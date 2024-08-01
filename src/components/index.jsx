@@ -9,13 +9,13 @@ import ProgressCircle from "./ProgressCircle";
 import StatBox from "./StatBox";
 
 export {
-  Header,
-  AccordionItem,
-  BarChart,
-  PieChart,
-  LineChart,
-  StreamChart,
-  GeographyChart,
-  ProgressCircle,
-  StatBox,
+    Header,
+    AccordionItem,
+    BarChart,
+    PieChart,
+    LineChart,
+    StreamChart,
+    GeographyChart,
+    ProgressCircle,
+    StatBox,
 };

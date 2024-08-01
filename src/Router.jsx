@@ -1,42 +1,38 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import App from "./App";
 import {
-  Dashboard,
-  Team,
-  Invoices,
-  Contacts,
-  Form,
-  Bar,
-  Line,
-  Pie,
-  FAQ,
-  Geography,
-  Calendar,
-  Stream,
+    Dashboard,
+    Book,
+    Calendar,
+    Send,
+    Notice,
+    Board,
+    Hr,
+    Mypage
 } from "./scenes";
+import Write from "./scenes/write/index.jsx";
+import List from "./scenes/list/index.jsx";
 
 const AppRouter = () => {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<App />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/contacts" element={<Contacts />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/form" element={<Form />} />
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/bar" element={<Bar />} />
-          <Route path="/pie" element={<Pie />} />
-          <Route path="/stream" element={<Stream />} />
-          <Route path="/line" element={<Line />} />
-          <Route path="/faq" element={<FAQ />} />
-          <Route path="/geography" element={<Geography />} />
-        </Route>
-      </Routes>
-    </Router>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<App/>}>
+                    <Route path="/" element={<Dashboard/>}/>
+                    <Route path="/write" element={<Write/>}/>
+                    <Route path="/list" element={<List/>}/>
+                    <Route path="/send" element={<Send/>}/>
+                    <Route path="/calendar" element={<Calendar/>}/>
+                    <Route path="/notice" element={<Notice/>}/>
+                    <Route path="/board" element={<Board/>}/>
+                    <Route path="/book" element={<Book/>}/>
+                    <Route path="/hr" element={<Hr/>}/>
+                    <Route path="/mypage" element={<Mypage/>}/>
+                </Route>
+            </Routes>
+        </Router>
+    );
 };
 
 export default AppRouter;
