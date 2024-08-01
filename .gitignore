@@ -144,3 +144,6 @@ sketch
 *.rdb
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,react,redis,intellij+all
+
+# bun package manager lock file
+bun.lockb
