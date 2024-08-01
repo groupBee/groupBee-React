@@ -6,17 +6,11 @@ import {Menu, MenuItem, Sidebar, SubMenu} from "react-pro-sidebar";
 import {
     BarChartOutlined,
     CalendarTodayOutlined,
-    ContactsOutlined,
     DashboardOutlined,
     DonutLargeOutlined,
     HelpOutlineOutlined,
-    MapOutlined,
     MenuOutlined,
     PeopleAltOutlined,
-    PersonOutlined,
-    ReceiptOutlined,
-    TimelineOutlined,
-    WavesOutlined,
     Settings,
     PersonAddAlt1Outlined,
     CreateOutlined,
@@ -76,15 +70,15 @@ const SideBar = () => {
                                 <img
                                     style={{width: "30px", height: "30px", borderRadius: "8px"}}
                                     src={logo}
-                                    alt="Argon"
+                                    alt="groupBee"
                                 />
                                 <Typography
                                     variant="h4"
                                     fontWeight="bold"
                                     textTransform="capitalize"
-                                    color={colors.greenAccent[500]}
+                                    color={colors.yellowAccent[600]}
                                 >
-                                    Argon
+                                    groupBee
                                 </Typography>
                             </Box>
                         )}
