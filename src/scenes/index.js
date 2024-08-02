@@ -5,7 +5,6 @@ import Team from "./write";
 import Send from "./send";
 import List from "./list";
 import Calendar from "./calendar";
-import Notice from "./notice";
 import Board from "./board";
 import Book from "./book";
 import Hr from "./hr";
@@ -19,7 +18,6 @@ export {
     Send,
     List,
     Calendar,
-    Notice,
     Board,
     Book,
     Hr,

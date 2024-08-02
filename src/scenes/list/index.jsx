@@ -1,14 +1,12 @@
-import { Box, useTheme, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import { Header } from "../../components";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { mockDataContacts } from "../../data/mockData"; // 실제 데이터로 교체 필요
+import { mockDataContacts } from "../../data/mockData";
 import { tokens } from "../../theme";
-import axios from "axios";
-import { useEffect, useState } from "react";
 
 const Contacts = () => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
     const [list, setList] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -141,7 +139,7 @@ const Contacts = () => {
                         color: colors.greenAccent[300],
                     },
                     "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: colors.blueAccent[700],
+                        backgroundColor: colors.yellowAccent[1000],
                         borderBottom: "none",
                     },
                     "& .MuiDataGrid-virtualScroller": {
@@ -149,7 +147,7 @@ const Contacts = () => {
                     },
                     "& .MuiDataGrid-footerContainer": {
                         borderTop: "none",
-                        backgroundColor: colors.blueAccent[700],
+                        backgroundColor: colors.yellowAccent[1000],
                     },
                     "& .MuiCheckbox-root": {
                         color: `${colors.greenAccent[200]} !important`,

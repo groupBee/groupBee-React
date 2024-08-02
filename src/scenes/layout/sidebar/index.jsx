@@ -7,10 +7,8 @@ import {
     BarChartOutlined,
     CalendarTodayOutlined,
     DashboardOutlined,
-    DonutLargeOutlined,
     HelpOutlineOutlined,
     MenuOutlined,
-    PeopleAltOutlined,
     Settings,
     PersonAddAlt1Outlined,
     CreateOutlined,
@@ -18,6 +16,8 @@ import {
     SendOutlined,
     CalendarViewMonthOutlined,
     TextsmsOutlined,
+    ListAltOutlined,
+    DescriptionOutlined,
 } from "@mui/icons-material";
 import avatar from "../../../assets/images/avatar.png";
 import logo from "../../../assets/images/logo.png";
@@ -68,18 +68,10 @@ const SideBar = () => {
                                 sx={{transition: ".3s ease"}}
                             >
                                 <img
-                                    style={{width: "30px", height: "30px", borderRadius: "8px"}}
+                                    style={{height: "55px", borderRadius: "8px", marginTop: "3px"}}
                                     src={logo}
                                     alt="groupBee"
                                 />
-                                <Typography
-                                    variant="h4"
-                                    fontWeight="bold"
-                                    textTransform="capitalize"
-                                    color={colors.yellowAccent[600]}
-                                >
-                                    groupBee
-                                </Typography>
                             </Box>
                         )}
                         <IconButton onClick={() => setCollapsed(!collapsed)}>
@@ -106,14 +98,14 @@ const SideBar = () => {
                     />
                     <Box sx={{textAlign: "center"}}>
                         <Typography variant="h3" fontWeight="bold" color={colors.gray[100]}>
-                            박 보 민
+                            손 가 원
                         </Typography>
                         <Typography
                             variant="h6"
                             fontWeight="500"
-                            color={colors.greenAccent[500]}
+                            color={colors.yellowAccent[1000]}
                         >
-                            VP Fancy Admin
+                            CEO
                         </Typography>
                     </Box>
                 </Box>
@@ -124,7 +116,7 @@ const SideBar = () => {
                     menuItemStyles={{
                         button: {
                             ":hover": {
-                                color: "#868dfb",
+                                color: "#FFCC1A",
                                 background: "transparent",
                                 transition: ".4s ease",
                             },
@@ -147,7 +139,7 @@ const SideBar = () => {
                                 {!collapsed ? "전자결재" : " "}
                             </Typography>
                         }
-                        icon={<PeopleAltOutlined/>}
+                        icon={<DescriptionOutlined/>}
                     >
                         <Item
                             title="결재작성"
@@ -191,27 +183,13 @@ const SideBar = () => {
                         />
                     </SubMenu>
 
-                    <SubMenu
-                        label={
-                            <Typography variant="h6" color={colors.gray[300]}>
-                                {!collapsed ? "게시판" : " "}
-                            </Typography>
-                        }
-                        icon={<BarChartOutlined/>}
-                    >
-                        <Item
-                            title="공지사항"
-                            path="/notice"
-                            colors={colors}
-                            icon={<BarChartOutlined/>}
-                        />
-                        <Item
-                            title="사원 게시판"
-                            path="/board"
-                            colors={colors}
-                            icon={<DonutLargeOutlined/>}
-                        />
-                    </SubMenu>
+                    <Item
+                        title="게시판"
+                        path="/board"
+                        colors={colors}
+                        icon={<ListAltOutlined/>}
+                    />
+
                     <SubMenu
                         label={
                             <Typography variant="h6" color={colors.gray[300]}>
