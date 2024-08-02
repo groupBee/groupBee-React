@@ -6,7 +6,6 @@ import {
     Book,
     Calendar,
     Send,
-    Notice,
     Board,
     Hr,
     Mypage
@@ -24,7 +23,6 @@ const AppRouter = () => {
                     <Route path="/list" element={<List/>}/>
                     <Route path="/send" element={<Send/>}/>
                     <Route path="/calendar" element={<Calendar/>}/>
-                    <Route path="/notice" element={<Notice/>}/>
                     <Route path="/board" element={<Board/>}/>
                     <Route path="/book" element={<Book/>}/>
                     <Route path="/hr" element={<Hr/>}/>
