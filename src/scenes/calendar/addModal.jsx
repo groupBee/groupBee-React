@@ -1,10 +1,12 @@
 import React from 'react';
-import {Box, Button, TextField, Typography} from "@mui/material";
+import {Box, Button, Modal, TextField, Typography} from "@mui/material";
 
 const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => {
     const handleChange = (e) => {
+        const {name, value} = e.target;
         setInputValues({
-            ...inputValues, [e.target.name]: e.target.value,
+            ...inputValues,
+            [name]: value,
         });
     };
 
