@@ -1,7 +1,7 @@
 import React from 'react';
 import {Box, Button, Modal, Typography} from "@mui/material";
 
-const MyModal = ({ isOpen, onCancel, onSubmit, title, message}) => {
+const DeleteModal = ({ isOpen, onCancel, onSubmit, title, message}) => {
     return (
         <Modal open={isOpen} onClose={onCancel}>
             <Box sx={{
@@ -30,4 +30,4 @@ const MyModal = ({ isOpen, onCancel, onSubmit, title, message}) => {
     );
 };
 
-export default MyModal;
+export default DeleteModal;
