@@ -8,8 +8,8 @@ import {MenuItem} from "react-pro-sidebar";
 import axios from "axios";
 
 const Contacts = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
 
     const [list, setList] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
