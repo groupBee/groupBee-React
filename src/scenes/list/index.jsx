@@ -1,8 +1,11 @@
-import { Box, useTheme } from "@mui/material";
+import {Box, FormControl, InputLabel, Select, useTheme} from "@mui/material";
 import { Header } from "../../components";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { mockDataContacts } from "../../data/mockData";
 import { tokens } from "../../theme";
+import {useEffect, useState} from "react";
+import {MenuItem} from "react-pro-sidebar";
+import axios from "axios";
 
 const Contacts = () => {
   const theme = useTheme();
