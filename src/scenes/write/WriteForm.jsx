@@ -5,7 +5,7 @@ import AppDocVacation from "./AppDocVacation";
 import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
 import NewAppDocType from "./NewAppDocType";
-import '../css/WriteForm.css';
+import './WriteForm.css';
 
 const WriteForm = () => {
     const [writer, setWriter] = useState('');
