@@ -1,18 +1,18 @@
-import { Box, Typography, useTheme } from "@mui/material";
-import { Header } from "../../components";
-import { DataGrid } from "@mui/x-data-grid";
-import { mockDataTeam } from "../../data/mockData";
-import { tokens } from "../../theme";
+import {Box, Typography, useTheme} from "@mui/material";
+import {Header} from "../../components";
+import {DataGrid} from "@mui/x-data-grid";
+import {mockDataTeam} from "../../data/mockData";
+import {tokens} from "../../theme";
 import {
-  AdminPanelSettingsOutlined,
-  LockOpenOutlined,
-  SecurityOutlined,
+    AdminPanelSettingsOutlined,
+    LockOpenOutlined,
+    SecurityOutlined,
 } from "@mui/icons-material";
 import WriteForm from "./WriteForm.jsx";
 
 const Team = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
 
   const columns = [
     { field: "id", headerName: "ID" },
