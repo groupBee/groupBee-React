@@ -6,6 +6,7 @@ import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
 import NewAppDocType from "./NewAppDocType";
 import './WriteForm.css';
+import DatePicker from "react-datepicker";
 
 const WriteForm = () => {
     const [writer, setWriter] = useState('');
@@ -18,11 +19,12 @@ const WriteForm = () => {
     const [approveStatus, setApproveStatus] = useState(0);
     const [approveType, setApproveType] = useState(2);
     const [level, setLevel] = useState(0);
-    const [approveDate, setApproveDate] = useState('');
+    const [approveDate, setApproveDate] = useState(new Date());
     const [appDocType, setAppDocType] = useState(0);
     const [position, setPosition] = useState('');
     const [department, setDepartment] = useState('');
     const [additionalFields, setAdditionalFields] = useState({});
+    const [errors, setErrors] = useState({});
 
     const uploadPhoto = (e) => {
         const uploadFile = e.target.files[0];
@@ -51,8 +53,25 @@ const WriteForm = () => {
             [key]: value
         }));
     };
+    const validateForm = () => {
+        const newErrors = {};
+        if (!writer) newErrors.writer = "이름을 입력하세요.";
+        if (!firstApprover) newErrors.firstApprover = "최초승인자를 입력하세요.";
+        if (!secondApprover) newErrors.secondApprover = "중간승인자를 입력하세요.";
+        if (!thirdApprover) newErrors.thirdApprover = "최종승인자를 입력하세요.";
+        if (!department) newErrors.department = "부서를 입력하세요.";
+        if (!position) newErrors.position = "직급을 입력하세요.";
+        if (!level) newErrors.level = "보안등급을 입력하세요.";
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
 
     const createApp = () => {
+        if (!validateForm()) {
+            alert("필수 항목을 모두 입력하세요.");
+            return;
+    }
         const originalFileName = originalFile ? originalFile.name : '';
 
         // additionalFields의 키에서 '__'를 '.'으로 변환
@@ -100,9 +119,9 @@ const WriteForm = () => {
                     <td colSpan={4} rowSpan={3}
                         style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
                     <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
-                    <td style={{height: '50px', fontSize: '23px'}}>최초승인자</td>
-                    <td style={{fontSize: '23px'}}>중간승인자</td>
-                    <td style={{fontSize: '23px'}}>최종승인자</td>
+                    <td style={{height: '50px', fontSize: '23px',width:'200px'}}>최초승인자</td>
+                    <td style={{fontSize: '23px',width:'200px'}}>중간승인자</td>
+                    <td style={{fontSize: '23px',width:'200px'}}>최종승인자</td>
                 </tr>
                 <tr>
                     <td style={{height: '150px'}}></td>
@@ -111,28 +130,38 @@ const WriteForm = () => {
                 </tr>
                 <tr>
                     <td>
-                        <input type="text" value={firstApprover} onChange={(e) => setFirstApprover(e.target.value)}/>
+                        <input type="text" value={firstApprover} onChange={(e) => setFirstApprover(e.target.value)}
+                               style={{width:'100%'}}/>
+                        {errors.firstApprover && <div className="error">{errors.firstApprover}</div>}
                     </td>
                     <td>
-                        <input type="text" value={secondApprover} onChange={(e) => setSecondApprover(e.target.value)}/>
+                        <input type="text" value={secondApprover} onChange={(e) => setSecondApprover(e.target.value)}
+                               style={{width:'100%'}}/>
+                        {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
                     </td>
                     <td>
-                        <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}/>
+                        <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}
+                               style={{width:'100%'}}/>
+                        {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}
                     </td>
                 </tr>
                 <tr>
-                    <td style={{width: '70px', fontSize: '23px'}}>성명</td>
+                    <td style={{width: '90px', fontSize: '23px'}}>성명</td>
                     <td><input type="text" value={writer} onChange={(e) => setWriter(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/></td>
+                               style={{fontSize: '23px', width: '175px'}}/>
+                        {errors.writer&& <div className="error">{errors.writer}</div>}</td>
                     <td style={{width: '70px', fontSize: '23px'}}>부서</td>
                     <td><input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/></td>
-                    <td style={{width: '70px', fontSize: '23px'}}>직급</td>
+                               style={{fontSize: '23px', width: '175px'}}/>
+                        {errors.department&& <div className="error">{errors.department}</div>}</td>
+                    <td style={{width: '90px', fontSize: '23px'}}>직급</td>
                     <td><input type="text" value={position} onChange={(e) => setPosition(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/></td>
+                               style={{fontSize: '23px', width: '175px'}}/>
+                        {errors.position&& <div className="error">{errors.position}</div>}</td>
                     <td style={{width: '70px', fontSize: '23px'}}>보안등급</td>
                     <td><input type="number" value={level} onChange={(e) => setLevel(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/></td>
+                               style={{fontSize: '23px', width: '175px'}}/>
+                        {errors.level&& <div className="error">{errors.level}</div>}</td>
                 </tr>
                 {appDocType === 0 && <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
                 {appDocType === 1 && <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
@@ -145,9 +174,14 @@ const WriteForm = () => {
                 </tbody>
                 <tbody>
                 <tr style={{fontSize: '23px'}}>
-                    <td colSpan={8}><input type="date" value={approveDate}
-                                           onChange={(e) => setApproveDate(e.target.value)}
-                                           style={{marginTop: '50px'}}/></td>
+                    <td colSpan={8}>
+                        <DatePicker
+                            selected={approveDate}
+                            onChange={(data)=>setApproveDate(data)}
+                            dateFormat="yyyy년 MM월 dd일"
+                            style={{marginTop: '50px'}}
+                            className="custom-datepicker"/>
+                    </td>
                 </tr>
                 <tr style={{fontSize: '23px'}}>
                     <td colSpan={4} style={{height: '50px'}}></td>

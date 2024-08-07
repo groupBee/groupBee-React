@@ -1,12 +1,13 @@
 import {useEffect, useState} from "react";
+import DatePicker from "react-datepicker";
 
 const AppDocExpend = ({ handleAdditionalFieldChange }) => {
     // 요청일자, 지출유형, 최종금액, 통화 단위는 개별 상태로 유지
-    const [requestDate, setRequestDate] = useState('');
     const [expendType, setExpendType] = useState(0);
     const [title, setTitle] = useState('');
     const [finalPrice, setFinalPrice] = useState(0);
     const [monetaryUnit, setMonetaryUnit] = useState(0);
+    const [startDate, setStartDate] = useState(new Date());
 
     // 내역을 관리하는 배열 상태, 기본적으로 10개 초기화
 
@@ -18,9 +19,10 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
         setFinalPrice(total);
     }, [details]);
 
-    const handleRequestDateChange = (e) => {
-        setRequestDate(e.target.value);
-        handleAdditionalFieldChange("requestDate", e.target.value);
+    const handleRequestDateChange = (date) => {
+        setStartDate(date);
+        const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD" 형식으로 변환
+        handleAdditionalFieldChange("requestDate", formattedDate);
     };
 
     const handleExpendTypeChange = (e) => {
@@ -68,7 +70,11 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
             <tr style={{ fontSize: '23px' }}>
                 <td>요청일자</td>
                 <td colSpan={3}>
-                    <input type='date' value={requestDate} name='requestDate' onChange={handleRequestDateChange} />
+                    <DatePicker
+                        selected={startDate}
+                        onChange={handleRequestDateChange}
+                        dateFormat="yyyy년 MM월 dd일"
+                        className="custom-datepicker"/>
                 </td>
                 <td>지출유형</td>
                 <td>
@@ -86,12 +92,12 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                     <input type='text' value={title} name='title' onChange={handleTitleChange} style={{width:'100%'}}/>
                 </td>
             </tr>
-            <tr style={{ fontSize: '23px' }}>
+            <tr style={{ fontSize: '23px',appearance:'none'}}>
                 <td>최종금액</td>
 
                 <td colSpan={7}>
                     <input type='number' value={finalPrice} name='finalPrice' onChange={handleFinalPriceChange}
-                           style={{width: '80%'}} readOnly/>
+                           style={{width: '60%', pointerEvents: 'none', outline: 'none',textAlign:'right'}} readOnly/>
 
                     <select defaultValue={monetaryUnit} onChange={handleMonetaryUnitChange} name='monetaryUnit'>
                         <option value={0}>원</option>
@@ -112,7 +118,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
             </tr>
             {details.map((detail, index) => (
 
-                <tr key={index} style={{fontSize: '23px'}}>
+                <tr key={index} style={{fontSize: '23px',appearance:'none'}}>
 
                     <td colSpan={3} style={{ height: '65px' }}>
                         <input
@@ -128,7 +134,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                             type='number'
                             value={detail.price}
                             name={`price-${index}`}
-                            style={{width:'100%'}}
+                            style={{width:'100%',appearance:'none'}}
                             onChange={(e) => handleDetailChange(index, 'price', e.target.value)}
                         />
                     </td>
