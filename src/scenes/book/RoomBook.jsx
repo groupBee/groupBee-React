@@ -141,7 +141,7 @@ const RoomBook = () => {
                                             <div className="d-flex p-15">
                                                 <Card sx={{display: 'flex'}}
                                                       onClick={() => handleRoomClick(item)}>
-                                                    <Box style={{ width:'330px', height:'200px',}}>
+                                                    <Box style={{ width:'220px', height:'150px',}}>
                                                         <img
                                                             src={`https://minio.bmops.kro.kr/groupbee/book/${item.photo}`}
                                                             alt=''

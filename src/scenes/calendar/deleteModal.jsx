@@ -9,7 +9,7 @@ const DeleteModal = ({ isOpen, onCancel, onSubmit, title, message}) => {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -100%)',
-                bgcolor: 'background.default',
+                bgcolor: 'white',
                 borderRadius: '5px',
                 width: 400,
                 boxShadow: 24,
@@ -23,7 +23,7 @@ const DeleteModal = ({ isOpen, onCancel, onSubmit, title, message}) => {
                 </Typography>
                 <Box mt={2}>
                     <Button onClick={onSubmit} variant="contained" color="primary">확인</Button>
-                    <Button onClick={onCancel} variant="outlined" color="secondary" sx={{ ml: 2 }}>취소</Button>
+                    <Button onClick={onCancel} variant="outlined" color="warning" sx={{ ml: 2 }}>취소</Button>
                 </Box>
             </Box>
         </Modal>

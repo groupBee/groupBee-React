@@ -1,31 +1,34 @@
-import React from 'react';
-import {Box, Button, Modal, TextField, Typography} from "@mui/material";
+import React, { useEffect } from 'react';
+import {Dialog, DialogTitle, DialogContent,DialogActions, Box, Button, Modal, TextField, Typography} from "@mui/material";
 
 const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => {
+
+    useEffect(() => {
+        console.log("Current Input Values:", inputValues);
+    }, [inputValues]);
+
     const handleChange = (e) => {
+
         const {name, value} = e.target;
-        setInputValues({
-            ...inputValues,
-            [name]: value,
-        });
+        setInputValues((prev) => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     return (
-        <Modal open={isOpen} onClose={onCancel}>
-            <Box sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                bgcolor: 'background.default',
-                borderRadius: '5px',
-                width: 400,
-                boxShadow: 24,
-                p: 4
-            }}>
-                <Typography variant="h3" component="h2">
+        <Dialog open={isOpen} onClose={onCancel}>
+                <DialogTitle variant="h3" component="h2"
+                            sx={{
+                                fontSize: '1.5rem',
+                                marginBottom: '1px',
+                                backgroundImage: 'linear-gradient(to right, #FFA800, #FFD600)',
+                                color: 'white'
+                            }}>
                     일정 추가
-                </Typography>
+                </DialogTitle>
+            <DialogContent>
+
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -34,6 +37,21 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     name="title"
                     value={inputValues.title}
                     onChange={handleChange}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            '&:hover fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                        },
+                        '&:hover': {
+                            '& .MuiInputLabel-root': {
+                                color: '#ffb121',
+                            },
+                        },
+                    }}
                 />
                 <TextField
                     fullWidth
@@ -44,6 +62,24 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     type="datetime-local"
                     value={inputValues.start}
                     onChange={handleChange}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            '&:hover fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                        },
+                        '&:hover': {
+                            '& .MuiInputLabel-root': {
+                                color: '#ffb121',
+                            },
+                        },
+                    }}
                 />
                 <TextField
                     fullWidth
@@ -54,6 +90,24 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     type="datetime-local"
                     value={inputValues.end}
                     onChange={handleChange}
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            '&:hover fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                        },
+                        '&:hover': {
+                            '& .MuiInputLabel-root': {
+                                color: '#ffb121',
+                            },
+                        },
+                    }}
                 />
                 <TextField
                     fullWidth
@@ -63,13 +117,50 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     name="description"
                     value={inputValues.description}
                     onChange={handleChange}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            '&:hover fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#ffb121',
+                            },
+                        },
+                        '&:hover': {
+                            '& .MuiInputLabel-root': {
+                                color: '#ffb121',
+                            },
+                        },
+                    }}
                 />
-                <Box mt={2}>
-                    <Button onClick={onSubmit} variant="contained" color="primary">추가</Button>
-                    <Button onClick={onCancel} variant="outlined" color="secondary" sx={{ml: 2}}>취소</Button>
-                </Box>
-            </Box>
-        </Modal>
+
+                <DialogActions mt={2}>
+                    <Button onClick={onSubmit} variant="outlined" color="secondary"
+                            sx={{
+                                fontSize: '1rem',
+                                color: '#ffb121',
+                                backgroundColor: 'white',
+                                border: '1px solid #ffb121',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#ffb121',
+                                    border: '1px solid #ffb121',},
+                            }}>추가</Button>
+
+                    <Button onClick={onCancel} variant="outlined" color="secondary"
+                            sx={{
+                                fontSize: '1rem',
+                                color: '#ffb121',
+                                backgroundColor: 'white',
+                                border: '1px solid #ffb121',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#ffb121',
+                                    border: '1px solid #ffb121',},
+                            }}>취소</Button>
+                </DialogActions>
+        </DialogContent>
+        </Dialog>
     );
 };
 
