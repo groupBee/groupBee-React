@@ -13,9 +13,10 @@ const useModal = () => {
         console.log('Modal Open State Changed:', isOpen);
     }, [isOpen]);
 
-    const showModal = (title, message, type = 'confirm') => {
+    const showModal = (title, message, type = 'confirm', initialValues={}) => {
         console.log('showModal Called !')
         setModalContent({title, message, type});
+        setInputValues(initialValues);
         setIsOpen(true);
         console.log('Modal Open State:', isOpen); // 비동기 처리이기 때문에 아직 false 값을 반환한다.
         return new Promise((resolve) => {
