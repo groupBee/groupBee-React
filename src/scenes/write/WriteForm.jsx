@@ -75,7 +75,7 @@ const WriteForm = () => {
 
     const createApp = () => {
         if (!validateForm()) {
-            alert("필수 항목을 모두 입력하세요.");
+            alert("필수항목을 모두 입력하세요.");
             return;
     }
         const originalFileName = originalFile ? originalFile.name : '';
