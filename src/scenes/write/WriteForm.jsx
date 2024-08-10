@@ -25,13 +25,14 @@ const WriteForm = () => {
     const [department, setDepartment] = useState('');
     const [additionalFields, setAdditionalFields] = useState({});
     const [errors, setErrors] = useState({});
+    const [intentValidator, setIntentValidator] = useState(null);
 
     const uploadPhoto = (e) => {
         const uploadFile = e.target.files[0];
         setOriginalFile(uploadFile);
         const uploadForm = new FormData();
         uploadForm.append("file", uploadFile);
-        axios.post('/elecapp/uploadfile', uploadForm, {
+        axios.post('/api/elecapp/uploadfile', uploadForm, {
             headers: { "Content-Type": "multipart/form-data" }
         })
         .then(res => {
@@ -62,6 +63,11 @@ const WriteForm = () => {
         if (!department) newErrors.department = "부서를 입력하세요.";
         if (!position) newErrors.position = "직급을 입력하세요.";
         if (!level) newErrors.level = "보안등급을 입력하세요.";
+
+        // if (appDocType === 0 && intentValidator && !intentValidator()) {
+        //     newErrors.intent = "품의서의 필수 항목을 모두 입력하세요.";
+        // }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -81,7 +87,11 @@ const WriteForm = () => {
             transformedAdditionalFields[newKey] = additionalFields[key];
         });
 
-        axios.post('/elecapp/create', {
+        console.log(  "writer>>",writer," firstApprover>>", firstApprover, "secondApprover>>",secondApprover, "thirdApprover",thirdApprover,
+             "originalFileName>>",originalFileName, "attachedFile>>",attachedFile, "approveStatus>>",approveStatus, "appDocType>>",appDocType, "level>>",level,
+            "approveType>>",approveType, "position>>",position, "department>>",department, additionalFields);
+
+        axios.post('/api/elecapp/create', {
             writer, firstApprover, secondApprover, thirdApprover,
             originalFile: originalFileName, attachedFile, approveStatus, appDocType, level,
             approveType, position, department, additionalFields
