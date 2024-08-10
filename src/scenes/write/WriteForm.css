@@ -26,3 +26,18 @@ button{
     border-radius: 4px;
     background: #fcdc83;
 }
+.custom-datepicker {
+    cursor: pointer;
+}
+.custom-datepickerstart {
+    cursor: pointer;
+    margin-left: 180px;
+}
+.custom-datepickerend {
+    cursor: pointer;
+    padding-left: 70px;
+    flex: 1;
+}
+.error{
+    color: red;
+}

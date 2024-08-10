@@ -1,23 +1,26 @@
 import { useState } from "react";
+import DatePicker from "react-datepicker";
 
 const AppDocVacation = ({ handleAdditionalFieldChange }) => {
     const [days, setDays] = useState(0);
-    const [start, setStart] = useState('');
-    const [end, setEnd] = useState('');
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
     const [day, setDay] = useState('');
     const [type, setType] = useState('');
     const [detail,setDetail]=useState('');
 
     // 휴가 정보 변경 시 상위 컴포넌트에 알림
 
-    const handleStartChange = (e) => {
-        setStart(e.target.value);
-        handleAdditionalFieldChange("start", e.target.value);
+    const handleStartChange = (date) => {
+        setStartDate(date);
+        const formattedDate = date.toISOString().split('T')[0];
+        handleAdditionalFieldChange("start", formattedDate);
     };
 
-    const handleEndChange = (e) => {
-        setEnd(e.target.value);
-        handleAdditionalFieldChange("end", e.target.value);
+    const handleEndChange = (date) => {
+        setEndDate(date);
+        const formattedDate = date.toISOString().split('T')[0];
+        handleAdditionalFieldChange("end", formattedDate);
     };
 
 
@@ -32,7 +35,7 @@ const AppDocVacation = ({ handleAdditionalFieldChange }) => {
     };
     return (
         <>
-            <tr>
+            <tr style={{fontSize:'23px'}}>
                 <td colSpan={2}>휴가 종류</td>
                 <td colSpan={6}>
                     <input type="radio" value="반차" checked={type === "반차"} onChange={handleTypeChange}
@@ -45,23 +48,36 @@ const AppDocVacation = ({ handleAdditionalFieldChange }) => {
                            style={{width:'20px'}}/>기타
                 </td>
             </tr>
-            <tr>
+            <tr style={{fontSize:'23px'}}>
                 <td colSpan={2}>휴가 기간</td>
-                <td colSpan={6}>
-                    <input type="date" value={start} name="start" onChange={handleStartChange}/>
-                    ~<input type="date" value={end} name="end" onChange={handleEndChange}/>
+                <td colSpan={6} style={{textAlign:'center'}}>
+                    <div style={{display: 'inline-flex', alignItems: 'center', width: '100%'}}>
+                        <DatePicker
+                            selected={startDate}
+                            onChange={handleStartChange}
+                            dateFormat="yyyy년 MM월 dd일"
+                            className="custom-datepickerstart"
+                        />
+                        <span style={{margin: '0 10px'}}>~</span>
+                        <DatePicker
+                            selected={endDate}
+                            onChange={handleEndChange}
+                            dateFormat="yyyy년 MM월 dd일"
+                            className="custom-datepickerend"
+                        />
+                    </div>
                 </td>
             </tr>
-            <tr>
-                <td colSpan={8} style={{height: '50px'}}>내 용</td>
+            <tr style={{fontSize: '23px'}}>
+            <td colSpan={8} style={{height: '50px'}}>내 용</td>
             </tr>
-            <tr>
+            <tr style={{fontSize:'23px'}}>
                 <td colSpan={8}>
-                    <input type='text' value={detail} name='detail' onChange={handleDetailChange}
-                           style={{height: '600px', width: '100%'}}/>
+                    <textarea value={detail} name='detail' onChange={handleDetailChange}
+                           style={{height: '600px', width: '100%', border:'none',resize:'none'}}/>
                 </td>
             </tr>
-            <tr>
+            <tr style={{fontSize:'23px'}}>
                 <td colSpan={8} style={{height:'50px'}}>위와 같이 휴가을 신청하오니 허락해주시기 바랍니다.</td>
             </tr>
         </>
