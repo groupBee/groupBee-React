@@ -16,7 +16,7 @@ const Contacts = () => {
     const [selectedStatus, setSelectedStatus] = useState("all");
 
     const getStatusCount = () => {
-        axios.post("/elecapp/receivedApp", { memberId: "손가투" }) // 실제 멤버 ID로 교체 필요
+        axios.post("/api/elecapp/receivedApp", { memberId: "손가투" }) // 실제 멤버 ID로 교체 필요
             .then(res => {
                 setList(res.data);
                 setFilteredData(res.data);

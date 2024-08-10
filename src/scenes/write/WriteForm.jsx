@@ -29,7 +29,7 @@ const WriteForm = () => {
         setOriginalFile(uploadFile);
         const uploadForm = new FormData();
         uploadForm.append("file", uploadFile);
-        axios.post('/elecapp/uploadfile', uploadForm, {
+        axios.post('/api/elecapp/uploadfile', uploadForm, {
             headers: { "Content-Type": "multipart/form-data" }
         })
         .then(res => {
@@ -62,7 +62,7 @@ const WriteForm = () => {
             transformedAdditionalFields[newKey] = additionalFields[key];
         });
 
-        axios.post('/elecapp/create', {
+        axios.post('/api/elecapp/create', {
             writer, firstApprover, secondApprover, thirdApprover,
             originalFile: originalFileName, attachedFile, approveStatus, appDocType, level,
             approveType, position, department, additionalFields
