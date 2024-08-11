@@ -134,14 +134,14 @@ const RoomBook = () => {
                     <Card.Body className="px-0 py-2">
                         <div className="row">
                             {/* 왼쪽 열: 기존 콘텐츠 */}
-                            <div className="col-md-5" style={{padding: '20px'}}>
+                            <div className="col-md-6" style={{padding: '20px'}}>
                                 {currentItems && currentItems.map((item) => (
                                     <div key={item.id} className="mb-4">
                                         <div className="row d-flex">
                                             <div className="d-flex p-15">
                                                 <Card sx={{display: 'flex'}}
                                                       onClick={() => handleRoomClick(item)}>
-                                                    <Box style={{ width:'220px', height:'150px',}}>
+                                                    <Box style={{ width:'250px', height:'140px',}}>
                                                         <img
                                                             src={`https://minio.bmops.kro.kr/groupbee/book/${item.photo}`}
                                                             alt=''
@@ -169,7 +169,7 @@ const RoomBook = () => {
                             </div>
 
                             {/* 오른쪽 열: 차량 상세 정보 */}
-                            <div className="col-md-7" style={{padding:'50px',}}>
+                            <div className="col-md-6" style={{padding:'30px',}}>
                                 {!roomDetails ? (
                                     <div className="p-3" style={{ borderRadius:'10px', border:'1px solid #ffb121', textAlign: 'center' }}>
                                         <h5>회의룸을 선택하세요</h5>
@@ -185,7 +185,7 @@ const RoomBook = () => {
                                             alt=''
                                             style={{
                                                 width: '100%',
-                                                height: '100%',
+                                                height: '400px',
                                                 objectFit: 'cover',
                                                 borderRadius: '10px'
                                             }}

@@ -142,7 +142,7 @@ const CarBook = () => {
                                             <div className="d-flex p-15">
                                                 <Card sx={{display: 'flex'}}
                                                       onClick={() => handleCarClick(item)}>
-                                                    <Box style={{ width:'220px', height:'150px',}}>
+                                                    <Box style={{ width:'250px', height:'140px',}}>
                                                         <img
                                                             src={`https://minio.bmops.kro.kr/groupbee/book/${item.photo}`}
                                                             alt={item.type}
@@ -173,7 +173,7 @@ const CarBook = () => {
                             </div>
 
                             {/* 오른쪽 열: 차량 상세 정보 */}
-                            <div className="col-md-6" style={{padding:'50px',}}>
+                            <div className="col-md-6" style={{padding:'30px',}}>
                                 {!carDetails ? (
                                     <div className="p-3" style={{ borderRadius:'10px', border:'1px solid #ffb121', textAlign: 'center' }}>
                                         <h5>차량을 선택하세요</h5>

@@ -10,7 +10,7 @@ const BookRoute = () => {
         <div>
             <Box m="20px">
                 <Header title="예약"/>
-                <nav>
+                <nav style={{marginTop:'-20px'}}>
                     <ul style={{
                         listStyle: 'none',
                         padding: 0,
@@ -21,7 +21,7 @@ const BookRoute = () => {
                         <li style={{margin: 0}}>
                             <Link to="carbook" style={{
                                 textDecoration: 'none',
-                                fontSize: '21px',
+                                fontSize: '20px',
                                 color: '#000'
                             }}>
                                 차량 예약
@@ -30,10 +30,19 @@ const BookRoute = () => {
                         <li style={{margin: 0}}>
                             <Link to="roombook" style={{
                                 textDecoration: 'none',
-                                fontSize: '21px',
+                                fontSize: '20px',
                                 color: '#000'
                             }}>
                                 회의실 예약
+                            </Link>
+                        </li>
+                        <li style={{margin: 0}}>
+                            <Link to="roombook" style={{
+                                textDecoration: 'none',
+                                fontSize: '20px',
+                                color: '#000'
+                            }}>
+                                예약현황
                             </Link>
                         </li>
                     </ul>
