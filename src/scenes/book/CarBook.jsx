@@ -12,6 +12,7 @@ import './DatePicker.css';
 
 
 
+
 const CarBook = () => {
     const [cars, setCars] = useState([]);
     const [reservations, setReservations] = useState([]);
@@ -67,13 +68,13 @@ const CarBook = () => {
         const selectedDateEnd = new Date(selectedDate.setHours(23, 59, 59, 999)); // 선택된 날짜의 끝
 
         return reservations.filter(res => {
-            const rantDayDate = new Date(res.rantDay);
+            const rentDayDate = new Date(res.rentDay);
             const returnDayDate = new Date(res.returnDay);
 
             // 예약이 선택된 날짜와 일치하거나 포함하는지 확인
             return (
                 res.corporateCarId === carId &&
-                (rantDayDate <= selectedDateEnd && returnDayDate >= selectedDateStart)
+                (rentDayDate <= selectedDateEnd && returnDayDate >= selectedDateStart)
             );
         });
     };
@@ -87,10 +88,10 @@ const CarBook = () => {
         const selectedDateEnd = new Date(selectedDate.setHours(23, 59, 59, 999));
 
         reservations.forEach((reservation) => {
-            const rantDayDate = new Date(reservation.rantDay);
+            const rentDayDate = new Date(reservation.rentDay);
             const returnDayDate = new Date(reservation.returnDay);
 
-            const reservationStart = new Date(Math.max(rantDayDate, selectedDateStart));
+            const reservationStart = new Date(Math.max(rentDayDate, selectedDateStart));
             const reservationEnd = new Date(Math.min(returnDayDate, selectedDateEnd));
 
             const reservationStartHour = reservationStart.getHours();
@@ -279,6 +280,7 @@ const CarBook = () => {
                     reservations={reservations}
                 />
             )}
+
         </Box>
     );
 };

@@ -322,7 +322,7 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                         )}
                     </Grid>
                     <DialogActions>
-                        <Button onClick={handleClose} variant="contained" color="primary"
+                        <Button onClick={handleClose} variant="" color="primary"
                                 sx={{
                                     fontSize: '1rem',
                                     color: '#ffb121',
@@ -334,7 +334,7 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                                         border: '1px solid #ffb121',
                                     },
                                 }}>취소</Button>
-                        <Button type="submit" variant="contained" color="primary"
+                        <Button type="submit" variant="" color="primary"
                                 sx={{
                                     fontSize: '1rem',
                                     color: '#ffb121',

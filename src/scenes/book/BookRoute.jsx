@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Link, Navigate } from 'react-router-dom';
 import CarBook from './CarBook.jsx';
 import RoomBook from './RoomBook.jsx';
+import BookList from './BookList.jsx';
 import {Box } from "@mui/material";
 import {Header} from "../../components/index.jsx";
 
@@ -37,7 +38,7 @@ const BookRoute = () => {
                             </Link>
                         </li>
                         <li style={{margin: 0}}>
-                            <Link to="roombook" style={{
+                            <Link to="booklist" style={{
                                 textDecoration: 'none',
                                 fontSize: '20px',
                                 color: '#000'
@@ -54,6 +55,7 @@ const BookRoute = () => {
                 <Route path="/" element={<Navigate to="carbook"/>}/>
                 <Route path="carbook" element={<CarBook/>}/>
                 <Route path="roombook" element={<RoomBook/>}/>
+                <Route path="booklist" element={<BookList/>}/>
             </Routes>
         </div>
     );
