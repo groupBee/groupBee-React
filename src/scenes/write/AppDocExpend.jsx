@@ -11,12 +11,12 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
 
     // 내역을 관리하는 배열 상태, 기본적으로 10개 초기화
 
-    const [details, setDetails] = useState(Array(9).fill(null).map(() => ({ content: '', price: 0, note: '' })));
+    const [details, setDetails] = useState(Array(9).fill(null).map(() => ({ content: '', price: '0', note: '' })));
 
     useEffect(() => {
         // details 배열의 price 값을 모두 더하여 finalPrice를 업데이트
-        const total = details.reduce((sum, detail) => sum + Number(detail.price), 0);
-        setFinalPrice(total);
+        const total = details.reduce((sum, detail) => sum + Number(detail.price.replaceAll(',','')), 0);
+        setFinalPrice(total.toLocaleString('ko-KR'));
     }, [details]);
 
     const handleRequestDateChange = (date) => {
@@ -36,8 +36,13 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
     };
 
     const handleFinalPriceChange = (e) => {
-        setFinalPrice(e.target.value);
-        handleAdditionalFieldChange("finalPrice", e.target.value);
+        let price = e.target.value.replaceAll(',', '');
+        if (isNaN(price)) {
+            setFinalPrice('0');
+        } else {
+            setFinalPrice(Number(price).toLocaleString('ko-KR'));
+        }
+        handleAdditionalFieldChange("finalPrice", price);
     };
 
     const handleMonetaryUnitChange = (e) => {
@@ -48,6 +53,14 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
     // 각 행의 데이터를 업데이트하는 함수
     const handleDetailChange = (index, field, value) => {
         const newDetails = [...details];
+        if (field === 'price') {
+            value = value.replaceAll(',', '');
+            if (isNaN(value)) {
+                value = '0';
+            } else {
+                value = Number(value).toLocaleString('ko-KR');
+            }
+        }
         newDetails[index][field] = value;
         setDetails(newDetails);
         handleAdditionalFieldChange(`details_${index}_${field}`, value);
@@ -96,8 +109,8 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                 <td>최종금액</td>
 
                 <td colSpan={7}>
-                    <input type='number' value={finalPrice} name='finalPrice' onChange={handleFinalPriceChange}
-                           style={{width: '60%', pointerEvents: 'none', outline: 'none',textAlign:'right'}} readOnly/>
+                    <input type='text' value={finalPrice} name='finalPrice' onChange={handleFinalPriceChange}
+                           style={{width: '60%', pointerEvents: 'none', outline: 'none',textAlign:'right',paddingRight:'20px'}} readOnly/>
 
                     <select defaultValue={monetaryUnit} onChange={handleMonetaryUnitChange} name='monetaryUnit'>
                         <option value={0}>원</option>
@@ -131,10 +144,10 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                     </td>
                     <td colSpan={3}>
                         <input
-                            type='number'
+                            type='text'
                             value={detail.price}
                             name={`price-${index}`}
-                            style={{width:'100%',appearance:'none'}}
+                            style={{width:'100%',appearance:'none',textAlign:'right',paddingRight:'20px'}}
                             onChange={(e) => handleDetailChange(index, 'price', e.target.value)}
                         />
                     </td>
