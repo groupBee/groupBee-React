@@ -132,11 +132,7 @@ const List = () => {
                                     }
                                 </td>
                                 <td style={{borderRight:'none',borderLeft:'none'}}>
-                                    {
-                                        
-
-
-                                    }
+                                    {item.approveType == 0 ? '반려' : item.approveType == 1 ? '제출완료' : item.approveType == 2 ? '진행중' : '결재완료'}
                                </td>
                             </tr>
                         ))
