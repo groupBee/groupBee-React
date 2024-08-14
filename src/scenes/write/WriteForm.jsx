@@ -105,110 +105,136 @@ const WriteForm = () => {
     }
 
     return (
-        <div>
-            <div class='diamond'>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            transformOrigin: 'top ',
+            transform: 'scale(0.8)',
+        }}>
+            <div style={{
+                backgroundColor: '#ffb121',
+                border: 'none',
+                borderRadius: '5px 5px 0 0',
+                height: '60px',
+                width: '100%',
+            }}></div>
+            <div style={{
+                border: 'none',
+                padding: '100px 100px 100px 100px',
+                backgroundColor: '#fafaf0',
+                width: '100%',
+            }}>
+                <table
+                    style={{border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
+                    <caption align='top' style={{paddingBottom: '20ox'}}>
+                        <button onClick={() => changeAppDoc(0)}
+                                style={{backgroundColor: appDocType === 0 ? '#ffb121' : ''}}>
+                            품의서
+                        </button>
+                        <button onClick={() => changeAppDoc(1)}
+                                style={{backgroundColor: appDocType === 1 ? '#ffb121' : ''}}>
+                            휴가신청서
+                        </button>
+                        <button onClick={() => changeAppDoc(2)}
+                                style={{backgroundColor: appDocType === 2 ? '#ffb121' : ''}}>
+                            지출보고서
+                        </button>
+                    </caption>
+                    <tbody className='tableborder'>
+                    <tr>
+                        <td colSpan={4} rowSpan={3}
+                            style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
+                        <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
+                        <td style={{height: '50px', fontSize: '23px', width: '200px'}}>최초승인자</td>
+                        <td style={{fontSize: '23px', width: '200px'}}>중간승인자</td>
+                        <td style={{fontSize: '23px', width: '200px'}}>최종승인자</td>
+                    </tr>
+                    <tr>
+                        <td style={{height: '150px'}}></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="text" value={firstApprover} onChange={(e) => setFirstApprover(e.target.value)}
+                                   style={{width: '100%'}}/>
+                            {errors.firstApprover && <div className="error">{errors.firstApprover}</div>}
+                        </td>
+                        <td>
+                            <input type="text" value={secondApprover}
+                                   onChange={(e) => setSecondApprover(e.target.value)}
+                                   style={{width: '100%'}}/>
+                            {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
+                        </td>
+                        <td>
+                            <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}
+                                   style={{width: '100%'}}/>
+                            {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style={{width: '90px', fontSize: '23px'}}>성명</td>
+                        <td><input type="text" value={writer} onChange={(e) => setWriter(e.target.value)}
+                                   style={{fontSize: '23px', width: '175px'}}/>
+                            {errors.writer && <div className="error">{errors.writer}</div>}</td>
+                        <td style={{width: '70px', fontSize: '23px'}}>부서</td>
+                        <td><input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
+                                   style={{fontSize: '23px', width: '175px'}}/>
+                            {errors.department && <div className="error">{errors.department}</div>}</td>
+                        <td style={{width: '90px', fontSize: '23px'}}>직급</td>
+                        <td><input type="text" value={position} onChange={(e) => setPosition(e.target.value)}
+                                   style={{fontSize: '23px', width: '175px'}}/>
+                            {errors.position && <div className="error">{errors.position}</div>}</td>
+                        <td style={{width: '70px', fontSize: '23px'}}>보안등급</td>
+                        <td><input type="number" value={level} onChange={(e) => setLevel(e.target.value)}
+                                   style={{fontSize: '23px', width: '175px'}}/>
+                            {errors.level && <div className="error">{errors.level}</div>}</td>
+                    </tr>
+                    {appDocType === 0 && <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
+                    {appDocType === 1 && <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
+                    {appDocType === 2 && <AppDocExpend handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
+                    {appDocType > 2 && <NewAppDocType handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
+                    <tr style={{fontSize: '23px'}}>
+                        <td colSpan={2}>첨부파일</td>
+                        <td colSpan={6}><input type="file" ref={fileRef} onChange={uploadPhoto}/></td>
+                    </tr>
+                    </tbody>
+                    <tbody>
+                    <tr style={{fontSize: '23px'}}>
+                        <td colSpan={8}>
+                            <DatePicker
+                                selected={approveDate}
+                                onChange={(data) => setApproveDate(data)}
+                                dateFormat="yyyy년 MM월 dd일"
+                                style={{marginTop: '50px'}}
+                                className="custom-datepicker"/>
+                        </td>
+                    </tr>
+                    <tr style={{fontSize: '23px'}}>
+                        <td colSpan={4} style={{height: '50px'}}></td>
+                        <td>서명</td>
+                        <td>신청자 :</td>
+                        <td></td>
+                        <td>(인)</td>
+                    </tr>
+                    <tr>
+                        <td colSpan={8}>
+                            <Button variant="outlined" color="warning"
+                                    onClick={() => setApproveStatus('1')}>임시저장</Button>
+                            <Button variant="outlined" color="warning" onClick={createApp}>작성완료</Button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-            <div style={{border:'none', padding:'100px 100px 100px 100px',backgroundColor:'#fafaf0'}}>
-            <table style={{border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
-                <caption align='top' style={{paddingBottom:'20ox'}}>
-                    <button onClick={() => changeAppDoc(0)}
-                            style={{backgroundColor: appDocType === 0 ? '#ffb121' : ''}}>
-                        품의서
-                    </button>
-                    <button onClick={() => changeAppDoc(1)}
-                            style={{backgroundColor: appDocType === 1 ? '#ffb121' : ''}}>
-                        휴가신청서
-                    </button>
-                    <button onClick={() => changeAppDoc(2)}
-                            style={{backgroundColor: appDocType === 2 ? '#ffb121' : ''}}>
-                        지출보고서
-                    </button>
-                </caption>
-                <tbody className='tableborder'>
-                <tr>
-                    <td colSpan={4} rowSpan={3}
-                        style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
-                    <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
-                    <td style={{height: '50px', fontSize: '23px',width:'200px'}}>최초승인자</td>
-                    <td style={{fontSize: '23px',width:'200px'}}>중간승인자</td>
-                    <td style={{fontSize: '23px',width:'200px'}}>최종승인자</td>
-                </tr>
-                <tr>
-                    <td style={{height: '150px'}}></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td>
-                        <input type="text" value={firstApprover} onChange={(e) => setFirstApprover(e.target.value)}
-                               style={{width:'100%'}}/>
-                        {errors.firstApprover && <div className="error">{errors.firstApprover}</div>}
-                    </td>
-                    <td>
-                        <input type="text" value={secondApprover} onChange={(e) => setSecondApprover(e.target.value)}
-                               style={{width:'100%'}}/>
-                        {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
-                    </td>
-                    <td>
-                        <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}
-                               style={{width:'100%'}}/>
-                        {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}
-                    </td>
-                </tr>
-                <tr>
-                    <td style={{width: '90px', fontSize: '23px'}}>성명</td>
-                    <td><input type="text" value={writer} onChange={(e) => setWriter(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/>
-                        {errors.writer&& <div className="error">{errors.writer}</div>}</td>
-                    <td style={{width: '70px', fontSize: '23px'}}>부서</td>
-                    <td><input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/>
-                        {errors.department&& <div className="error">{errors.department}</div>}</td>
-                    <td style={{width: '90px', fontSize: '23px'}}>직급</td>
-                    <td><input type="text" value={position} onChange={(e) => setPosition(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/>
-                        {errors.position&& <div className="error">{errors.position}</div>}</td>
-                    <td style={{width: '70px', fontSize: '23px'}}>보안등급</td>
-                    <td><input type="number" value={level} onChange={(e) => setLevel(e.target.value)}
-                               style={{fontSize: '23px', width: '175px'}}/>
-                        {errors.level&& <div className="error">{errors.level}</div>}</td>
-                </tr>
-                {appDocType === 0 && <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
-                {appDocType === 1 && <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
-                {appDocType === 2 && <AppDocExpend handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
-                {appDocType > 2 && <NewAppDocType handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
-                <tr style={{fontSize: '23px'}}>
-                    <td colSpan={2}>첨부파일</td>
-                    <td colSpan={6}><input type="file" ref={fileRef} onChange={uploadPhoto}/></td>
-                </tr>
-                </tbody>
-                <tbody>
-                <tr style={{fontSize: '23px'}}>
-                    <td colSpan={8}>
-                        <DatePicker
-                            selected={approveDate}
-                            onChange={(data)=>setApproveDate(data)}
-                            dateFormat="yyyy년 MM월 dd일"
-                            style={{marginTop: '50px'}}
-                            className="custom-datepicker"/>
-                    </td>
-                </tr>
-                <tr style={{fontSize: '23px'}}>
-                    <td colSpan={4} style={{height: '50px'}}></td>
-                    <td>서명</td>
-                    <td>신청자 :</td>
-                    <td></td>
-                    <td>(인)</td>
-                </tr>
-                <tr>
-                    <td colSpan={8}>
-                        <Button variant="outlined" color="warning" onClick={() => setApproveStatus('1')}>임시저장</Button>
-                        <Button variant="outlined" color="warning" onClick={createApp}>작성완료</Button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            </div>
+            <div style={{
+                backgroundColor: '#ffb121',
+                border: 'none',
+                borderRadius: '0 0 5px 5px',
+                height: '60px',
+                width: '100%',
+            }}></div>
         </div>
     );
 }
