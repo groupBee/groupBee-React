@@ -5,8 +5,8 @@ import Swal from 'sweetalert2';
 
 const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) => {
     const [memberId, setMemberId] = useState('');
-    const [rantDay, setRantDay] = useState('');
-    const [rantTime, setRantTime] = useState('');
+    const [rentDay, setRentDay] = useState('');
+    const [rentTime, setRentTime] = useState('');
     const [returnDay, setReturnDay] = useState('');
     const [returnTime, setReturnTime] = useState('');
     const [reason, setReason] = useState('');
@@ -18,7 +18,7 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
             const carReservations = reservations.filter(res => res.corporateCarId === car.id);
             const bookedSlots = {};
             carReservations.forEach(reservation => {
-                const start = new Date(reservation.rantDay);
+                const start = new Date(reservation.rentDay);
                 const end = new Date(reservation.returnDay);
 
                 while (start <= end) {
@@ -40,13 +40,13 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
             return; // 오류가 있을 경우 폼 제출을 중단합니다.
         }
 
-        const rantDateTime = `${rantDay}T${rantTime}:00`;
+        const rentDateTime = `${rentDay}T${rentTime}:00`;
         const returnDateTime = `${returnDay}T${returnTime}:00`;
 
         const bookingData = {
             corporateCarId: car.id,
             memberId,
-            rantDay: rantDateTime,
+            rentDay: rentDateTime,
             returnDay: returnDateTime,
             reason,
         };
@@ -79,21 +79,21 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
         const errors = {};
 
         if (!memberId) errors.memberId = '회원 ID를 입력해 주세요.';
-        if (!rantDay) errors.rantDay = '대여일을 입력해 주세요.';
-        if (!rantTime) errors.rantTime = '대여 시간을 선택해 주세요.';
+        if (!rentDay) errors.rentDay = '대여일을 입력해 주세요.';
+        if (!rentTime) errors.rentTime = '대여 시간을 선택해 주세요.';
         if (!returnDay) errors.returnDay = '반납일을 입력해 주세요.';
         if (!returnTime) errors.returnTime = '반납 시간을 선택해 주세요.';
         if (!reason) errors.reason = '예약 사유를 입력해 주세요.';
 
-        const rantDateTime = `${rantDay}T${rantTime}:00`;
+        const rentDateTime = `${rentDay}T${rentTime}:00`;
         const returnDateTime = `${returnDay}T${returnTime}:00`;
 
-        if (new Date(rantDateTime) >= new Date(returnDateTime)) {
+        if (new Date(rentDateTime) >= new Date(returnDateTime)) {
             errors.dateTime = '반납 시간은 대여 시간보다 늦어야 합니다.';
         }
 
-        if (isTimeBooked(rantDay, rantTime)) {
-            errors.rantTime = '이 시간대는 이미 예약되었습니다.';
+        if (isTimeBooked(rentDay, rentTime)) {
+            errors.rentTime = '이 시간대는 이미 예약되었습니다.';
         }
         if (isTimeBooked(returnDay, returnTime)) {
             errors.returnTime = '이 시간대는 이미 예약되었습니다.';
@@ -167,14 +167,14 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
-                            <FormControl fullWidth error={!!errors.rantDay}>
+                            <FormControl fullWidth error={!!errors.rentDay}>
                                 <TextField
-                                    name="rantDay"
+                                    name="rentDay"
                                     label="대여일"
                                     type="date"
                                     variant="outlined"
-                                    value={rantDay}
-                                    onChange={handleInputChange(setRantDay)}
+                                    value={rentDay}
+                                    onChange={handleInputChange(setRentDay)}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
@@ -196,16 +196,16 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                                     }}
 
                                 />
-                                <FormHelperText>{errors.rantDay}</FormHelperText>
+                                <FormHelperText>{errors.rentDay}</FormHelperText>
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
-                            <FormControl variant="outlined" fullWidth required error={!!errors.rantTime}>
+                            <FormControl variant="outlined" fullWidth required error={!!errors.rentTime}>
                                 <InputLabel>대여 시간</InputLabel>
                                 <Select
-                                    name="rantTime"
-                                    value={rantTime}
-                                    onChange={handleInputChange(setRantTime)}
+                                    name="rentTime"
+                                    value={rentTime}
+                                    onChange={handleInputChange(setRentTime)}
                                     label="대여 시간"
                                     sx={{
                                         '&:hover .MuiOutlinedInput-notchedOutline': {
@@ -217,12 +217,12 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                                     }}
                                 >
                                     {timeOptions.map((time, index) => (
-                                        <MenuItem key={index} value={time} disabled={isTimeBooked(rantDay, time)}>
+                                        <MenuItem key={index} value={time} disabled={isTimeBooked(rentDay, time)}>
                                             {time}
                                         </MenuItem>
                                     ))}
                                 </Select>
-                                <FormHelperText>{errors.rantTime}</FormHelperText>
+                                <FormHelperText>{errors.rentTime}</FormHelperText>
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
@@ -322,7 +322,7 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                         )}
                     </Grid>
                     <DialogActions>
-                        <Button onClick={handleClose} variant="contained" color="primary"
+                        <Button onClick={handleClose} variant="" color="primary"
                                 sx={{
                                     fontSize: '1rem',
                                     color: '#ffb121',
@@ -334,7 +334,7 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                                         border: '1px solid #ffb121',
                                     },
                                 }}>취소</Button>
-                        <Button type="submit" variant="contained" color="primary"
+                        <Button type="submit" variant="" color="primary"
                                 sx={{
                                     fontSize: '1rem',
                                     color: '#ffb121',

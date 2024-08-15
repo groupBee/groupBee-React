@@ -18,11 +18,11 @@ const List = () => {
 
     const getinfo=()=>{
         axios.get("/api/elecapp/getinfo")
-        .then(res=>{
-            setMemberId(res.data.name);
-            getStatusCount();
-            getStatusCount(); // 컴포넌트가 마운트될 때 데이터 로드
-        })
+            .then(res=>{
+                setMemberId(res.data.name);
+                getStatusCount();
+                getStatusCount(); // 컴포넌트가 마운트될 때 데이터 로드
+            })
 
     }
     const handleChange = (e) => {
@@ -33,22 +33,22 @@ const List = () => {
     }
 
     const getStatusCount = () => {
-            if(status==="all"){
+        if(status==="all"){
             axios(`/api/elecapp/allreceived?memberId=${memberId}`)
-            .then(res=>{
-                setFilteredData(res.data);
-            })
+                .then(res=>{
+                    setFilteredData(res.data);
+                })
         }else{
             axios(`/api/elecapp/status?memberId=${memberId}&status=${status}`)
-            .then(res=>{
-                setFilteredData(res.data);
-            })
+                .then(res=>{
+                    setFilteredData(res.data);
+                })
         }
     };
 
     useEffect(() => {
         getinfo();
-  
+
     }, []);
 
     const handleStatusChange = (event) => {
@@ -104,8 +104,8 @@ const List = () => {
                 </FormControl>
             </Box>
 
-                   <table className="table table-bordered">
-            <thead>
+            <table className="table table-bordered">
+                <thead>
                 <tr style={{border:'none',lineHeight:'30px'}}>
                     <td style={{backgroundColor:'#ffb121',border:'none',borderRadius:'5px 0 0 0',width:'10%',paddingLeft:'1.5%'}}>번호</td>
                     <td style={{backgroundColor:'#ffb121',border:'none',width:'15%'}}>종류</td>
@@ -115,76 +115,76 @@ const List = () => {
                     <td style={{backgroundColor:'#ffb121',border:'none',width:'15%'}}>작성일</td>
                     <td style={{backgroundColor:'#ffb121',border:'none',borderRadius:'0 5px 0 0',width:'10%'}}>상태</td>
                 </tr>
-            </thead>
-            <tbody>
-                
-                    {   currentData &&
-                        currentData.map((item, idx) => (
-                            <tr key={idx} style={{lineHeight:'30px',cursor:'pointer'}} onClick={() => trClick(item.appDocType, item.id)}>
-                                <td style={{borderRight:'none',borderLeft:'none',paddingLeft:'1.5%'}}>{(currentPage - 1) * PageCount + idx + 1}</td>
-                                <td style={{borderRight:'none',borderLeft:'none'}}>
-                                    {item.appDocType === 0 ? '품의서' :
-                                     item.appDocType === 1 ? '휴가신청서' :
-                                     item.appDocType === 2 ? '지출보고서' : ''}
-                                </td>
-                                <td style={{borderRight:'none',borderLeft:'none'}}>
-                                    <NavLink to={`/elecapp/sign/${item.appDocType}/${memberId}/${item.id}`} style={{color:'black',textDecoration:'none'}}>
+                </thead>
+                <tbody>
+
+                {   currentData &&
+                    currentData.map((item, idx) => (
+                        <tr key={idx} style={{lineHeight:'30px',cursor:'pointer'}} onClick={() => trClick(item.appDocType, item.id)}>
+                            <td style={{borderRight:'none',borderLeft:'none',paddingLeft:'1.5%'}}>{(currentPage - 1) * PageCount + idx + 1}</td>
+                            <td style={{borderRight:'none',borderLeft:'none'}}>
+                                {item.appDocType === 0 ? '품의서' :
+                                    item.appDocType === 1 ? '휴가신청서' :
+                                        item.appDocType === 2 ? '지출보고서' : ''}
+                            </td>
+                            <td style={{borderRight:'none',borderLeft:'none'}}>
+                                <NavLink to={`/elecapp/sign/${item.appDocType}/${memberId}/${item.id}`} style={{color:'black',textDecoration:'none'}}>
                                     {
                                         item.additionalFields.title?item.additionalFields.title:'휴가신청서'
                                     }</NavLink>
-                                </td>
-                                <td style={{borderRight:'none',borderLeft:'none'}}>{item.writer}</td>
-                                <td style={{borderRight:'none',borderLeft:'none'}}>{item.department}</td>
-                                <td style={{borderRight:'none',borderLeft:'none'}}>
-                                    {
-                                       item.writeday.substring(0,10)
-                                    }
-                                </td>
-                                <td style={{borderRight:'none',borderLeft:'none'}}>
-                                    {item.approveType == 0 ? '반려' : item.approveType == 1 ? '제출완료' : item.approveType == 2 ? '진행중' : '결재완료'}
-                               </td>
-                            </tr>
-                        ))
-                    }
-                    {binpage.map((_, idx) => (
-                        <tr key={`empty-${idx}`} style={{lineHeight: '30px', border: 'none'}}>
-                            <td style={{border: 'none'}}>&nbsp;</td>
-                            <td style={{border: 'none'}}>&nbsp;</td>
-                            <td style={{border: 'none'}}>&nbsp;</td>
-                            <td style={{border: 'none'}}>&nbsp;</td>
-                            <td style={{border: 'none'}}>&nbsp;</td>
-                            <td style={{border: 'none'}}>&nbsp;</td>
-                            <td style={{border: 'none'}}>&nbsp;</td>
+                            </td>
+                            <td style={{borderRight:'none',borderLeft:'none'}}>{item.writer}</td>
+                            <td style={{borderRight:'none',borderLeft:'none'}}>{item.department}</td>
+                            <td style={{borderRight:'none',borderLeft:'none'}}>
+                                {
+                                    item.writeday.substring(0,10)
+                                }
+                            </td>
+                            <td style={{borderRight:'none',borderLeft:'none'}}>
+                                {item.approveType == 0 ? '반려' : item.approveType == 1 ? '제출완료' : item.approveType == 2 ? '진행중' : '결재완료'}
+                            </td>
                         </tr>
-                    ))}
-            </tbody>
-                       <tfoot>
-                       <tr>
-                           <td colSpan={7} style={{
-                               border: 'none',
-                               lineHeight: '30px',
-                               backgroundColor: '#ffb121',
-                               textAlign: 'right'
-                           }}>
+                    ))
+                }
+                {binpage.map((_, idx) => (
+                    <tr key={`empty-${idx}`} style={{lineHeight: '30px', border: 'none'}}>
+                        <td style={{border: 'none'}}>&nbsp;</td>
+                        <td style={{border: 'none'}}>&nbsp;</td>
+                        <td style={{border: 'none'}}>&nbsp;</td>
+                        <td style={{border: 'none'}}>&nbsp;</td>
+                        <td style={{border: 'none'}}>&nbsp;</td>
+                        <td style={{border: 'none'}}>&nbsp;</td>
+                        <td style={{border: 'none'}}>&nbsp;</td>
+                    </tr>
+                ))}
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colSpan={7} style={{
+                        border: 'none',
+                        lineHeight: '30px',
+                        backgroundColor: '#ffb121',
+                        textAlign: 'right'
+                    }}>
                                <span style={{margin: '0 10px'}}>
                                 {currentPage} / {totalPage}
                             </span>
-                               <Button
-                                   onClick={handlePrevPage}
-                                   disabled={currentPage === 1} // 첫 페이지에서는 비활성화
-                               >
-                                   이전
-                               </Button>
-                               <Button
-                                   onClick={handleNextPage}
-                                   disabled={filteredData.length <= currentPage * PageCount}
-                               >
-                                   다음
-                               </Button>
-                           </td>
-                       </tr>
-                       </tfoot>
-                   </table>
+                        <Button
+                            onClick={handlePrevPage}
+                            disabled={currentPage === 1} // 첫 페이지에서는 비활성화
+                        >
+                            이전
+                        </Button>
+                        <Button
+                            onClick={handleNextPage}
+                            disabled={filteredData.length <= currentPage * PageCount}
+                        >
+                            다음
+                        </Button>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
         </Box>
     );
 };
