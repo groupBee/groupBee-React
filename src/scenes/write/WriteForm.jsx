@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppDocVacation from "./AppDocVacation";
 import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
@@ -26,6 +26,22 @@ const WriteForm = () => {
     const [additionalFields, setAdditionalFields] = useState({});
     const [errors, setErrors] = useState({});
     const [intentValidator, setIntentValidator] = useState(null);
+
+    useEffect(() => {
+        getinfo();
+    })
+
+    const getinfo=()=>{
+        axios.get("/api/elecapp/getinfo")
+        .then(res=>{
+
+            setFirstApprover(res.data.name);
+            setWriter(res.data.name);
+            setDepartment(res.data.departmentName);
+            setPosition(res.data.position);
+        })
+
+    }
 
     const uploadPhoto = (e) => {
         const uploadFile = e.target.files[0];
@@ -56,12 +72,8 @@ const WriteForm = () => {
     };
     const validateForm = () => {
         const newErrors = {};
-        if (!writer) newErrors.writer = "이름을 입력하세요.";
-        if (!firstApprover) newErrors.firstApprover = "최초승인자를 입력하세요.";
         if (!secondApprover) newErrors.secondApprover = "중간승인자를 입력하세요.";
         if (!thirdApprover) newErrors.thirdApprover = "최종승인자를 입력하세요.";
-        if (!department) newErrors.department = "부서를 입력하세요.";
-        if (!position) newErrors.position = "직급을 입력하세요.";
         if (!level) newErrors.level = "보안등급을 입력하세요.";
 
         // if (appDocType === 0 && intentValidator && !intentValidator()) {
@@ -157,9 +169,9 @@ const WriteForm = () => {
                     </tr>
                     <tr>
                         <td>
-                            <input type="text" value={firstApprover} onChange={(e) => setFirstApprover(e.target.value)}
+                            <input type="text" value={firstApprover} 
                                    style={{width: '100%'}}/>
-                            {errors.firstApprover && <div className="error">{errors.firstApprover}</div>}
+       
                         </td>
                         <td>
                             <input type="text" value={secondApprover}
@@ -175,17 +187,17 @@ const WriteForm = () => {
                     </tr>
                     <tr>
                         <td style={{width: '90px', fontSize: '23px'}}>성명</td>
-                        <td><input type="text" value={writer} onChange={(e) => setWriter(e.target.value)}
+                        <td><input type="text" value={writer} 
                                    style={{fontSize: '23px', width: '175px'}}/>
-                            {errors.writer && <div className="error">{errors.writer}</div>}</td>
+                            </td>
                         <td style={{width: '70px', fontSize: '23px'}}>부서</td>
-                        <td><input type="text" value={department} onChange={(e) => setDepartment(e.target.value)}
+                        <td><input type="text" value={department} 
                                    style={{fontSize: '23px', width: '175px'}}/>
-                            {errors.department && <div className="error">{errors.department}</div>}</td>
+                            </td>
                         <td style={{width: '90px', fontSize: '23px'}}>직급</td>
-                        <td><input type="text" value={position} onChange={(e) => setPosition(e.target.value)}
+                        <td><input type="text" value={position} 
                                    style={{fontSize: '23px', width: '175px'}}/>
-                            {errors.position && <div className="error">{errors.position}</div>}</td>
+                            </td>
                         <td style={{width: '70px', fontSize: '23px'}}>보안등급</td>
                         <td><input type="number" value={level} onChange={(e) => setLevel(e.target.value)}
                                    style={{fontSize: '23px', width: '175px'}}/>
@@ -214,7 +226,7 @@ const WriteForm = () => {
                     <tr style={{fontSize: '23px'}}>
                         <td colSpan={4} style={{height: '50px'}}></td>
                         <td>서명</td>
-                        <td>신청자 :</td>
+                        <td>신청자 : {writer}</td>
                         <td></td>
                         <td>(인)</td>
                     </tr>
