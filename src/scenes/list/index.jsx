@@ -10,12 +10,21 @@ const List = () => {
     const colors = tokens(theme.palette.mode);
 
     const [filteredData, setFilteredData] = useState([]);
-    const memberId = "손가투"; // 실제 멤버 ID로 교체 필요
+    const [memberId,setMemberId]=useState("");
     const [status,setStatus]=useState("all");
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1); // 페이지 번호 상태 추가
     const PageCount = 10; // 한 페이지에 표시할 항목 수
 
+    const getinfo=()=>{
+        axios.get("/api/elecapp/getinfo")
+        .then(res=>{
+            setMemberId(res.data.name);
+            getStatusCount();
+            getStatusCount(); // 컴포넌트가 마운트될 때 데이터 로드
+        })
+
+    }
     const handleChange = (e) => {
         const selectedStatus = e.target.value;
         setStatus(selectedStatus);
@@ -38,8 +47,8 @@ const List = () => {
     };
 
     useEffect(() => {
-
-        getStatusCount(); // 컴포넌트가 마운트될 때 데이터 로드
+        getinfo();
+  
     }, []);
 
     const handleStatusChange = (event) => {
