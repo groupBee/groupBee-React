@@ -4,11 +4,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Box,
     Button,
-    Modal,
     TextField,
-    Typography
 } from "@mui/material";
 
 const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => {
