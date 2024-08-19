@@ -34,7 +34,6 @@ const WriteForm = () => {
     const getinfo=()=>{
         axios.get("/api/elecapp/getinfo")
         .then(res=>{
-
             setFirstApprover(res.data.name);
             setWriter(res.data.name);
             setDepartment(res.data.departmentName);
@@ -109,7 +108,11 @@ const WriteForm = () => {
             approveType, position, department, additionalFields
         })
             .then(res => {
-                alert("성공");
+                if(approveStatus==0){
+                alert("전자결제가 등록되었습니다");}
+                else{
+                    alert("전자결재가 임시저장되었습니다.")
+                }
             })
             .catch(err => {
                 console.error('데이터 전송 중 오류 발생:', err);
@@ -233,7 +236,7 @@ const WriteForm = () => {
                     <tr>
                         <td colSpan={8}>
                             <Button variant="outlined" color="warning"
-                                    onClick={() => setApproveStatus('1')}>임시저장</Button>
+                                    onClick={() => {setApproveStatus('1'),createApp()}}>임시저장</Button>
                             <Button variant="outlined" color="warning" onClick={createApp}>작성완료</Button>
                         </td>
                     </tr>
