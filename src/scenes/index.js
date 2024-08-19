@@ -9,6 +9,7 @@ import Board from "./board";
 import Book from "./book/Book.jsx";
 import Hr from "./hr";
 import Mypage from "./mypage";
+import Detail from "./write/Detail";
 
 export {
     Navbar,
@@ -22,4 +23,5 @@ export {
     Book,
     Hr,
     Mypage,
+    Detail
 };

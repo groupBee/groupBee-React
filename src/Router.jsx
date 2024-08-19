@@ -12,6 +12,7 @@ import {
 } from "./scenes";
 import Write from "./scenes/write/index.jsx";
 import List from "./scenes/list/index.jsx";
+import Detail from "./scenes/write/Detail.jsx";
 
 const AppRouter = () => {
     return (
@@ -27,6 +28,7 @@ const AppRouter = () => {
                     <Route path="/book/*" element={<Book/>}/>
                     <Route path="/hr" element={<Hr/>}/>
                     <Route path="/mypage" element={<Mypage/>}/>
+                    <Route path="/detail" element={<Detail/>}/>
                 </Route>
             </Routes>
         </Router>
