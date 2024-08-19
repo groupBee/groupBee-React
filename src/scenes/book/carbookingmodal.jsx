@@ -92,11 +92,19 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
             errors.dateTime = '반납 시간은 대여 시간보다 늦어야 합니다.';
         }
 
-        if (isTimeBooked(rentDay, rentTime)) {
-            errors.rentTime = '이 시간대는 이미 예약되었습니다.';
-        }
-        if (isTimeBooked(returnDay, returnTime)) {
-            errors.returnTime = '이 시간대는 이미 예약되었습니다.';
+
+        // 대여 시간과 반납 시간 사이의 시간대를 체크
+        let currentDateTime = new Date(rentDateTime);
+        while (currentDateTime < new Date(returnDateTime)) {
+            const date = `${currentDateTime.getFullYear()}-${String(currentDateTime.getMonth() + 1).padStart(2, '0')}-${String(currentDateTime.getDate()).padStart(2, '0')}`;
+            const time = `${String(currentDateTime.getHours()).padStart(2, '0')}:00`;
+
+            if (isTimeBooked(date, time)) {
+                errors.dateTime = '이 시간대는 이미 예약되어 있습니다.';
+                break;
+            }
+
+            currentDateTime.setHours(currentDateTime.getHours() + 1); // 1시간 단위로 증가
         }
 
         return errors;
