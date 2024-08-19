@@ -4,6 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
+import googleCalendarPlugin from '@fullcalendar/google-calendar';
 import {tokens} from "../../theme";
 import {useEffect, useState} from "react";
 import {Header} from "../../components";
@@ -161,7 +162,7 @@ const Calendar = () => {
                 >
                     <FullCalendar
                         height="75vh"
-                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin,]}
+                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
                         headerToolbar={{
                             left: `${isSmDevices ? "prev,next" : "prev,next today"}`,
                             center: "title",
