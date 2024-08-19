@@ -1,76 +1,66 @@
-import {Box, FormControl, InputLabel, Select, useTheme, MenuItem, Button} from "@mui/material";
+import { Box, FormControl, InputLabel, Select, useTheme, MenuItem, Button } from "@mui/material";
 import { Header } from "../../components";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { tokens } from "../../theme";
-import {Link, NavLink, useNavigate} from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import Detail from "../write/Detail.jsx";
+import { each } from "jquery";
 
 
 const List = () => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-
     const [filteredData, setFilteredData] = useState([]);
-    const [memberId,setMemberId]=useState("");
-    const [status,setStatus]=useState("all");
+    const [memberId, setMemberId] = useState("");
+    const [status, setStatus] = useState("all");
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1); // 페이지 번호 상태 추가
     const PageCount = 10; // 한 페이지에 표시할 항목 수
 
-    const moveDetail=(itemId)=>{
-        navigate("/detail",{
-            state:{
-                memberId : memberId,
-                itemId:itemId
+    const moveDetail = (itemId) => {
+        navigate("/detail", {
+            state: {
+                memberId: memberId,
+                itemId: itemId
             }
-        })
-    }
+        });
+    };
 
-
-    const getinfo=()=>{
-        axios.get("/api/elecapp/getinfo")
-            .then(res=>{
-                setMemberId(res.data.name);
-                getStatusCount(); // 컴포넌트가 마운트될 때 데이터 로드
-            })
-
-    }
-    const handleChange = (e) => {
-        const selectedStatus = e.target.value;
-        setStatus(selectedStatus);
-        setCurrentPage(1); // 상태가 바뀔 때 페이지 번호 초기화
-        // navigate(`/${memberId}/${selectedStatus}/${sort}`);
-    }
-
-    const getStatusCount = () => {
-        if(status==="all"){
-            axios(`/api/elecapp/allreceived?memberId=${memberId}`)
-                .then(res=>{
-                    setFilteredData(res.data);
-                    console.log(res.data);
-                })
-        }else{
-            axios(`/api/elecapp/status?memberId=${memberId}&status=${status}`)
-                .then(res=>{
-                    setFilteredData(res.data);
-                })
+    const getinfo = async () => {
+        try {
+            const res = await axios.get("/api/elecapp/getinfo");
+            const fetchedMemberId = res.data.name;
+            setMemberId(fetchedMemberId);
+            getList(fetchedMemberId); // getList를 getinfo 호출 후에 호출
+        } catch (err) {
+            console.error("Error fetching info:", err);
         }
     };
 
-    useEffect(() => {
-        getinfo();
+    const getList = async (fetchedMemberId) => {
+        if (!fetchedMemberId) return; // memberId가 비어 있으면 실행하지 않음
+        try {
+            const res = await axios.get(`/api/elecapp/status?memberId=${fetchedMemberId}&status=${status}`);
+            setFilteredData(res.data);
+        } catch (err) {
+            console.error("Error fetching list:", err);
+        }
+    };
 
+    const handleChange = (e) => {
+        setStatus(e);
+        setCurrentPage(1); // 상태가 바뀔 때 페이지 번호 초기화
+    };
+
+    useEffect(() => {
+        getinfo(); // 컴포넌트가 마운트될 때 한 번만 실행
     }, []);
 
-    const handleStatusChange = (event) => {
-        //status 보내기
-        console.log("status="+status)
-    };
     useEffect(() => {
-        getStatusCount();
-        handleStatusChange(); // 컴포넌트가 마운트될 때 데이터 로드
-    }, [status, currentPage]);
+        if (memberId) {
+            getList(memberId); // memberId가 설정된 후에 getList 호출
+        }
+    }, [status, currentPage, memberId]);
+
     // 현재 페이지에 해당하는 데이터를 슬라이싱하여 가져오기
     const currentData = filteredData.slice((currentPage - 1) * PageCount, currentPage * PageCount);
 
@@ -90,110 +80,101 @@ const List = () => {
     // 총 페이지 수 계산
     const totalPage = Math.ceil(filteredData.length / PageCount);
 
-    // 클릭된 행을 링크로 리다이렉트하는 함수
-    // const trClick = (appDocType, id) => {
-    //     navigate(`/elecapp/sign/${appDocType}/${memberId}/${id}`);
-    // };
-
 
     return (
         <Box m="20px">
             <Header title="결재현황" subtitle="List of Contacts for Future Reference" />
-            <Box mb="20px" display="flex" justifyContent="flex-end">
-                <FormControl variant="outlined" sx={{ minWidth: 200 }}>
-                    <InputLabel id="status-select-label">결재 상태</InputLabel>
-                    <Select
-                        labelId="status-select-label"
-                        value={status}
-                        onChange={handleChange}
-                        label="결재 상태"
-                    >
-                        <MenuItem value="all">모두 보기</MenuItem>
-                        <MenuItem value="ready">결재 대기</MenuItem>
-                        <MenuItem value="ing">결재 중</MenuItem>
-                        <MenuItem value="done">결재 완료</MenuItem>
-                    </Select>
-                </FormControl>
+            <Box mb="20px" display="flex" justifyContent="center">
+                <div >
+                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("all")}>모두 보기</Button>
+                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("rejected")}>반려 </Button>
+                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("ready")}>결재 대기</Button>
+                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("ing")}>결재 중</Button>
+                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("done")}>결재 완료</Button>
+                </div>
+
             </Box>
 
             <table className="table table-bordered">
                 <thead>
-                <tr style={{border:'none',lineHeight:'30px'}}>
-                    <td style={{backgroundColor:'#ffb121',border:'none',borderRadius:'5px 0 0 0',width:'10%',paddingLeft:'1.5%'}}>번호</td>
-                    <td style={{backgroundColor:'#ffb121',border:'none',width:'15%'}}>종류</td>
-                    <td style={{backgroundColor:'#ffb121',border:'none',width:'30%'}}>제목</td>
-                    <td style={{backgroundColor:'#ffb121',border:'none',width:'10%'}}>작성자</td>
-                    <td style={{backgroundColor:'#ffb121',border:'none',width:'10%'}}>부서</td>
-                    <td style={{backgroundColor:'#ffb121',border:'none',width:'15%'}}>작성일</td>
-                    <td style={{backgroundColor:'#ffb121',border:'none',borderRadius:'0 5px 0 0',width:'10%'}}>상태</td>
-                </tr>
+                    <tr style={{ border: 'none', lineHeight: '30px' }}>
+                        <td style={{ backgroundColor: '#ffb121', border: 'none', borderRadius: '5px 0 0 0', width: '10%', paddingLeft: '1.5%' }}>번호</td>
+                        <td style={{ backgroundColor: '#ffb121', border: 'none', width: '15%' }}>종류</td>
+                        <td style={{ backgroundColor: '#ffb121', border: 'none', width: '30%' }}>제목</td>
+                        <td style={{ backgroundColor: '#ffb121', border: 'none', width: '10%' }}>작성자</td>
+                        <td style={{ backgroundColor: '#ffb121', border: 'none', width: '10%' }}>부서</td>
+                        <td style={{ backgroundColor: '#ffb121', border: 'none', width: '15%' }}>작성일</td>
+                        <td style={{ backgroundColor: '#ffb121', border: 'none', borderRadius: '0 5px 0 0', width: '10%' }}>상태</td>
+                    </tr>
                 </thead>
                 <tbody>
-
-                {   currentData &&
-                    currentData.map((item, idx) => (
-                        <tr key={idx} style={{lineHeight:'30px',cursor:'pointer'}}>
-                            <td style={{borderRight:'none',borderLeft:'none',paddingLeft:'1.5%'}}>{(currentPage - 1) * PageCount + idx + 1}</td>
-                            <td style={{borderRight:'none',borderLeft:'none'}}>
-                                {item.appDocType === 0 ? '품의서' :
-                                    item.appDocType === 1 ? '휴가신청서' :
-                                        item.appDocType === 2 ? '지출보고서' : ''}
-                            </td>
-                            <td style={{borderRight: 'none', borderLeft: 'none'}} onClick={() => moveDetail(item.id)}>
-
+                    {currentData.length > 0 ? (
+                        currentData.map((item, idx) => (
+                            <tr key={idx} style={{ lineHeight: '30px', cursor: 'pointer' }}>
+                                <td style={{ borderRight: 'none', borderLeft: 'none', paddingLeft: '1.5%' }}>{(currentPage - 1) * PageCount + idx + 1}</td>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                    {item.appDocType === 0 ? '품의서' :
+                                        item.appDocType === 1 ? '휴가신청서' :
+                                            item.appDocType === 2 ? '지출보고서' : ''}
+                                </td>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }} onClick={() => moveDetail(item.id)}>
                                     {item.additionalFields.title ? item.additionalFields.title : '휴가신청서'}
+                                </td>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.writer}</td>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.department}</td>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                    {item.writeday.substring(0, 10)}
+                                </td>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                    {item.additionalFields.status}
+                                </td>
+                            </tr>
+                        ))
+                    ) : (
 
-                            </td>
-                            <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.writer}</td>
-                            <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.department}</td>
-                            <td style={{borderRight: 'none', borderLeft: 'none'}}>
-                                {
-                                    item.writeday.substring(0, 10)
-                                }
-                            </td>
-                            <td style={{borderRight:'none',borderLeft:'none'}}>
-                                {item.approveType == 0 ? '반려' : item.approveType == 1 ? '제출완료' : item.approveType == 2 ? '진행중' : '결재완료'}
-                            </td>
+                        <tr>
+                            <td colSpan="7" style={{ textAlign: 'center' }}>없습니다</td>
                         </tr>
-                    ))
-                }
-                {binpage.map((_, idx) => (
-                    <tr key={`empty-${idx}`} style={{lineHeight: '30px', border: 'none'}}>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                        <td style={{border: 'none'}}>&nbsp;</td>
-                    </tr>
-                ))}
+
+                    )}
+                    {binpage.length > 0 && currentData.length > 0 && binpage.map((_, idx) => (
+                        <tr key={`empty-${idx}`} style={{ lineHeight: '30px', border: 'none' }}>
+                            <td style={{ border: 'none' }}>&nbsp;</td>
+                            <td style={{ border: 'none' }}>&nbsp;</td>
+                            <td style={{ border: 'none' }}>&nbsp;</td>
+                            <td style={{ border: 'none' }}>&nbsp;</td>
+                            <td style={{ border: 'none' }}>&nbsp;</td>
+                            <td style={{ border: 'none' }}>&nbsp;</td>
+                            <td style={{ border: 'none' }}>&nbsp;</td>
+                        </tr>
+                    ))}
                 </tbody>
+
                 <tfoot>
-                <tr>
-                    <td colSpan={7} style={{
-                        border: 'none',
-                        lineHeight: '30px',
-                        backgroundColor: '#ffb121',
-                        textAlign: 'right'
-                    }}>
-                               <span style={{margin: '0 10px'}}>
+                    <tr>
+                        <td colSpan={7} style={{
+                            border: 'none',
+                            lineHeight: '30px',
+                            backgroundColor: '#ffb121',
+                            textAlign: 'right'
+                        }}>
+                            <span style={{ margin: '0 10px' }}>
                                 {currentPage} / {totalPage}
                             </span>
-                        <Button
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 1} // 첫 페이지에서는 비활성화
-                        >
-                            이전
-                        </Button>
-                        <Button
-                            onClick={handleNextPage}
-                            disabled={filteredData.length <= currentPage * PageCount}
-                        >
-                            다음
-                        </Button>
-                    </td>
-                </tr>
+                            <Button
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1} // 첫 페이지에서는 비활성화
+                            >
+                                이전
+                            </Button>
+                            <Button
+                                onClick={handleNextPage}
+                                disabled={filteredData.length <= currentPage * PageCount}
+                            >
+                                다음
+                            </Button>
+                        </td>
+                    </tr>
                 </tfoot>
             </table>
         </Box>
