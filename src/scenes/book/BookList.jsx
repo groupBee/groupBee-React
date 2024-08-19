@@ -202,7 +202,7 @@ const BookList = () => {
                         <Table striped bordered hover>
                             <thead>
                             <tr>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>번호</th> {/* 번호 열 */}
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px'}}>번호</th> {/* 번호 열 */}
                                 <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>차량/회의실</th> {/* 차량/회의실 구분 열 */}
                                 <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>아이템</th> {/* 차량 종류 또는 회의실 이름 열 */}
                                 <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>예약시간</th> {/* 예약 시간 열 */}
