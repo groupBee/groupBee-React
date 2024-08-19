@@ -3,7 +3,9 @@ import { Header } from "../../components";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { tokens } from "../../theme";
-import {NavLink, useNavigate} from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
+import Detail from "../write/Detail.jsx";
+
 
 const List = () => {
     const theme = useTheme();
@@ -15,6 +17,16 @@ const List = () => {
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState(1); // 페이지 번호 상태 추가
     const PageCount = 10; // 한 페이지에 표시할 항목 수
+
+    const moveDetail=(itemId)=>{
+        navigate("/detail",{
+            state:{
+                memberId : memberId,
+                itemId:itemId
+            }
+        })
+    }
+
 
     const getinfo=()=>{
         axios.get("/api/elecapp/getinfo")
@@ -28,7 +40,7 @@ const List = () => {
         const selectedStatus = e.target.value;
         setStatus(selectedStatus);
         setCurrentPage(1); // 상태가 바뀔 때 페이지 번호 초기화
-        navigate(`/${memberId}/${selectedStatus}/${sort}`);
+        // navigate(`/${memberId}/${selectedStatus}/${sort}`);
     }
 
     const getStatusCount = () => {
@@ -79,9 +91,9 @@ const List = () => {
     const totalPage = Math.ceil(filteredData.length / PageCount);
 
     // 클릭된 행을 링크로 리다이렉트하는 함수
-    const trClick = (appDocType, id) => {
-        navigate(`/elecapp/sign/${appDocType}/${memberId}/${id}`);
-    };
+    // const trClick = (appDocType, id) => {
+    //     navigate(`/elecapp/sign/${appDocType}/${memberId}/${id}`);
+    // };
 
 
     return (
@@ -120,24 +132,23 @@ const List = () => {
 
                 {   currentData &&
                     currentData.map((item, idx) => (
-                        <tr key={idx} style={{lineHeight:'30px',cursor:'pointer'}} onClick={() => trClick(item.appDocType, item.id)}>
+                        <tr key={idx} style={{lineHeight:'30px',cursor:'pointer'}}>
                             <td style={{borderRight:'none',borderLeft:'none',paddingLeft:'1.5%'}}>{(currentPage - 1) * PageCount + idx + 1}</td>
                             <td style={{borderRight:'none',borderLeft:'none'}}>
                                 {item.appDocType === 0 ? '품의서' :
                                     item.appDocType === 1 ? '휴가신청서' :
                                         item.appDocType === 2 ? '지출보고서' : ''}
                             </td>
-                            <td style={{borderRight:'none',borderLeft:'none'}}>
-                                <NavLink to={`/elecapp/sign/${item.appDocType}/${memberId}/${item.id}`} style={{color:'black',textDecoration:'none'}}>
-                                    {
-                                        item.additionalFields.title?item.additionalFields.title:'휴가신청서'
-                                    }</NavLink>
+                            <td style={{borderRight: 'none', borderLeft: 'none'}} onClick={() => moveDetail(item.id)}>
+
+                                    {item.additionalFields.title ? item.additionalFields.title : '휴가신청서'}
+
                             </td>
-                            <td style={{borderRight:'none',borderLeft:'none'}}>{item.writer}</td>
-                            <td style={{borderRight:'none',borderLeft:'none'}}>{item.department}</td>
-                            <td style={{borderRight:'none',borderLeft:'none'}}>
+                            <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.writer}</td>
+                            <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.department}</td>
+                            <td style={{borderRight: 'none', borderLeft: 'none'}}>
                                 {
-                                    item.writeday.substring(0,10)
+                                    item.writeday.substring(0, 10)
                                 }
                             </td>
                             <td style={{borderRight:'none',borderLeft:'none'}}>
