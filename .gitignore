@@ -147,3 +147,6 @@ sketch
 
 # bun package manager lock file
 bun.lockb
+
+#proxy
+vite.config.js

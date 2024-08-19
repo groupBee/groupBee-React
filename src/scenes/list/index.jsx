@@ -20,7 +20,6 @@ const List = () => {
         axios.get("/api/elecapp/getinfo")
             .then(res=>{
                 setMemberId(res.data.name);
-                getStatusCount();
                 getStatusCount(); // 컴포넌트가 마운트될 때 데이터 로드
             })
 
@@ -37,6 +36,7 @@ const List = () => {
             axios(`/api/elecapp/allreceived?memberId=${memberId}`)
                 .then(res=>{
                     setFilteredData(res.data);
+                    console.log(res.data);
                 })
         }else{
             axios(`/api/elecapp/status?memberId=${memberId}&status=${status}`)
