@@ -13,6 +13,7 @@ const BookList = () => {
     const [roomData, setRoomData] = useState([]);
     const [carBookedTimes, setCarBookedTimes] = useState({});
     const [roomBookedTimes, setRoomBookedTimes] = useState({});
+    const [editingBooking, setEditingBooking] = React.useState(null);
 
     const [showModal, setShowModal] = useState(false);
     const [currentBooking, setCurrentBooking] = useState(null);
@@ -83,9 +84,13 @@ const BookList = () => {
         };
     };
 
+
+
+
     const handleEdit = (booking) => {
         setCurrentBooking(booking);
         setCategory(booking.category);
+        setEditingBooking(booking); //수정버튼 누르고 해당 시간대는 선택가능하게
 
         if (booking.category === '차량') {
             const { localDate: rentDate, localTime: rentTime } = convertUTCToLocal(booking.rentDay);
@@ -106,7 +111,7 @@ const BookList = () => {
                 photo: booking.photo || ''
             });
 
-            // 차량 예약된 시간대 설정
+            // 차량 아이디 비교해서 같은 차량 추출
             const carBookingss = carBookings.filter(res => res.corporateCarId === booking.corporateCarId);
             const carbookedSlots = {};
 
@@ -114,13 +119,25 @@ const BookList = () => {
                 const start = new Date(carBooking.rentDay);
                 const end = new Date(carBooking.returnDay);
 
+                //반복문을 통해서 시간 사이의 값을 추출
                 while (start <= end) {
                     carbookedSlots[`${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:00`] = true;
                     start.setHours(start.getHours() + 1);
                 }
             });
 
+            // 수정 중인 예약의 시간대는 false로 설정하여 선택 가능하게 함
+            const start = new Date(booking.rentDay);
+            const end = new Date(booking.returnDay);
+
+            while (start <= end) {
+                carbookedSlots[`${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:00`] = false;
+                start.setHours(start.getHours() + 1);
+            }
+
+
             setCarBookedTimes(carbookedSlots);
+
         }
 
         if (booking.category === '회의실') {
@@ -156,42 +173,84 @@ const BookList = () => {
                 }
             });
 
+            // 수정 중인 예약의 시간대는 false로 설정하여 선택 가능하게 함
+            const start = new Date(booking.enter);
+            const end = new Date(booking.leave);
+
+            while (start <= end) {
+                roombookedSlots[`${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:00`] = false;
+                start.setHours(start.getHours() + 1);
+            }
+
             setRoomBookedTimes(roombookedSlots);
+
         }
 
         setShowModal(true);
     };
 
+
     const handleDelete = async (id, category) => {
         try {
-            const url = category === '차량'
-                ? `/api/cars/delete/${id}`
-                : `/api/rooms/delete/${id}`;
-
-            const response = await fetch(url, {
-                method: 'DELETE',
+            const result = await Swal.fire({
+                title: '정말 삭제하시겠습니까?',
+                text: "이 작업은 되돌릴 수 없습니다.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ffb121',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '확인',
+                cancelButtonText: '취소'
             });
 
-            if (response.ok) {
-                if (category === '차량') {
-                    setCarBookings(carBookings.filter(booking => booking.id !== id));
+            if (result.isConfirmed) {
+                const url = category === '차량'
+                    ? `/api/cars/delete/${id}`
+                    : `/api/rooms/delete/${id}`;
+
+                const response = await fetch(url, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    if (category === '차량') {
+                        setCarBookings(carBookings.filter(booking => booking.id !== id));
+                    } else {
+                        setRoomBookings(roomBookings.filter(booking => booking.id !== id));
+                    }
+                    Swal.fire({
+                        title: '<strong>삭제 성공</strong>',
+                        icon: 'success',
+                        html: '예약이 성공적으로 삭제되었습니다.',
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#ffb121',
+                    });
                 } else {
-                    setRoomBookings(roomBookings.filter(booking => booking.id !== id));
+                    Swal.fire({
+                        title: '<strong>삭제 실패</strong>',
+                        icon: 'error',
+                        html: '예약 삭제에 실패했습니다.',
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#ffb121',
+                    });
                 }
-                alert('예약이 삭제되었습니다.');
-            } else {
-                alert('삭제에 실패했습니다.');
             }
         } catch (error) {
             console.error('삭제 중 에러 발생:', error);
-            alert('삭제에 실패했습니다.');
+            Swal.fire({
+                title: '<strong>삭제 실패</strong>',
+                icon: 'error',
+                html: '삭제 중 에러가 발생했습니다.',
+                confirmButtonText: '확인',
+                confirmButtonColor: '#ffb121',
+            });
         }
     };
 
     const handleModalClose = () => {
         setShowModal(false);
         setCurrentBooking(null);
-        setCategory('');
+        // setCategory('');
     };
 
     const handleModalSave = async () => {
@@ -205,22 +264,22 @@ const BookList = () => {
                 return;
             }
 
-            // let timeConflict = false;
-            // const tempDate = new Date(rentDateTime);
-            // while (tempDate <= returnDateTime) {
-            //     const dateString = formatDateToYYYYMMDD(tempDate);
-            //     const timeString = formatTimeToHHMM(tempDate);
-            //     if (carTimeBooked(dateString, timeString)) {
-            //         timeConflict = true;
-            //         break;
-            //     }
-            //     tempDate.setHours(tempDate.getHours() + 1);
-            // }
-            //
-            // if (timeConflict) {
-            //     setValidationError('이 시간대는 이미 예약되어 있습니다.');
-            //     return;
-            // }
+            let timeConflict = false;
+            const tempDate = new Date(rentDateTime);
+            while (tempDate <= returnDateTime) {
+                const dateString = formatDateToYYYYMMDD(tempDate);
+                const timeString = formatTimeToHHMM(tempDate);
+                if (carTimeBooked(dateString, timeString)) {
+                    timeConflict = true;
+                    break;
+                }
+                tempDate.setHours(tempDate.getHours() + 1);
+            }
+
+            if (timeConflict) {
+                setValidationError('이 시간대는 이미 예약되어 있습니다.');
+                return;
+            }
         }
 
         if (category === '회의실') {
@@ -284,8 +343,8 @@ const BookList = () => {
             // Close the modal first
             handleModalClose();
 
-            // Show the Swal alert after the modal has closed
-            await Swal.fire({
+
+            Swal.fire({
                 title: response.ok ? '<strong>수정 성공</strong>' : '<strong>수정 실패</strong>',
                 icon: response.ok ? 'success' : 'error',
                 html: response.ok ? '예약이 성공적으로 수정되었습니다.' : '예약 수정에 실패했습니다.',
@@ -299,8 +358,7 @@ const BookList = () => {
             }
         } catch (error) {
             console.error('수정 중 에러 발생:', error);
-            handleModalClose();
-            await Swal.fire({
+            Swal.fire({
                 title: '<strong>수정 실패</strong>',
                 icon: 'error',
                 html: '예약 수정에 실패했습니다.',
@@ -348,7 +406,11 @@ const BookList = () => {
     const formatDateTime = (dateTime) => {
         if (!dateTime) return '';
         const { localDate, localTime } = convertUTCToLocal(dateTime);
-        return `${localDate} ${localTime}시`;
+
+        // 시간만 추출하고 '시'를 붙이는 작업
+        const formattedTime = localTime.split(':')[0] + '시';
+
+        return `${localDate} ${formattedTime}`;
     };
 
     const generateTimeOptions = () => {
@@ -366,6 +428,7 @@ const BookList = () => {
         return carBookedTimes[`${date}T${time}`] === true;
     };
 
+
     const roomTimeBooked = (date, time) => {
         return roomBookedTimes[`${date}T${time}`] === true;
     };
@@ -380,13 +443,13 @@ const BookList = () => {
                         <Table striped bordered hover>
                             <thead>
                             <tr>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px'}}>번호</th>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>차량/회의실</th>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>아이템</th>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>예약시간</th>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>반납시간</th>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>사유</th>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>변경/삭제</th>
+                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '4%'}}>번호</th>
+                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%'}}>차량/회의실</th>
+                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%'}}>아이템</th>
+                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%'}}>예약시간</th>
+                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%'}}>반납시간</th>
+                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '30%'}}>사유</th>
+                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '11%'}}>변경/삭제</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -399,7 +462,7 @@ const BookList = () => {
                                     <td>{formatDateTime(booking.returnDay || booking.leave)}</td>
                                     <td>{booking.reason || booking.purpose}</td>
                                     <td>
-                                        <Button
+                                    <Button
                                             variant=""
                                             size="small"
                                             onClick={() => handleEdit(booking)}
