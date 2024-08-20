@@ -16,7 +16,9 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
     useEffect(() => {
         // details 배열의 price 값을 모두 더하여 finalPrice를 업데이트
         const total = details.reduce((sum, detail) => sum + Number(detail.price.replaceAll(',','')), 0);
-        setFinalPrice(total.toLocaleString('ko-KR'));
+        const formattendTotal=total.toLocaleString('ko-kR');
+        setFinalPrice(formattendTotal);
+        handleAdditionalFieldChange("finalPrice",formattendTotal);
     }, [details]);
 
     const handleRequestDateChange = (date) => {
@@ -33,16 +35,6 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
         handleAdditionalFieldChange("title", e.target.value);
-    };
-
-    const handleFinalPriceChange = (e) => {
-        let price = e.target.value.replaceAll(',', '');
-        if (isNaN(price)) {
-            setFinalPrice('0');
-        } else {
-            setFinalPrice(Number(price).toLocaleString('ko-KR'));
-        }
-        handleAdditionalFieldChange("finalPrice", price);
     };
 
     const handleMonetaryUnitChange = (e) => {
@@ -109,7 +101,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                 <td>최종금액</td>
 
                 <td colSpan={7}>
-                    <input type='text' value={finalPrice} name='finalPrice' onChange={handleFinalPriceChange}
+                    <input type='text' value={finalPrice} name='finalPrice'
                            style={{width: '60%', pointerEvents: 'none', outline: 'none',textAlign:'right',paddingRight:'20px'}} readOnly/>
 
                     <select defaultValue={monetaryUnit} onChange={handleMonetaryUnitChange} name='monetaryUnit'>
