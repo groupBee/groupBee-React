@@ -10,6 +10,7 @@ import Book from "./book/Book.jsx";
 import Hr from "./hr";
 import Mypage from "./mypage";
 import Detail from "./write/Detail";
+import EmailMain from "./email"
 
 export {
     Navbar,
@@ -23,5 +24,6 @@ export {
     Book,
     Hr,
     Mypage,
-    Detail
+    Detail,
+    EmailMain
 };
