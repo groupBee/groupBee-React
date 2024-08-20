@@ -28,6 +28,7 @@
     "@nivo/line": "^0.87.0",
     "@nivo/pie": "^0.87.0",
     "@nivo/stream": "^0.87.0",
+    "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.4",
     "bootstrap": "^5.3.3",
     "bun": "^1.1.24",

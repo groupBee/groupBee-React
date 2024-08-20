@@ -1,21 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Box } from "@mui/material";
-import { Row, Card, Table, Button, Modal, Form } from 'react-bootstrap';
+import { Row, Card, Table } from 'react-bootstrap';
+import {
+    Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, TextField, FormControl, Typography, Select, MenuItem, InputLabel
+} from '@mui/material';
+import Swal from 'sweetalert2';
 
 const BookList = () => {
     const [carBookings, setCarBookings] = useState([]);
     const [carData, setCarData] = useState([]);
     const [roomBookings, setRoomBookings] = useState([]);
     const [roomData, setRoomData] = useState([]);
+    const [carBookedTimes, setCarBookedTimes] = useState({});
+    const [roomBookedTimes, setRoomBookedTimes] = useState({});
 
     const [showModal, setShowModal] = useState(false);
     const [currentBooking, setCurrentBooking] = useState(null);
     const [category, setCategory] = useState('');
     const [formData, setFormData] = useState({
-        rentDay: '',
-        returnDay: '',
-        enter: '',
-        leave: '',
+        rentDate: '',
+        rentTime: '',
+        returnDate: '',
+        returnTime: '',
+        enterDate: '',
+        enterTime: '',
+        leaveDate: '',
+        leaveTime: '',
         reason: '',
         purpose: '',
         type: '',
@@ -23,25 +33,23 @@ const BookList = () => {
         photo: ''
     });
 
-    // 데이터 가져오는 함수
+    const [validationError, setValidationError] = useState('');
+
+
     const fetchData = async () => {
         try {
-            // 차량 목록 가져오기
             const carResponse = await fetch('/api/cars/list');
             const carData = await carResponse.json();
             setCarData(carData);
 
-            // 차량 예약 목록 가져오기
             const carBookingResponse = await fetch('/api/cars/booklist');
             const carBookingData = await carBookingResponse.json();
             setCarBookings(carBookingData);
 
-            // 회의실 목록 가져오기
             const roomResponse = await fetch('/api/rooms/list');
             const roomData = await roomResponse.json();
             setRoomData(roomData);
 
-            // 회의실 예약 목록 가져오기
             const roomBookingResponse = await fetch('/api/rooms/booklist');
             const roomBookingData = await roomBookingResponse.json();
             setRoomBookings(roomBookingData);
@@ -50,25 +58,107 @@ const BookList = () => {
         }
     };
 
-    // 컴포넌트가 마운트될 때 데이터 가져오기
     useEffect(() => {
         fetchData();
     }, []);
 
+    const formatDateToYYYYMMDD = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    const formatTimeToHHMM = (date) => {
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${hours}:${minutes}`;
+    };
+
+    const convertUTCToLocal = (utcDate) => {
+        const date = new Date(utcDate);
+        return {
+            localDate: formatDateToYYYYMMDD(date),
+            localTime: formatTimeToHHMM(date)
+        };
+    };
+
     const handleEdit = (booking) => {
         setCurrentBooking(booking);
         setCategory(booking.category);
-        setFormData({
-            rentDay: booking.rentDay ? new Date(booking.rentDay).toISOString().slice(0, 16) : '',
-            returnDay: booking.returnDay ? new Date(booking.returnDay).toISOString().slice(0, 16) : '',
-            reason: booking.reason || '',
-            enter: booking.enter ? new Date(booking.enter).toISOString().slice(0, 16) : '',
-            leave: booking.leave ? new Date(booking.leave).toISOString().slice(0, 16) : '',
-            purpose: booking.purpose || '',
-            type: booking.type || '',
-            name: booking.name || '',
-            photo: booking.photo || ''
-        });
+
+        if (booking.category === '차량') {
+            const { localDate: rentDate, localTime: rentTime } = convertUTCToLocal(booking.rentDay);
+            const { localDate: returnDate, localTime: returnTime } = convertUTCToLocal(booking.returnDay);
+            setFormData({
+                rentDate,
+                rentTime,
+                returnDate,
+                returnTime,
+                enterDate: '',
+                enterTime: '',
+                leaveDate: '',
+                leaveTime: '',
+                reason: booking.reason || '',
+                purpose: '',
+                type: booking.type || '',
+                name: booking.name || '',
+                photo: booking.photo || ''
+            });
+
+            // 차량 예약된 시간대 설정
+            const carBookingss = carBookings.filter(res => res.corporateCarId === booking.corporateCarId);
+            const carbookedSlots = {};
+
+            carBookingss.forEach(carBooking => {
+                const start = new Date(carBooking.rentDay);
+                const end = new Date(carBooking.returnDay);
+
+                while (start <= end) {
+                    carbookedSlots[`${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:00`] = true;
+                    start.setHours(start.getHours() + 1);
+                }
+            });
+
+            setCarBookedTimes(carbookedSlots);
+        }
+
+        if (booking.category === '회의실') {
+            const { localDate: enterDate, localTime: enterTime } = convertUTCToLocal(booking.enter);
+            const { localDate: leaveDate, localTime: leaveTime } = convertUTCToLocal(booking.leave);
+            setFormData({
+                rentDate: '',
+                rentTime: '',
+                returnDate: '',
+                returnTime: '',
+                enterDate,
+                enterTime,
+                leaveDate,
+                leaveTime,
+                reason: '',
+                purpose: booking.purpose || '',
+                type: booking.type || '',
+                name: booking.name || '',
+                photo: booking.photo || ''
+            });
+
+            // 회의실 예약된 시간대 설정
+            const roomBookingss = roomBookings.filter(res => res.roomId === booking.roomId);
+            const roombookedSlots = {};
+
+            roomBookingss.forEach(roomBooking => {
+                const start = new Date(roomBooking.enter);
+                const end = new Date(roomBooking.leave);
+
+                while (start <= end) {
+                    roombookedSlots[`${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:00`] = true;
+                    start.setHours(start.getHours() + 1);
+                }
+            });
+
+            setRoomBookedTimes(roombookedSlots);
+        }
+
         setShowModal(true);
     };
 
@@ -83,7 +173,6 @@ const BookList = () => {
             });
 
             if (response.ok) {
-                // 성공적으로 삭제된 경우, 예약 목록에서 해당 항목을 제거
                 if (category === '차량') {
                     setCarBookings(carBookings.filter(booking => booking.id !== id));
                 } else {
@@ -104,8 +193,65 @@ const BookList = () => {
         setCurrentBooking(null);
         setCategory('');
     };
-    //업데이트
+
     const handleModalSave = async () => {
+        // Validation logic
+        if (category === '차량') {
+            const rentDateTime = new Date(`${formData.rentDate}T${formData.rentTime}:00`);
+            const returnDateTime = new Date(`${formData.returnDate}T${formData.returnTime}:00`);
+
+            if (rentDateTime >= returnDateTime) {
+                setValidationError('예약 시간은 반납 시간보다 먼저여야 합니다.');
+                return;
+            }
+
+            // let timeConflict = false;
+            // const tempDate = new Date(rentDateTime);
+            // while (tempDate <= returnDateTime) {
+            //     const dateString = formatDateToYYYYMMDD(tempDate);
+            //     const timeString = formatTimeToHHMM(tempDate);
+            //     if (carTimeBooked(dateString, timeString)) {
+            //         timeConflict = true;
+            //         break;
+            //     }
+            //     tempDate.setHours(tempDate.getHours() + 1);
+            // }
+            //
+            // if (timeConflict) {
+            //     setValidationError('이 시간대는 이미 예약되어 있습니다.');
+            //     return;
+            // }
+        }
+
+        if (category === '회의실') {
+            const enterDateTime = new Date(`${formData.enterDate}T${formData.enterTime}:00`);
+            const leaveDateTime = new Date(`${formData.leaveDate}T${formData.leaveTime}:00`);
+
+            if (enterDateTime >= leaveDateTime) {
+                setValidationError('예약 시간은 반납 시간보다 먼저여야 합니다.');
+                return;
+            }
+
+            let timeConflict = false;
+            const tempDate = new Date(enterDateTime);
+            while (tempDate <= leaveDateTime) {
+                const dateString = formatDateToYYYYMMDD(tempDate);
+                const timeString = formatTimeToHHMM(tempDate);
+                if (roomTimeBooked(dateString, timeString)) {
+                    timeConflict = true;
+                    break;
+                }
+                tempDate.setHours(tempDate.getHours() + 1);
+            }
+
+            if (timeConflict) {
+                setValidationError('이 시간대는 이미 예약되어 있습니다.');
+                return;
+            }
+        }
+
+        setValidationError('');
+
         try {
             const url = category === '차량'
                 ? `/api/cars/update/${currentBooking.id}`
@@ -113,17 +259,17 @@ const BookList = () => {
 
             const requestBody = category === '차량'
                 ? {
-                    rentDay: new Date(formData.rentDay).toISOString(),
-                    returnDay: new Date(formData.returnDay).toISOString(),
+                    rentDay: `${formData.rentDate}T${formData.rentTime}:00`,
+                    returnDay: `${formData.returnDate}T${formData.returnTime}:00`,
                     reason: formData.reason,
                     corporateCarId: currentBooking.corporateCarId,
                     memberId: currentBooking.memberId
                 }
                 : {
-                    enter: new Date(formData.enter).toISOString(),
-                    leave: new Date(formData.leave).toISOString(),
+                    enter: `${formData.enterDate}T${formData.enterTime}:00`,
+                    leave: `${formData.leaveDate}T${formData.leaveTime}:00`,
                     purpose: formData.purpose,
-                    roomId: formData.roomId,
+                    roomId: currentBooking.roomId,
                     memberId: currentBooking.memberId
                 };
 
@@ -135,20 +281,38 @@ const BookList = () => {
                 body: JSON.stringify(requestBody),
             });
 
+            // Close the modal first
+            handleModalClose();
+
+            // Show the Swal alert after the modal has closed
+            await Swal.fire({
+                title: response.ok ? '<strong>수정 성공</strong>' : '<strong>수정 실패</strong>',
+                icon: response.ok ? 'success' : 'error',
+                html: response.ok ? '예약이 성공적으로 수정되었습니다.' : '예약 수정에 실패했습니다.',
+                focusConfirm: false,
+                confirmButtonText: '확인',
+                confirmButtonColor: '#ffb121',
+            });
+
             if (response.ok) {
-                // 성공적으로 업데이트된 경우, 예약 목록을 새로고침
-                fetchData();
-                alert('예약이 업데이트되었습니다.');
-            } else {
-                alert('업데이트에 실패했습니다.');
+                fetchData(); // Refresh data
             }
         } catch (error) {
-            console.error('업데이트 중 에러 발생:', error);
-            alert('업데이트에 실패했습니다.');
+            console.error('수정 중 에러 발생:', error);
+            handleModalClose();
+            await Swal.fire({
+                title: '<strong>수정 실패</strong>',
+                icon: 'error',
+                html: '예약 수정에 실패했습니다.',
+                focusConfirm: false,
+                confirmButtonText: '확인',
+                confirmButtonColor: '#ffb121',
+            });
         }
-
-        handleModalClose();
     };
+
+
+
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -158,19 +322,16 @@ const BookList = () => {
         });
     };
 
-    // 차량 ID를 기반으로 차량 정보를 가져오기 위한 함수
     const getCarTypeByCarId = (carId) => {
         const car = carData.find(car => car.id === carId);
         return car ? car.type : 'Unknown';
     };
 
-    // 회의실 ID를 기반으로 회의실 정보를 가져오기 위한 함수
     const getRoomNameByRoomId = (roomId) => {
         const room = roomData.find(room => room.id === roomId);
         return room ? room.name : 'Unknown';
     };
 
-    // 차량 예약과 회의실 예약을 합치는 함수
     const combinedBookings = [
         ...carBookings.map(booking => ({
             ...booking,
@@ -184,14 +345,31 @@ const BookList = () => {
         }))
     ];
 
-    // 날짜 및 시간 포맷팅 함수
     const formatDateTime = (dateTime) => {
-        const date = new Date(dateTime);
-        return date.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }) +
-            ' ' +
-            date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) +
-            '시';
+        if (!dateTime) return '';
+        const { localDate, localTime } = convertUTCToLocal(dateTime);
+        return `${localDate} ${localTime}시`;
     };
+
+    const generateTimeOptions = () => {
+        const times = [];
+        for (let i = 0; i < 24; i++) {
+            const hour = String(i).padStart(2, '0');
+            times.push(`${hour}:00`);
+        }
+        return times;
+    };
+
+    const timeOptions = generateTimeOptions();
+
+    const carTimeBooked = (date, time) => {
+        return carBookedTimes[`${date}T${time}`] === true;
+    };
+
+    const roomTimeBooked = (date, time) => {
+        return roomBookedTimes[`${date}T${time}`] === true;
+    };
+
 
 
     return (
@@ -202,37 +380,61 @@ const BookList = () => {
                         <Table striped bordered hover>
                             <thead>
                             <tr>
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>번호</th> {/* 번호 열 */}
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>차량/회의실</th> {/* 차량/회의실 구분 열 */}
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>아이템</th> {/* 차량 종류 또는 회의실 이름 열 */}
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>예약시간</th> {/* 예약 시간 열 */}
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>반납시간</th> {/* 반납 시간 열 */}
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>사유</th> {/* 이유 열 */}
-                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>수정/삭제</th> {/* 수정/삭제 버튼 열 */}
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px'}}>번호</th>
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>차량/회의실</th>
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>아이템</th>
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>예약시간</th>
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>반납시간</th>
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>사유</th>
+                                <th style={{ backgroundColor: '#ffb121', padding: '12px' }}>변경/삭제</th>
                             </tr>
                             </thead>
                             <tbody>
                             {combinedBookings.map((booking, index) => (
                                 <tr key={index}>
-                                    <td>{index + 1}</td> {/* 번호 열 */}
-                                    <td>{booking.category}</td> {/* 차량 또는 회의실 구분 */}
+                                    <td>{index + 1}</td>
+                                    <td>{booking.category}</td>
                                     <td>{booking.type}</td>
-                                    <td>{formatDateTime(booking.rentDay || booking.enter)}</td> {/* 예약 시간 */}
-                                    <td>{formatDateTime(booking.returnDay || booking.leave)}</td> {/* 반납 시간 */}
-                                    <td>{booking.reason || booking.purpose}</td> {/* 이유 */}
+                                    <td>{formatDateTime(booking.rentDay || booking.enter)}</td>
+                                    <td>{formatDateTime(booking.returnDay || booking.leave)}</td>
+                                    <td>{booking.reason || booking.purpose}</td>
                                     <td>
                                         <Button
-                                            variant="warning"
-                                            size="sm"
+                                            variant=""
+                                            size="small"
                                             onClick={() => handleEdit(booking)}
-                                            className="me-2"
+                                            sx={{
+                                                backgroundColor: '#ffb121',
+                                                color: '#fff',
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                                borderRadius: '5px',
+                                                padding: '6px 12px',
+                                                '&:hover': {
+                                                    backgroundColor: '#e68a00',
+                                                    transform: 'scale(1.05)',
+                                                },
+                                                marginRight: '8px', // Margin right for spacing
+                                            }}
                                         >
-                                            수정
+                                            변경
                                         </Button>
                                         <Button
-                                            variant="danger"
-                                            size="sm"
+                                            variant=""
+                                            size="small"
                                             onClick={() => handleDelete(booking.id, booking.category)}
+                                            sx={{
+                                                backgroundColor: '#dc3545',
+                                                color: '#fff',
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                                borderRadius: '5px',
+                                                padding: '6px 12px',
+                                                '&:hover': {
+                                                    backgroundColor: '#c82333',
+                                                    transform: 'scale(1.05)',
+                                                },
+                                            }}
                                         >
                                             삭제
                                         </Button>
@@ -245,91 +447,361 @@ const BookList = () => {
                 </Card>
             </Row>
 
-            {/* 수정 모달 */}
-
-            <Modal show={showModal} onHide={handleModalClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>예약 수정</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
+            <Dialog open={showModal} onClose={handleModalClose} fullWidth maxWidth="sm">
+                <DialogTitle
+                    sx={{
+                        fontSize: '1.5rem',
+                        marginBottom: '1px',
+                        backgroundImage: 'linear-gradient(to right, #FFA800, #FFD600)',
+                        color: 'white'
+                    }}>예약 수정</DialogTitle>
+                <DialogContent
+                    sx={{
+                        marginTop: '15px',
+                    }}>
+                    <form >
                         {category === '차량' && (
                             <>
-                                <Form.Label style={{fontSize: '30px'}}>{formData.type}</Form.Label>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>예약 시간</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="rentDay"
-                                        value={formData.rentDay}
-                                        onChange={handleInputChange}
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>반납 시간</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="returnDay"
-                                        value={formData.returnDay}
-                                        onChange={handleInputChange}
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>사유</Form.Label>
-                                    <Form.Control
+                                <Grid container spacing={2} marginBottom={2}>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <TextField
+                                                label="예약일"
+                                                type="date"
+                                                name="rentDate"
+                                                value={formData.rentDate}
+                                                onChange={handleInputChange}
+                                                fullWidth
+                                                InputLabelProps={{ shrink: true }}
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                    },
+                                                    '&:hover': {
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#ffb121',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <InputLabel>예약시간</InputLabel>
+                                            <Select
+                                                label="예약시간"
+                                                name="rentTime"
+                                                value={formData.rentTime}
+                                                onChange={handleInputChange}
+                                                sx={{
+                                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                }}
+                                            >
+                                                {timeOptions.map((time, index) => (
+                                                    <MenuItem
+                                                        key={index}
+                                                        value={time}
+                                                        disabled={carTimeBooked(formData.rentDate, time)}
+                                                    >
+                                                        {time}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+
+                                <Grid container spacing={2} marginBottom={2}>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <TextField
+                                                label="반납일"
+                                                type="date"
+                                                name="returnDate"
+                                                value={formData.returnDate}
+                                                onChange={handleInputChange}
+                                                fullWidth
+                                                InputLabelProps={{ shrink: true }}
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                    },
+                                                    '&:hover': {
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#ffb121',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <InputLabel>반납시간</InputLabel>
+                                            <Select
+                                                label="반납시간"
+                                                name="returnTime"
+                                                value={formData.returnTime}
+                                                onChange={handleInputChange}
+                                                sx={{
+                                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                }}
+                                            >
+                                                {timeOptions.map((time, index) => (
+                                                    <MenuItem
+                                                        key={index}
+                                                        value={time}
+                                                        disabled={carTimeBooked(formData.returnDate, time)}
+                                                    >
+                                                        {time}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+
+                                <FormControl fullWidth margin="normal">
+                                    <TextField
+                                        label="예약사유"
                                         type="text"
                                         name="reason"
                                         value={formData.reason}
                                         onChange={handleInputChange}
+                                        multiline
+                                        rows={3}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                '&:hover fieldset': {
+                                                    borderColor: '#ffb121',
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#ffb121',
+                                                },
+                                            },
+                                            '&:hover': {
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#ffb121',
+                                                },
+                                            },
+                                        }}
                                     />
-                                </Form.Group>
+                                </FormControl>
                             </>
                         )}
 
-
                         {category === '회의실' && (
                             <>
-                                <Form.Label style={{fontSize: '30px'}}>{formData.type}</Form.Label>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>예약 시간</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="enter"
-                                        value={formData.enter}
-                                        onChange={handleInputChange}
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>반납 시간</Form.Label>
-                                    <Form.Control
-                                        type="datetime-local"
-                                        name="leave"
-                                        value={formData.leave}
-                                        onChange={handleInputChange}
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>사유</Form.Label>
-                                    <Form.Control
+                                <Grid container spacing={2} marginBottom={2}>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <TextField
+                                                label="예약일"
+                                                type="date"
+                                                name="enterDate"
+                                                value={formData.enterDate}
+                                                onChange={handleInputChange}
+                                                fullWidth
+                                                InputLabelProps={{ shrink: true }}
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                    },
+                                                    '&:hover': {
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#ffb121',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <InputLabel>예약시간</InputLabel>
+                                            <Select
+                                                label="예약시간"
+                                                name="enterTime"
+                                                value={formData.enterTime}
+                                                onChange={handleInputChange}
+                                                sx={{
+                                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                }}
+                                            >
+                                                {timeOptions.map((time, index) => (
+                                                    <MenuItem
+                                                        key={index}
+                                                        value={time}
+                                                        disabled={roomTimeBooked(formData.enterDate, time)}
+                                                    >
+                                                        {time}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+
+                                <Grid container spacing={2} marginBottom={2}>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <TextField
+                                                label="반납일"
+                                                type="date"
+                                                name="leaveDate"
+                                                value={formData.leaveDate}
+                                                onChange={handleInputChange}
+                                                fullWidth
+                                                InputLabelProps={{ shrink: true }}
+                                                sx={{
+                                                    '& .MuiOutlinedInput-root': {
+                                                        '&:hover fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                        '&.Mui-focused fieldset': {
+                                                            borderColor: '#ffb121',
+                                                        },
+                                                    },
+                                                    '&:hover': {
+                                                        '& .MuiInputLabel-root': {
+                                                            color: '#ffb121',
+                                                        },
+                                                    },
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <FormControl fullWidth margin="normal">
+                                            <InputLabel>반납시간</InputLabel>
+                                            <Select
+                                                label="반납시간"
+                                                name="leaveTime"
+                                                value={formData.leaveTime}
+                                                onChange={handleInputChange}
+                                                sx={{
+                                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                                        borderColor: '#ffb121',
+                                                    },
+                                                }}
+                                            >
+                                                {timeOptions.map((time, index) => (
+                                                    <MenuItem
+                                                        key={index}
+                                                        value={time}
+                                                        disabled={roomTimeBooked(formData.leaveDate, time)}
+                                                    >
+                                                        {time}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Grid>
+                                </Grid>
+
+                                <FormControl fullWidth margin="normal">
+                                    <TextField
+                                        label="예약사유"
                                         type="text"
                                         name="purpose"
                                         value={formData.purpose}
                                         onChange={handleInputChange}
+                                        multiline
+                                        rows={3}
+                                        sx={{
+                                            marginTop: '15px',
+                                            '& .MuiOutlinedInput-root': {
+                                                '&:hover fieldset': {
+                                                    borderColor: '#ffb121',
+                                                },
+                                                '&.Mui-focused fieldset': {
+                                                    borderColor: '#ffb121',
+                                                },
+                                            },
+                                            '&:hover': {
+                                                '& .MuiInputLabel-root': {
+                                                    color: '#ffb121',
+                                                },
+                                            },
+                                        }}
                                     />
-                                </Form.Group>
+                                </FormControl>
                             </>
                         )}
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleModalClose}>
+                    </form>
+
+                    {validationError && (
+                        <Typography color="error" variant="body2" style={{ marginTop: '16px' }}>
+                            {validationError}
+                        </Typography>
+                    )}
+                </DialogContent>
+
+                <DialogActions style={{marginRight:'20px'}}>
+                    <Button onClick={handleModalClose} color="primary" variant=""
+                            sx={{
+                                fontSize: '1rem',
+                                color: '#ffb121',
+                                backgroundColor: 'white',
+                                border: '1px solid #ffb121',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#ffb121',
+                                    border: '1px solid #ffb121',
+                                },
+                            }}>
                         취소
                     </Button>
-                    <Button variant="primary" onClick={handleModalSave}>
-                        저장
+                    <Button onClick={handleModalSave} color="primary" variant=""
+                            sx={{
+                                fontSize: '1rem',
+                                color: '#ffb121',
+                                backgroundColor: 'white',
+                                border: '1px solid #ffb121',
+                                '&:hover': {
+                                    backgroundColor: 'white',
+                                    color: '#ffb121',
+                                    border: '1px solid #ffb121',
+                                },
+                            }}>
+                        변경하기
                     </Button>
-                </Modal.Footer>
-            </Modal>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

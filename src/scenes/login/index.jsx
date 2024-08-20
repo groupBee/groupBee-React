@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useDispatch } from "react-redux";
-import { loginUser } from "../reducer/userSlice.js";
+import { loginUser } from "../userSlice.js";
 import axios from "axios";
 import "./Login.css"
 
