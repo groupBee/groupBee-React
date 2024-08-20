@@ -13,6 +13,7 @@ import {
 import Write from "./scenes/write/index.jsx";
 import List from "./scenes/list/index.jsx";
 import Detail from "./scenes/write/Detail.jsx";
+import EmailMain from "./scenes/email/index.jsx";
 
 const AppRouter = () => {
     return (
@@ -29,6 +30,7 @@ const AppRouter = () => {
                     <Route path="/hr" element={<Hr/>}/>
                     <Route path="/mypage" element={<Mypage/>}/>
                     <Route path="/detail" element={<Detail/>}/>
+                    <Route path="/email" element={<EmailMain/>}/>
                 </Route>
             </Routes>
         </Router>

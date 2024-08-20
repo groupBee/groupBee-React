@@ -214,14 +214,14 @@ const SideBar = () => {
                     <SubMenu
                         label={
                             <Typography variant="h6" color={colors.gray[300]}>
-                                {!collapsed ? "채팅" : " "}
+                                {!collapsed ? "이메일" : " "}
                             </Typography>
                         }
                         icon={<TextsmsOutlined/>}
                     >
                         <Item
-                            title="채팅"
-                            path="/chat"
+                            title="이메일"
+                            path="/email"
                             colors={colors}
                             icon={<TextsmsOutlined/>}
                         />
