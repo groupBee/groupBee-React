@@ -43,11 +43,14 @@ const Detail = () => {
         }
     }, [memberId, appId]);
 
-    // 날짜 문자열을 Date 객체로 변환하는 함수
-    const parseDate = (dateString) => {
-        if (!dateString) return null;
-        const [year, month, day] = dateString.split('-');
-        return new Date(year, month - 1, day);
+    // "yyyy년 MM월 dd일" 형식으로 날짜를 포맷하는 함수
+    const formatDateToKorean = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}년 ${month}월 ${day}일`;
     };
 
     const handleRejectionOpen = () => {
@@ -69,7 +72,7 @@ const Detail = () => {
             .then(res => {
                 setOpen(false);
                 alert('반려되었습니다.');
-                navi('list'); // 반려 후 메인 페이지로 이동
+                navi('/list'); // 반려 후 메인 페이지로 이동
             })
             .catch(err => {
                 console.error("Rejection failed:", err);
@@ -113,13 +116,13 @@ const Detail = () => {
                 border: 'none',
                 borderRadius: '5px 5px 0 0',
                 height: '60px',
-                width: '100%',
+                width: '87%',
             }}></div>
             <div style={{
                 border: 'none',
                 padding: '100px 100px 100px 100px',
                 backgroundColor: '#fafaf0',
-                width: '100%',
+                width: '87%',
             }}>
             <table style={{ border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
                 <tbody className='tableborder'>
@@ -223,19 +226,22 @@ const Detail = () => {
                             </tr>
                             <tr style={{fontSize:'23px'}}>
                                 <td colSpan={2}>휴가 기간</td>
-                                <td colSpan={6}>
-                                    <DatePicker
-                                        value={list.additionalFields?.start || ''}
-                                        dateFormat="yyyy년 MM월 dd일"
-                                        className="custom-datepickerstart"
-                                        readOnly
-                                    />
-                                    ~<DatePicker
-                                    value={list.additionalFields?.end || ''}
-                                    dateFormat="yyyy년 MM월 dd일"
-                                    className="custom-datepickerstart"
-                                    readOnly
-                                />
+                                <td colSpan={6} style={{textAlign:'center'}}>
+                                    <div style={{display: 'inline-flex', alignItems: 'center', width: '100%'}}>
+                                        <DatePicker
+                                            value={formatDateToKorean(list.additionalFields?.start) || ''}
+                                            dateFormat="yyyy년 MM월 dd일"
+                                            className="custom-datepickerstart"
+                                            readOnly
+                                        />
+                                        <span style={{marginRight:'-115px'}}>~</span>
+                                        <DatePicker
+                                            value={formatDateToKorean(list.additionalFields?.end) || ''}
+                                            dateFormat="yyyy년 MM월 dd일"
+                                            className="custom-datepickerstart"
+                                            readOnly
+                                        />
+                                    </div>
                                 </td>
                             </tr>
                             <tr style={{fontSize:'23px'}}>
@@ -258,7 +264,11 @@ const Detail = () => {
                             <tr style={{fontSize: '23px'}}>
                                 <td>요청일자</td>
                                 <td colSpan={3}>
-                                    <input type='date' value={formatDateForInput(list.requestDate) || ''} readOnly/>
+                                    <DatePicker
+                                        value={formatDateToKorean(list.additionalFields?.requestDate) || ''}
+                                        dateFormat="yyyy년 MM월 dd일"
+                                        className="custom-datepicker"
+                                        readOnly/>
                                 </td>
                                 <td>지출유형</td>
                                 <td>
@@ -280,7 +290,7 @@ const Detail = () => {
                             <tr style={{fontSize: '23px', appearance: 'none'}}>
                                 <td>최종금액</td>
                                 <td colSpan={7}>
-                                    <input type='number' value={list.additionalFields?.finalPrice || ''} readOnly
+                                    <input type='text' value={list.additionalFields?.finalPrice || ''} readOnly
                                            style={{width: '70px'}}/>
                                     <select defaultValue={list.additionalFields?.monetaryUnit || ''} disabled>
                                         <option value={0}>원</option>
@@ -332,7 +342,7 @@ const Detail = () => {
                 <tr style={{fontSize: '23px'}}>
                     <td colSpan={8}>
                         <DatePicker
-                            value={formatDateForInput(list.writeday) || ''}
+                            value={formatDateToKorean(list.writeday) || ''}
                             dateFormat="yyyy년 MM월 dd일"
                             style={{marginTop: '50px', outline: 'none'}}
                             className="custom-datepicker"
@@ -377,7 +387,7 @@ const Detail = () => {
                 border: 'none',
                 borderRadius: '0 0 5px 5px',
                 height: '60px',
-                width: '100%',
+                width: '87%',
             }}></div>
         </div>
     );
