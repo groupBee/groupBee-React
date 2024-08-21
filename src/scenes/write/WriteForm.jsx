@@ -7,6 +7,7 @@ import AppDocIntent from "./AppDocIntent";
 import NewAppDocType from "./NewAppDocType";
 import './WriteForm.css';
 import DatePicker from "react-datepicker";
+import GroupModal from "./groupModal.jsx";
 
 const WriteForm = () => {
     const [writer, setWriter] = useState('');
@@ -26,6 +27,10 @@ const WriteForm = () => {
     const [additionalFields, setAdditionalFields] = useState({});
     const [errors, setErrors] = useState({});
     const [intentValidator, setIntentValidator] = useState(null);
+
+    // 모달 상태
+    const [modalOpen, setModalOpen] = useState(false);
+    const [currentApproverType, setCurrentApproverType] = useState(null);
 
     useEffect(() => {
         getinfo();
@@ -119,6 +124,19 @@ const WriteForm = () => {
             });
     }
 
+    const openModal = (approverType) => {
+        setCurrentApproverType(approverType);
+        setModalOpen(true);
+    };
+
+    const handleModalSelect = (value) => {
+        if (currentApproverType === 'second') {
+            setSecondApprover(value);
+        } else if (currentApproverType === 'third') {
+            setThirdApprover(value);
+        }
+    };
+
     return (
         <div style={{
             display: 'flex',
@@ -180,11 +198,13 @@ const WriteForm = () => {
                             <input type="text" value={secondApprover}
                                    onChange={(e) => setSecondApprover(e.target.value)}
                                    style={{width: '100%'}}/>
+                            <Button variant="outlined" onClick={() => openModal('second')}>찾기</Button>
                             {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
                         </td>
                         <td>
                             <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}
                                    style={{width: '100%'}}/>
+                            <Button variant="outlined" onClick={() => openModal('third')}>찾기</Button>
                             {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}
                         </td>
                     </tr>
@@ -250,6 +270,11 @@ const WriteForm = () => {
                 height: '60px',
                 width: '100%',
             }}></div>
+            <GroupModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSelect={handleModalSelect}
+            />
         </div>
     );
 }
