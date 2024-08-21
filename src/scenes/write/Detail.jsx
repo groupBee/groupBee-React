@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './WriteForm.css';
 import {
     Button,
     Dialog,
@@ -55,7 +56,7 @@ const Detail = () => {
 
     // 첨부파일 다운로드 함수 추가
     const onClickImgLink = useCallback((srcUrl, name) => {
-        fetch(getMinioFileUrl(list.attachedFile), { method: 'GET' }) // 여기서 getMinioFileUrl(list.attachedFile)을 사용
+        fetch(getMinioFileUrl(srcUrl), { method: 'GET' }) // 여기서 getMinioFileUrl(list.attachedFile)을 사용
             .then(res => res.blob())
             .then(blob => {
                 const url = window.URL.createObjectURL(blob);

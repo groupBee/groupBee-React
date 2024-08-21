@@ -7,7 +7,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
     const [title, setTitle] = useState('');
     const [finalPrice, setFinalPrice] = useState(0);
     const [monetaryUnit, setMonetaryUnit] = useState(0);
-    const [startDate, setStartDate] = useState(new Date());
+    const [requestDate, setRequestDate] = useState(new Date());
 
     // 내역을 관리하는 배열 상태, 기본적으로 10개 초기화
 
@@ -21,8 +21,14 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
         handleAdditionalFieldChange("finalPrice",formattendTotal);
     }, [details]);
 
+    useEffect(() => {
+        // 컴포넌트가 마운트될 때 기본 날짜 저장 (오늘 날짜)
+        const formattedDate = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD" 형식으로 변환
+        handleAdditionalFieldChange("requestDate", formattedDate);
+    }, []);  // 빈 배열로 주면 컴포넌트가 처음 렌더링될 때 한 번만 실행
+
     const handleRequestDateChange = (date) => {
-        setStartDate(date);
+        setRequestDate(date);
         const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD" 형식으로 변환
         handleAdditionalFieldChange("requestDate", formattedDate);
     };
@@ -76,7 +82,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                 <td>요청일자</td>
                 <td colSpan={3}>
                     <DatePicker
-                        selected={startDate}
+                        selected={requestDate}
                         onChange={handleRequestDateChange}
                         dateFormat="yyyy년 MM월 dd일"
                         className="custom-datepicker"/>
