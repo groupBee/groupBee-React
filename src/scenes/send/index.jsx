@@ -3,6 +3,7 @@ import { Header } from "../../components";
 import { tokens } from "../../theme";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Invoices = () => {
     const theme = useTheme();
@@ -11,7 +12,7 @@ const Invoices = () => {
     const [writer, setWriter] = useState('');
     const [currentPage, setCurrentPage] = useState(1); // 페이지 번호 상태 추가
     const PageCount = 10; // 한 페이지에 표시할 항목 수
-
+    const navigate = useNavigate();
     const getinfo = () => {
         axios.get("/api/elecapp/getinfo")
             .then(res => {
@@ -98,6 +99,15 @@ const Invoices = () => {
         },
     ];
     
+    //디테일 페이지 이동
+    const moveDetail = (itemId) => {
+        navigate("/detail", {
+            state: {
+                memberId: writer,
+                itemId: itemId
+            }
+        });
+    };
     return (
         <Box m="20px">
             <Header title="발신목록" subtitle="List of Invoice Balances" />
@@ -174,7 +184,7 @@ const Invoices = () => {
                                         item.appDocType === 1 ? '휴가신청서' :
                                             item.appDocType === 2 ? '지출보고서' : ''}
                                 </td>
-                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }} onClick={() => moveDetail(item.id)}>
                                     {
                                         item.additionalFields.title ? item.additionalFields.title : '휴가신청서'
                                     }
