@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
@@ -12,6 +12,8 @@ import {
 } from '@mui/material';
 import DatePicker from "react-datepicker";
 import * as details from "react-bootstrap/ElementChildren";
+import approvedImage from '/src/scenes/write/succes.png'; // 승인 이미지
+import rejectedImage from '/src/scenes/write/rejected.png'; // 반려 이미지
 
 const Detail = () => {
     const location = useLocation();
@@ -23,6 +25,9 @@ const Detail = () => {
     const navi = useNavigate();
     const [appId, setAppId] = useState(itemId); // appId를 itemId로 초기화
     const [appDocType, setAppDocType] = useState(null); // appDocType 상태 추가
+    const [approvalStatus, setApprovalStatus] = useState('');
+    const [imageSrc, setImageSrc] = useState(null); // 추가된 이미지 상태
+
     // 결재 문서 데이터를 가져오는 함수
     const getSignForm = () => {
         axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
@@ -36,6 +41,40 @@ const Detail = () => {
                 console.error("문서 불러오기 실패:", err);
             });
     };
+
+    const getMinioFileUrl = (fileName) => {
+        if (!fileName) return '';
+        return `https://minio.bmops.kro.kr/groupbee/elec_app/${fileName}`;
+    };
+
+    const approveimg = ()=>{
+        return `https://minio.bmops.kro.kr/groupbee/elec_app/965924ea-3eec-4f97-9a66-dd3b4f4cf418`;
+    }
+
+    const approveimg2 = ()=>{
+        return `https://minio.bmops.kro.kr/groupbee/elec_app/599eea51-7f30-4356-9b6f-89f208aac46c`;
+    }
+
+    // 첨부파일 다운로드 함수 추가
+    const onClickImgLink = useCallback((srcUrl, name) => {
+        fetch(getMinioFileUrl(list.attachedFile), { method: 'GET' }) // 여기서 getMinioFileUrl(list.attachedFile)을 사용
+            .then(res => res.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; // Blob URL을 사용
+                a.download = name; // 파일의 이름 설정
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url); // URL 해제
+                }, 1000);
+                a.remove(); // a 태그 제거
+            })
+            .catch(err => {
+                console.error('파일 다운로드 실패:', err);
+            });
+    }, []);
 
     useEffect(() => {
         if (memberId && appId) {
@@ -138,7 +177,17 @@ const Detail = () => {
                 <tr>
                     <td style={{height: '150px'}}></td>
                     <td>
-                        {list.approveType === 2 && memberId === list.secondApprover && (
+                        {list.approveType === 2 && (
+                            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                                <img src={approveimg()} style={{width: '100px', height: '100px'}} />
+                            </div>
+                        )}
+                        {list.approveType === 0 && (
+                            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                                <img src={approveimg2()} style={{width: '100px', height: '100px'}} />
+                            </div>
+                        )}
+                        {list.approveType === 1 && memberId === list.secondApprover && (
                             <>
                                 <Button variant='outlined' color='warning' onClick={acception}>승인</Button>
                                 <Button variant='outlined' color='warning' onClick={handleRejectionOpen}>반려</Button>
@@ -146,7 +195,17 @@ const Detail = () => {
                         )}
                     </td>
                     <td>
-                        {list.approveType === 3 && memberId === list.thirdApprover && (
+                        {list.approveType === 3 && (
+                            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                                <img src={approveimg()} style={{width: '100px', height: '100px'}} />
+                            </div>
+                        )}
+                        {list.approveType === 0 && (
+                            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                                <img src={approveimg2()} style={{width: '100px', height: '100px'}} />
+                            </div>
+                        )}
+                        {list.approveType === 2 && memberId === list.thirdApprover && (
                             <>
                                 <Button variant='outlined' color='warning' onClick={acception}>승인</Button>
                                 <Button variant='outlined' color='warning' onClick={handleRejectionOpen}>반려</Button>
@@ -333,9 +392,16 @@ const Detail = () => {
                         </>
                     )
                 }
-                <tr style={{fontSize: '23px'}}>
-                    <td colSpan={2}>첨부파일</td>
-                    <td colSpan={6}>{list.originalFile}</td>
+                <tr>
+                    <td style={{fontSize: '23px'}} colSpan={2}>첨부파일</td>
+                    <td style={{fontSize: '20px'}} colSpan={6}>
+                        <a
+                            onClick={() => onClickImgLink(list.attachedFile, list.originalFile)}
+                            style={{cursor: 'pointer', textDecoration: 'underline', color: 'blue'}} // 클릭 가능한 스타일 추가
+                        >
+                            {list.originalFile} {/* 파일 이름을 텍스트로 표시 */}
+                        </a>
+                    </td>
                 </tr>
                 </tbody>
                 <tbody>

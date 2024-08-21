@@ -8,7 +8,7 @@ const Invoices = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [list, setList] = useState([]);
-    const [writer, setWriter] = useState('김창인');
+    const [writer, setWriter] = useState('');
     const [currentPage, setCurrentPage] = useState(1); // 페이지 번호 상태 추가
     const PageCount = 10; // 한 페이지에 표시할 항목 수
 
