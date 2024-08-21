@@ -11,9 +11,7 @@ import {
     TextField
 } from '@mui/material';
 import DatePicker from "react-datepicker";
-import * as details from "react-bootstrap/ElementChildren";
-import approvedImage from '/src/scenes/write/succes.png'; // 승인 이미지
-import rejectedImage from '/src/scenes/write/rejected.png'; // 반려 이미지
+
 
 const Detail = () => {
     const location = useLocation();
@@ -175,42 +173,44 @@ const Detail = () => {
                     <td style={{fontSize: '23px', width: '200px'}}>최종승인자</td>
                 </tr>
                 <tr>
-                    <td style={{height: '150px'}}></td>
-                    <td>
-                        {list.approveType === 2 && (
+                    <td style={{height: '150px'}}>
                             <div style={{ marginBottom: '10px', textAlign: 'center' }}>
-                                <img src={approveimg()} style={{width: '100px', height: '100px'}} />
+                                {list.approveStatus===0?(<img src={approveimg()} style={{width: '100px', height: '100px'}} />):''}
                             </div>
-                        )}
-                        {list.approveType === 0 && (
-                            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
-                                <img src={approveimg2()} style={{width: '100px', height: '100px'}} />
-                            </div>
-                        )}
-                        {list.approveType === 1 && memberId === list.secondApprover && (
-                            <>
-                                <Button variant='outlined' color='warning' onClick={acception}>승인</Button>
-                                <Button variant='outlined' color='warning' onClick={handleRejectionOpen}>반려</Button>
-                            </>
-                        )}
                     </td>
                     <td>
-                        {list.approveType === 3 && (
-                            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
-                                <img src={approveimg()} style={{width: '100px', height: '100px'}} />
-                            </div>
-                        )}
-                        {list.approveType === 0 && (
+                        
+                            {list.approveStatus===0&&list.approveType>1?(
+                                <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                                    <img src={approveimg()} style={{width: '100px', height: '100px'}} />
+                                </div>
+                            ):list.approveStatus===0&&list.approveType===0?(
                             <div style={{ marginBottom: '10px', textAlign: 'center' }}>
                                 <img src={approveimg2()} style={{width: '100px', height: '100px'}} />
-                            </div>
-                        )}
-                        {list.approveType === 2 && memberId === list.thirdApprover && (
-                            <>
-                                <Button variant='outlined' color='warning' onClick={acception}>승인</Button>
-                                <Button variant='outlined' color='warning' onClick={handleRejectionOpen}>반려</Button>
-                            </>
-                        )}
+                            </div>):
+                            list.approveStatus===0&&list.approveType === 1 && memberId === list.secondApprover ? (
+                                <>
+                                    <Button variant='outlined' color='warning' onClick={acception}>승인</Button>
+                                    <Button variant='outlined' color='warning' onClick={handleRejectionOpen}>반려</Button>
+                                </>
+                        ):''}
+                    
+                    </td>
+                    <td>
+                        {list.approveStatus===0&&list.approveType>2?(
+                                <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                                    <img src={approveimg()} style={{width: '100px', height: '100px'}} />
+                                </div>
+                            ):list.approveStatus===0&&list.approveType===0?(
+                            <div style={{ marginBottom: '10px', textAlign: 'center' }}>
+                                <img src={approveimg2()} style={{width: '100px', height: '100px'}} />
+                            </div>):
+                            list.approveStatus===0&&list.approveType === 2 && memberId === list.thirdApprover ? (
+                                <>
+                                    <Button variant='outlined' color='warning' onClick={acception}>승인</Button>
+                                    <Button variant='outlined' color='warning' onClick={handleRejectionOpen}>반려</Button>
+                                </>
+                        ):''}
                     </td>
                 </tr>
                 <tr>
