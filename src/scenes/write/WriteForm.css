@@ -31,3 +31,9 @@ button{
 .error{
     color: red;
 }
+/* 특정 요소 크기 고정 */
+.fixed-size {
+    font-size: 23px; /* 폰트 크기 고정 */
+    min-width: 200px; /* 최소 너비 설정 */
+
+}

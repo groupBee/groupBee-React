@@ -66,7 +66,10 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
 
     // 행 추가 함수
     const addDetail = () => {
-        setDetails([...details, { content: '', price: 0, note: '' }]);
+        setDetails((prevDetails) => {
+            const updatedDetails = [...prevDetails, { content: '', price: '0', note: '' }];
+            return updatedDetails;
+        });
     };
 
     // 마지막 행 삭제 함수
