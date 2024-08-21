@@ -14,6 +14,7 @@ import Write from "./scenes/write/index.jsx";
 import List from "./scenes/list/index.jsx";
 import Detail from "./scenes/write/Detail.jsx";
 import EmailMain from "./scenes/email/index.jsx";
+import BoardWrite from "./scenes/board/BoardWrite.jsx";
 
 const AppRouter = () => {
     return (
@@ -21,11 +22,12 @@ const AppRouter = () => {
             <Routes>
                 <Route path="/" element={<App/>}>
                     <Route path="/" element={<Dashboard/>}/>
-                    <Route path="/write" element={<Write/>}/>
+                    <Route path="/write" element={<Write/>}/>s
                     <Route path="/list" element={<List/>}/>
                     <Route path="/send" element={<Send/>}/>
                     <Route path="/calendar" element={<Calendar/>}/>
                     <Route path="/board" element={<Board/>}/>
+                    <Route path="/board/write" element={<BoardWrite/>}/>
                     <Route path="/book/*" element={<Book/>}/>
                     <Route path="/hr" element={<Hr/>}/>
                     <Route path="/mypage" element={<Mypage/>}/>
