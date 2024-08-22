@@ -215,33 +215,19 @@ const Detail = () => {
                     </td>
                 </tr>
                 <tr>
-                    <td className="stampFirst">
-                        <input type="text" style={{outline: 'none'}} defaultValue={list.firstApprover} readOnly/>
-                    </td>
-                    <td className="stampSecond">
-                        <input type="text" style={{outline: 'none'}} defaultValue={list.secondApprover} readOnly/>
-                    </td>
-                    <td className="stampThird">
-                        <input type="text" style={{outline: 'none'}} defaultValue={list.thirdApprover} readOnly/>
-                    </td>
+                    <td className="stampFirst" style={{fontSize: '23px', height:'50px'}}>{list.firstApprover}</td>
+                    <td className="stampSecond" style={{fontSize: '23px'}}>{list.secondApprover}</td>
+                    <td className="stampThird" style={{fontSize: '23px'}}>{list.thirdApprover}</td>
                 </tr>
                 <tr>
                     <td style={{minWidth: '90px', fontSize: '23px'}}>성명</td>
-                    <td><input type="text" defaultValue={list.writer}
-                               style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
-                    </td>
+                    <td style={{fontSize: '23px', width: '175px',outline: 'none', height:'50px'}}>{list.writer}</td>
                     <td style={{minWidth: '70px', fontSize: '23px'}}>부서</td>
-                    <td><input type="text" defaultValue={list.department}
-                               style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
-                    </td>
+                    <td style={{fontSize: '23px', width: '175px',outline: 'none'}}>{list.department}</td>
                     <td style={{minWidth: '90px', fontSize: '23px'}}>직급</td>
-                    <td><input type="text" defaultValue={list.position}
-                               style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
-                    </td>
+                    <td style={{fontSize: '23px', width: '175px',outline: 'none'}}>{list.position}</td>
                     <td style={{minWidth: '70px', fontSize: '23px'}}>보안등급</td>
-                    <td><input type="number" defaultValue={list.level}
-                               style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
-                       </td>
+                    <td style={{fontSize: '23px', width: '175px',outline: 'none'}}>{list.level}</td>
                 </tr>
                 {/* 문서 유형에 따른 상세 내용 */}
                 {
@@ -367,26 +353,14 @@ const Detail = () => {
                             </tr>
                             {details.map((detail, index) => (
                                 <tr key={index}>
-                                    <td colSpan={3} style={{height: '65px'}}>
-                                        <input
-                                            type="text"
-                                            value={list.additionalFields?.[`details_${index}_content`] || ''}
-                                            style={{fontSize: '23px', width: '100%', outline: 'none'}}
-                                        />
+                                    <td colSpan={3} style={{height: '65px',fontSize: '23px'}}>
+                                        {list.additionalFields?.[`details_${index}_content`] || ''}
                                     </td>
-                                    <td colSpan={3}>
-                                        <input
-                                            type="text"
-                                            value={list.additionalFields?.[`details_${index}_price`] || ''}
-                                            style={{fontSize: '23px', width: '100%', outline: 'none'}}
-                                        />
+                                    <td colSpan={3} style={{fontSize: '23px', textAlign:'right',paddingRight:'20px'}}>
+                                        {list.additionalFields?.[`details_${index}_price`] || ''}
                                     </td>
-                                    <td colSpan={2}>
-                                        <input
-                                            type="text"
-                                            value={list.additionalFields?.[`details_${index}_note`] || ''}
-                                            style={{fontSize: '23px', width: '100%', outline: 'none'}}
-                                        />
+                                    <td colSpan={2} style={{fontSize: '23px'}}>
+                                        {list.additionalFields?.[`details_${index}_note`] || ''}
                                     </td>
                                 </tr>
                             ))}

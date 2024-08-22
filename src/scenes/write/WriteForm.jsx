@@ -150,7 +150,7 @@ const WriteForm = () => {
                 gap: '10px',
                 marginBottom: '20px',
                 width: '100%',
-                paddingLeft: '20px',
+                paddingLeft: '125px',
                 fontSize:'23px'
             }}>
                 <Button

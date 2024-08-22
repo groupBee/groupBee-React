@@ -92,7 +92,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                 </td>
                 <td>지출유형</td>
                 <td colSpan={3}>
-                    <select defaultValue={expendType} onChange={handleExpendTypeChange} name='expend_type'>
+                    <select defaultValue={expendType} onChange={handleExpendTypeChange} name='expend_type' style={{width:'300px',textAlign:'center'}}>
                         <option value={0}>자재비</option>
                         <option value={1}>배송비</option>
                         <option value={2}>교육비</option>
@@ -132,8 +132,10 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                 <td colSpan={3} style={{height: '50px'}}>지출내용</td>
                 <td colSpan={3}>금액</td>
                 <td colSpan={2}>비고
-                    <button onClick={addDetail}>+</button>
-                    <button onClick={removeLastDetail}>-</button>
+                    <button style={{border:'1px solid #ffb121', backgroundColor:'#fafaf0', color:'#ffb121', borderRadius:'4px', width:'30px', marginRight:'10px'}}
+                        onClick={addDetail}>+</button>
+                    <button style={{border:'1px solid #ffb121', backgroundColor:'#fafaf0', color:'#ffb121', borderRadius:'4px', width:'30px', marginRight:'10px'}}
+                        onClick={removeLastDetail}>-</button>
                 </td>
             </tr>
             {details.map((detail, index) => (
