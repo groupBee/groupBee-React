@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { tokens } from "../../theme";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import Detail from "../write/Detail.jsx";
+import Detail from "./Detail.jsx";
 import { each } from "jquery";
 
 

@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import AppDocVacation from "./AppDocVacation";
 import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
-import NewAppDocType from "./NewAppDocType";
 import './WriteForm.css';
 import DatePicker from "react-datepicker";
 import GroupModal from "./groupModal.jsx";
@@ -34,7 +33,7 @@ const WriteForm = () => {
 
     useEffect(() => {
         getinfo();
-    }, []) // Missing dependency array to prevent infinite loop
+    })
 
     const getinfo=()=>{
         axios.get("/api/elecapp/getinfo")
@@ -80,6 +79,10 @@ const WriteForm = () => {
         if (!thirdApprover) newErrors.thirdApprover = "최종승인자를 입력하세요.";
         if (!level) newErrors.level = "보안등급을 입력하세요.";
 
+        // if (appDocType === 0 && intentValidator && !intentValidator()) {
+        //     newErrors.intent = "품의서의 필수 항목을 모두 입력하세요.";
+        // }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -89,7 +92,7 @@ const WriteForm = () => {
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
             return;
-        }
+    }
         const originalFileName = originalFile ? originalFile.name : '';
 
         // additionalFields의 키에서 '__'를 '.'으로 변환
@@ -131,7 +134,6 @@ const WriteForm = () => {
         } else if (currentApproverType === 'third') {
             setThirdApprover(value);
         }
-        setModalOpen(false); // Close modal after selection
     };
 
     return (
@@ -143,11 +145,37 @@ const WriteForm = () => {
             transform: 'scale(0.8)',
         }}>
             <div style={{
+                display: 'flex',
+                justifyContent: 'flex-start',
+                gap: '10px',
+                marginBottom: '20px',
+                width: '100%',
+                paddingLeft: '20px',
+                fontSize:'23px'
+            }}>
+                <Button
+                    onClick={() => changeAppDoc(0)}
+                    style={{backgroundColor: appDocType === 0 ? '#ffb121' : '#fafaf0',fontSize:'20px',color:appDocType === 0 ? 'white' :'#ffb121',border:'1px solid #ffb121'}}>
+                    품의서
+                </Button>
+                <Button
+                    onClick={() => changeAppDoc(1)}
+                    style={{backgroundColor: appDocType === 1 ? '#ffb121' : '#fafaf0',fontSize:'20px',color:appDocType === 1 ? 'white' :'#ffb121',border:'1px solid #ffb121'}}>
+                    휴가신청서
+                </Button>
+                <Button
+                    onClick={() => changeAppDoc(2)}
+                    style={{backgroundColor: appDocType === 2 ? '#ffb121' : '#fafaf0',fontSize:'20px',color:appDocType === 2 ? 'white' :'#ffb121',border:'1px solid #ffb121'}}>
+                    지출보고서
+                </Button>
+            </div>
+            <div style={{
                 backgroundColor: '#ffb121',
                 border: 'none',
                 borderRadius: '5px 5px 0 0',
                 height: '60px',
                 width: '100%',
+                alignItems: 'center',
             }}></div>
             <div style={{
                 border: 'none',
@@ -157,42 +185,28 @@ const WriteForm = () => {
             }}>
                 <table
                     style={{border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
-                    <caption align='top' style={{paddingBottom: '20px'}}>
-                        <button onClick={() => changeAppDoc(0)}
-                                style={{backgroundColor: appDocType === 0 ? '#ffb121' : ''}}>
-                            품의서
-                        </button>
-                        <button onClick={() => changeAppDoc(1)}
-                                style={{backgroundColor: appDocType === 1 ? '#ffb121' : ''}}>
-                            휴가신청서
-                        </button>
-                        <button onClick={() => changeAppDoc(2)}
-                                style={{backgroundColor: appDocType === 2 ? '#ffb121' : ''}}>
-                            지출보고서
-                        </button>
-                    </caption>
                     <tbody className='tableborder'>
                     <tr>
                         <td colSpan={4} rowSpan={3}
                             style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
                         <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
-                        <td style={{height: '50px', fontSize: '23px', width: '200px'}}>최초승인자</td>
-                        <td style={{fontSize: '23px', width: '200px'}}>중간승인자</td>
-                        <td style={{fontSize: '23px', width: '200px'}}>최종승인자</td>
+                        <td className="fixed-size" style={{height:'50px'}}>최초승인자</td>
+                        <td className="fixed-size">중간승인자</td>
+                        <td className="fixed-size">최종승인자</td>
                     </tr>
                     <tr>
-                        <td style={{height: '150px'}}></td>
-                        <td></td>
-                        <td></td>
+                        <td className="fixed-size" style={{height: '150px'}}></td>
+                        <td className="fixed-size"></td>
+                        <td className="fixed-size"></td>
                     </tr>
                     <tr>
                         <td>
-                            <input type="text" value={firstApprover} 
-                                   readOnly // Added readOnly to prevent warnings for this field
+                            <input type="text" value={firstApprover}
                                    style={{width: '100%'}}/>
+
                         </td>
                         <td>
-                            <input type="text" value={secondApprover}
+                        <input type="text" value={secondApprover}
                                    onChange={(e) => setSecondApprover(e.target.value)}
                                    style={{width: '100%'}}/>
                             <Button variant="outlined" onClick={() => openModal('second')}>찾기</Button>
@@ -206,22 +220,19 @@ const WriteForm = () => {
                         </td>
                     </tr>
                     <tr>
-                        <td style={{width: '90px', fontSize: '23px'}}>성명</td>
-                        <td><input type="text" value={writer} 
-                                   readOnly // Added readOnly to prevent warnings for this field
+                        <td style={{minWidth: '90px', fontSize: '23px'}}>성명</td>
+                        <td><input type="text" value={writer}
                                    style={{fontSize: '23px', width: '175px'}}/>
-                            </td>
-                        <td style={{width: '70px', fontSize: '23px'}}>부서</td>
-                        <td><input type="text" value={department} 
-                                   readOnly // Added readOnly to prevent warnings for this field
+                        </td>
+                        <td style={{minWidth: '70px', fontSize: '23px'}}>부서</td>
+                        <td><input type="text" value={department}
                                    style={{fontSize: '23px', width: '175px'}}/>
-                            </td>
-                        <td style={{width: '90px', fontSize: '23px'}}>직급</td>
-                        <td><input type="text" value={position} 
-                                   readOnly // Added readOnly to prevent warnings for this field
+                        </td>
+                        <td style={{minWidth: '90px', fontSize: '23px'}}>직급</td>
+                        <td><input type="text" value={position}
                                    style={{fontSize: '23px', width: '175px'}}/>
-                            </td>
-                        <td style={{width: '70px', fontSize: '23px'}}>보안등급</td>
+                        </td>
+                        <td style={{minWidth: '70px', fontSize: '23px'}}>보안등급</td>
                         <td><input type="number" value={level} onChange={(e) => setLevel(e.target.value)}
                                    style={{fontSize: '23px', width: '175px'}}/>
                             {errors.level && <div className="error">{errors.level}</div>}</td>
@@ -256,7 +267,9 @@ const WriteForm = () => {
                     <tr>
                         <td colSpan={8}>
                             <Button variant="outlined" color="warning"
-                                    onClick={() => {setApproveStatus('1'); createApp();}}>임시저장</Button>
+                                    onClick={() => {
+                                        setApproveStatus('1'), createApp()
+                                    }}>임시저장</Button>
                             <Button variant="outlined" color="warning" onClick={createApp}>작성완료</Button>
                         </td>
                     </tr>

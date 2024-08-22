@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './WriteForm.css';
+import '../write/WriteForm.css';
 import {
     Button,
     Dialog,
@@ -154,13 +154,13 @@ const Detail = () => {
                 border: 'none',
                 borderRadius: '5px 5px 0 0',
                 height: '60px',
-                width: '87%',
+                width: '100%',
             }}></div>
             <div style={{
                 border: 'none',
                 padding: '100px 100px 100px 100px',
                 backgroundColor: '#fafaf0',
-                width: '87%',
+                width: '100%',
             }}>
             <table style={{ border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
                 <tbody className='tableborder'>
@@ -169,9 +169,9 @@ const Detail = () => {
                         {appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}
                     </td>
                     <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
-                    <td style={{height: '50px', fontSize: '23px', width: '200px'}}>최초승인자</td>
-                    <td style={{fontSize: '23px', width: '200px'}}>중간승인자</td>
-                    <td style={{fontSize: '23px', width: '200px'}}>최종승인자</td>
+                    <td className="fixed-size" style={{height: '50px'}}>최초승인자</td>
+                    <td className="fixed-size">중간승인자</td>
+                    <td className="fixed-size" style={{maxWidth:'200px'}}>최종승인자</td>
                 </tr>
                 <tr>
                     <td style={{height: '150px'}}>
@@ -226,20 +226,20 @@ const Detail = () => {
                     </td>
                 </tr>
                 <tr>
-                    <td style={{width: '90px', fontSize: '23px'}}>성명</td>
+                    <td style={{minWidth: '90px', fontSize: '23px'}}>성명</td>
                     <td><input type="text" value={list.writer}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                     </td>
-                    <td style={{width: '70px', fontSize: '23px'}}>부서</td>
+                    <td style={{minWidth: '70px', fontSize: '23px'}}>부서</td>
                     <td><input type="text" value={list.department}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                     </td>
-                    <td style={{width: '90px', fontSize: '23px'}}>직급</td>
+                    <td style={{minWidth: '90px', fontSize: '23px'}}>직급</td>
                     <td><input type="text" value={list.position}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                     </td>
-                    <td style={{width: '70px', fontSize: '23px'}}>보안등급</td>
-                    <td><input type="number" value={list.level} onChange={(e) => setLevel(e.target.value)}
+                    <td style={{minWidth: '70px', fontSize: '23px'}}>보안등급</td>
+                    <td><input type="number" value={list.level}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                        </td>
                 </tr>
@@ -454,7 +454,7 @@ const Detail = () => {
                 border: 'none',
                 borderRadius: '0 0 5px 5px',
                 height: '60px',
-                width: '87%',
+                width: '100%',
             }}></div>
         </div>
     );
