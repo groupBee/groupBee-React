@@ -6,7 +6,8 @@ import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
 import './WriteForm.css';
 import DatePicker from "react-datepicker";
-import GroupModal from "../../components/groupModal.jsx";
+import GroupModal from "./groupModal.jsx";
+import {useNavigate} from "react-router-dom";
 
 const WriteForm = () => {
     const [writer, setWriter] = useState('');
@@ -27,6 +28,7 @@ const WriteForm = () => {
     const [errors, setErrors] = useState({});
     const [intentValidator, setIntentValidator] = useState(null);
 
+    const navi = useNavigate();
     // 모달 상태
     const [modalOpen, setModalOpen] = useState(false);
     const [currentApproverType, setCurrentApproverType] = useState(null);
@@ -89,6 +91,7 @@ const WriteForm = () => {
 
 
     const createApp = () => {
+
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
             return;
@@ -113,9 +116,11 @@ const WriteForm = () => {
         })
             .then(res => {
                 if(approveStatus==0){
-                alert("전자결제가 등록되었습니다");}
-                else{
+                alert("전자결제가 등록되었습니다");
+                    navi('/send');
+                }else{
                     alert("전자결재가 임시저장되었습니다.")
+                    navi('/send');
                 }
             })
             .catch(err => {
@@ -199,23 +204,23 @@ const WriteForm = () => {
                         <td className="fixed-size"></td>
                         <td className="fixed-size"></td>
                     </tr>
-                    <tr>
+                    <tr style={{fontSize:'23px'}}>
                         <td>
                             <input type="text" value={firstApprover}
-                                   style={{width: '100%'}}
+                                   style={{width: '100%', textAlign:'center'}}
                                    onChange={(e) => setFirstApprover(e.target.value)} readOnly/>
 
                         </td>
                         <td>
                         <input type="text" value={secondApprover}
                                    onChange={(e) => setSecondApprover(e.target.value)}
-                                   style={{width: '100%'}}/>
+                                   style={{width: '100%', textAlign:'center'}}/>
                             <Button variant="outlined" onClick={() => openModal('second')}>찾기</Button>
                             {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
                         </td>
                         <td>
                             <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}
-                                   style={{width: '100%'}}/>
+                                   style={{width: '100%', textAlign:'center'}}/>
                             <Button variant="outlined" onClick={() => openModal('third')}>찾기</Button>
                             {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}
                         </td>
@@ -262,9 +267,8 @@ const WriteForm = () => {
                     </tr>
                     <tr style={{fontSize: '23px'}}>
                         <td colSpan={4} style={{height: '50px'}}></td>
-                        <td>서명</td>
-                        <td>신청자 : {writer}</td>
-                        <td></td>
+                        <td>신청자 :</td>
+                        <td colSpan={2} style={{textAlign:'right'}}>{writer}</td>
                         <td>(인)</td>
                     </tr>
                     <tr>

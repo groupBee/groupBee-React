@@ -235,9 +235,8 @@ const Detail = () => {
                         <>
                             <tr>
                                 <td style={{fontSize: '23px'}}>제목</td>
-                                <td colSpan={7}>
-                                    <input type='text' value={list.additionalFields?.title || ''}
-                                           style={{width: '100%', fontSize: '23px'}} readOnly/>
+                                <td colSpan={7} style={{height:'50px',textAlign:'left',paddingLeft:'20px', fontSize:'23px'}}>
+                                    {list.additionalFields?.title || ''}
                                 </td>
                             </tr>
                             <tr>
@@ -328,9 +327,8 @@ const Detail = () => {
                             </tr>
                             <tr style={{fontSize: '23px'}}>
                                 <td>제목</td>
-                                <td colSpan={7}>
-                                    <input type='text' value={list.additionalFields?.title || ''} readOnly
-                                           style={{width: '100%'}}/>
+                                <td colSpan={7} style={{height:'50px',textAlign:'left',paddingLeft:'20px'}}>
+                                    {list.additionalFields?.title || ''}
                                 </td>
                             </tr>
                             <tr style={{fontSize: '23px', appearance: 'none'}}>
