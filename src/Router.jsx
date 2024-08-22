@@ -15,11 +15,14 @@ import List from "./scenes/list/index.jsx";
 import Detail from "./scenes/write/Detail.jsx";
 import EmailMain from "./scenes/email/index.jsx";
 import BoardWrite from "./scenes/board/BoardWrite.jsx";
+import Login from "./scenes/login/login.jsx";
 
 const AppRouter = () => {
     return (
         <Router>
             <Routes>
+                <Route path="/login" element={<Login/>}/>
+
                 <Route path="/" element={<App/>}>
                     <Route path="/" element={<Dashboard/>}/>
                     <Route path="/write" element={<Write/>}/>s
