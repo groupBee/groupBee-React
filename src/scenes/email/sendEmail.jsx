@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
+import GroupModal from '../../components/groupModal';
+import axios from 'axios';
 
 const SendEmail = () => {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState('p@ssw0rd');
     const [to, setTo] = useState('');
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
     const [attachment, setAttachment] = useState(null);
 
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const getinfo=()=>{
+        axios.get("/api/employee/info")
+        .then(res=>{
+            setUsername(res.data.data.email)
+        })
+    }
+
+    const openModal = () => {
+        setModalOpen(true);
+    };
     const handleSendEmail = async (e) => {
         e.preventDefault();
 
@@ -40,29 +55,26 @@ const SendEmail = () => {
         }
     };
 
+    const handleModalSelect = (value) => {
+        setTo(value.email)
+    };
+
+    useEffect(()=>{
+        getinfo();
+    },[])
+
     return (
         <div>
             <h2 style={{marginTop:'20px'}}>메일 보내기</h2>
             <form onSubmit={handleSendEmail}>
-                <input
-                    type="email"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Your email"
-                />
-                <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Your email password"
-                />
+                
                 <hr/>
                 <b>받는사람</b><input style={{width:'700px',marginLeft:'35px'}}
                     type="email"
                     value={to}
                     onChange={(e) => setTo(e.target.value)}
                     placeholder="메일주소"
-                /><br/>
+                /><Button variant='contained' color='warning' onClick={openModal}>찾아보기</Button><br/>
                 <b>참조</b><input style={{width: '700px', marginLeft: '60px', marginTop: '10px'}}
                          type="text"
                          value={to}
@@ -85,6 +97,11 @@ const SendEmail = () => {
 
                 <button type="submit" style={{marginLeft:'730px',width:'50px',height:'30px'}}>Send</button>
             </form>
+            <GroupModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSelect={handleModalSelect}
+            />
         </div>
     );
 };

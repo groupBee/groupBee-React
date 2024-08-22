@@ -104,9 +104,9 @@ const GroupModal = ({ open, onClose, onSelect }) => {
                                     <ListItem 
                                         button 
                                         key={person.id} 
-                                        onClick={() => setSelectedPerson(person.name)}
+                                        onClick={() => setSelectedPerson(person)}
                                     >
-                                        {person.name} &lt;{person.position}&gt;
+                                        {person.name} &lt;{person.position}&gt;<br/>{person.email}
                                     </ListItem>
                                 ))}
                             </List>
