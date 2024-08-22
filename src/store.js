@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import axios from 'axios';
-import {useNavigate} from "react-router-dom";
 
 const useStore = create((set) => ({
     id: '',
