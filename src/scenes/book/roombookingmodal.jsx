@@ -45,7 +45,6 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
 
         const bookingData = {
             roomId: room.id,
-            memberId,
             enter: enterDateTime,
             leave: leaveDateTime,
             purpose,
@@ -78,7 +77,6 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
     const validateForm = () => {
         const errors = {};
 
-        if (!memberId) errors.memberId = '회원 ID를 입력해 주세요.';
         if (!enterDay) errors.enterDay = '입실일을 입력해 주세요.';
         if (!enterTime) errors.enterTime = '입실 시간을 선택해 주세요.';
         if (!leaveDay) errors.leaveDay = '퇴실일을 입력해 주세요.';
@@ -146,35 +144,6 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                 }}>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <FormControl fullWidth error={!!errors.memberId}>
-                                <TextField
-                                    name="memberId"
-                                    label="회원 ID"
-                                    variant="outlined"
-                                    value={memberId}
-                                    onChange={handleInputChange(setMemberId)}
-                                    required
-                                    sx={{
-                                        marginTop: '15px',
-                                        '& .MuiOutlinedInput-root': {
-                                            '&:hover fieldset': {
-                                                borderColor: '#ffb121',
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#ffb121',
-                                            },
-                                        },
-                                        '&:hover': {
-                                            '& .MuiInputLabel-root': {
-                                                color: '#ffb121',
-                                            },
-                                        },
-                                    }}
-                                />
-                                <FormHelperText>{errors.memberId}</FormHelperText>
-                            </FormControl>
-                        </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth error={!!errors.enterDay}>
                                 <TextField
@@ -187,6 +156,7 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
+
                                     required
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
