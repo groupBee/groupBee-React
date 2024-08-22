@@ -13,34 +13,40 @@ const GroupModal = ({ open, onClose, onSelect }) => {
         axios.get("/api/employee/list")
             .then(res => {
                 setMemberList(res.data.data);
+                console.log(res.data.data);
             });
     }
 
     // 부서별로 멤버를 정리하는 함수
     const organizeDepartments = (memberList) => {
-        const departmentNames = [...new Set(memberList.map(member => member.department))];
+        const departmentMap = {};
 
-        const sortedList = departmentNames.map(dep => ({
-            name: dep,
-            people: [],
-            open: false
-        }));
-
+        // 각 멤버를 부서별로 정리
         memberList.forEach(member => {
-            const department = sortedList.find(dep => dep.name === member.department);
-            if (department) {
-                department.people.push({
-                    id: member.id,
-                    name: member.name,
-                    position: member.position, // 직급 추가
-                    email: member.email,
-                    extensionCall: member.extensionCall,
-                    phoneNumber: member.phoneNumber
-                });
+            const departmentName = member.departmentName;
+
+            // 부서가 아직 존재하지 않으면 생성
+            if (!departmentMap[departmentName]) {
+                departmentMap[departmentName] = {
+                    name: departmentName,
+                    people: [],
+                    open: false
+                };
             }
+
+            // 해당 부서에 멤버 추가
+            departmentMap[departmentName].people.push({
+                id: member.id,
+                name: member.name,
+                position: member.position,
+                email: member.email,
+                extensionCall: member.extensionCall,
+                phoneNumber: member.phoneNumber
+            });
         });
 
-        return sortedList;
+        // 부서 리스트로 변환
+        return Object.values(departmentMap);
     };
 
     useEffect(() => {
