@@ -4,14 +4,55 @@ import { Modal, Button, Box, Typography, Collapse, List, ListItem } from '@mui/m
 import axios from 'axios';
 
 const GroupModal = ({ open, onClose, onSelect }) => {
-    const [departments, setDepartments] = useState([
-        { name: '인사부', people: [], open: false },
-        { name: '자재부', people: [], open: false },
-        { name: 'IT부', people: [], open: false }
-    ]);
+    const [memberList, setMemberList] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [selectedPerson, setSelectedPerson] = useState('');
 
+    // 정보 가져오기
+    const getinfo = () => {
+        axios.get("/api/employee/list")
+            .then(res => {
+                setMemberList(res.data.data);
+            });
+    }
 
+    // 부서별로 멤버를 정리하는 함수
+    const organizeDepartments = (memberList) => {
+        const departmentNames = [...new Set(memberList.map(member => member.department))];
+
+        const sortedList = departmentNames.map(dep => ({
+            name: dep,
+            people: [],
+            open: false
+        }));
+
+        memberList.forEach(member => {
+            const department = sortedList.find(dep => dep.name === member.department);
+            if (department) {
+                department.people.push({
+                    id: member.id,
+                    name: member.name,
+                    position: member.position, // 직급 추가
+                    email: member.email,
+                    extensionCall: member.extensionCall,
+                    phoneNumber: member.phoneNumber
+                });
+            }
+        });
+
+        return sortedList;
+    };
+
+    useEffect(() => {
+        getinfo();
+    }, []);
+
+    useEffect(() => {
+        if (memberList.length > 0) {
+            const organizedDepartments = organizeDepartments(memberList);
+            setDepartments(organizedDepartments);
+        }
+    }, [memberList]);
 
     const handleDepartmentClick = (departmentName) => {
         setDepartments(prevDepartments =>
@@ -54,8 +95,12 @@ const GroupModal = ({ open, onClose, onSelect }) => {
                         <Collapse in={department.open}>
                             <List>
                                 {department.people.map(person => (
-                                    <ListItem button key={person.id} onClick={() => setSelectedPerson(person.name)}>
-                                        {person.name}
+                                    <ListItem 
+                                        button 
+                                        key={person.id} 
+                                        onClick={() => setSelectedPerson(person.name)}
+                                    >
+                                        {person.name} &lt;{person.position}&gt;
                                     </ListItem>
                                 ))}
                             </List>
