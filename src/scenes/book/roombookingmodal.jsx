@@ -156,6 +156,7 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
+
                                     required
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
