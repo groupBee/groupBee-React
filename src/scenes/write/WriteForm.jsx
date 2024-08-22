@@ -34,7 +34,7 @@ const WriteForm = () => {
 
     useEffect(() => {
         getinfo();
-    })
+    }, []) // Missing dependency array to prevent infinite loop
 
     const getinfo=()=>{
         axios.get("/api/elecapp/getinfo")
@@ -80,10 +80,6 @@ const WriteForm = () => {
         if (!thirdApprover) newErrors.thirdApprover = "최종승인자를 입력하세요.";
         if (!level) newErrors.level = "보안등급을 입력하세요.";
 
-        // if (appDocType === 0 && intentValidator && !intentValidator()) {
-        //     newErrors.intent = "품의서의 필수 항목을 모두 입력하세요.";
-        // }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -93,7 +89,7 @@ const WriteForm = () => {
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
             return;
-    }
+        }
         const originalFileName = originalFile ? originalFile.name : '';
 
         // additionalFields의 키에서 '__'를 '.'으로 변환
@@ -135,6 +131,7 @@ const WriteForm = () => {
         } else if (currentApproverType === 'third') {
             setThirdApprover(value);
         }
+        setModalOpen(false); // Close modal after selection
     };
 
     return (
@@ -160,7 +157,7 @@ const WriteForm = () => {
             }}>
                 <table
                     style={{border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
-                    <caption align='top' style={{paddingBottom: '20ox'}}>
+                    <caption align='top' style={{paddingBottom: '20px'}}>
                         <button onClick={() => changeAppDoc(0)}
                                 style={{backgroundColor: appDocType === 0 ? '#ffb121' : ''}}>
                             품의서
@@ -191,8 +188,8 @@ const WriteForm = () => {
                     <tr>
                         <td>
                             <input type="text" value={firstApprover} 
+                                   readOnly // Added readOnly to prevent warnings for this field
                                    style={{width: '100%'}}/>
-       
                         </td>
                         <td>
                             <input type="text" value={secondApprover}
@@ -211,14 +208,17 @@ const WriteForm = () => {
                     <tr>
                         <td style={{width: '90px', fontSize: '23px'}}>성명</td>
                         <td><input type="text" value={writer} 
+                                   readOnly // Added readOnly to prevent warnings for this field
                                    style={{fontSize: '23px', width: '175px'}}/>
                             </td>
                         <td style={{width: '70px', fontSize: '23px'}}>부서</td>
                         <td><input type="text" value={department} 
+                                   readOnly // Added readOnly to prevent warnings for this field
                                    style={{fontSize: '23px', width: '175px'}}/>
                             </td>
                         <td style={{width: '90px', fontSize: '23px'}}>직급</td>
                         <td><input type="text" value={position} 
+                                   readOnly // Added readOnly to prevent warnings for this field
                                    style={{fontSize: '23px', width: '175px'}}/>
                             </td>
                         <td style={{width: '70px', fontSize: '23px'}}>보안등급</td>
@@ -256,7 +256,7 @@ const WriteForm = () => {
                     <tr>
                         <td colSpan={8}>
                             <Button variant="outlined" color="warning"
-                                    onClick={() => {setApproveStatus('1'),createApp()}}>임시저장</Button>
+                                    onClick={() => {setApproveStatus('1'); createApp();}}>임시저장</Button>
                             <Button variant="outlined" color="warning" onClick={createApp}>작성완료</Button>
                         </td>
                     </tr>
