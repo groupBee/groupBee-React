@@ -6,7 +6,7 @@ import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
 import './WriteForm.css';
 import DatePicker from "react-datepicker";
-import GroupModal from "../../components/groupModal.jsx";
+import GroupModal from "./groupModal.jsx";
 
 const WriteForm = () => {
     const [writer, setWriter] = useState('');
