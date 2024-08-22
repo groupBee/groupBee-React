@@ -1,5 +1,8 @@
+
+
 /* login.css */
 #login-wrapper {
+    color: white;
     background: linear-gradient(to bottom right, #FFA800 0%, #FFD600 100%);
     position: absolute;
     left: 0;
@@ -165,3 +168,17 @@
         transform: translateY(-700px) rotate(600deg);
     }
 }
+
+#logo-image {
+    max-width: 450px; /* Set the maximum width of the image */
+    max-height: 450px; /* Set the maximum height of the image */
+    height: auto; /* Maintain aspect ratio */
+    width: auto; /* Maintain aspect ratio */
+    margin-right: 15px; /* Add space between the image and the title */
+}
+
+h1 {
+    font-size: 24px; /* Adjust the font size as needed */
+}
+
+
