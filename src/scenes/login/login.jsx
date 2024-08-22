@@ -29,7 +29,7 @@ const Login = () => {
     return (
             <div className="wrapper">
                 <div className="container">
-                    <h1>Welcome</h1>
+                    <h1>Group Bee</h1>
                     <form onSubmit={handleSubmit}>
                         {!isLogined ? (
                             <>
