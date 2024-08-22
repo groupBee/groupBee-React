@@ -23,7 +23,7 @@ import { ToggledContext } from "../../../App";
 import useStore from "../../../store";
 
 const Navbar = () => {
-    const { logout } = useStore();
+    const { logout, id, isAdmin } = useStore();
     const theme = useTheme();
     const colorMode = useContext(ColorModeContext);
     const { toggled, setToggled } = useContext(ToggledContext);
@@ -105,7 +105,8 @@ const Navbar = () => {
                                     zIndex: 1,
                                     bgcolor: colors.primary[400],
                                 }}
-                            >
+                            >   <Box>id: {id}</Box>
+                                <Box>{isAdmin ? "관리자" : "관리자(x)"}</Box>
                                 <Button
                                     variant="contained"
                                     color="primary"
