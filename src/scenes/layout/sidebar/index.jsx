@@ -189,6 +189,12 @@ const SideBar = () => {
                         colors={colors}
                         icon={<ListAltOutlined/>}
                     />
+                    <Item
+                        title="이메일"
+                        path="/email"
+                        colors={colors}
+                        icon={<TextsmsOutlined/>}
+                    />
 
                     <SubMenu
                         label={
@@ -211,21 +217,7 @@ const SideBar = () => {
                             icon={<BarChartOutlined/>}
                         />
                     </SubMenu>
-                    <SubMenu
-                        label={
-                            <Typography variant="h6" color={colors.gray[300]}>
-                                {!collapsed ? "이메일" : " "}
-                            </Typography>
-                        }
-                        icon={<TextsmsOutlined/>}
-                    >
-                        <Item
-                            title="이메일"
-                            path="/email"
-                            colors={colors}
-                            icon={<TextsmsOutlined/>}
-                        />
-                    </SubMenu>
+
                 </Menu>
             </Box>
         </Sidebar>
