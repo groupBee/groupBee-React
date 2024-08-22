@@ -81,7 +81,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
 
     return (
         <>
-            <tr style={{ fontSize: '23px' }}>
+            <tr style={{fontSize: '23px'}}>
                 <td>요청일자</td>
                 <td colSpan={3}>
                     <DatePicker
@@ -91,8 +91,8 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                         className="custom-datepicker"/>
                 </td>
                 <td>지출유형</td>
-                <td>
-                    <select defaultValue={expendType} onChange={handleExpendTypeChange} name='expend_type'>
+                <td colSpan={3}>
+                    <select defaultValue={expendType} onChange={handleExpendTypeChange} name='expend_type' style={{width:'300px',textAlign:'center'}}>
                         <option value={0}>자재비</option>
                         <option value={1}>배송비</option>
                         <option value={2}>교육비</option>
@@ -100,18 +100,24 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                     </select>
                 </td>
             </tr>
-            <tr style={{ fontSize: '23px' }}>
+            <tr style={{fontSize: '23px'}}>
                 <td>제목</td>
                 <td colSpan={7}>
-                    <input type='text' value={title} name='title' onChange={handleTitleChange} style={{width:'100%'}}/>
+                    <input type='text' value={title} name='title' onChange={handleTitleChange} style={{width: '100%'}}/>
                 </td>
             </tr>
-            <tr style={{ fontSize: '23px',appearance:'none'}}>
+            <tr style={{fontSize: '23px', appearance: 'none'}}>
                 <td>최종금액</td>
 
                 <td colSpan={7}>
                     <input type='text' value={finalPrice} name='finalPrice'
-                           style={{width: '60%', pointerEvents: 'none', outline: 'none',textAlign:'right',paddingRight:'20px'}} readOnly/>
+                           style={{
+                               width: '60%',
+                               pointerEvents: 'none',
+                               outline: 'none',
+                               textAlign: 'right',
+                               paddingRight: '20px'
+                           }} readOnly/>
 
                     <select defaultValue={monetaryUnit} onChange={handleMonetaryUnitChange} name='monetaryUnit'>
                         <option value={0}>원</option>
@@ -126,20 +132,22 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                 <td colSpan={3} style={{height: '50px'}}>지출내용</td>
                 <td colSpan={3}>금액</td>
                 <td colSpan={2}>비고
-                    <button onClick={addDetail}>+</button>
-                    <button onClick={removeLastDetail}>-</button>
+                    <button style={{border:'1px solid #ffb121', backgroundColor:'#fafaf0', color:'#ffb121', borderRadius:'4px', width:'30px', marginRight:'10px'}}
+                        onClick={addDetail}>+</button>
+                    <button style={{border:'1px solid #ffb121', backgroundColor:'#fafaf0', color:'#ffb121', borderRadius:'4px', width:'30px', marginRight:'10px'}}
+                        onClick={removeLastDetail}>-</button>
                 </td>
             </tr>
             {details.map((detail, index) => (
 
-                <tr key={index} style={{fontSize: '23px',appearance:'none'}}>
+                <tr key={index} style={{fontSize: '23px', appearance: 'none'}}>
 
-                    <td colSpan={3} style={{ height: '65px' }}>
+                    <td colSpan={3} style={{height: '65px'}}>
                         <input
                             type='text'
                             value={detail.content}
                             name={`content-${index}`}
-                            style={{width:'100%'}}
+                            style={{width: '100%'}}
                             onChange={(e) => handleDetailChange(index, 'content', e.target.value)}
                         />
                     </td>
@@ -148,7 +156,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                             type='text'
                             value={detail.price}
                             name={`price-${index}`}
-                            style={{width:'100%',appearance:'none',textAlign:'right',paddingRight:'20px'}}
+                            style={{width: '100%', appearance: 'none', textAlign: 'right', paddingRight: '20px'}}
                             onChange={(e) => handleDetailChange(index, 'price', e.target.value)}
                         />
                     </td>
@@ -157,12 +165,16 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                             type='text'
                             value={detail.note}
                             name={`note-${index}`}
-                            style={{width:'100%'}}
+                            style={{width: '100%'}}
                             onChange={(e) => handleDetailChange(index, 'note', e.target.value)}
                         />
                     </td>
                 </tr>
+
             ))}
+            <tr>
+                <td colSpan={8} style={{height: '50px', fontSize: '23px'}}>위 금액을 청구하오니 결재바랍니다.</td>
+            </tr>
         </>
     )
 }
