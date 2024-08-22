@@ -12,16 +12,34 @@ const Board = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('/api/notice-boards')
+        axios.get('/api/board')
             .then(res => {
-                const sortedData = res.data.sort((a, b) => b.id - a.id);
-                setBoardList(sortedData);
-                setTotalPages(Math.ceil(sortedData.length / itemsPerPage));
+                // 중요 게시글과 일반 게시글 분리
+                const importantPosts = res.data.filter(post => post.mustMustRead);
+                const regularPosts = res.data.filter(post => !post.mustMustRead);
+
+                // 일반 게시글을 최신순으로 정렬 (번호가 높은 순서대로)
+                const sortedRegularPosts = regularPosts.sort((a, b) => b.id - a.id);
+
+                // 페이징 적용
+                const displayedRegularPosts = sortedRegularPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+                // 중요 게시글은 상단에, 일반 게시글은 그 아래에 표시
+                const finalPosts = [
+                    ...importantPosts,
+                    ...displayedRegularPosts
+                ].map((post, index) => ({
+                    ...post,
+                    displayNumber: index + 1 + (currentPage - 1) * itemsPerPage,
+                }));
+
+                setBoardList(finalPosts);
+                setTotalPages(Math.ceil(sortedRegularPosts.length / itemsPerPage));
             })
             .catch(error => {
                 console.error('Error fetching board list:', error);
             });
-    }, []);
+    }, [currentPage]);
 
     const handleWriteClick = () => {
         navigate('/board/write');
@@ -30,8 +48,6 @@ const Board = () => {
     const handlePageChange = (event, page) => {
         setCurrentPage(page);
     };
-
-    const currentItems = boardList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
     return (
         <Box m="20px">
@@ -55,12 +71,15 @@ const Board = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {currentItems.map((row, idx) => (
-                        <tr key={idx}>
+                    {boardList.map((row, idx) => (
+                        <tr key={idx} style={row.mustMustRead
+                            ? { backgroundColor: '#b3b3b3', fontWeight: 'bold' ,color:'grey'} // 상단 고정 게시글 스타일
+                            : { backgroundColor: 'transparent' } // 일반 게시글 스타일
+                        } >
                             <td>{row.id}</td>
-                            <td>{row.title}</td>
+                            <td>{row.mustRead && <span style={{color:'red'}}>[공지] </span>}{row.title}</td>
                             <td>{row.writer}</td>
-                            <td>{new Date(row.create).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}</td>
+                            <td>{new Date(row.create).toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'})}</td>
                             <td>{row.readcount}</td>
                         </tr>
                     ))}
