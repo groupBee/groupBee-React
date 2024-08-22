@@ -6,6 +6,8 @@ function EmailList() {
     const [password, setPassword] = useState('');
     const [emails, setEmails] = useState([]);
     const [error, setError] = useState('');
+    const [selectedEmail, setSelectedEmail] = useState(null);
+    const [showModal, setShowModal] = useState(false);
 
     const checkEmail = async () => {
         try {
@@ -30,55 +32,69 @@ function EmailList() {
         }
     };
 
-    const showMail=(content)=>{
-        
-    }
+    const showMail = (content) => {
+        setSelectedEmail(content);
+    };
+
+    const openModal = () => {
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+    };
+
     return (
         <div>
-            <h1>Check Email</h1>
+            <h2 style={{ marginTop: '20px' }}>받은 메일함</h2>
             <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Email"
-            />
+            />&nbsp; &nbsp;&nbsp;
             <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
             />
-            <button onClick={checkEmail}>Check Email</button>
+            <button onClick={checkEmail} style={{ marginLeft: '30px' }}>Check Email</button>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <ul>
-                
-
-                    <table style={{ border: '1px solid grey' }}> 
-                    
-                        <tr>
-                            <td>번호</td>
-                            <td>제목</td>
-                            <td>발신자</td>
-                            <td>받은 날짜</td>
-                        </tr>
-                        {emails.map((email, index) => (
+                <table style={{ border: '1px solid grey', width: '900px', marginTop: '30px', marginLeft: '-30px' }}>
+                    <tr style={{ border: '1px solid grey' }}>
+                        <td style={{ border: '1px solid grey', width: '30px' }}>번호</td>
+                        <td style={{ border: '1px solid grey' }}>&nbsp;&nbsp;제목</td>
+                        <td style={{ border: '1px solid grey' }}>발신자</td>
+                        <td style={{ border: '1px solid grey' }}>받은 날짜</td>
+                    </tr>
+                    {emails.map((email, index) => (
                         <>
-                        <tr style={{ border: '1px solid grey' }}>
-                            <td style={{ border: '1px solid grey' }}>{index+1}</td>
-                            <td style={{ border: '1px solid grey' }}><b onClick={showMail(email.content)}>{email.subject}</b></td>
-                            <td style={{ border: '1px solid grey' }}>{email.from}</td>
-                            <td style={{ border: '1px solid grey' }}>{email.receivedDate}</td>
-                        </tr>
-                        </>))}
-                    </table>
-                    {/* // <li key={index}>
-                    //     <strong>Subject:</strong> {email.subject}<br />
-                    //     <strong>From:</strong> {email.from}<br />
-                    //     <strong>Received:</strong> {email.receivedDate}<br />
-                    //     <strong>Content:</strong> <div dangerouslySetInnerHTML={{ __html: email.content }} />
-                    // </li> */}
-            
+                            <tr style={{ border: '1px solid grey' }}>
+                                <td style={{ border: '1px solid grey', textAlign: 'center' }}>{index + 1}</td>
+                                <td style={{ border: '1px solid grey' }}>
+                                    <p onClick={() => {
+                                        showMail(email.content);
+                                        openModal();
+                                    }}>&nbsp;&nbsp;{email.subject}</p>
+                                </td>
+                                <td style={{ border: '1px solid grey' }}>{email.from}</td>
+                                <td style={{ border: '1px solid grey' }}>{email.receivedDate}</td>
+                            </tr>
+                        </>
+                    ))}
+                </table>
             </ul>
+            {showModal && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close" onClick={closeModal}>&times;</span>
+                        <h3>Email Content</h3>
+                        <div dangerouslySetInnerHTML={{ __html: selectedEmail }} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
