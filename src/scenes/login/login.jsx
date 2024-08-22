@@ -21,9 +21,9 @@ const Login = () => {
     return (
         <div id="login-wrapper">
             <div id="login-container">
-                <h1>Group Bee</h1>
+                <img src="src/assets/images/logo.png" alt="Group Bee Logo" id="logo-image"/>
                 <form id="login-form" onSubmit={handleSubmit}>
-                    <div>
+                <div>
                         <label>ID : </label>
                         <input
                             type="text"
@@ -39,7 +39,7 @@ const Login = () => {
                             onChange={(e) => setPasswd(e.target.value)}
                         />
                     </div>
-                    <button type="submit">로그인</button>
+                    <button type="submit">Login</button>
                 </form>
             </div>
 
