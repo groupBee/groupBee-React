@@ -6,7 +6,7 @@ import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
 import './WriteForm.css';
 import DatePicker from "react-datepicker";
-import GroupModal from "./groupModal.jsx";
+import GroupModal from "../../components/groupModal.jsx";
 
 const WriteForm = () => {
     const [writer, setWriter] = useState('');
@@ -174,14 +174,14 @@ const WriteForm = () => {
                 border: 'none',
                 borderRadius: '5px 5px 0 0',
                 height: '60px',
-                width: '100%',
+                width: '1400px',
                 alignItems: 'center',
             }}></div>
             <div style={{
                 border: 'none',
                 padding: '100px 100px 100px 100px',
                 backgroundColor: '#fafaf0',
-                width: '100%',
+                width: '1400px',
             }}>
                 <table
                     style={{border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
@@ -202,7 +202,8 @@ const WriteForm = () => {
                     <tr>
                         <td>
                             <input type="text" value={firstApprover}
-                                   style={{width: '100%'}}/>
+                                   style={{width: '100%'}}
+                                   onChange={(e) => setFirstApprover(e.target.value)} readOnly/>
 
                         </td>
                         <td>
@@ -221,16 +222,18 @@ const WriteForm = () => {
                     </tr>
                     <tr>
                         <td style={{minWidth: '90px', fontSize: '23px'}}>성명</td>
-                        <td><input type="text" value={writer}
-                                   style={{fontSize: '23px', width: '175px'}}/>
+                        <td><input type="text"
+                                   defaultValue={writer}
+                                   style={{fontSize: '23px', width: '175px'}}
+                                    readOnly/>
                         </td>
                         <td style={{minWidth: '70px', fontSize: '23px'}}>부서</td>
-                        <td><input type="text" value={department}
-                                   style={{fontSize: '23px', width: '175px'}}/>
+                        <td><input type="text" defaultValue={department}
+                                   style={{fontSize: '23px', width: '175px'}} readOnly/>
                         </td>
                         <td style={{minWidth: '90px', fontSize: '23px'}}>직급</td>
-                        <td><input type="text" value={position}
-                                   style={{fontSize: '23px', width: '175px'}}/>
+                        <td><input type="text" defaultValue={position}
+                                   style={{fontSize: '23px', width: '175px'}} readOnly/>
                         </td>
                         <td style={{minWidth: '70px', fontSize: '23px'}}>보안등급</td>
                         <td><input type="number" value={level} onChange={(e) => setLevel(e.target.value)}
@@ -281,7 +284,7 @@ const WriteForm = () => {
                 border: 'none',
                 borderRadius: '0 0 5px 5px',
                 height: '60px',
-                width: '100%',
+                width: '1400px',
             }}></div>
             <GroupModal
                 open={modalOpen}

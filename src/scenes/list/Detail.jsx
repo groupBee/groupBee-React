@@ -47,7 +47,7 @@ const Detail = () => {
     };
 
     const approveimg = ()=>{
-        return `https://minio.bmops.kro.kr/groupbee/elec_app/965924ea-3eec-4f97-9a66-dd3b4f4cf418`;
+        return `https://minio.bmops.kro.kr/groupbee/elec_app/d97c5383-9fff-483c-9cda-37bbf92e5bea`;
     }
 
     const approveimg2 = ()=>{
@@ -154,13 +154,13 @@ const Detail = () => {
                 border: 'none',
                 borderRadius: '5px 5px 0 0',
                 height: '60px',
-                width: '100%',
+                width: '1400px',
             }}></div>
             <div style={{
                 border: 'none',
                 padding: '100px 100px 100px 100px',
                 backgroundColor: '#fafaf0',
-                width: '100%',
+                width: '1400px',
             }}>
             <table style={{ border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center'}}>
                 <tbody className='tableborder'>
@@ -216,30 +216,30 @@ const Detail = () => {
                 </tr>
                 <tr>
                     <td className="stampFirst">
-                        <input type="text" style={{outline: 'none'}} value={list.firstApprover || ''} readOnly/>
+                        <input type="text" style={{outline: 'none'}} defaultValue={list.firstApprover} readOnly/>
                     </td>
                     <td className="stampSecond">
-                        <input type="text" style={{outline: 'none'}} value={list.secondApprover || ''} readOnly/>
+                        <input type="text" style={{outline: 'none'}} defaultValue={list.secondApprover} readOnly/>
                     </td>
                     <td className="stampThird">
-                        <input type="text" style={{outline: 'none'}} value={list.thirdApprover || ''} readOnly/>
+                        <input type="text" style={{outline: 'none'}} defaultValue={list.thirdApprover} readOnly/>
                     </td>
                 </tr>
                 <tr>
                     <td style={{minWidth: '90px', fontSize: '23px'}}>성명</td>
-                    <td><input type="text" value={list.writer}
+                    <td><input type="text" defaultValue={list.writer}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                     </td>
                     <td style={{minWidth: '70px', fontSize: '23px'}}>부서</td>
-                    <td><input type="text" value={list.department}
+                    <td><input type="text" defaultValue={list.department}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                     </td>
                     <td style={{minWidth: '90px', fontSize: '23px'}}>직급</td>
-                    <td><input type="text" value={list.position}
+                    <td><input type="text" defaultValue={list.position}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                     </td>
                     <td style={{minWidth: '70px', fontSize: '23px'}}>보안등급</td>
-                    <td><input type="number" value={list.level}
+                    <td><input type="number" defaultValue={list.level}
                                style={{fontSize: '23px', width: '175px',outline: 'none'}} readOnly/>
                        </td>
                 </tr>
@@ -331,7 +331,7 @@ const Detail = () => {
                                         readOnly/>
                                 </td>
                                 <td>지출유형</td>
-                                <td>
+                                <td colSpan={3}>
                                     <select defaultValue={list.additionalFields?.expendType || ''} disabled>
                                         <option value={0}>자재비</option>
                                         <option value={1}>배송비</option>
@@ -390,18 +390,25 @@ const Detail = () => {
                                     </td>
                                 </tr>
                             ))}
+                            <tr>
+                                <td colSpan={8} style={{height: '50px', fontSize: '23px'}}>위 금액을 청구하오니 결재바랍니다.</td>
+                            </tr>
                         </>
                     )
                 }
                 <tr>
                     <td style={{fontSize: '23px'}} colSpan={2}>첨부파일</td>
                     <td style={{fontSize: '20px'}} colSpan={6}>
+                        {list.attachedFile && list.originalFile ? (
                         <a
                             onClick={() => onClickImgLink(list.attachedFile, list.originalFile)}
                             style={{cursor: 'pointer', textDecoration: 'underline', color: 'blue'}} // 클릭 가능한 스타일 추가
                         >
                             {list.originalFile} {/* 파일 이름을 텍스트로 표시 */}
                         </a>
+                            ) : (
+                                <span style={{fontSize: '23px'}}>첨부파일이 없습니다</span>
+                            )}
                     </td>
                 </tr>
                 </tbody>
@@ -454,7 +461,7 @@ const Detail = () => {
                 border: 'none',
                 borderRadius: '0 0 5px 5px',
                 height: '60px',
-                width: '100%',
+                width: '1400px',
             }}></div>
         </div>
     );
