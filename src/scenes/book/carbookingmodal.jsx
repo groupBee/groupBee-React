@@ -78,7 +78,7 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
     const validateForm = () => {
         const errors = {};
 
-        if (!memberId) errors.memberId = '회원 ID를 입력해 주세요.';
+        // if (!memberId) errors.memberId = '회원 ID를 입력해 주세요.';
         if (!rentDay) errors.rentDay = '대여일을 입력해 주세요.';
         if (!rentTime) errors.rentTime = '대여 시간을 선택해 주세요.';
         if (!returnDay) errors.returnDay = '반납일을 입력해 주세요.';
@@ -145,35 +145,35 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                 }}>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <FormControl fullWidth error={!!errors.memberId}>
-                                <TextField
-                                    name="memberId"
-                                    label="회원 ID"
-                                    variant="outlined"
-                                    value={memberId}
-                                    onChange={handleInputChange(setMemberId)}
-                                    required
-                                    sx={{
-                                        marginTop: '15px',
-                                        '& .MuiOutlinedInput-root': {
-                                            '&:hover fieldset': {
-                                                borderColor: '#ffb121',
-                                            },
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: '#ffb121',
-                                            },
-                                        },
-                                        '&:hover': {
-                                            '& .MuiInputLabel-root': {
-                                                color: '#ffb121',
-                                            },
-                                        },
-                                    }}
-                                />
-                                <FormHelperText>{errors.memberId}</FormHelperText>
-                            </FormControl>
-                        </Grid>
+                        {/*<Grid item xs={12}>*/}
+                        {/*    <FormControl fullWidth error={!!errors.memberId}>*/}
+                        {/*        <TextField*/}
+                        {/*            name="memberId"*/}
+                        {/*            label="회원 ID"*/}
+                        {/*            variant="outlined"*/}
+                        {/*            value={memberId}*/}
+                        {/*            onChange={handleInputChange(setMemberId)}*/}
+                        {/*            required*/}
+                        {/*            sx={{*/}
+                        {/*                marginTop: '15px',*/}
+                        {/*                '& .MuiOutlinedInput-root': {*/}
+                        {/*                    '&:hover fieldset': {*/}
+                        {/*                        borderColor: '#ffb121',*/}
+                        {/*                    },*/}
+                        {/*                    '&.Mui-focused fieldset': {*/}
+                        {/*                        borderColor: '#ffb121',*/}
+                        {/*                    },*/}
+                        {/*                },*/}
+                        {/*                '&:hover': {*/}
+                        {/*                    '& .MuiInputLabel-root': {*/}
+                        {/*                        color: '#ffb121',*/}
+                        {/*                    },*/}
+                        {/*                },*/}
+                        {/*            }}*/}
+                        {/*        />*/}
+                        {/*        <FormHelperText>{errors.memberId}</FormHelperText>*/}
+                        {/*    </FormControl>*/}
+                        {/*</Grid>*/}
                         <Grid item xs={6}>
                             <FormControl fullWidth error={!!errors.rentDay}>
                                 <TextField
