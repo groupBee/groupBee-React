@@ -6,7 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import googleCalendarPlugin from '@fullcalendar/google-calendar';
 import {tokens} from "../../theme";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Header} from "../../components";
 import {formatDate} from "@fullcalendar/core";
 import useModal from "./useModal";
@@ -19,6 +19,7 @@ const Calendar = () => {
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
 
+    /* 백엔드 데이터 리스트 출력 */
     const fetchData = async () => {
         try {
             const calendarResponse = await fetch("/api/calendar/list");
@@ -40,10 +41,16 @@ const Calendar = () => {
         }
     }
 
+    /* 대한민국 공휴일 받아오기 위한 이벤트 */
+    const [googleEvents, setGoogleEvents] = useState([]); // Google Calendar 이벤트 상태
+    const CALENDAR_ID = 'ko.south_korea#holiday@group.v.calendar.google.com';
+    const API_KEY = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY;
+
     useEffect(() => {
-        fetchData();
+        fetchData(); // 백엔드 이벤트 가져오기
     }, []);
 
+    /* fullcalendar 관련된 설정 */
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const isMdDevices = useMediaQuery("(max-width:920px)");
@@ -51,8 +58,10 @@ const Calendar = () => {
     const isXsDevices = useMediaQuery("(max-width:380px)");
     const [currentEvents, setCurrentEvents] = useState([]);
 
+    /* Custom Modal 사용을 위함 */
     const {showModal, modal} = useModal();
 
+    /* 캘린더 데이터 추가를 위한 이벤트 */
     const handleDateClick = async (selected) => {
         const calendarApi = selected.view.calendar;
         calendarApi.unselect();
@@ -96,6 +105,7 @@ const Calendar = () => {
         }
     };
 
+    /* 캘린더 데이터 삭제를 위한 이벤트 */
     const handleEventClick = async (selected) => {
         // DB에서 가져온 이벤트 데이터를 사용하는 경우
         const eventFromDb = await fetch(`/api/calendar/${selected.event.id}`).then(response => response.json());
@@ -115,6 +125,7 @@ const Calendar = () => {
             fetchData();
         }
     };
+
     return (
         <Box m="20px">
             <Header title="Calendar" subtitle="Full Calendar Interactive Page"/>
@@ -179,6 +190,7 @@ const Calendar = () => {
                         selectable={true}
                         selectMirror={true}
                         dayMaxEvents={true}
+                        googleCalendarApiKey={API_KEY}
                         dayCellContent={(info) => {
                             return info.date.getDate();
                         }} // 요일 없애기
@@ -186,6 +198,7 @@ const Calendar = () => {
                         select={handleDateClick}
                         eventClick={handleEventClick}
                         events={events}
+                        //eventSources={}
                         eventsSet={(events) => setCurrentEvents(events)}
                         eventMouseEnter={(info) => {
                             setTooltipContent(info.event.extendedProps.content);
