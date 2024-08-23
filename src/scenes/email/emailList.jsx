@@ -1,4 +1,4 @@
-import { BorderAll } from '@mui/icons-material';
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 function EmailList() {
@@ -9,20 +9,23 @@ function EmailList() {
     const [selectedEmail, setSelectedEmail] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
-
-    //로그인한 사람 메일 리스트 출력
-    const getinfo=()=>{
+    // 로그인한 사람의 이메일 정보를 가져오는 함수
+    const getinfo = () => {
         axios.get("/api/employee/info")
-        .then(res=>{
-            setUsername(res.data.data.email)
-        })
-    }
+            .then(res => {
+                setUsername(res.data.data.email);
+                
+            })
+            .catch(err => {
+                setError('정보를 가져오는 데 실패했습니다: ' + err.message);
+            });
+    };
 
-    useEffect(()=>{
-        getinfo();
-        checkEmail();
-    },[])
+    // 이메일 목록을 가져오는 함수
     const checkEmail = async () => {
+
+        console.log(username,password)
+
         try {
             const response = await fetch('/api/email/check', {
                 method: 'POST',
@@ -34,6 +37,7 @@ function EmailList() {
 
             if (response.ok) {
                 const result = await response.json();
+                console.log(result)
                 setEmails(result);
                 setError('');
             } else {
@@ -41,26 +45,43 @@ function EmailList() {
                 setError(result.error || '이메일과 비밀번호를 확인해주세요');
             }
         } catch (err) {
+
             setError('에러: ' + err.message);
         }
+
+        console.log("d")
     };
 
+    // 특정 이메일 내용을 보여주는 함수
     const showMail = (content) => {
         setSelectedEmail(content);
     };
 
+    // 모달 열기
     const openModal = () => {
         setShowModal(true);
     };
 
+    // 모달 닫기
     const closeModal = () => {
         setShowModal(false);
     };
 
+    // 컴포넌트가 처음 렌더링될 때 유저 정보 가져오기
+    useEffect(() => {
+        getinfo();
+    }, []);
+
+    // 유저 이름이 설정된 후 이메일 체크
+    useEffect(() => {
+        if (username) {
+            checkEmail();
+        }
+    }, [username]);
+
     return (
         <div>
             <h2 style={{ marginTop: '20px' }}>받은 메일함</h2>
-            <button onClick={checkEmail} style={{ marginLeft: '30px' }}>Check Email</button>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <ul>
                 <table style={{ border: '1px solid grey', width: '900px', marginTop: '30px', marginLeft: '-30px' }}>
@@ -71,19 +92,17 @@ function EmailList() {
                         <td style={{ border: '1px solid grey' }}>받은 날짜</td>
                     </tr>
                     {emails.map((email, index) => (
-                        <>
-                            <tr style={{ border: '1px solid grey' }}>
-                                <td style={{ border: '1px solid grey', textAlign: 'center' }}>{index + 1}</td>
-                                <td style={{ border: '1px solid grey' }}>
-                                    <p onClick={() => {
-                                        showMail(email.content);
-                                        openModal();
-                                    }}>&nbsp;&nbsp;{email.subject}</p>
-                                </td>
-                                <td style={{ border: '1px solid grey' }}>{email.from}</td>
-                                <td style={{ border: '1px solid grey' }}>{email.receivedDate}</td>
-                            </tr>
-                        </>
+                        <tr key={index} style={{ border: '1px solid grey' }}>
+                            <td style={{ border: '1px solid grey', textAlign: 'center' }}>{index + 1}</td>
+                            <td style={{ border: '1px solid grey' }}>
+                                <p onClick={() => {
+                                    showMail(email.content);
+                                    openModal();
+                                }}>&nbsp;&nbsp;{email.subject}</p>
+                            </td>
+                            <td style={{ border: '1px solid grey' }}>{email.To}</td>
+                            <td style={{ border: '1px solid grey' }}>{email.receivedDate}</td>
+                        </tr>
                     ))}
                 </table>
             </ul>
