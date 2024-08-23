@@ -4,7 +4,7 @@ import './login.css'; // CSS 파일 임포트
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-    const { id, passwd, isLogined, setId, setPasswd, login } = useStore();
+    const { id, passwd, isLogined, setId, setPasswd, login , error} = useStore();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,6 +39,7 @@ const Login = () => {
                             onChange={(e) => setPasswd(e.target.value)}
                         />
                     </div>
+                    {error && <p style={{ color: '#ff2c2c' }}>{error}</p>}
                     <button type="submit">Login</button>
                 </form>
             </div>

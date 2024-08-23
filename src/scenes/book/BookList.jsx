@@ -14,6 +14,7 @@ const BookList = () => {
     const [carBookedTimes, setCarBookedTimes] = useState({});
     const [roomBookedTimes, setRoomBookedTimes] = useState({});
     const [editingBooking, setEditingBooking] = React.useState(null);
+    const [potalId, setPotalId]=useState();
 
     const [showModal, setShowModal] = useState(false);
     const [currentBooking, setCurrentBooking] = useState(null);
@@ -54,6 +55,14 @@ const BookList = () => {
             const roomBookingResponse = await fetch('/api/rooms/booklist');
             const roomBookingData = await roomBookingResponse.json();
             setRoomBookings(roomBookingData);
+
+            // const apiPotalResponse = await fetch('/api/employee/info');
+            // const apiPotalData = await apiPotalResponse.json();
+            //
+            // const potalId=apiPotalData.data.potal_id;
+            //
+            // setPotalId(potalId);
+            // console.log(potalId);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
