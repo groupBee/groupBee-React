@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import DatePicker from "react-datepicker";
+import axios from "axios";
 
-const AppDocVacation = ({ handleAdditionalFieldChange }) => {
+const AppDocVacation = ({ handleAdditionalFieldChange, appId }) => {
     const [days, setDays] = useState(0);
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -10,11 +11,32 @@ const AppDocVacation = ({ handleAdditionalFieldChange }) => {
     const [detail,setDetail]=useState('');
 
     useEffect(() => {
-        // 컴포넌트가 마운트될 때 기본 날짜 저장 (오늘 날짜)
-        const formattedDate = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD" 형식으로 변환
-        handleAdditionalFieldChange("start", formattedDate);
-        handleAdditionalFieldChange("end", formattedDate);
-    }, []);  // 빈 배열로 주면 컴포넌트가 처음 렌더링될 때 한 번만 실행
+        if (appId){
+           getFormData()
+        }else {
+            // 컴포넌트가 마운트될 때 기본 날짜 저장 (오늘 날짜)
+            const formattedDate = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD" 형식으로 변환
+            handleAdditionalFieldChange("start", formattedDate);
+            handleAdditionalFieldChange("end", formattedDate);
+            setType('');
+            setDetail('');
+        }
+    }, [appId]);
+
+    const getFormData = () => {
+        if (appId) {
+            axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
+                .then(res => {
+                    setStartDate(new Date(res.data.additionalFields.start));
+                    setEndDate(new Date(res.data.additionalFields.end));
+                    setType(res.data.additionalFields.type);
+                    setDetail(res.data.additionalFields.detail);
+                })
+                .catch(err => {
+                    console.error("문서 불러오기 실패:", err);
+                });
+        }
+    };
 
     // 휴가 정보 변경 시 상위 컴포넌트에 알림
 

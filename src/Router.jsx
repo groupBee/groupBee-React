@@ -27,7 +27,8 @@ const AppRouter = () => {
 
                 <Route path="/" element={<ProtectedRoute element={<App />} />}>
                     <Route path="/" element={<Dashboard/>}/>
-                    <Route path="/write" element={<WriteForm/>}/>s
+                    <Route path="/write" element={<WriteForm/>}/>
+                    <Route path="/write/:appId" element={<WriteForm />} />
                     <Route path="/list" element={<List/>}/>
                     <Route path="/send" element={<Send/>}/>
                     <Route path="/calendar" element={<Calendar/>}/>

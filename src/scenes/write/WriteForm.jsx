@@ -7,7 +7,7 @@ import AppDocIntent from "./AppDocIntent";
 import './WriteForm.css';
 import DatePicker from "react-datepicker";
 import GroupModal from "../../components/groupModal.jsx";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
 const WriteForm = ({}) => {
     const [writer, setWriter] = useState('');
@@ -30,47 +30,58 @@ const WriteForm = ({}) => {
     const [list, setList] = useState({});
 
     const navigate = useNavigate();
+    const location = useLocation();
+    const appId = location.state?.itemId || ''; // 기본값 설정
+
 
     // 모달 상태
     const [modalOpen, setModalOpen] = useState(false);
     const [currentApproverType, setCurrentApproverType] = useState(null);
 
     useEffect(() => {
-        // 상태에 따라 데이터 불러오기
-        if (approveStatus === 1) {
-            console.log("approveStatus가 1이라서 getSignForm 호출");
-            getSignForm(); // 임시 저장된 데이터를 불러옴
-        } else {
-            console.log("approveStatus가 0이라서 getSignForm 호출");
-            getinfo(); // 빈값으로 초기화
-        }
-    }, [approveStatus]);
+        console.log("Location state:", location.state);
+        console.log("appId:", appId);
 
+        if (appId) {
+            getSignForm();
+        } else {
+            getinfo();
+        }
+    }, [appId]);
+
+    useEffect(() => {
+        if (approveStatus === 1) {
+            createApp();
+        }
+    }, [approveStatus]); // approveStatus가 변경될 때 createApp 호출
 
     // 결재 문서 데이터를 가져오는 함수
     const getSignForm = () => {
-        axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
-            .then(res => {
-                const data = res.data;
-                console.log("받은 데이터:", data); // 서버에서 받은 데이터 확인
-                setList(data);
-                setAppDocType(data.appDocType);
-                setFirstApprover(data.firstApprover);
-                setSecondApprover(data.secondApprover);
-                setThirdApprover(data.thirdApprover);
-                setWriter(data.writer);
-                setDepartment(data.department);
-                setPosition(data.position);
-                setAttachedFile(data.attachedFile);
-                setApproveDate(new Date(data.approveDate));
-                setLevel(data.level);
-                setAdditionalFields(data.additionalFields || {});
-            })
-            .catch(err => {
-                console.error("문서 불러오기 실패:", err);
-            });
-
+        console.log("Fetching data for appId:", appId); // 디버깅을 위한 로그
+        if (appId) {
+            axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
+                .then(res => {
+                    console.log("Data fetched successfully:", res.data); // 성공적인 데이터 가져오기
+                    setList(res.data);
+                    setAppDocType(res.data.appDocType);
+                    setFirstApprover(res.data.firstApprover);
+                    setSecondApprover(res.data.secondApprover);
+                    setThirdApprover(res.data.thirdApprover);
+                    setWriter(res.data.writer);
+                    setDepartment(res.data.department);
+                    setPosition(res.data.position);
+                    setAttachedFile(res.data.attachedFile);
+                    setApproveDate(new Date(res.data.writeday));
+                    setLevel(res.data.level);
+                    setAdditionalFields(res.data.additionalFields || {});
+                    setApproveStatus(res.data.approveStatus);
+                })
+                .catch(err => {
+                    console.error("문서 불러오기 실패:", err); // 에러 로그
+                });
+        }
     };
+
 
 // 기본 정보 가져오는 함수 (새 문서)
     const getinfo = () => {
@@ -138,18 +149,21 @@ const WriteForm = ({}) => {
 
 
     const createApp = () => {
+        console.log('변수 발생1')
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
             return;
         }
+        console.log('변수 발생2')
         const originalFileName = originalFile ? originalFile.name : '';
-
+        console.log('변수 발생3')
         // additionalFields의 키에서 '__'를 '.'으로 변환
         const transformedAdditionalFields = {};
         Object.keys(additionalFields).forEach(key => {
             const newKey = key.replace(/__/g, '.');
             transformedAdditionalFields[newKey] = additionalFields[key];
         });
+        console.log('변수 발생4')
 
         console.log(  "writer>>",writer," firstApprover>>", firstApprover, "secondApprover>>",secondApprover, "thirdApprover",thirdApprover,
             "originalFileName>>",originalFileName, "attachedFile>>",attachedFile, "approveStatus>>",approveStatus, "appDocType>>",appDocType, "level>>",level,
@@ -161,10 +175,10 @@ const WriteForm = ({}) => {
             approveType, position, department, additionalFields
         })
             .then(res => {
-                if(approveStatus==0) {
+                if(approveStatus===0){
                     alert("전자결제가 등록되었습니다");
-                    navigate('/send');
-                }else{
+                    navigate('/send');}
+                else{
                     alert("전자결재가 임시저장되었습니다.")
                     navigate('/send');
                 }
@@ -173,6 +187,7 @@ const WriteForm = ({}) => {
                 console.error('데이터 전송 중 오류 발생:', err);
             });
     }
+
 
     const openModal = (approverType) => {
         setCurrentApproverType(approverType);
@@ -247,7 +262,7 @@ const WriteForm = ({}) => {
                     </tr>
                     <tr>
                         <td className="fixed-size" style={{height: '150px'}}></td>
-                        <td className="fixed-size">{list.firstApprover}</td>
+                        <td className="fixed-size"></td>
                         <td className="fixed-size"></td>
                     </tr>
                     <tr>
@@ -291,9 +306,9 @@ const WriteForm = ({}) => {
                                    style={{fontSize: '23px', width: '175px'}}/>
                             {errors.level && <div className="error">{errors.level}</div>}</td>
                     </tr>
-                    {appDocType === 0 && <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
-                    {appDocType === 1 && <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
-                    {appDocType === 2 && <AppDocExpend handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
+                    {appDocType === 0 && <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
+                    {appDocType === 1 && <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
+                    {appDocType === 2 && <AppDocExpend handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
                     <tr style={{fontSize: '23px'}}>
                         <td colSpan={2}>첨부파일</td>
                         <td colSpan={6}><input type="file" ref={fileRef} onChange={uploadPhoto}/></td>
@@ -320,10 +335,20 @@ const WriteForm = ({}) => {
                     <tr>
                         <td colSpan={8}>
                             <Button variant="outlined" color="warning"
-                                    onClick={() => {
-                                        setApproveStatus('1'), createApp()
-                                    }}>임시저장</Button>
-                            <Button variant="outlined" color="warning" onClick={createApp}>작성완료</Button>
+                            onClick={() => {
+                            console.log(`임시 저장 변수 발생 (숫자 변경 전) ${approveStatus}`);
+                            setApproveStatus(prevStatus => {
+                                console.log(`임시 저장 변수 발생 (숫자 변경 후) ${1}`);
+                                createApp(); // 상태가 변경된 후에 createApp 호출
+                                return 1; // approveStatus를 1로 변경
+                            });
+                        }}>
+                            임시저장
+                        </Button>
+                            <Button variant="outlined" color="warning" onClick={()=> {
+                                console.log("작성완료 변수 발생")
+                                createApp()
+                            }}>작성완료</Button>
                         </td>
                     </tr>
                     </tbody>
