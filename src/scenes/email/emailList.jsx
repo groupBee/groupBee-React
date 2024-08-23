@@ -1,14 +1,27 @@
 import { BorderAll } from '@mui/icons-material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 function EmailList() {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState('p@ssw0rd');
     const [emails, setEmails] = useState([]);
     const [error, setError] = useState('');
     const [selectedEmail, setSelectedEmail] = useState(null);
     const [showModal, setShowModal] = useState(false);
 
+
+    //로그인한 사람 메일 리스트 출력
+    const getinfo=()=>{
+        axios.get("/api/employee/info")
+        .then(res=>{
+            setUsername(res.data.data.email)
+        })
+    }
+
+    useEffect(()=>{
+        getinfo();
+        checkEmail();
+    },[])
     const checkEmail = async () => {
         try {
             const response = await fetch('/api/email/check', {
@@ -47,18 +60,6 @@ function EmailList() {
     return (
         <div>
             <h2 style={{ marginTop: '20px' }}>받은 메일함</h2>
-            <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Email"
-            />&nbsp; &nbsp;&nbsp;
-            <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-            />
             <button onClick={checkEmail} style={{ marginLeft: '30px' }}>Check Email</button>
             {error && <div style={{ color: 'red' }}>{error}</div>}
             <ul>

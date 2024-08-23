@@ -41,6 +41,7 @@ const List = () => {
         try {
             const res = await axios.get(`/api/elecapp/status?memberId=${fetchedMemberId}&status=${status}`);
             setFilteredData(res.data);
+            console.log(res.data)
         } catch (err) {
             console.error("Error fetching list:", err);
         }
