@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from "../../components";
 import axios from 'axios';
-import { Box, Button, Pagination } from "@mui/material";
+import { Box, Button} from "@mui/material";
 
 const BoardWrite = () => {
     const navigate = useNavigate();
@@ -11,7 +11,7 @@ const BoardWrite = () => {
     const [mustRead, setMustRead] = useState(false); // 공지사항 체크박스 상태
     const [mustMustRead, setMustMustRead] = useState(false); // 중요 체크박스 상태
     const [file, setFile] = useState(null); // 파일 상태
-
+    const writer = 'dd';
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
     };
@@ -32,29 +32,43 @@ const BoardWrite = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('content', content);
-        formData.append('mustRead', mustRead);
-        formData.append('mustMustRead', mustMustRead);
-        if (file) {
-            formData.append('file', file);
-        }
+        e.preventDefault(); // 기본 제출 방지
 
 
+            // 게시글 데이터 전송
+            const postData = {
+                writer,
+                title,
+                content,
+                mustRead,
+                mustMustRead,
+            };
         try {
-            await axios.post('/api/board', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            navigate('/board');
+            // 게시글 데이터를 전송하여 게시글 생성
+            const postResponse = await axios.post('/api/board/insert', postData);
+
+            // // 게시글 생성 후 반환된 ID를 사용하여 파일을 업로드
+            // const postId = postResponse.data.id; // 서버에서 반환된 게시글 ID
+            //
+            // // 파일이 선택된 경우에만 파일 전송
+            // if (file) {
+            //     const formData = new FormData();
+            //     formData.append('uploadFile', file);
+            //
+            //     await axios.post(`/api/board/upload/${postId}`, formData, {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data',
+            //         },
+            //     });
+            // }
+
+            navigate('/board'); // 요청이 성공하면 게시판 페이지로 이동
         } catch (error) {
-            console.error('Error creating post:', error);
+            console.log(postData);
+            console.error('Error creating post:', error); // 에러 발생 시 콘솔에 출력
         }
     };
+
 
     return (
         <Box m="20px">

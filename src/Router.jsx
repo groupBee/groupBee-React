@@ -18,6 +18,7 @@ import EmailMain from "./scenes/email/index.jsx";
 import BoardWrite from "./scenes/board/BoardWrite.jsx";
 import Login from "./scenes/login/login.jsx";
 import ProtectedRoute from './ProtectedRoute';
+import DetailPage from "./scenes/board/DetailPage.jsx";
 
 const AppRouter = () => {
     return (
@@ -34,6 +35,7 @@ const AppRouter = () => {
                     <Route path="/calendar" element={<Calendar/>}/>
                     <Route path="/board" element={<Board/>}/>
                     <Route path="/board/write" element={<BoardWrite/>}/>
+                    <Route path="/board/:id" element={<DetailPage/>}/>
                     <Route path="/book/*" element={<Book/>}/>
                     <Route path="/hr" element={<Hr/>}/>
                     <Route path="/mypage" element={<Mypage/>}/>
