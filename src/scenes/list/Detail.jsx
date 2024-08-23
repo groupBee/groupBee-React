@@ -371,16 +371,12 @@ const Detail = () => {
                 <tr>
                     <td style={{fontSize: '23px'}} colSpan={2}>첨부파일</td>
                     <td style={{fontSize: '20px'}} colSpan={6}>
-                        {list.attachedFile && list.originalFile ? (
                         <a
                             onClick={() => onClickImgLink(list.attachedFile, list.originalFile)}
                             style={{cursor: 'pointer', textDecoration: 'underline', color: 'blue'}} // 클릭 가능한 스타일 추가
                         >
                             {list.originalFile} {/* 파일 이름을 텍스트로 표시 */}
                         </a>
-                            ) : (
-                                <span style={{fontSize: '23px'}}>첨부파일이 없습니다</span>
-                            )}
                     </td>
                 </tr>
                 </tbody>
