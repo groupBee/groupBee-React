@@ -105,21 +105,34 @@ const Navbar = () => {
                                     zIndex: 1,
                                     bgcolor: colors.primary[400],
                                 }}
-                            >   <Box>id: {id}</Box>
-                                <Box>{isAdmin ? "관리자" : "관리자(x)"}</Box>
-                                <Button
+                                >
+                                {isAdmin ?    <Button
                                     variant="contained"
-                                    color="primary"
+                                    sx={{
+                                        backgroundColor: '#fdaf1a', // 원하는 배경색
+                                        color: '#fff', // 텍스트 색상
+                                        '&:hover': {
+                                            backgroundColor: '#ffb41d', // 호버 시 배경색
+                                        }
+                                    }}
+
                                     fullWidth
                                     onClick={() => alert("Profile clicked")}
-                                >
-                                    Profile
-                                </Button>
+                                    >
+                                    관리자
+                                    </Button> : ""}
+
                                 <Button
                                     variant="contained"
-                                    color="info"
+                                    sx={{
+                                        backgroundColor: '#2c3d4f', // 원하는 배경색
+                                        color: '#fff', // 텍스트 색상
+                                        mt: 1,
+                                        '&:hover': {
+                                            backgroundColor: '#364d63', // 호버 시 배경색
+                                        }
+                                    }}
                                     fullWidth
-                                    sx={{ mt: 1 }}
                                     onClick={handleLogout}
                                 >
                                     Logout

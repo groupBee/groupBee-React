@@ -6,11 +6,11 @@ const useStore = create((set) => ({
     passwd: '',
     isLogined: false,
     isAdmin: false,
-
-
     setId: (id) => set({ id }),
     setPasswd: (passwd) => set({ passwd }),
+    error: '',
 
+    //로그인
     login: async () => {
         try {
             const { id, passwd } = useStore.getState();
@@ -32,30 +32,34 @@ const useStore = create((set) => ({
 
                 set({
                     isLogined: true,
-                    isAdmin
+                    isAdmin,
+                    error: ''
                 });
 
             }
         } catch (error) {
             if (error.response) {
+                let errorMessage = '로그인 실패: 요청 중 오류 발생';
                 switch (error.response.status) {
                     case 401:
-                        console.log('로그인 실패: 존재하지 않는 ID입니다.');
+                        errorMessage = '존재하지 않는 ID입니다.';
                         break;
                     case 402:
-                        console.log('로그인 실패: 비밀번호가 틀렸습니다.');
+                        errorMessage = '비밀번호가 틀렸습니다.';
                         break;
                     default:
                         console.log('로그인 실패: 요청 중 오류 발생');
                         break;
                 }
+                set({ error: errorMessage });
             } else {
-                console.log('로그인 실패: 요청 중 오류 발생');
+                set({ error: '로그인 실패: 요청 중 오류 발생' });
             }
             console.error('로그인 실패:', error);
         }
     },
 
+    //로그아웃
     logout: async () => {
         try {
             const response = await axios.post('/api/employee/auth/logout');
@@ -65,7 +69,8 @@ const useStore = create((set) => ({
                     isLogined: false,
                     id: '',
                     passwd: '',
-                    isAdmin: false
+                    isAdmin: false,
+                    error: ''
                 });
             } else {
                 console.log('로그아웃 실패: 알 수 없는 오류가 발생했습니다.');
@@ -92,8 +97,10 @@ const useStore = create((set) => ({
                     isLogined: false,
                     id: '',
                     passwd: '',
-                    isAdmin: false
+                    isAdmin: false,
+                    error: ''
                 });
+                alert('세션이 만료되었습니다');
             }
         } catch (error) {
             console.error('로그인 상태 확인 실패:', error);
@@ -102,7 +109,8 @@ const useStore = create((set) => ({
                 isLogined: false,
                 id: '',
                 passwd: '',
-                isAdmin: false
+                isAdmin: false,
+                error: ''
             });
         }
     }
