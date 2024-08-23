@@ -76,8 +76,8 @@ const Board = () => {
                             ? { backgroundColor: '#b3b3b3', fontWeight: 'bold' ,color:'grey'} // 상단 고정 게시글 스타일
                             : { backgroundColor: 'transparent' } // 일반 게시글 스타일
                         } >
-                            <td>{row.id}</td>
-                            <td>{row.mustRead && <span style={{color:'red'}}>[공지] </span>}{row.title}</td>
+                            <td>{row.id}{row.mustMustRead && <span style={{color:'red'}}><b>[중요]</b></span>}</td>
+                            <td>{row.mustRead && <span><b>[공지]</b></span>}{row.title}</td>
                             <td>{row.writer}</td>
                             <td>{new Date(row.create).toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'})}</td>
                             <td>{row.readcount}</td>
