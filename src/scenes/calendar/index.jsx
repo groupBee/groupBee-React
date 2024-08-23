@@ -102,6 +102,7 @@ const Calendar = () => {
             console.log(`Adding Event: ${event.title} | Start: ${localStart} | End: ${localEnd}`); // 콘솔에 로그 출력
 
             calendarApi.addEvent(event);
+            fetchData();
         }
     };
 
@@ -115,7 +116,8 @@ const Calendar = () => {
             title: eventFromDb.title,
             content: eventFromDb.content,
             startDay: eventFromDb.startDay,
-            endDay: eventFromDb.endDay
+            endDay: eventFromDb.endDay,
+            contentType: eventFromDb.contentType,
         };
         const result = await showModal(
             eventData.id, eventData.title, 'confirm', eventData
