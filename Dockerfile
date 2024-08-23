@@ -8,5 +8,5 @@ EXPOSE 5173
 
 RUN npm install --silent
 
-CMD ["vite"]
+CMD ["npm","run","dev"]
 
