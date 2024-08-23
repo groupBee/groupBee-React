@@ -4,6 +4,7 @@ import { tokens } from "../../theme";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import item from "../layout/sidebar/Item.jsx";
 
 const Invoices = () => {
     const theme = useTheme();
@@ -13,6 +14,7 @@ const Invoices = () => {
     const [currentPage, setCurrentPage] = useState(1); // 페이지 번호 상태 추가
     const PageCount = 10; // 한 페이지에 표시할 항목 수
     const navigate = useNavigate();
+
     const getinfo = () => {
         axios.get("/api/elecapp/getinfo")
             .then(res => {
@@ -20,21 +22,20 @@ const Invoices = () => {
             });
     }
 
-    useEffect(() => {
-        getinfo();
-        getList();
-    }, []);
-
     const getList = () => {
         axios.post("/api/elecapp/sentapp", { writer: writer })
             .then(res => {
                 setList(res.data);
-             
             })
             .catch(err => {
                 console.error('데이터를 가져오는 중 오류 발생:', err);
             });
     }
+
+    useEffect(() => {
+        getinfo();
+        getList();
+    }, []);
 
     useEffect(() => {
         getList();
@@ -64,87 +65,33 @@ const Invoices = () => {
     // 총 페이지 수 계산
     const totalPage = Math.ceil(list.length / PageCount);
 
-    const columns = [
-        { field: "id", headerName: "ID" },
-        {
-            field: "name",
-            headerName: "Name",
-            flex: 1,
-            cellClassName: "name-column--cell",
-        },
-        {
-            field: "phone",
-            headerName: "Phone Number",
-            flex: 1,
-        },
-        {
-            field: "email",
-            headerName: "Email",
-            flex: 1,
-        },
-        {
-            field: "cost",
-            headerName: "Cost",
-            flex: 1,
-            renderCell: (params) => (
-                <Typography color={colors.greenAccent[500]}>
-                    ${params.row.cost}
-                </Typography>
-            ),
-        },
-        {
-            field: "date",
-            headerName: "Date",
-            flex: 1,
-        },
-    ];
-    
     //디테일 페이지 이동
-    const moveDetail = (itemId) => {
-        navigate("/detail", {
-            state: {
-                memberId: writer,
-                itemId: itemId
-            }
-        });
+    const moveDetail = (item) => {
+        if (item.approveStatus === 1) {
+            // 상태가 '임시저장'이면 /writeForm으로 이동
+            navigate("/write", {
+                state: {
+                    memberId: writer,
+                    itemId: item.id
+                }
+            });
+        } else {
+            // 다른 상태일 경우 /detail로 이동
+            navigate("/detail", {
+                state: {
+                    memberId: writer,
+                    itemId: item.id
+                }
+            });
+        }
     };
     return (
         <Box m="20px">
             <Header title="발신목록" subtitle="List of Invoice Balances" />
             <Box
-                mt="40px" 
+                mt="40px"
                 height="75vh"
-                maxWidth="100%"
-                sx={{
-                    "& .MuiDataGrid-root": {
-                        border: "none",
-                    },
-                    "& .MuiDataGrid-cell": {
-                        border: "none",
-                    },
-                    "& .name-column--cell": {
-                        color: colors.greenAccent[300],
-                    },
-                    "& .MuiDataGrid-columnHeaders": {
-                        backgroundColor: colors.yellowAccent[1000],
-                        borderBottom: "none",
-                    },
-                    "& .MuiDataGrid-virtualScroller": {
-                        backgroundColor: colors.primary[400],
-                    },
-                    "& .MuiDataGrid-footerContainer": {
-                        borderTop: "none",
-                        backgroundColor: colors.yellowAccent[1000],
-                    },
-                    "& .MuiCheckbox-root": {
-                        color: `${colors.greenAccent[200]} !important`,
-                    },
-                    "& .MuiDataGrid-iconSeparator": {
-                        color: colors.primary[100],
-                    },
-                }}
-            >
-                
+                maxWidth="100%">
                 <Button onClick={getList} >발신</Button>
                 <Button onClick={fillterStatus}>임시저장</Button>
 
@@ -177,14 +124,14 @@ const Invoices = () => {
                     <tbody>
                     {currentData &&
                         currentData.map((item, idx) => (
-                            <tr key={idx} style={{ lineHeight: '30px' }}>
+                            <tr key={idx} style={{ lineHeight: '30px' }} onClick={() => moveDetail(item)}>
                                 <td style={{ borderRight: 'none', borderLeft: 'none', paddingLeft: '1.5%' }}>{(currentPage - 1) * PageCount + idx + 1}</td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>
                                     {item.appDocType === 0 ? '품의서' :
                                         item.appDocType === 1 ? '휴가신청서' :
                                             item.appDocType === 2 ? '지출보고서' : ''}
                                 </td>
-                                <td style={{ borderRight: 'none', borderLeft: 'none' }} onClick={() => moveDetail(item.id)}>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>
                                     {
                                         item.additionalFields.title ? item.additionalFields.title : '휴가신청서'
                                     }

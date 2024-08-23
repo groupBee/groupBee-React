@@ -235,9 +235,8 @@ const Detail = () => {
                         <>
                             <tr>
                                 <td style={{fontSize: '23px'}}>제목</td>
-                                <td colSpan={7}>
-                                    <input type='text' value={list.additionalFields?.title || ''}
-                                           style={{width: '100%', fontSize: '23px'}} readOnly/>
+                                <td colSpan={7} style={{height:'50px',textAlign:'left',paddingLeft:'20px', fontSize:'23px'}}>
+                                    {list.additionalFields?.title || ''}
                                 </td>
                             </tr>
                             <tr>
@@ -328,9 +327,8 @@ const Detail = () => {
                             </tr>
                             <tr style={{fontSize: '23px'}}>
                                 <td>제목</td>
-                                <td colSpan={7}>
-                                    <input type='text' value={list.additionalFields?.title || ''} readOnly
-                                           style={{width: '100%'}}/>
+                                <td colSpan={7} style={{height:'50px',textAlign:'left',paddingLeft:'20px'}}>
+                                    {list.additionalFields?.title || ''}
                                 </td>
                             </tr>
                             <tr style={{fontSize: '23px', appearance: 'none'}}>
@@ -373,16 +371,12 @@ const Detail = () => {
                 <tr>
                     <td style={{fontSize: '23px'}} colSpan={2}>첨부파일</td>
                     <td style={{fontSize: '20px'}} colSpan={6}>
-                        {list.attachedFile && list.originalFile ? (
                         <a
                             onClick={() => onClickImgLink(list.attachedFile, list.originalFile)}
                             style={{cursor: 'pointer', textDecoration: 'underline', color: 'blue'}} // 클릭 가능한 스타일 추가
                         >
                             {list.originalFile} {/* 파일 이름을 텍스트로 표시 */}
                         </a>
-                            ) : (
-                                <span style={{fontSize: '23px'}}>첨부파일이 없습니다</span>
-                            )}
                     </td>
                 </tr>
                 </tbody>
