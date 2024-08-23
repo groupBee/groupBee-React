@@ -6,10 +6,10 @@ import AppDocExpend from "./AppDocExpend";
 import AppDocIntent from "./AppDocIntent";
 import './WriteForm.css';
 import DatePicker from "react-datepicker";
-import GroupModal from "./groupModal.jsx";
+import GroupModal from "../../components/groupModal.jsx";
 import {useNavigate} from "react-router-dom";
 
-const WriteForm = () => {
+const WriteForm = ({}) => {
     const [writer, setWriter] = useState('');
     const [secondApprover, setSecondApprover] = useState('');
     const [firstApprover, setFirstApprover] = useState('');
@@ -27,26 +27,73 @@ const WriteForm = () => {
     const [additionalFields, setAdditionalFields] = useState({});
     const [errors, setErrors] = useState({});
     const [intentValidator, setIntentValidator] = useState(null);
+    const [list, setList] = useState({});
 
-    const navi = useNavigate();
+    const navigate = useNavigate();
+
     // 모달 상태
     const [modalOpen, setModalOpen] = useState(false);
     const [currentApproverType, setCurrentApproverType] = useState(null);
 
     useEffect(() => {
-        getinfo();
-    })
+        // 상태에 따라 데이터 불러오기
+        if (approveStatus === 1) {
+            console.log("approveStatus가 1이라서 getSignForm 호출");
+            getSignForm(); // 임시 저장된 데이터를 불러옴
+        } else {
+            console.log("approveStatus가 0이라서 getSignForm 호출");
+            getinfo(); // 빈값으로 초기화
+        }
+    }, [approveStatus]);
 
-    const getinfo=()=>{
+
+    // 결재 문서 데이터를 가져오는 함수
+    const getSignForm = () => {
+        axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
+            .then(res => {
+                const data = res.data;
+                console.log("받은 데이터:", data); // 서버에서 받은 데이터 확인
+                setList(data);
+                setAppDocType(data.appDocType);
+                setFirstApprover(data.firstApprover);
+                setSecondApprover(data.secondApprover);
+                setThirdApprover(data.thirdApprover);
+                setWriter(data.writer);
+                setDepartment(data.department);
+                setPosition(data.position);
+                setAttachedFile(data.attachedFile);
+                setApproveDate(new Date(data.approveDate));
+                setLevel(data.level);
+                setAdditionalFields(data.additionalFields || {});
+            })
+            .catch(err => {
+                console.error("문서 불러오기 실패:", err);
+            });
+
+    };
+
+// 기본 정보 가져오는 함수 (새 문서)
+    const getinfo = () => {
         axios.get("/api/elecapp/getinfo")
-        .then(res=>{
-            setFirstApprover(res.data.name);
-            setWriter(res.data.name);
-            setDepartment(res.data.departmentName);
-            setPosition(res.data.position);
-        })
+            .then(res => {
+                // 기본 사용자 정보 세팅
+                setFirstApprover(res.data.name);
+                setWriter(res.data.name);
+                setDepartment(res.data.departmentName);
+                setPosition(res.data.position);
 
-    }
+                // 빈 값으로 초기화
+                setSecondApprover('');
+                setThirdApprover('');
+                setAttachedFile('');
+                setApproveDate(new Date()); // 현재 날짜로 초기화
+                setLevel(0);
+                setAdditionalFields({});
+            })
+            .catch(err => {
+                console.error("기본 정보 불러오기 실패:", err);
+            });
+    };
 
     const uploadPhoto = (e) => {
         const uploadFile = e.target.files[0];
@@ -56,13 +103,13 @@ const WriteForm = () => {
         axios.post('/api/elecapp/uploadfile', uploadForm, {
             headers: { "Content-Type": "multipart/form-data" }
         })
-        .then(res => {
-            console.log(res.data);
-            setAttachedFile(res.data);
-        })
-        .catch(err => {
-            console.error('파일 업로드 중 오류 발생:', err);
-        });
+            .then(res => {
+                console.log(res.data);
+                setAttachedFile(res.data);
+            })
+            .catch(err => {
+                console.error('파일 업로드 중 오류 발생:', err);
+            });
     }
 
     const changeAppDoc = (value) => {
@@ -91,11 +138,10 @@ const WriteForm = () => {
 
 
     const createApp = () => {
-
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
             return;
-    }
+        }
         const originalFileName = originalFile ? originalFile.name : '';
 
         // additionalFields의 키에서 '__'를 '.'으로 변환
@@ -106,7 +152,7 @@ const WriteForm = () => {
         });
 
         console.log(  "writer>>",writer," firstApprover>>", firstApprover, "secondApprover>>",secondApprover, "thirdApprover",thirdApprover,
-             "originalFileName>>",originalFileName, "attachedFile>>",attachedFile, "approveStatus>>",approveStatus, "appDocType>>",appDocType, "level>>",level,
+            "originalFileName>>",originalFileName, "attachedFile>>",attachedFile, "approveStatus>>",approveStatus, "appDocType>>",appDocType, "level>>",level,
             "approveType>>",approveType, "position>>",position, "department>>",department, additionalFields);
 
         axios.post('/api/elecapp/create', {
@@ -115,12 +161,12 @@ const WriteForm = () => {
             approveType, position, department, additionalFields
         })
             .then(res => {
-                if(approveStatus==0){
-                alert("전자결제가 등록되었습니다");
-                    navi('/send');
+                if(approveStatus==0) {
+                    alert("전자결제가 등록되었습니다");
+                    navigate('/send');
                 }else{
                     alert("전자결재가 임시저장되었습니다.")
-                    navi('/send');
+                    navigate('/send');
                 }
             })
             .catch(err => {
@@ -201,26 +247,26 @@ const WriteForm = () => {
                     </tr>
                     <tr>
                         <td className="fixed-size" style={{height: '150px'}}></td>
-                        <td className="fixed-size"></td>
+                        <td className="fixed-size">{list.firstApprover}</td>
                         <td className="fixed-size"></td>
                     </tr>
-                    <tr style={{fontSize:'23px'}}>
+                    <tr>
                         <td>
                             <input type="text" value={firstApprover}
-                                   style={{width: '100%', textAlign:'center'}}
+                                   style={{width: '100%'}}
                                    onChange={(e) => setFirstApprover(e.target.value)} readOnly/>
 
                         </td>
                         <td>
-                        <input type="text" value={secondApprover}
+                            <input type="text" value={secondApprover}
                                    onChange={(e) => setSecondApprover(e.target.value)}
-                                   style={{width: '100%', textAlign:'center'}}/>
+                                   style={{width: '100%'}}/>
                             <Button variant="outlined" onClick={() => openModal('second')}>찾기</Button>
                             {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
                         </td>
                         <td>
                             <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}
-                                   style={{width: '100%', textAlign:'center'}}/>
+                                   style={{width: '100%'}}/>
                             <Button variant="outlined" onClick={() => openModal('third')}>찾기</Button>
                             {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}
                         </td>
@@ -230,7 +276,7 @@ const WriteForm = () => {
                         <td><input type="text"
                                    defaultValue={writer}
                                    style={{fontSize: '23px', width: '175px'}}
-                                    readOnly/>
+                                   readOnly/>
                         </td>
                         <td style={{minWidth: '70px', fontSize: '23px'}}>부서</td>
                         <td><input type="text" defaultValue={department}
@@ -248,7 +294,6 @@ const WriteForm = () => {
                     {appDocType === 0 && <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
                     {appDocType === 1 && <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
                     {appDocType === 2 && <AppDocExpend handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
-                    {appDocType > 2 && <NewAppDocType handleAdditionalFieldChange={handleAdditionalFieldChange}/>}
                     <tr style={{fontSize: '23px'}}>
                         <td colSpan={2}>첨부파일</td>
                         <td colSpan={6}><input type="file" ref={fileRef} onChange={uploadPhoto}/></td>
@@ -267,8 +312,9 @@ const WriteForm = () => {
                     </tr>
                     <tr style={{fontSize: '23px'}}>
                         <td colSpan={4} style={{height: '50px'}}></td>
-                        <td>신청자 :</td>
-                        <td colSpan={2} style={{textAlign:'right'}}>{writer}</td>
+                        <td>서명</td>
+                        <td>신청자 : {writer}</td>
+                        <td></td>
                         <td>(인)</td>
                     </tr>
                     <tr>

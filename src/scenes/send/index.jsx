@@ -4,6 +4,7 @@ import { tokens } from "../../theme";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import item from "../layout/sidebar/Item.jsx";
 
 const Invoices = () => {
     const theme = useTheme();
@@ -29,7 +30,7 @@ const Invoices = () => {
         axios.post("/api/elecapp/sentapp", { writer: writer })
             .then(res => {
                 setList(res.data);
-             
+
             })
             .catch(err => {
                 console.error('데이터를 가져오는 중 오류 발생:', err);
@@ -98,21 +99,32 @@ const Invoices = () => {
             flex: 1,
         },
     ];
-    
+
     //디테일 페이지 이동
-    const moveDetail = (itemId) => {
-        navigate("/detail", {
-            state: {
-                memberId: writer,
-                itemId: itemId
-            }
-        });
+    const moveDetail = (item) => {
+        if (item.approveStatus === 1) {
+            // 상태가 '임시저장'이면 /writeForm으로 이동
+            navigate("/write", {
+                state: {
+                    memberId: writer,
+                    itemId: item.id
+                }
+            });
+        } else {
+            // 다른 상태일 경우 /detail로 이동
+            navigate("/detail", {
+                state: {
+                    memberId: writer,
+                    itemId: item.id
+                }
+            });
+        }
     };
     return (
         <Box m="20px">
             <Header title="발신목록" subtitle="List of Invoice Balances" />
             <Box
-                mt="40px" 
+                mt="40px"
                 height="75vh"
                 maxWidth="100%"
                 sx={{
@@ -144,7 +156,7 @@ const Invoices = () => {
                     },
                 }}
             >
-                
+
                 <Button onClick={getList} >발신</Button>
                 <Button onClick={fillterStatus}>임시저장</Button>
 
@@ -184,7 +196,7 @@ const Invoices = () => {
                                         item.appDocType === 1 ? '휴가신청서' :
                                             item.appDocType === 2 ? '지출보고서' : ''}
                                 </td>
-                                <td style={{ borderRight: 'none', borderLeft: 'none' }} onClick={() => moveDetail(item.id)}>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }} onClick={() => moveDetail(item)}>
                                     {
                                         item.additionalFields.title ? item.additionalFields.title : '휴가신청서'
                                     }
