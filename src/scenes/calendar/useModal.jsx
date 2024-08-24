@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import DeleteModal from "./deleteModal.jsx";
+import UpdateModal from "./updateModal.jsx";
 import AddModal from "./addModal.jsx";
+import DeleteModal from "./deleteModal.jsx";
+// import DeleteModal from "./deleteModal.jsx";
 
 const useModal = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -10,11 +12,10 @@ const useModal = () => {
 
     // 동기처리를 하여 값이 변경되었는지 확인하기 위해서 잠깐 추가
     useEffect(() => {
-        console.log('Modal Open State Changed:', isOpen);
+
     }, [isOpen]);
 
     const showModal = (id, title, type = 'confirm', initialValues = {}) => {
-        console.log('showModal Called !')
         setModalContent({id, title, type});
         setInputValues(initialValues);
         setIsOpen(true);
@@ -22,6 +23,15 @@ const useModal = () => {
             setResolvePromise(() => resolve);
         });
     };
+
+    const deleteModal = (id, title, type='delete', initialValues={}) => {
+        setModalContent({id, title, type});
+        setInputValues(initialValues);
+        setIsOpen(true);
+        return new Promise((resolve) => {
+            setResolvePromise(()=>resolve);
+        })
+    }
 
     const handleCancel = () => {
         setIsOpen(false);
@@ -106,24 +116,41 @@ const useModal = () => {
             });
     }
 
-    const modal = modalContent.type === 'confirm' ? (
-        <DeleteModal
-            isOpen={isOpen}
-            onCancel={handleCancel}
-            onDelete={handleDelete}
-            onUpdate={handleUpdate}
-            initialData={inputValues}  // 초기 데이터 전달
-        />) : (
-        <AddModal
-            isOpen={isOpen}
-            onCancel={handleCancel}
-            onSubmit={handleSubmit}
-            inputValues={inputValues}
-            setInputValues={setInputValues}
-        />
-    );
+    const modal = (() => {
+        if (modalContent.type === 'confirm') {
+            return (
+                <UpdateModal
+                    isOpen={isOpen}
+                    onCancel={handleCancel}
+                    onDelete={handleDelete}
+                    onUpdate={handleUpdate}
+                    initialData={inputValues}
+                />
+            );
+        } else if (modalContent.type === 'delete') {
+            return (
+                <DeleteModal
+                    isOpen={isOpen}
+                    onCancel={handleCancel}
+                    onDelete={handleDelete}
+                    initialData={inputValues}
+                />
+            );
+        } else {
+            return (
+                <AddModal
+                    isOpen={isOpen}
+                    onCancel={handleCancel}
+                    onSubmit={handleSubmit}
+                    inputValues={inputValues}
+                    setInputValues={setInputValues}
+                />
+            );
+        }
+    })();
 
-    return {showModal, modal};
+
+    return {showModal, deleteModal, modal};
 };
 
 export default useModal;

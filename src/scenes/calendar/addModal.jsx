@@ -40,7 +40,7 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                         margin="normal"
                         label="제목"
                         name="title"
-                        value={inputValues.title}
+                        value={inputValues.title || ''}
                         onChange={handleChange}
                         sx={{
                             '& .MuiOutlinedInput-root': {
@@ -65,7 +65,7 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     label="시작 시간"
                     name="startDay"
                     type="datetime-local"
-                    value={inputValues.startDay}
+                    value={inputValues.startDay || ''}
                     onChange={handleChange}
                     InputLabelProps={{
                         shrink: true,
@@ -93,7 +93,7 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     label="끝나는 시간"
                     name="endDay"
                     type="datetime-local"
-                    value={inputValues.endDay}
+                    value={inputValues.endDay || ''}
                     onChange={handleChange}
                     InputLabelProps={{
                         shrink: true,
@@ -121,7 +121,7 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                         margin="normal"
                         label="내용"
                         name="content"
-                        value={inputValues.content}
+                        value={inputValues.content || ''}
                         onChange={handleChange}
                         sx={{
                             '& .MuiOutlinedInput-root': {

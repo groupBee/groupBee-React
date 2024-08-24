@@ -8,7 +8,7 @@ import {
     TextField,
 } from "@mui/material";
 
-const DeleteModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
+const UpdateModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
     const [inputValues, setInputValues] = useState({
         title: initialData?.title || '',
         content: initialData?.content || '',
@@ -189,4 +189,4 @@ const DeleteModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
     );
 };
 
-export default DeleteModal;
+export default UpdateModal;
