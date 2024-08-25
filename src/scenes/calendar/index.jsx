@@ -12,12 +12,12 @@ import {formatDate} from "@fullcalendar/core";
 import useModal from "./useModal";
 import './calendar.css';
 
-
 const Calendar = () => {
     const [events, setEvents] = useState([]);
     const [tooltipContent, setTooltipContent] = useState('');
     const [tooltipOpen, setTooltipOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const [filteredEvents, setFilteredEvents] = useState([]);
 
     /* 백엔드 데이터 리스트 출력 */
     const fetchData = async () => {
@@ -33,16 +33,16 @@ const Calendar = () => {
                 backgroundColor: '#ffc107',     // 이벤트 배경색
                 borderColor: '#ffc107',         // 이벤트 테두리색
                 textColor: '#111111',
-            }))
+            }));
             setEvents(events);
             console.log(events);
         } catch (e) {
-            console.error('Error fetching data:', e)
+            console.error('Error fetching data:', e);
         }
-    }
+    };
 
     /* 대한민국 공휴일 받아오기 위한 이벤트 */
-    const [googleEvents, setGoogleEvents] = useState([]); // Google Calendar 이벤트 상태
+    const [googleEvents, setGoogleEvents] = useState([]);
     const CALENDAR_ID = 'ko.south_korea#holiday@group.v.calendar.google.com';
     const API_KEY = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY;
 
@@ -58,8 +58,16 @@ const Calendar = () => {
     const isXsDevices = useMediaQuery("(max-width:380px)");
     const [currentEvents, setCurrentEvents] = useState([]);
 
+    /* 특정 날짜에 해당하는 이벤트 필터링 */
+    const filterEventsForDate = (events, date) => {
+        return events.filter(event => {
+            const eventDate = new Date(event.start).toISOString().split('T')[0];
+            return eventDate === date.toISOString().split('T')[0];
+        });
+    };
+
     /* Custom Modal 사용을 위함 */
-    const {showModal, modal} = useModal();
+    const {showModal, deleteModal, modal} = useModal();
 
     /* 캘린더 데이터 추가를 위한 이벤트 */
     const handleDateClick = async (selected) => {
@@ -75,8 +83,6 @@ const Calendar = () => {
             endDate.setDate(endDate.getDate() - 1);
             endStr = endDate.toISOString().slice(0, 10) + 'T00:30';
         }
-        console.log(startStr);
-        console.log(endStr);
 
         const inputValues = await showModal("일정 추가", "일정을 입력하세요:", 'prompt', {
             startDay: startStr,
@@ -89,17 +95,12 @@ const Calendar = () => {
             const event = {
                 id: `${selected.startStr}-${title}`,
                 title,
-                start: new Date(startDay), // start 값 설정
-                end: new Date(endDay), // end 값 설정
+                start: new Date(startDay),
+                end: new Date(endDay),
                 content,
-                backgroundColor: '#ffc107',  // 이벤트 배경색
-                borderColor: '#ffc107'       // 이벤트 테두리색
+                backgroundColor: '#ffc107',
+                borderColor: '#ffc107'
             };
-
-            const localStart = new Date(startDay).toISOString();
-            const localEnd = new Date(endDay).toISOString();
-
-            console.log(`Adding Event: ${event.title} | Start: ${localStart} | End: ${localEnd}`); // 콘솔에 로그 출력
 
             calendarApi.addEvent(event);
             fetchData();
@@ -108,23 +109,29 @@ const Calendar = () => {
 
     /* 캘린더 데이터 삭제를 위한 이벤트 */
     const handleEventClick = async (selected) => {
-        // DB에서 가져온 이벤트 데이터를 사용하는 경우
-        const eventFromDb = await fetch(`/api/calendar/${selected.event.id}`).then(response => response.json());
+        try {
+            const eventFromDb = await fetch(`/api/calendar/${selected.event.id}`).then(response => response.json());
 
-        const eventData = {
-            id: eventFromDb.id,
-            title: eventFromDb.title,
-            content: eventFromDb.content,
-            startDay: eventFromDb.startDay,
-            endDay: eventFromDb.endDay,
-            contentType: eventFromDb.contentType,
-        };
-        const result = await showModal(
-            eventData.id, eventData.title, 'confirm', eventData
-        );
+            const eventData = {
+                id: eventFromDb.id,
+                title: eventFromDb.title,
+                content: eventFromDb.content,
+                startDay: eventFromDb.startDay,
+                endDay: eventFromDb.endDay,
+                bookType: eventFromDb.bookType,
+                corporateCarId: eventFromDb.corporateCarId,
+            };
 
-        if (result) {
-            fetchData();
+            let result;
+            if (eventData.bookType === 0) {
+                result = await showModal(eventData.id, eventData.title, 'confirm', eventData);
+            } else {
+                result = await deleteModal(eventData.id, eventData.title, 'delete', eventData);
+            }
+
+            if (result) fetchData();
+        } catch (error) {
+            console.error('Calendar index handleEventClick error:', error);
         }
     };
 
@@ -139,40 +146,51 @@ const Calendar = () => {
                     bgcolor={colors.primary[400]}
                     p="15px"
                     borderRadius="4px"
-
                 >
-                    <Typography variant="h5">Event</Typography>
+                    <Typography variant="h5">오늘의 일정</Typography>
                     <List>
-                        {currentEvents.map((event) => (
+                        {filteredEvents.map((event) => (
                             <ListItem
                                 key={event.id}
                                 sx={{
                                     bgcolor: `#ffb121`,
                                     my: "10px",
-                                    borderRadius: "2px",
+                                    borderRadius: "5px",
                                 }}
                             >
                                 <ListItemText
                                     primary={event.title}
+                                    primaryTypographyProps={{
+                                        sx: {
+                                            fontSize: "1.1em",
+                                            fontWeight: "bold"
+                                        }
+                                    }}
                                     secondary={
                                         <Typography>
-                                            {formatDate(event.start, {
-                                                year: "numeric",
-                                                month: "short",
-                                                day: "numeric",
-                                            })}
+                                            {`${new Date(event.start).toLocaleString('ko-KR', {
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                hour12: false
+                                            })}`}
+                                            {` ~ ${new Date(event.end).toLocaleString('ko-KR', {
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                hour12: false
+                                            })}`}
                                         </Typography>
                                     }
                                 />
                             </ListItem>
                         ))}
                     </List>
+
                 </Box>
 
                 {/* CALENDAR */}
-                <Box
-                    flex="1 1 100%"
-                >
+                <Box flex="1 1 100%">
                     <FullCalendar
                         height="75vh"
                         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
@@ -193,15 +211,17 @@ const Calendar = () => {
                         selectMirror={true}
                         dayMaxEvents={true}
                         googleCalendarApiKey={API_KEY}
-                        dayCellContent={(info) => {
-                            return info.date.getDate();
-                        }} // 요일 없애기
-                        showNonCurrentDates={false}  // 현재 월이 아닌 날짜 숨기기
+                        dayCellContent={(info) => info.date.getDate()}
+                        showNonCurrentDates={false}
                         select={handleDateClick}
                         eventClick={handleEventClick}
                         events={events}
-                        //eventSources={}
-                        eventsSet={(events) => setCurrentEvents(events)}
+                        eventsSet={(events) => {
+                            setCurrentEvents(events);
+                            const today = new Date();
+                            const filtered = filterEventsForDate(events, today);
+                            setFilteredEvents(filtered);
+                        }}
                         eventMouseEnter={(info) => {
                             setTooltipContent(info.event.extendedProps.content);
                             setAnchorEl(info.el);
@@ -215,16 +235,16 @@ const Calendar = () => {
                             hour: '2-digit',
                             minute: '2-digit',
                             meridiem: false,
-                        }} // 시간 포맷 설정
-                        locale='ko' //한국날짜
+                        }}
+                        locale='ko'
                     />
                     <Tooltip
                         open={tooltipOpen}
                         title={tooltipContent}
                         placement="bottom"
                         PopperProps={{
-                            anchorEl: anchorEl,  // 툴팁 위치 지정
-                            disablePortal: true,  // Tooltip 을 부모 요소의 컨텍스트에 추가
+                            anchorEl: anchorEl,
+                            disablePortal: true,
                             sx: {
                                 '.MuiTooltip-tooltip': {
                                     fontSize: '13px',

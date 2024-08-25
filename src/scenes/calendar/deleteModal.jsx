@@ -1,38 +1,33 @@
 import React, {useEffect, useState} from 'react';
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    TextField,
-} from "@mui/material";
+import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography} from "@mui/material";
 
-const DeleteModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
-    const [inputValues, setInputValues] = useState({
-        title: initialData?.title || '',
-        content: initialData?.content || '',
-        startDay: initialData?.startDay || '',
-        endDay: initialData?.endDay || '',
-    });
+const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
+    const [carName, setCarName] = useState('');
+    const [carImage, setCarImage] = useState('');
 
     useEffect(() => {
-        if (initialData) {
-            setInputValues({
-                title: initialData.title || '',
-                content: initialData.content || '',
-                startDay: initialData.startDay || '',
-                endDay: initialData.endDay || ''
-            });
+        if (initialData?.corporateCarId && isOpen) {
+            fetch(`/api/cars/${initialData.corporateCarId}`)
+                .then(response => response.json())
+                .then(data => {
+                    setCarName(data.carId || '')
+                    setCarImage(data.photo || '')
+                })
+                .catch(err => console.error("deleteModal Error:", err));
         }
-    }, [initialData]);
+    }, [initialData?.corporateCarId, isOpen]);
 
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setInputValues((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+
+        const date = new Date(dateString);
+
+        const year = String(date.getFullYear()).slice(2); // 연도 마지막 두 자리
+        const month = date.toLocaleDateString('ko-KR', { month: 'long' }).replace(' ', ''); // '8월'
+        const day = date.getDate(); // 날짜
+        const time = date.getHours(); // 시간 (정각 기준)
+
+        return `${year}년 ${month} ${day}일 ${time}시`;
     };
 
     return (
@@ -44,122 +39,40 @@ const DeleteModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
                              backgroundImage: 'linear-gradient(to right, #FFA800, #FFD600)',
                              color: 'white'
                          }}>
-                일정 수정
+                차량 예약 정보
             </DialogTitle>
-            <DialogContent>
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="normal"
-                    label="제목"
-                    name="title"
-                    value={inputValues.title}
-                    onChange={handleChange}
+            <DialogContent dividers
+                           sx={{
+                               minWidth: 256,
+                               padding: 2,
+                           }}
+            >
+                <Box
                     sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '&:hover fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                        },
-                        '&:hover': {
-                            '& .MuiInputLabel-root': {
-                                color: '#ffb121',
-                            },
-                        },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2,
+                        color: '#FFB121',
                     }}
-                />
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="normal"
-                    label="시작 시간"
-                    name="startDay"
-                    type="datetime-local"
-                    value={inputValues.startDay}
-                    onChange={handleChange}
-                    InputLabelProps={{shrink: true}}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '&:hover fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                        },
-                        '&:hover': {
-                            '& .MuiInputLabel-root': {
-                                color: '#ffb121',
-                            },
-                        },
-                    }}
-                />
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="normal"
-                    label="끝나는 시간"
-                    name="endDay"
-                    type="datetime-local"
-                    value={inputValues.endDay}
-                    onChange={handleChange}
-                    InputLabelProps={{shrink: true}}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '&:hover fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                        },
-                        '&:hover': {
-                            '& .MuiInputLabel-root': {
-                                color: '#ffb121',
-                            },
-                        },
-                    }}
-                />
-                <TextField
-                    fullWidth
-                    variant="outlined"
-                    margin="normal"
-                    label="내용"
-                    name="content"
-                    value={inputValues.content}
-                    onChange={handleChange}
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            '&:hover fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                            '&.Mui-focused fieldset': {
-                                borderColor: '#ffb121',
-                            },
-                        },
-                        '&:hover': {
-                            '& .MuiInputLabel-root': {
-                                color: '#ffb121',
-                            },
-                        },
-                    }}
-                />
+                >
+                    <Typography variant="h4">차량번호: {carName || ''}</Typography>
+                    <Typography variant="h4">예약시간: {formatDate(initialData?.startDay) || ''}</Typography>
+                    <Typography variant="h4">반납시간: {formatDate(initialData?.endDay) || ''}</Typography>
+                    <Typography variant="h4">사유: {initialData?.content || ''}</Typography>
+                    <Box style={{ width:'250px', height:'140px',}}>
+                        <img
+                            src={`https://minio.bmops.kro.kr/groupbee/book/${carImage}`}
+                            alt={carImage}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                borderRadius: '5px'
+                            }}
+                        />
+                    </Box>
+                </Box>
                 <DialogActions mt={2}>
-                    <Button onClick={()=> onUpdate(inputValues)} variant="outlined" color="secondary"
-                            sx={{
-                                fontSize: '1rem',
-                                color: '#ffb121',
-                                backgroundColor: 'white',
-                                border: '1px solid #ffb121',
-                                '&:hover': {
-                                    backgroundColor: 'white',
-                                    color: '#ffb121',
-                                    border: '1px solid #ffb121',
-                                },
-                            }}>수정</Button>
                     <Button onClick={onDelete} variant="outlined" color="secondary"
                             sx={{
                                 fontSize: '1rem',
