@@ -4,7 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) => {
-    const [memberId, setMemberId] = useState('');
+    const today = new Date().toISOString().split('T')[0];
     const [enterDay, setEnterDay] = useState('');
     const [enterTime, setEnterTime] = useState('');
     const [leaveDay, setLeaveDay] = useState('');
@@ -17,11 +17,15 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
         if (room) {
             const roomReservations = reservations.filter(res => res.roomId === room.id);
             const bookedSlots = {};
+
             roomReservations.forEach(reservation => {
                 const start = new Date(reservation.enter);
                 const end = new Date(reservation.leave);
 
-                while (start <= end) {
+                // 마지막 시간대를 제외하기 위해 end 시간을 1시간 전으로 설정합니다
+                const adjustedEnd = new Date(end.getTime() - 60 * 60 * 1000); // 1시간 전
+
+                while (start <= adjustedEnd) {
                     bookedSlots[`${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:00`] = true;
                     start.setHours(start.getHours() + 1);
                 }
@@ -30,6 +34,21 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
             setBookedTimes(bookedSlots);
         }
     }, [room, reservations]);
+
+    useEffect(() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const currentDate = `${year}-${month}-${day}`;
+
+        setEnterDay(currentDate);
+        setLeaveDay(currentDate);
+    }, []);
+
+    useEffect(() => {
+        console.log('Booked Slots:', bookedTimes);
+    }, [bookedTimes]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -144,7 +163,10 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                 }}>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid item xs={6}
+                              sx={{
+                                  marginTop: '10px',
+                              }}>
                             <FormControl fullWidth error={!!errors.enterDay}>
                                 <TextField
                                     name="enterDay"
@@ -156,7 +178,9 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
-
+                                    inputProps={{
+                                        min: today
+                                    }}
                                     required
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
@@ -178,7 +202,10 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                                 <FormHelperText>{errors.enterDay}</FormHelperText>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6}
+                              sx={{
+                                  marginTop: '10px',
+                              }}>
                             <FormControl variant="outlined" fullWidth required error={!!errors.enterTime}>
                                 <InputLabel>입실 시간</InputLabel>
                                 <Select
@@ -215,6 +242,9 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                                     onChange={handleInputChange(setLeaveDay)}
                                     InputLabelProps={{
                                         shrink: true,
+                                    }}
+                                    inputProps={{
+                                        min: today
                                     }}
                                     required
                                     sx={{

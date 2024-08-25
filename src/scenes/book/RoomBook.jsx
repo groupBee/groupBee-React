@@ -217,12 +217,13 @@ const RoomBook = () => {
                                                 display: 'flex',
                                                 alignItems: 'center'
                                             }}>
-                                                <h5 style={{margin: '0 10px 0 0'}}>날짜선택:</h5>
+                                                <h6 style={{margin: '0 10px 0 0'}}>예약현황:</h6>
                                                 <DatePicker
                                                     selected={selectedDate}
                                                     onChange={(date) => setSelectedDate(date)}
                                                     showPopperIndicator={true} // 팝업 인디케이터 표시
                                                     dateFormat="yyyy/MM/dd" // 날짜 형식
+                                                    className="custom-datepicker"
                                                 />
                                             </div>
                                             <div style={{
