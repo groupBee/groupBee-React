@@ -56,13 +56,13 @@ const BookList = () => {
             const roomBookingData = await roomBookingResponse.json();
             setRoomBookings(roomBookingData);
 
-            // const apiPotalResponse = await fetch('/api/employee/info');
-            // const apiPotalData = await apiPotalResponse.json();
-            //
-            // const potalId=apiPotalData.data.potal_id;
-            //
-            // setPotalId(potalId);
-            // console.log(potalId);
+            const apiPotalResponse = await fetch('/api/employee/info');
+            const apiPotalData = await apiPotalResponse.json();
+
+            const potalId=apiPotalData.data.potal_id;
+
+            setPotalId(potalId);
+            console.log(potalId);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -411,6 +411,10 @@ const BookList = () => {
             category: '회의실'
         }))
     ];
+    // 멤버 아이디 같은거만 뽑아내는 코드
+    const filteredBookings = combinedBookings.filter(booking=> booking.memberId === potalId);
+    console.log(filteredBookings);
+
 
     const formatDateTime = (dateTime) => {
         if (!dateTime) return '';
@@ -462,7 +466,7 @@ const BookList = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {combinedBookings.map((booking, index) => (
+                            {filteredBookings.map((booking, index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{booking.category}</td>

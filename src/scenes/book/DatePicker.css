@@ -1,7 +1,6 @@
 /* DatePicker.css */
 .react-datepicker {
     font-size: 0.9rem; /* 전체 폰트 크기 조정 */
-
 }
 
 
@@ -15,6 +14,20 @@
     background-color: white; /* 호버 시 날짜 배경 색상 */
     color: #ffb121; /* 호버 시 날짜 텍스트 색상 */
 }
+
+/* styles.css */
+.custom-datepicker {
+    border: 1px solid #ffb121; /* 원하는 색상으로 테두리 설정 */
+    border-radius: 8px; /* 테두리 모서리 둥글게 */
+    padding: 7px; /* 패딩 추가 */
+    font-size: 15px; /* 폰트 크기 */
+    width: 150px; /* 너비 조정 */
+    height: 35px;
+}
+
+
+
+
 
 
 

@@ -43,7 +43,7 @@ const BookRoute = () => {
                                 fontSize: '20px',
                                 color: '#000'
                             }}>
-                                예약현황
+                                예약 기록
                             </Link>
                         </li>
                     </ul>

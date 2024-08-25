@@ -4,7 +4,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) => {
-    const [memberId, setMemberId] = useState('');
+    const today = new Date().toISOString().split('T')[0];
     const [rentDay, setRentDay] = useState('');
     const [rentTime, setRentTime] = useState('');
     const [returnDay, setReturnDay] = useState('');
@@ -17,11 +17,15 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
         if (car) {
             const carReservations = reservations.filter(res => res.corporateCarId === car.id);
             const bookedSlots = {};
+
             carReservations.forEach(reservation => {
                 const start = new Date(reservation.rentDay);
                 const end = new Date(reservation.returnDay);
 
-                while (start <= end) {
+                // 마지막 시간대를 제외하기 위해 end 시간을 1시간 전으로 설정합니다
+                const adjustedEnd = new Date(end.getTime() - 60 * 60 * 1000); // 1시간 전
+
+                while (start <= adjustedEnd) {
                     bookedSlots[`${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}T${String(start.getHours()).padStart(2, '0')}:00`] = true;
                     start.setHours(start.getHours() + 1);
                 }
@@ -30,6 +34,21 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
             setBookedTimes(bookedSlots);
         }
     }, [car, reservations]);
+
+    useEffect(() => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const currentDate = `${year}-${month}-${day}`;
+
+        setRentDay(currentDate);
+        setReturnDay(currentDate);
+    }, []);
+
+    useEffect(() => {
+        console.log('Booked Slots:', bookedTimes);
+    }, [bookedTimes]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -42,6 +61,7 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
 
         const rentDateTime = `${rentDay}T${rentTime}:00`;
         const returnDateTime = `${returnDay}T${returnTime}:00`;
+
 
         const bookingData = {
             corporateCarId: car.id,
@@ -113,6 +133,7 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
         setErrors({ ...errors, [event.target.name]: '' }); // 입력값 변경 시 에러 메시지 초기화
     };
 
+    //시간 select
     const generateTimeOptions = () => {
         const times = [];
         for (let i = 0; i < 24; i++) {
@@ -127,6 +148,7 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
     const isTimeBooked = (date, time) => {
         return bookedTimes[`${date}T${time}`] === true;
     };
+
 
     return (
         <Dialog open={show} onClose={handleClose}>
@@ -143,7 +165,10 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                 }}>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
-                        <Grid item xs={6}>
+                        <Grid item xs={6}
+                              sx={{
+                                  marginTop: '10px',
+                              }}>
                             <FormControl fullWidth error={!!errors.rentDay}>
                                 <TextField
                                     name="rentDay"
@@ -154,6 +179,9 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                                     onChange={handleInputChange(setRentDay)}
                                     InputLabelProps={{
                                         shrink: true,
+                                    }}
+                                    inputProps={{
+                                        min: today
                                     }}
                                     required
                                     sx={{
@@ -176,7 +204,10 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                                 <FormHelperText>{errors.rentDay}</FormHelperText>
                             </FormControl>
                         </Grid>
-                        <Grid item xs={6}>
+                        <Grid item xs={6}
+                              sx={{
+                                  marginTop: '10px',
+                              }}>
                             <FormControl variant="outlined" fullWidth required error={!!errors.rentTime}>
                                 <InputLabel>대여 시간</InputLabel>
                                 <Select
@@ -213,6 +244,9 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                                     onChange={handleInputChange(setReturnDay)}
                                     InputLabelProps={{
                                         shrink: true,
+                                    }}
+                                    inputProps={{
+                                        min: today
                                     }}
                                     required
                                     sx={{
