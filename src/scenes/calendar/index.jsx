@@ -114,7 +114,7 @@ const Calendar = () => {
             endStr = endDate.toISOString().slice(0, 10) + 'T00:30';
         }
 
-        const inputValues = await showModal("일정 추가", "일정을 입력하세요:", 'prompt', {
+        const inputValues = await showModal("", "", 'prompt', {
             startDay: startStr,
             endDay: endStr
         });
