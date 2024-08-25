@@ -9,6 +9,8 @@ const useStore = create((set) => ({
     setId: (id) => set({ id }),
     setPasswd: (passwd) => set({ passwd }),
     error: '',
+    timer: 0,
+    timerInterval: null,
 
     //로그인
     login: async () => {
@@ -33,8 +35,23 @@ const useStore = create((set) => ({
                 set({
                     isLogined: true,
                     isAdmin,
-                    error: ''
+                    error: '',
+                    timer: 1800, //로그인 성공시 timer 30분
+                    timerInterval: setInterval(()=> {
+                        set((state)=>{
+                            const newTime =state.timer - 1;
+                            if(newTime <= 0) {
+                                clearInterval(state.timerInterval);
+                                localStorage.removeItem('timer');
+                                useStore.getState().logout();
+                                return { timer: 0 };
+                            }
+                            localStorage.setItem('timer', newTime);
+                            return { timer: newTime };
+                        });
+                    }, 1000)
                 });
+                localStorage.setItem('timer', 1800);
 
             }
         } catch (error) {
@@ -70,8 +87,12 @@ const useStore = create((set) => ({
                     id: '',
                     passwd: '',
                     isAdmin: false,
-                    error: ''
+                    error: '',
+                    timer: 0, // 타이머 종료
                 });
+                clearInterval(useStore.getState().timerInterval);
+                localStorage.removeItem('timer'); // 로그아웃 시 로컬 저장소 타이머 제거
+                alert('로그아웃 되었습니다.');
             } else {
                 console.log('로그아웃 실패: 알 수 없는 오류가 발생했습니다.');
             }
@@ -86,10 +107,33 @@ const useStore = create((set) => ({
             const response = await axios.get('/api/employee/auth/islogin');
             if (response.status === 200) {
                 const { isAdmin } = response.data;
+
+                const newTimer = 1800;
+
+                const state = useStore.getState();
+                if (state.timerInterval) {
+                    clearInterval(state.timerInterval);
+                }
+
                 set({
                     isLogined: true,
-                    isAdmin
+                    isAdmin,
+                    timer: newTimer,
+                    timerInterval: setInterval(() => {
+                        set((state) => {
+                            const newTime = state.timer - 1;
+                            if (newTime <= 0) {
+                                clearInterval(state.timerInterval);
+                                localStorage.removeItem('timer');
+                                useStore.getState().logout();
+                                return { timer: 0 };
+                            }
+                            localStorage.setItem('timer', newTime);
+                            return { timer: newTime };
+                        });
+                    }, 1000)
                 });
+                localStorage.setItem('timer', newTimer);
                 console.log('새로고침해서 데이터를 받아왔습니다.');
             } else if (response.status === 400) {
                 // 응답이 400인 경우 상태를 초기화합니다.
@@ -98,9 +142,11 @@ const useStore = create((set) => ({
                     id: '',
                     passwd: '',
                     isAdmin: false,
-                    error: ''
+                    error: '',
+                    timer: 0
                 });
-                alert('세션이 만료되었습니다');
+                localStorage.removeItem('timer'); // 세션 만료 시 로컬 저장소에서 제거
+                alert('세션이 만료되었습니다.');
             }
         } catch (error) {
             console.error('로그인 상태 확인 실패:', error);
@@ -110,8 +156,10 @@ const useStore = create((set) => ({
                 id: '',
                 passwd: '',
                 isAdmin: false,
-                error: ''
+                error: '',
+                timer: 0
             });
+            localStorage.removeItem('timer'); // 요청 실패 시 로컬 저장소에서 제거
         }
     }
 }));

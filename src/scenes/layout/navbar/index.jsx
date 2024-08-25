@@ -8,9 +8,11 @@ import {
     Button,
     Paper,
     ClickAwayListener,
+    Typography,
 } from "@mui/material";
 import { tokens, ColorModeContext } from "../../../theme";
 import {
+    AccessTimeOutlined,
     DarkModeOutlined,
     LightModeOutlined,
     MenuOutlined,
@@ -23,7 +25,7 @@ import { ToggledContext } from "../../../App";
 import useStore from "../../../store";
 
 const Navbar = () => {
-    const { logout, id, isAdmin } = useStore();
+    const { logout, id, isAdmin, timer, initializeState } = useStore();
     const theme = useTheme();
     const colorMode = useContext(ColorModeContext);
     const { toggled, setToggled } = useContext(ToggledContext);
@@ -44,6 +46,17 @@ const Navbar = () => {
 
     const handleDropdownClose = () => {
         setIsDropdownOpen(false);
+    };
+
+    // 타이머 포맷팅 함수
+    const formatTime = (seconds) => {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    };
+
+    const handleRefresh = async () => {
+        await initializeState(); // 상태를 초기화합니다.
     };
 
     return (
@@ -74,7 +87,37 @@ const Navbar = () => {
                 </Box>
             </Box>
 
-            <Box>
+            <Box display="flex" alignItems="center" >
+                {/* 타이머 표시 */}
+                <Box display="flex" alignItems="center" justifyContent="space-between"
+                     onClick={handleRefresh}
+                sx={{
+                    width: '95px',
+                    backgroundColor:'#ff960c',
+                    mr: 1,
+                    borderRadius: '4px',
+                    cursor: 'pointer'
+                }}>
+                <Typography
+                    variant="h1"
+                    sx={{
+                        color: 'white', // 텍스트 색상
+                        fontWeight: 'bold',
+                        fontSize: '1.1rem', // 폰트 크기 조정
+                        marginTop: '3px',
+                        marginLeft: '12px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    {formatTime(timer)}
+                </Typography>
+                <IconButton>
+                    <AccessTimeOutlined
+                        sx={{
+                            color: 'white', // 텍스트 색상
+                        }}/>
+                </IconButton>
+            </Box>
                 <IconButton onClick={colorMode.toggleColorMode}>
                     {theme.palette.mode === "dark" ? (
                         <LightModeOutlined />

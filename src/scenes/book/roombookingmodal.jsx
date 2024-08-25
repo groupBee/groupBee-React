@@ -148,6 +148,36 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
         return bookedTimes[`${date}T${time}`] === true;
     };
 
+    // 새로운 isTimeBooked 함수
+    const isTimeBookedWithExceptions = (date, time) => {
+        const sortedTimes = Object.keys(bookedTimes).sort(); // 예약된 시간을 정렬
+        const exceptionTimes = [];
+
+        let lastBookedTime = null;
+
+        // 연속되지 않은 첫 번째 시간을 찾기
+        sortedTimes.forEach((dateTimeKey, index) => {
+            const currentDateTime = new Date(dateTimeKey);
+
+            if (lastBookedTime) {
+                // 두 시간 간격을 계산 (시간 차이)
+                const diffInHours = (currentDateTime - lastBookedTime) / (1000 * 60 * 60);
+                if (diffInHours > 1) {
+                    exceptionTimes.push(sortedTimes[index]); // 연속되지 않은 첫 번째 시간대
+                }
+            }
+            lastBookedTime = currentDateTime;
+        });
+
+        // 예외 시간대라면 false 반환
+        if (exceptionTimes.includes(`${date}T${time}`)) {
+            return false;
+        }
+
+        // 그 외는 기존 로직 유지
+        return isTimeBooked(date, time);
+    };
+
     return (
         <Dialog open={show} onClose={handleClose}>
             <DialogTitle
@@ -285,7 +315,7 @@ const Roombookingmodal = ({ show, handleClose, room, fetchData, reservations }) 
                                     }}
                                 >
                                     {timeOptions.map((time, index) => (
-                                        <MenuItem key={index} value={time} disabled={isTimeBooked(leaveDay, time)}>
+                                        <MenuItem key={index} value={time} disabled={isTimeBookedWithExceptions(leaveDay, time)}>
                                             {time}
                                         </MenuItem>
                                     ))}
