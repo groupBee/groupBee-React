@@ -19,14 +19,11 @@ const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
-
         const date = new Date(dateString);
-
         const year = String(date.getFullYear()).slice(2); // 연도 마지막 두 자리
         const month = date.toLocaleDateString('ko-KR', { month: 'long' }).replace(' ', ''); // '8월'
         const day = date.getDate(); // 날짜
         const time = date.getHours(); // 시간 (정각 기준)
-
         return `${year}년 ${month} ${day}일 ${time}시`;
     };
 

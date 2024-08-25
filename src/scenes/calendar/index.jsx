@@ -8,11 +8,11 @@ import googleCalendarPlugin from '@fullcalendar/google-calendar';
 import {tokens} from "../../theme";
 import {useEffect, useRef, useState} from "react";
 import {Header} from "../../components";
-import {formatDate} from "@fullcalendar/core";
 import useModal from "./useModal";
 import './calendar.css';
 
 const Calendar = () => {
+    const fullcalendarRef = useRef(null);
     const [events, setEvents] = useState([]);
     const [tooltipContent, setTooltipContent] = useState('');
     const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -23,7 +23,25 @@ const Calendar = () => {
     const fetchData = async () => {
         try {
             const calendarResponse = await fetch("/api/calendar/list");
+            // HTTP 상태 코드를 확인하여 200이 아닌 경우 오류 처리
+            if (!calendarResponse.ok) {
+                if (calendarResponse.status === 404) {
+                    console.error("404: 서버에서 데이터를 찾을 수 없습니다.");
+                } else if (calendarResponse.status === 500) {
+                    console.error("500: 서버 오류가 발생했습니다.");
+                } else if (calendarResponse.status === 502) {
+                    console.error("502: Gate way 오류가 발생했습니다.");
+                }
+                else {
+                    console.error(`${calendarResponse.status}: 알 수 없는 오류가 발생했습니다.`);
+                }
+                // FullCalendar 초기화
+                const calendarApi = fullcalendarRef.current.getApi();
+                calendarApi.removeAllEvents();
+                return;
+            }
             const calendarData = await calendarResponse.json();
+
             const events = calendarData.map((event, index) => ({
                 id: event.id,
                 title: event.title,
@@ -37,7 +55,10 @@ const Calendar = () => {
             setEvents(events);
             console.log(events);
         } catch (e) {
-            console.error('Error fetching data:', e);
+            console.log("받아올 데이터가 없습니다.")
+            // 오류 발생 시 FullCalendar 초기화
+            const calendarApi = fullcalendarRef.current.getApi();
+            calendarApi.removeAllEvents();  // 모든 이벤트 제거
         }
     };
 
@@ -61,11 +82,17 @@ const Calendar = () => {
     /* 특정 날짜에 해당하는 이벤트 필터링 */
     const filterEventsForDate = (events, date) => {
         return events.filter(event => {
-            const eventDate = new Date(event.start);
-            eventDate.setHours(0, 0, 0, 0);  // 시간 정보를 0으로 설정
+            const eventStartDate = new Date(event.start);
+            const eventEndDate = new Date(event.end);
             const targetDate = new Date(date);
-            targetDate.setHours(0, 0, 0, 0);  // 시간 정보를 0으로 설정
-            return eventDate.getTime() === targetDate.getTime();  // 날짜 비교
+
+            // 시간 정보를 0으로 설정하여 날짜만 비교
+            eventStartDate.setHours(0, 0, 0, 0);
+            eventEndDate.setHours(0, 0, 0, 0);
+            targetDate.setHours(0, 0, 0, 0);
+
+            // 오늘 날짜가 이벤트 기간에 포함되는지 확인
+            return targetDate >= eventStartDate && targetDate <= eventEndDate;
         });
     };
 
@@ -219,6 +246,7 @@ const Calendar = () => {
                         select={handleDateClick}
                         eventClick={handleEventClick}
                         events={events}
+                        ref={fullcalendarRef}
                         eventsSet={(events) => {
                             setCurrentEvents(events);
                             const today = new Date();
