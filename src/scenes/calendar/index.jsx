@@ -61,8 +61,11 @@ const Calendar = () => {
     /* 특정 날짜에 해당하는 이벤트 필터링 */
     const filterEventsForDate = (events, date) => {
         return events.filter(event => {
-            const eventDate = new Date(event.start).toISOString().split('T')[0];
-            return eventDate === date.toISOString().split('T')[0];
+            const eventDate = new Date(event.start);
+            eventDate.setHours(0, 0, 0, 0);  // 시간 정보를 0으로 설정
+            const targetDate = new Date(date);
+            targetDate.setHours(0, 0, 0, 0);  // 시간 정보를 0으로 설정
+            return eventDate.getTime() === targetDate.getTime();  // 날짜 비교
         });
     };
 
