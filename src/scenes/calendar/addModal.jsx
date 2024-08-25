@@ -42,6 +42,7 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                         name="title"
                         value={inputValues.title || ''}
                         onChange={handleChange}
+                        required
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '&:hover fieldset': {
@@ -141,7 +142,13 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     />)}
 
                 <DialogActions mt={2}>
-                    <Button onClick={onSubmit} variant="outlined" color="secondary"
+                    <Button onClick={() => {
+                        if (inputValues.title) {
+                            onSubmit();
+                        } else {
+                            console.log("calendar addModal 오류 (재웅이가 잡을 예정)");
+                        }
+                    }} variant="outlined" color="secondary"
                             sx={{
                                 fontSize: '1rem',
                                 color: '#ffb121',
