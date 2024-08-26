@@ -37,11 +37,9 @@ const WriteForm = ({}) => {
     // 모달 상태
     const [modalOpen, setModalOpen] = useState(false);
     const [currentApproverType, setCurrentApproverType] = useState(null);
+    const [isDocumentLoaded, setIsDocumentLoaded] = useState(false); // 문서 로드 여부 체크
 
     useEffect(() => {
-        console.log("Location state:", location.state);
-        console.log("appId:", appId);
-
         if (appId) {
             getSignForm();
         } else {
@@ -50,10 +48,8 @@ const WriteForm = ({}) => {
     }, [appId]);
 
     useEffect(() => {
-        if (approveStatus === 1) {
-            createApp();
-        }
-    }, [approveStatus]); // approveStatus가 변경될 때 createApp 호출
+        console.log("appDocType 숫자 :", appDocType);  // appDocType이 업데이트될 때 로그 확인
+    }, [appDocType]);
 
     // 결재 문서 데이터를 가져오는 함수
     const getSignForm = () => {
@@ -62,6 +58,10 @@ const WriteForm = ({}) => {
             axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
                 .then(res => {
                     console.log("Data fetched successfully:", res.data); // 성공적인 데이터 가져오기
+                    // 날짜 필드가 유효한지 확인
+                    if (isNaN(new Date(res.data.vacationStartDate)) || isNaN(new Date(res.data.vacationEndDate))) {
+                        console.error("Invalid date in response data");
+                    }
                     setList(res.data);
                     setAppDocType(res.data.appDocType);
                     setFirstApprover(res.data.firstApprover);
@@ -75,6 +75,7 @@ const WriteForm = ({}) => {
                     setLevel(res.data.level);
                     setAdditionalFields(res.data.additionalFields || {});
                     setApproveStatus(res.data.approveStatus);
+                    setIsDocumentLoaded(true); // 문서가 로드되었음을 명시
                 })
                 .catch(err => {
                     console.error("문서 불러오기 실패:", err); // 에러 로그
@@ -100,6 +101,7 @@ const WriteForm = ({}) => {
                 setApproveDate(new Date()); // 현재 날짜로 초기화
                 setLevel(0);
                 setAdditionalFields({});
+                setApproveStatus(null); // 새 문서는 approveStatus를 null로 설정
             })
             .catch(err => {
                 console.error("기본 정보 불러오기 실패:", err);
@@ -148,40 +150,32 @@ const WriteForm = ({}) => {
     };
 
 
-    const createApp = () => {
-        console.log('변수 발생1')
+    const createApp = (status) => {
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
             return;
         }
-        console.log('변수 발생2')
+
         const originalFileName = originalFile ? originalFile.name : '';
-        console.log('변수 발생3')
-        // additionalFields의 키에서 '__'를 '.'으로 변환
         const transformedAdditionalFields = {};
         Object.keys(additionalFields).forEach(key => {
             const newKey = key.replace(/__/g, '.');
             transformedAdditionalFields[newKey] = additionalFields[key];
         });
-        console.log('변수 발생4')
 
-        console.log(  "writer>>",writer," firstApprover>>", firstApprover, "secondApprover>>",secondApprover, "thirdApprover",thirdApprover,
-            "originalFileName>>",originalFileName, "attachedFile>>",attachedFile, "approveStatus>>",approveStatus, "appDocType>>",appDocType, "level>>",level,
-            "approveType>>",approveType, "position>>",position, "department>>",department, additionalFields);
-
+        // 상태를 기반으로 요청 전송
         axios.post('/api/elecapp/create', {
             writer, firstApprover, secondApprover, thirdApprover,
-            originalFile: originalFileName, attachedFile, approveStatus, appDocType, level,
-            approveType, position, department, additionalFields
+            originalFile: originalFileName, attachedFile, approveStatus: status, // 전달받은 approveStatus로 상태 설정
+            appDocType, level, approveType, position, department, additionalFields: transformedAdditionalFields
         })
             .then(res => {
-                if(approveStatus===0){
-                    alert("전자결제가 등록되었습니다");
-                    navigate('/send');}
-                else{
-                    alert("전자결재가 임시저장되었습니다.")
-                    navigate('/send');
+                if(status === 1) {
+                    alert("전자결재가 임시저장되었습니다.");
+                } else if (status === 0) {
+                    alert("전자결제가 등록되었습니다.");
                 }
+                navigate('/send');
             })
             .catch(err => {
                 console.error('데이터 전송 중 오류 발생:', err);
@@ -334,21 +328,22 @@ const WriteForm = ({}) => {
                     </tr>
                     <tr>
                         <td colSpan={8}>
-                            <Button variant="outlined" color="warning"
-                            onClick={() => {
-                            console.log(`임시 저장 변수 발생 (숫자 변경 전) ${approveStatus}`);
-                            setApproveStatus(prevStatus => {
-                                console.log(`임시 저장 변수 발생 (숫자 변경 후) ${1}`);
-                                createApp(); // 상태가 변경된 후에 createApp 호출
-                                return 1; // approveStatus를 1로 변경
-                            });
-                        }}>
-                            임시저장
-                        </Button>
-                            <Button variant="outlined" color="warning" onClick={()=> {
-                                console.log("작성완료 변수 발생")
-                                createApp()
-                            }}>작성완료</Button>
+                            {/* 임시저장 버튼 클릭 시 approveStatus를 1로 설정 */}
+                            <Button
+                                variant="outlined"
+                                color="warning"
+                                onClick={() => createApp(1)} // 임시저장 시 approveStatus를 1로 설정
+                            >
+                                임시저장
+                            </Button>
+
+                            <Button
+                                variant="outlined"
+                                color="warning"
+                                onClick={() => createApp(0)} // 작성완료 시 approveStatus를 0으로 설정
+                            >
+                                작성완료
+                            </Button>
                         </td>
                     </tr>
                     </tbody>
