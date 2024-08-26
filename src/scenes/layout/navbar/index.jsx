@@ -93,20 +93,21 @@ const Navbar = () => {
                      onClick={handleRefresh}
                 sx={{
                     width: '95px',
-                    backgroundColor:'#ff960c',
+                    backgroundColor: '#ff960c',
                     mr: 1,
                     borderRadius: '4px',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
                 }}>
                 <Typography
                     variant="h1"
                     sx={{
-                        color: 'white', // 텍스트 색상
+                        color: timer <= 300 ? 'red' : 'white', // 텍스트 색상
                         fontWeight: 'bold',
                         fontSize: '1.1rem', // 폰트 크기 조정
                         marginTop: '3px',
                         marginLeft: '12px',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        transition: 'background-color 0.3s ease',
                     }}
                 >
                     {formatTime(timer)}
@@ -114,7 +115,8 @@ const Navbar = () => {
                 <IconButton>
                     <AccessTimeOutlined
                         sx={{
-                            color: 'white', // 텍스트 색상
+                            color: timer <= 300 ? 'red' : 'white',
+                            transition: 'background-color 0.3s ease',
                         }}/>
                 </IconButton>
             </Box>
@@ -154,6 +156,7 @@ const Navbar = () => {
                                     sx={{
                                         backgroundColor: '#fdaf1a', // 원하는 배경색
                                         color: '#fff', // 텍스트 색상
+
                                         '&:hover': {
                                             backgroundColor: '#ffb41d', // 호버 시 배경색
                                         }
