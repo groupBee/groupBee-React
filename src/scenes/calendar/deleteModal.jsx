@@ -32,49 +32,50 @@ const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
             <DialogTitle variant="h3" component="h2"
                          sx={{
                              fontSize: '1.5rem',
-                             marginBottom: '1px',
                              backgroundImage: 'linear-gradient(to right, #FFA800, #FFD600)',
                              color: 'white'
                          }}>
                 차량 예약 정보
             </DialogTitle>
-            <DialogContent dividers
-                           sx={{
-                               minWidth: 256,
-                               padding: 2,
-                           }}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2,
-                        color: '#FFB121',
-                    }}
-                >
-                    <Typography variant="h4">차량번호: {carName || ''}</Typography>
-                    <Typography variant="h4">예약시간: {formatDate(initialData?.startDay) || ''}</Typography>
-                    <Typography variant="h4">반납시간: {formatDate(initialData?.endDay) || ''}</Typography>
-                    <Typography variant="h4">사유: {initialData?.content || ''}</Typography>
-                    <Box style={{ width:'250px', height:'140px',}}>
-                        <img
-                            src={`https://minio.bmops.kro.kr/groupbee/book/${carImage}`}
-                            alt={carImage}
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                borderRadius: '5px'
-                            }}
-                        />
-                    </Box>
+            <DialogContent
+                sx={{
+
+                    padding: '0px'
+                }}>
+                <Box style={{ width:'500px', height:'300px',}}>
+                    <img
+                        src={`https://minio.bmops.kro.kr/groupbee/book/${carImage}`}
+                        alt={carImage}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+
+                        }}
+                    />
                 </Box>
-                <DialogActions mt={2}>
+
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1,
+                            color: 'black',
+                            padding: '18px',
+
+
+                        }}>
+                    <Typography variant="h5">차량번호 : {carName || ''}</Typography>
+                    <Typography variant="h5">대여시간 : {formatDate(initialData?.startDay) || ''} ~ {formatDate(initialData?.endDay) || ''}</Typography>
+                    <Typography variant="h5">사유 : {initialData?.content || ''}</Typography>
+                </Box>
+                <DialogActions mt={1}
+                >
                     <Button onClick={onDelete} variant="outlined" color="secondary"
                             sx={{
                                 fontSize: '1rem',
-                                color: '#ffb121',
-                                backgroundColor: 'white',
+                                color: 'white',
+                                backgroundColor: '#ffb121',
                                 border: '1px solid #ffb121',
                                 '&:hover': {
                                     backgroundColor: 'white',
@@ -84,8 +85,8 @@ const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
                             }}>삭제</Button>
                     <Button onClick={onCancel} variant="outlined" color="warning" sx={{
                         fontSize: '1rem',
-                        color: '#ffb121',
-                        backgroundColor: 'white',
+                        color: 'white',
+                        backgroundColor: '#ffb121',
                         border: '1px solid #ffb121',
                         '&:hover': {
                             backgroundColor: 'white',

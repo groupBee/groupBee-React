@@ -33,6 +33,31 @@ const UpdateModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
             ...prev,
             [name]: value
         }));
+
+        // 입력 값이 변경될 때 에러 메시지 제거
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: value ? '' : prevErrors[name],
+        }));
+    };
+
+    const  [errors, setErrors] = useState({});
+
+    const errorMessage = () => {
+        let tempErrors = {};
+        if (!inputValues.title) tempErrors.title = "제목을 입력해 주세요.";
+        if (!inputValues.content) tempErrors.content = "내용을 입력해 주세요.";
+
+        setErrors(tempErrors);
+
+        // 에러가 없으면 true, 에러가 있으면 false를 반환합니다.
+        return Object.keys(tempErrors).length === 0;
+    }
+
+    const handleUpdateClick = () => {
+        if (errorMessage()) {
+            onUpdate(inputValues); // 유효성 검사 통과 시 업데이트 실행
+        }
     };
 
     return (
@@ -55,6 +80,8 @@ const UpdateModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
                     name="title"
                     value={inputValues.title}
                     onChange={handleChange}
+                    error={!!errors.title}
+                    helperText={errors.title}
                     sx={{
                         '& .MuiOutlinedInput-root': {
                             '&:hover fieldset': {
@@ -131,6 +158,8 @@ const UpdateModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
                     name="content"
                     value={inputValues.content}
                     onChange={handleChange}
+                    error={!!errors.content}
+                    helperText={errors.content}
                     sx={{
                         '& .MuiOutlinedInput-root': {
                             '&:hover fieldset': {
@@ -148,7 +177,7 @@ const UpdateModal = ({isOpen, onCancel, onUpdate, onDelete, initialData}) => {
                     }}
                 />
                 <DialogActions mt={2}>
-                    <Button onClick={()=> onUpdate(inputValues)} variant="outlined" color="secondary"
+                    <Button onClick={handleUpdateClick} variant="outlined" color="secondary"
                             sx={{
                                 fontSize: '1rem',
                                 color: '#ffb121',

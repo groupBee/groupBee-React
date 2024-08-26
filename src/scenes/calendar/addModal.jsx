@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -13,6 +13,7 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
         //console.log("Current Input Values:", inputValues);
     }, [inputValues]);
 
+
     const handleChange = (e) => {
         const {name, value} = e.target;
         setInputValues((prev) => ({
@@ -20,6 +21,19 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
             [name]: value
         }));
     };
+
+    const  [errors, setErrors] = useState({});
+
+    const errorMessage = () => {
+        let tempErrors = {};
+        if (!inputValues.title) tempErrors.title = "제목을 입력해 주세요.";
+        if (!inputValues.content) tempErrors.content = "내용을 입력해 주세요.";
+
+        setErrors(tempErrors);
+
+        // 에러가 없으면 true, 에러가 있으면 false를 반환합니다.
+        return Object.keys(tempErrors).length === 0;
+    }
 
     return (
         <Dialog open={isOpen} onClose={onCancel}>
@@ -43,6 +57,8 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                         value={inputValues.title || ''}
                         onChange={handleChange}
                         required
+                        error={!!errors.title}
+                        helperText={errors.title}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '&:hover fieldset': {
@@ -124,6 +140,8 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                         name="content"
                         value={inputValues.content || ''}
                         onChange={handleChange}
+                        error={!!errors.content}
+                        helperText={errors.content}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 '&:hover fieldset': {
@@ -141,9 +159,12 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                         }}
                     />)}
 
-                <DialogActions mt={2}>
+                <DialogActions mt={2}
+                               sx={{
+                                   marginRight: '-7px'
+                               }}>
                     <Button onClick={() => {
-                        if (inputValues.title) {
+                        if (errorMessage()) {
                             onSubmit();
                         } else {
                             console.log("calendar addModal 오류 (재웅이가 잡을 예정)");

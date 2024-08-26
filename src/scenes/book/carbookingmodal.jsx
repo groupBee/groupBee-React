@@ -363,12 +363,15 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                             </Grid>
                         )}
                     </Grid>
-                    <DialogActions>
+                    <DialogActions
+                    sx={{
+                        marginRight: '-7px'
+                    }}>
                         <Button onClick={handleClose} variant="" color="primary"
                                 sx={{
                                     fontSize: '1rem',
-                                    color: '#ffb121',
-                                    backgroundColor: 'white',
+                                    color: 'white',
+                                    backgroundColor: '#ffb121',
                                     border: '1px solid #ffb121',
                                     '&:hover': {
                                         backgroundColor: 'white',
@@ -379,8 +382,8 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
                         <Button type="submit" variant="" color="primary"
                                 sx={{
                                     fontSize: '1rem',
-                                    color: '#ffb121',
-                                    backgroundColor: 'white',
+                                    color: 'white',
+                                    backgroundColor: '#ffb121',
                                     border: '1px solid #ffb121',
                                     '&:hover': {
                                         backgroundColor: 'white',

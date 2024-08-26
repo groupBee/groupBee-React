@@ -1,6 +1,9 @@
 /* 예시: 더 구체적인 선택자와 !important 사용 */
 .fc .fc-list-day-cushion {
-    background-color: #4caf50 !important; /* colors.greenAccent[500]에 대응 */
+    background-color: #ffb121 !important; /* colors.greenAccent[500]에 대응 */
+}
+.fc-list-day-cushion > .fc-list-day-text, .fc-list-day-side-text {
+    text-decoration: none !important;
 }
 
 .fc .fc-toolbar-title,
