@@ -9,7 +9,7 @@ import AdminBook from "./adminBook.jsx";
 const AdminRoute = () => {
     return (
         <div>
-            <Box m="20px">
+            <Box marginLeft='15px'>
                 <Header title="관리자 페이지"/>
                 <nav style={{marginTop: '-20px'}}>
                     <ul style={{

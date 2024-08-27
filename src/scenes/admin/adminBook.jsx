@@ -213,7 +213,7 @@ const AdminBook = () => {
                 <tr>
                     <th style={{backgroundColor: '#ffb121', padding: '12px', width: '4%', paddingLeft: '30px'}}>이름</th>
                     <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%'}}>차량/회의실</th>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%', paddingLeft: '30px'}}>아이템</th>
+                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%', paddingLeft: '10px'}}>아이템</th>
                     <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%', paddingLeft: '50px'}}>예약시간</th>
                     <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%', paddingLeft: '50px'}}>반납시간</th>
                     <th style={{backgroundColor: '#ffb121', padding: '12px', width: '30%', paddingLeft: '30px'}}>사유</th>
