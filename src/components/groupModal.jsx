@@ -71,7 +71,7 @@ const GroupModal = ({ open, onClose, onSelect }) => {
     };
 
     const handleSelect = () => {
-        onSelect(selectedPerson.name);
+        onSelect(selectedPerson);
         onClose();
     };
 
