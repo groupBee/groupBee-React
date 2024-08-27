@@ -1,0 +1,44 @@
+/* 페이지네이션 컨테이너 스타일 */
+.pagination {
+    margin: 20px;
+}
+
+/* 페이지 아이템 스타일 */
+.page-item {
+    margin: 0 2px; /* 페이지 아이템 간격 */
+}
+
+/* 페이지 링크 스타일 */
+.page-link {
+    display: none; /* 페이지 번호 링크 숨기기 */
+}
+
+/* 활성화된 페이지 링크 스타일 */
+.active .page-link {
+    display: none; /* 활성화된 페이지 링크도 숨기기 */
+}
+
+/* 이전 및 다음 버튼 스타일 */
+.page-item .page-link {
+    display: inline-block; /* 이전 및 다음 버튼은 보이기 */
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #ffb121;
+    background-color: #fff;
+    font-size: 14px;
+}
+
+/* 이전 및 다음 버튼 hover 상태 스타일 */
+.page-item .page-link:hover {
+    background-color: #f8f9fa;
+    border-color: #ffb121;
+}
+
+/* 활성화된 페이지 링크 스타일 */
+.active .page-link {
+    background-color: #ffb121;
+    color: #fff;
+    border-color: #ffb121;
+}

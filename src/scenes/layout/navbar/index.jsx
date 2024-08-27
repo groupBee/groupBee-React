@@ -28,7 +28,7 @@ import {
 import { ToggledContext } from "../../../App";
 import useStore from "../../../store";
 import axios from "axios";
-
+import { useNavigate } from 'react-router-dom';
 //비밀번호 변경 모달창 css
 const style = {
     position: 'absolute',
@@ -54,9 +54,10 @@ const Navbar = () => {
     const [newPass1, setNewPass1] = useState('');
     const [newPass2, setNewPass2] = useState('');
     const [passMessage, setPassMassage] = useState('');
+    const navigate = useNavigate();
 
 
-        //비밀번호 조건 확인
+    //비밀번호 조건 확인
         const matchpass = () => {
             if (newPass1 === newPass2) {
                 if (newPass1.length >= 8) {
@@ -225,7 +226,7 @@ const Navbar = () => {
                                         }}
 
                                         fullWidth
-                                        onClick={() => alert("Profile clicked")}
+                                        onClick={() => navigate('/admin')}
                                     >
                                         관리자
                                     </Button> : ""}
