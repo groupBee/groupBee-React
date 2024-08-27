@@ -73,19 +73,39 @@ const Navbar = () => {
                 setNewPass2('');
             }
         }
-        //현재 비밀번호 확인
-        const checkOriginalPass = () => {
-            const data = {
-                old: originalPass,
-                new: newPass1
-              };
-            const formData = new FormData();
-            formData.append('data', JSON.stringify(data));
-            axios("/employee/auth/changepasswd", formData)
-                .then(res => {
-                    console.log(res.data);
-                })
-        }
+     // 현재 비밀번호 확인
+const checkOriginalPass = () => {
+
+    const formData = new FormData();
+    
+    const data = {
+        old: originalPass,
+        new: newPass1
+    };
+
+    // JSON.stringify로 데이터를 문자열로 변환한 후 Blob으로 감싸서 FormData에 추가
+    formData.append("data", new Blob([JSON.stringify(data)], {type: "application/json"}));
+
+    axios({
+        url: '/api/employee/auth/changepasswd',
+        data: formData,
+        method:'put'
+        // ,
+        // headers: {
+        //     'Content-Type': 'multipart/form-data'  // multipart/form-data를 명시적으로 설정
+        // }
+    })
+    .then(res => {
+        alert(res.data.message);  // 서버에서 보낸 메시지를 표시
+    })
+    .catch(error => {
+        console.error('Error:', error.response ? error.response.data : error.message);  // 에러 핸들링
+        alert('비밀번호 변경에 실패했습니다. 다시 시도해주세요.');
+    });
+};
+
+    
+    
         // 드롭다운 상태 관리
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
         const [passModalOpen, setPassMadalOpen] = useState(false);
