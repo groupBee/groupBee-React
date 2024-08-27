@@ -19,6 +19,7 @@ import BoardWrite from "./scenes/board/BoardWrite.jsx";
 import Login from "./scenes/login/login.jsx";
 import ProtectedRoute from './ProtectedRoute';
 import DetailPage from "./scenes/board/DetailPage.jsx";
+import Admin from "./scenes/admin/index.jsx";
 
 const AppRouter = () => {
     return (
@@ -41,6 +42,7 @@ const AppRouter = () => {
                     <Route path="/mypage" element={<Mypage/>}/>
                     <Route path="/detail" element={<Detail/>}/>
                     <Route path="/email" element={<EmailMain/>}/>
+                    <Route path="/admin/*" element={<Admin/>}/>
                 </Route>
             </Routes>
         </Router>

@@ -62,7 +62,6 @@ const BookList = () => {
             const potalId=apiPotalData.data.potal_id;
 
             setPotalId(potalId);
-            console.log(potalId);
         } catch (error) {
             console.error('Error fetching data:', error);
         }

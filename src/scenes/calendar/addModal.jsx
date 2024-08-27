@@ -166,8 +166,6 @@ const addModal = ({isOpen, onCancel, onSubmit, inputValues, setInputValues}) => 
                     <Button onClick={() => {
                         if (errorMessage()) {
                             onSubmit();
-                        } else {
-                            console.log("calendar addModal 오류 (재웅이가 잡을 예정)");
                         }
                     }} variant="outlined" color="secondary"
                             sx={{
