@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 function EmailList() {
     const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('p@ssw0rd');
+    const [password, setPassword] = useState('');
     const [emails, setEmails] = useState([]);
     const [error, setError] = useState('');
     const [selectedEmail, setSelectedEmail] = useState(null);
@@ -11,15 +11,12 @@ function EmailList() {
 
     // 로그인한 사람의 이메일 정보를 가져오는 함수
     const getinfo = () => {
-        axios.get("/api/employee/info")
+        axios.get("/api/employee/auth/email")
             .then(res => {
-                setUsername(res.data.data.email);
-                
+                setUsername(res.data.email)
+                setPassword(res.data.password)
             })
-            .catch(err => {
-                setError('정보를 가져오는 데 실패했습니다: ' + err.message);
-            });
-    };
+    }
 
     // 이메일 목록을 가져오는 함수
     const checkEmail = async () => {
@@ -100,7 +97,7 @@ function EmailList() {
                                     openModal();
                                 }}>&nbsp;&nbsp;{email.subject}</p>
                             </td>
-                            <td style={{ border: '1px solid grey' }}>{email.To}</td>
+                            <td style={{ border: '1px solid grey' }}>{email.from}</td>
                             <td style={{ border: '1px solid grey' }}>{email.receivedDate}</td>
                         </tr>
                     ))}

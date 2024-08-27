@@ -190,9 +190,9 @@ const WriteForm = ({}) => {
 
     const handleModalSelect = (value) => {
         if (currentApproverType === 'second') {
-            setSecondApprover(value);
+            setSecondApprover(value.name);
         } else if (currentApproverType === 'third') {
-            setThirdApprover(value);
+            setThirdApprover(value.name);
         }
     };
 
