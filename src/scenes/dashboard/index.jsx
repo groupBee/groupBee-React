@@ -207,15 +207,15 @@ function Dashboard() {
                                 <tbody>
                                 {filteredData.map((item, idx) => (
                                     <tr key={idx}>
-                                        <td style={{width:'15%'}}>
+                                        <td style={{width:'15%', textAlign:'center'}}>
                                             {item.appDocType === 0 ? '품의서' :
                                                 item.appDocType === 1 ? '휴가신청서' :
                                                     item.appDocType === 2 ? '지출보고서' : ''}
                                         </td>
                                         <td style={{width:'37%'}}>{item.additionalFields.title || '제목 없음'}</td>
-                                        <td style={{width:'15%'}}>{item.writer}</td>
-                                        <td style={{width:'16%'}}>{item.department}</td>
-                                        <td style={{width:'17%'}}>{item.additionalFields.status}</td>
+                                        <td style={{width:'15%', textAlign:'center'}}>{item.writer}</td>
+                                        <td style={{width:'16%', textAlign:'center'}}>{item.department}</td>
+                                        <td style={{width:'17%', textAlign:'center'}}>{item.additionalFields.status}</td>
                                     </tr>
                                 ))}
                                 </tbody>
