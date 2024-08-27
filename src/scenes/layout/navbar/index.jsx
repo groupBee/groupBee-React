@@ -298,7 +298,7 @@ const checkOriginalPass = () => {
                                         새로운 비밀번호 : <OutlinedInput type="password" value={newPass1} onChange={(e) => setNewPass1(e.target.value)} /><br />
                                         비밀번호 확인: <OutlinedInput type="password" value={newPass2} onChange={(e) => setNewPass2(e.target.value)} /><br />
                                         <Button variant="contained" color="warning" size="small" onClick={matchpass}>변경</Button>
-                                        <b color="red">{passMessage}</b>
+                                        <b style={{ color:'red'}}>{passMessage}</b>
                                     </Typography>
                                 </Box>
                             </Modal>
