@@ -59,7 +59,7 @@ const BookList = () => {
             const apiPotalResponse = await fetch('/api/employee/info');
             const apiPotalData = await apiPotalResponse.json();
 
-            const potalId=apiPotalData.data.potal_id;
+            const potalId=apiPotalData.data.potalId;
 
             setPotalId(potalId);
         } catch (error) {

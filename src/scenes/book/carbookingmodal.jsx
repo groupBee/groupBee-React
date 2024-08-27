@@ -84,13 +84,27 @@ const Carbookingmodal = ({ show, handleClose, car, fetchData, reservations }) =>
             fetchData(); // 예약 후 데이터 새로고침
         } catch (error) {
             console.error('Error booking car:', error);
-            Swal.fire({
-                title: '예약 실패',
-                text: '차량 예약 중 오류가 발생했습니다. 다시 시도해 주세요.',
-                icon: 'error',
-                confirmButtonText: '확인',
-                confirmButtonColor: '#ffb121',
-            });
+            if (error.response && error.response.status === 409 ) {
+                Swal.fire({
+                    title: '예약 실패',
+                    text: '해당 시간은 이미 예약이 완려되었습니다. 다시 시도해 주세요.',
+                    icon: 'error',
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#ffb121',
+                });
+                handleClose();
+                fetchData();
+            } else {
+                Swal.fire({
+                    title: '예약 실패',
+                    text: '차량 예약 중 오류가 발생했습니다. 다시 시도해 주세요.',
+                    icon: 'error',
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#ffb121',
+                });
+                handleClose();
+                fetchData();
+            }
         }
     };
 
