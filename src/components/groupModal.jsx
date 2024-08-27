@@ -1,4 +1,3 @@
-// GroupModal.jsx
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Box, Typography, Collapse, List, ListItem } from '@mui/material';
 import axios from 'axios';
@@ -30,7 +29,7 @@ const GroupModal = ({ open, onClose, onSelect }) => {
                 departmentMap[departmentName] = {
                     name: departmentName,
                     people: [],
-                    open: false
+                    open: false  // 기본적으로 닫힌 상태
                 };
             }
 
@@ -64,19 +63,32 @@ const GroupModal = ({ open, onClose, onSelect }) => {
         setDepartments(prevDepartments =>
             prevDepartments.map(department =>
                 department.name === departmentName
-                    ? { ...department, open: !department.open }
+                    ? { ...department, open: !department.open }  // 클릭 시 열고 닫기
                     : department
             )
         );
     };
 
     const handleSelect = () => {
-        onSelect(selectedPerson);
+        if (selectedPerson) {
+            onSelect(selectedPerson.name);  // 선택한 사람의 이름만 전달
+        }
+        handleClose();  // 모달 닫기
+    };
+
+    const handleClose = () => {
+        // 모달이 닫힐 때 부서의 open 상태를 초기화
+        setDepartments(prevDepartments =>
+            prevDepartments.map(department => ({
+                ...department,
+                open: false  // 모든 부서를 닫힌 상태로 설정
+            }))
+        );
         onClose();
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
+        <Modal open={open} onClose={handleClose}>
             <Box style={{
                 position: 'absolute',
                 top: '50%',
@@ -101,9 +113,9 @@ const GroupModal = ({ open, onClose, onSelect }) => {
                         <Collapse in={department.open}>
                             <List>
                                 {department.people.map(person => (
-                                    <ListItem 
-                                        button 
-                                        key={person.id} 
+                                    <ListItem
+                                        button
+                                        key={person.id}
                                         onClick={() => setSelectedPerson(person)}
                                     >
                                         {person.name} &lt;{person.position}&gt;<br/>{person.email}

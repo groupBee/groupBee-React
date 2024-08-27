@@ -88,7 +88,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange }) => {
                         selected={requestDate}
                         onChange={handleRequestDateChange}
                         dateFormat="yyyy년 MM월 dd일"
-                        className="custom-datepicker"/>
+                        />
                 </td>
                 <td>지출유형</td>
                 <td colSpan={3}>

@@ -316,7 +316,7 @@ const WriteForm = ({}) => {
                                 onChange={(data) => setApproveDate(data)}
                                 dateFormat="yyyy년 MM월 dd일"
                                 style={{marginTop: '50px'}}
-                                className="custom-datepicker"/>
+                                />
                         </td>
                     </tr>
                     <tr style={{fontSize: '23px'}}>
