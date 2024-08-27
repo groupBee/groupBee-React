@@ -57,6 +57,7 @@ const SendEmail = () => {
 
     const handleModalSelect = (value) => {
         setTo(value.email)
+        console.log(value)
     };
 
     useEffect(()=>{
