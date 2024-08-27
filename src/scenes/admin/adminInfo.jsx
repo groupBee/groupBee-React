@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Box, IconButton, InputBase, MenuItem, Select, Typography, useMediaQuery} from "@mui/material";
 import {Table} from "react-bootstrap";
-import EditIcon from '@mui/icons-material/Edit';
 import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
 const AdminInfo = () => {
     const [sortOrder, setSortOrder] = useState('default');
@@ -80,18 +80,29 @@ const AdminInfo = () => {
                     <th style={{textAlign: "left", paddingLeft: "40px"}}>이름</th>
                     <th style={{textAlign: "left", paddingLeft: "40px"}}>직책</th>
                     <th style={{textAlign: "left", paddingLeft: "40px"}}>부서</th>
-                    <th style={{textAlign: "left", paddingLeft: "40px"}}>정보</th>
+                    <th style={{textAlign: "left", paddingLeft: "40px"}}>재직여부</th>
+                    <th style={{textAlign: "left", paddingLeft: "80px"}}>이메일</th>
+                    <th style={{textAlign: "left", paddingLeft: "30px"}}>상세보기</th>
                 </tr>
                 </thead>
                 <tbody>
-                {apiData.map((employee,index) => (
+                {apiData.map((info,index) => (
                     <tr key={index}>
-                        <td style={{ textAlign: "left", paddingLeft: "40px" }}>{employee.name}</td>
-                        <td style={{ textAlign: "left", paddingLeft: "40px" }}>{employee.position}</td>
-                        <td style={{ textAlign: "left", paddingLeft: "40px" }}>{employee.departmentName}</td>
-                        <td style={{ textAlign: "left", paddingLeft: "40px" }}>
-                            <EditIcon style={{ cursor: 'pointer' }} />
+                        <td style={{textAlign: "left", paddingLeft: "40px"}}>{info.name}</td>
+                        <td style={{textAlign: "left", paddingLeft: "40px"}}>{info.position}</td>
+                        <td style={{textAlign: "left", paddingLeft: "40px"}}>{info.departmentName}</td>
+                        <td style={{textAlign: "left", paddingLeft: "40px"}}>
+                            <span style={{
+                                color: info.membershipStatus ? '#7bd3b5' : 'red',
+                                backgroundColor: info.membershipStatus ? '#e7f9f1' : 'pink',
+                                padding: '2px 4px',
+                                borderRadius: '4px'
+                            }}>
+                                {info.membershipStatus ? '재직중' : '퇴직'}
+                            </span>
                         </td>
+                        <td style={{textAlign: "left", paddingLeft: "40px"}}>{info.email}</td>
+                        <td style={{textAlign: "left", paddingLeft: "40px"}}><MoreHorizIcon/></td>
                     </tr>
                 ))}
                 </tbody>
