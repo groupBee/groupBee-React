@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import UpdateModal from "./updateModal.jsx";
 import AddModal from "./addModal.jsx";
 import DeleteModal from "./deleteModal.jsx";
+import Swal from "sweetalert2";
 // import DeleteModal from "./deleteModal.jsx";
 
 const useModal = () => {
@@ -79,6 +80,14 @@ const useModal = () => {
                     if (resolvePromise) {
                         resolvePromise(true);
                     }
+                } else if (response.status === 404) {
+                    Swal.fire({
+                        title: '삭제 실패',
+                        text: '이미 삭제된 예약입니다.',
+                        icon: 'error',
+                        confirmButtonText: '확인',
+                        confirmButtonColor: '#ffb121',
+                    }).then(()=> {window.location.reload()})
                 } else {
                     throw new Error('Failed to delete event');
                 }
