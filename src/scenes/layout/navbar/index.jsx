@@ -31,6 +31,7 @@ import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 import {Header} from "../../../components/index.jsx";
 import {Table} from "react-bootstrap";
+import OrganizationModal from "./organizationModal.jsx";
 //비밀번호 변경 모달창 css
 const style = {
     position: 'absolute',
@@ -110,6 +111,7 @@ const checkOriginalPass = () => {
         // 드롭다운 상태 관리
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
         const [passModalOpen, setPassMadalOpen] = useState(false);
+        const [orModalOpen, setOrMadalOpen] = useState(false);
 
         const handleLogout = () => {
             logout(); // 로그아웃 함수 실행
@@ -129,6 +131,14 @@ const checkOriginalPass = () => {
         };
         const handlePassModalClose = () => {
             setPassMadalOpen(false);
+        };
+
+        //조직도 모달
+         const organizationModalOpen = () => {
+            setOrMadalOpen((prev => !prev));
+        };
+        const organizationModalClose = () => {
+            setOrMadalOpen(false);
         };
 
 
@@ -354,6 +364,7 @@ const checkOriginalPass = () => {
                                                 backgroundColor: '#364d63',
                                             }
                                         }}
+                                        onClick={organizationModalOpen}
                                     >
                                         조직도
                                     </Button>
@@ -378,6 +389,16 @@ const checkOriginalPass = () => {
                                         <b style={{ color:'red'}}>{passMessage}</b>
                                     </Typography>
                                 </Box>
+                            </Modal>
+
+                            {/*조직도 모달 */}
+                            <Modal
+                                open={orModalOpen}
+                                onClose={organizationModalClose}
+                                aria-labelledby="modal-modal-title"
+                                aria-describedby="modal-modal-description"
+                            >
+                              <OrganizationModal/>
                             </Modal>
                         </Box>
                     </ClickAwayListener>
