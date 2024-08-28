@@ -40,6 +40,12 @@ const BookList = () => {
 
     const fetchData = async () => {
         try {
+            const apiPotalResponse = await fetch('/api/employee/info');
+            const apiPotalData = await apiPotalResponse.json();
+
+            const potalId=apiPotalData.data.potalId;
+            setPotalId(potalId);
+
             const carResponse = await fetch('/api/cars/list');
             const carData = await carResponse.json();
             setCarData(carData);
@@ -48,20 +54,13 @@ const BookList = () => {
             const carBookingData = await carBookingResponse.json();
             setCarBookings(carBookingData);
 
-            const roomResponse = await fetch('/api/rooms/list');
+            const roomResponse = await fetch(`/api/rooms/list`);
             const roomData = await roomResponse.json();
             setRoomData(roomData);
 
             const roomBookingResponse = await fetch('/api/rooms/booklist');
             const roomBookingData = await roomBookingResponse.json();
             setRoomBookings(roomBookingData);
-
-            const apiPotalResponse = await fetch('/api/employee/info');
-            const apiPotalData = await apiPotalResponse.json();
-
-            const potalId=apiPotalData.data.potal_id;
-
-            setPotalId(potalId);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
