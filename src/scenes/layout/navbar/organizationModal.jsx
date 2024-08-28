@@ -156,7 +156,7 @@ const LeftPanel = ({ onSelectDepartment, onSelectTeam }) => {
     };
 
     return (
-        <div style={{ padding: '10px' }}>
+        <div style={{ padding: '10px',backgroundColor:'#f7f7f7' }}>
             <ul>
                 {topLevelCategories.map((category, categoryIndex) => (
                     <li key={categoryIndex} style={{ marginBottom: '20px', listStyleType: 'none' }}>
@@ -355,13 +355,13 @@ const CenterPanel = ({ selectedDepartment, selectedTeam, onSelectEmployee }) => 
 // 오른쪽 패널 컴포넌트
 const RightPanel = ({selectedEmployee}) => {
     return (
-        <div style={{padding: '10px'}}>
+        <div style={{padding: '10px',minHeight:'1050px',borderLeft:'3px solid #ffd454',paddingLeft:'40px'}}>
             {selectedEmployee ? (
                 <div>
                     <img
                         src={selectedEmployee.photo}
                         alt={selectedEmployee.name}
-                        style={{width: '100px', height: '100px', borderRadius: '50%', marginBottom: '10px'}}
+                        style={{minWidth: '150px', minHeight: '150px', borderRadius: '50%',border:'1px solid black', marginBottom: '50px',marginTop:'50px'}}
                     />
                     <h2>{selectedEmployee.name}</h2>
                     <p>{selectedEmployee.position}</p>
