@@ -156,7 +156,7 @@ const LeftPanel = ({ onSelectDepartment, onSelectTeam }) => {
     };
 
     return (
-        <div style={{ padding: '10px',backgroundColor:'#f7f7f7' }}>
+        <div style={{ padding: '10px',backgroundColor:'#f7f7f7',minHeight:'100%' }}>
             <ul>
                 {topLevelCategories.map((category, categoryIndex) => (
                     <li key={categoryIndex} style={{ marginBottom: '20px', listStyleType: 'none' }}>
@@ -244,7 +244,7 @@ const CenterPanel = ({ selectedDepartment, selectedTeam, onSelectEmployee }) => 
         <div style={{ padding: '10px' }}>
             {selectedTeam ? (
                 <div>
-                    <h2>{selectedTeam.name}</h2>
+                    <h2 style={{marginBottom:'50px'}}>{selectedTeam.name}</h2>
                     <ul>
                         <li>
                             <b style={{fontSize: '15px', marginLeft: '80px', display: 'flex', alignItems: 'center'}}>
@@ -293,7 +293,7 @@ const CenterPanel = ({ selectedDepartment, selectedTeam, onSelectEmployee }) => 
             ) : selectedDepartment ? (
                 <div>
 
-                    <h2>{selectedDepartment.name}</h2>
+                    <h2  style={{marginBottom:'50px'}}>{selectedDepartment.name}</h2>
 
                     <ul>
                         <li>
@@ -355,7 +355,7 @@ const CenterPanel = ({ selectedDepartment, selectedTeam, onSelectEmployee }) => 
 // 오른쪽 패널 컴포넌트
 const RightPanel = ({selectedEmployee}) => {
     return (
-        <div style={{padding: '10px',minHeight:'1050px',borderLeft:'3px solid #ffd454',paddingLeft:'40px'}}>
+        <div style={{padding: '10px',minHeight:'100%',borderLeft:'3px solid #ffd454',paddingLeft:'40px'}}>
             {selectedEmployee ? (
                 <div>
                     <img
@@ -406,8 +406,8 @@ const OrganizationModal = ({ open, onClose }) => {
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: 2300,
-                height: 1100,
+                width: '95%',
+                height: '90%',
                 bgcolor: 'background.paper',
                 boxShadow: 24,
                 p: 4,
