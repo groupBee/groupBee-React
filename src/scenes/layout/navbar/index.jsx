@@ -12,7 +12,7 @@ import {
     Modal,
     OutlinedInput,
     Tabs,
-    Tab,
+    Tab, TableBody, TableRow, TableCell,
 } from "@mui/material";
 import { tokens, ColorModeContext } from "../../../theme";
 import {
@@ -29,6 +29,8 @@ import { ToggledContext } from "../../../App";
 import useStore from "../../../store";
 import axios from "axios";
 import { useNavigate } from 'react-router-dom';
+import {Header} from "../../../components/index.jsx";
+import {Table} from "react-bootstrap";
 //비밀번호 변경 모달창 css
 const style = {
     position: 'absolute',
@@ -140,6 +142,9 @@ const checkOriginalPass = () => {
         const handleRefresh = async () => {
             await initializeState(); // 상태를 초기화합니다.
         };
+         const handleIconClick = () => {
+             navigate('/admin'); // navigate를 사용하여 경로 변경
+        };
 
         return (
             <Box
@@ -212,9 +217,10 @@ const checkOriginalPass = () => {
                     <IconButton>
                         <NotificationsOutlined />
                     </IconButton>
+                    {isAdmin ?
                     <IconButton>
-                        <SettingsOutlined />
-                    </IconButton>
+                        <SettingsOutlined onClick={handleIconClick}/>
+                    </IconButton>: ""}
                     {/* Person Icon with Dropdown */}
                     <ClickAwayListener onClickAway={handleDropdownClose}>
                         <Box display="inline-block" position="relative">
@@ -230,37 +236,98 @@ const checkOriginalPass = () => {
                                         mt: 1,
                                         p: 2,
                                         zIndex: 1,
-                                        bgcolor: colors.primary[400],
+                                        bgcolor: '#primary[400]',
+                                        width: '900px',
+                                        height: '500px'
                                     }}
                                 >
-                                    {isAdmin ? <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: '#fdaf1a', // 원하는 배경색
-                                            color: '#fff', // 텍스트 색상
+                                    <Typography variant="h3">내정보</Typography>
+                                    <Box borderBottom="1px solid #e0e0e0" marginTop="5px" />
 
-                                            '&:hover': {
-                                                backgroundColor: '#ffb41d', // 호버 시 배경색
-                                            }
-                                        }}
+                                    {/* 메인 레이아웃 */}
+                                    <Box sx={{ display: 'flex', height: '400px', marginTop: '20px' }}>
+                                        {/* 왼쪽 사진 */}
+                                        <Box sx={{  display: 'flex'}}>
+                                            <img
+                                                src=""
+                                                alt="Profile"
+                                                style={{
+                                                    width: '130px',
+                                                    height: '130px',
+                                                    objectFit: 'cover',
+                                                    border: '1px solid black',
+                                                    borderRadius: '50%'
+                                                }}
+                                            />
+                                        </Box>
 
-                                        fullWidth
-                                        onClick={() => navigate('/admin')}
-                                    >
-                                        관리자
-                                    </Button> : ""}
+                                        {/* 오른쪽 정보들 */}
+                                        <Box sx={{ width: '100%'}}>
+                                            <Table>
+                                                <TableBody>
+                                                    {/* 첫 번째 줄: 이름과 상태 */}
+                                                    <TableRow>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem', borderBottom: 'none' }}>
+                                                            이름
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem', borderBottom: 'none' }}>홍길동</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem', borderBottom: 'none' }}>재직중</TableCell>
+                                                    </TableRow>
+
+                                                    {/* 두 번째 줄: 정보 4개 */}
+                                                    <TableRow>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            직책
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>팀장</TableCell>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            부서
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>IT관리부</TableCell>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            이메일
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>example@groupbee.co.kr</TableCell>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            주소
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>서울시 강남구</TableCell>
+                                                    </TableRow>
+
+                                                    {/* 세 번째 줄: 추가 정보 4개 */}
+                                                    <TableRow>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            사내번호
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>1234</TableCell>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            내선번호
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>5678</TableCell>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            주소
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>서울시 강남구</TableCell>
+                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                                                            상태
+                                                        </TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>재직중</TableCell>
+                                                    </TableRow>
+                                                </TableBody>
+                                            </Table>
+                                        </Box>
+
+                                    </Box>
 
                                     <Button
                                         variant="contained"
                                         sx={{
-                                            backgroundColor: '#2c3d4f', // 원하는 배경색
-                                            color: '#fff', // 텍스트 색상
-                                            mt: 1,
+                                            backgroundColor: '#2c3d4f',
+                                            color: '#fff',
                                             '&:hover': {
-                                                backgroundColor: '#364d63', // 호버 시 배경색
+                                                backgroundColor: '#364d63',
                                             }
                                         }}
-                                        fullWidth
                                         onClick={handleLogout}
                                     >
                                         Logout
@@ -268,17 +335,27 @@ const checkOriginalPass = () => {
                                     <Button
                                         variant="contained"
                                         sx={{
-                                            backgroundColor: '#2c3d4f', // 원하는 배경색
-                                            color: '#fff', // 텍스트 색상
-                                            mt: 1,
+                                            backgroundColor: '#2c3d4f',
+                                            color: '#fff',
                                             '&:hover': {
-                                                backgroundColor: '#364d63', // 호버 시 배경색
+                                                backgroundColor: '#364d63',
                                             }
                                         }}
-                                        fullWidth
                                         onClick={handlePassModalOpen}
                                     >
                                         비밀번호 변경
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        sx={{
+                                            backgroundColor: '#2c3d4f',
+                                            color: '#fff',
+                                            '&:hover': {
+                                                backgroundColor: '#364d63',
+                                            }
+                                        }}
+                                    >
+                                        조직도
                                     </Button>
                                 </Paper>
                             )}
