@@ -5,6 +5,8 @@ import {Link, Navigate, NavLink, Route, Routes} from "react-router-dom";
 import AdminInfo from "./adminInfo.jsx";
 import AdminBook from "./adminBook.jsx";
 import AdminWrite from "./adminWrite.jsx";
+import AdminBoard from "./adminBoard.jsx";
+import AdminEmail from "./adminEmail.jsx";
 
 
 const AdminRoute = () => {
@@ -56,6 +58,30 @@ const AdminRoute = () => {
                                 전자결재
                             </NavLink>
                         </li>
+                        <li style={{margin: 0}}>
+                            <NavLink
+                                to="adminBoard"
+                                style={({isActive}) => ({
+                                    textDecoration: 'none',
+                                    fontSize: '20px',
+                                    color: isActive ? 'black' : '#a1a1a1'
+                                })}
+                            >
+                                게시판
+                            </NavLink>
+                        </li>
+                        <li style={{margin: 0}}>
+                            <NavLink
+                                to="adminEmail"
+                                style={({isActive}) => ({
+                                    textDecoration: 'none',
+                                    fontSize: '20px',
+                                    color: isActive ? 'black' : '#a1a1a1'
+                                })}
+                            >
+                                이메일
+                            </NavLink>
+                        </li>
                     </ul>
                 </nav>
             </Box>
@@ -65,6 +91,8 @@ const AdminRoute = () => {
                 <Route path="adminInfo" element={<AdminInfo/>}/>
                 <Route path="adminBook" element={<AdminBook/>}/>
                 <Route path="adminWrite" element={<AdminWrite/>}/>
+                <Route path="adminBoard" element={<AdminBoard/>}/>
+                <Route path="adminEmail" element={<AdminEmail/>}/>
             </Routes>
         </div>
     );

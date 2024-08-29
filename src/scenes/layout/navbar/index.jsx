@@ -57,6 +57,7 @@ const Navbar = () => {
     const [newPass2, setNewPass2] = useState('');
     const [passMessage, setPassMassage] = useState('');
     const navigate = useNavigate();
+    const [infoData, setInfoData] = useState([]);
 
 
     //비밀번호 조건 확인
@@ -156,6 +157,23 @@ const checkOriginalPass = () => {
              navigate('/admin'); // navigate를 사용하여 경로 변경
         };
 
+         const fetchData = async () => {
+            try {
+                const response = await fetch('/api/employee/info');
+                const data = await response.json();
+                    setInfoData(data);
+                    console.log(data)
+
+
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+            }
+         };
+
+        useEffect(() => {
+            fetchData();
+            }, []);
+
         return (
             <Box
                 display="flex"
@@ -163,14 +181,7 @@ const checkOriginalPass = () => {
                 justifyContent="space-between"
                 p={2}
             >
-                <Button
-                    sx={{
-                        width: '150px',
-                        backgroundColor: 'gray',
-                        height: 'auto',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                    }}>조직도 버튼(미완성)</Button>
+                <Box></Box>
 
                 <Box display="flex" alignItems="center" >
                     {/* 타이머 표시 */}
@@ -243,11 +254,12 @@ const checkOriginalPass = () => {
                                     <Box borderBottom="1px solid #e0e0e0" marginTop="5px" />
 
                                     {/* 메인 레이아웃 */}
+                                    {infoData && (
                                     <Box sx={{ display: 'flex', marginTop: '20px' }}>
                                         {/* 왼쪽 사진 */}
                                         <Box sx={{  display: 'flex'}}>
                                             <img
-                                                src=""
+                                                src={infoData.profileFile}
                                                 alt="Profile"
                                                 style={{
                                                     width: '120px',
@@ -268,8 +280,17 @@ const checkOriginalPass = () => {
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem', borderBottom: 'none' }}>
                                                             이름
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem', borderBottom: 'none' }}>홍길동</TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem', borderBottom: 'none' }}>재직중</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem', borderBottom: 'none' }}>{infoData.name}</TableCell>
+                                                        <TableCell sx={{
+                                                            fontSize: '1rem',
+                                                            borderBottom: 'none',
+                                                            fontWeight: 'bold'
+
+                                                        }}>
+                                                            <span style={{ color: '#ff5e16',backgroundColor: '#ffede0', padding:'4px', borderRadius:'5px' }}>
+                                                                {infoData.isAdmin ? '관리자' : ''}
+                                                            </span>
+                                                        </TableCell>
                                                     </TableRow>
 
                                                     {/* 두 번째 줄: 정보 4개 */}
@@ -277,39 +298,39 @@ const checkOriginalPass = () => {
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
                                                             직책
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>팀장</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.position.rank}</TableCell>
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
                                                             부서
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>IT관리부</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.department.departmentName}</TableCell>
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
                                                             이메일
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>example@groupbee.co.kr</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.email}</TableCell>
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            주소
+                                                            전화번호
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>서울시 강남구</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.phoneNumber}</TableCell>
                                                     </TableRow>
 
                                                     {/* 세 번째 줄: 추가 정보 4개 */}
                                                     <TableRow>
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            사내번호
+                                                            입사일
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>1234</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.firstDay}</TableCell>
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            내선번호
+                                                            사번
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>5678</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.idNumber}</TableCell>
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
                                                             주소
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>서울시 강남구</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.address}</TableCell>
                                                         <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            상태
+                                                            내선전화
                                                         </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>재직중</TableCell>
+                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.extensionCall}</TableCell>
                                                     </TableRow>
                                                 </TableBody>
                                             </Table>
@@ -361,6 +382,7 @@ const checkOriginalPass = () => {
                                             </Box>
                                         </Box>
                                     </Box>
+                                    )}
                                 </Paper>
                             )}
 
