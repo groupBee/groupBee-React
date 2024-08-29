@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { Box, IconButton, Modal } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import axios from "axios";
 // 상위 개념 데이터
+const departmentList = async () => {
+    const response = await axios.get('/api/department/all');
+    console.log(response.data)
+}
+
+const employeeList = async () => {
+    const response = await axios.get('/api/employee/list');
+    console.log(response.data)
+}
+
+const employeeDetail = async (employeeId) => {
+    const response = await axios.get('/api/employee/detail?id=' + employeeId);
+    console.log(response.data)
+}
+
+
+
 const topLevelCategories = [
     {
         name: '인사',
@@ -23,7 +41,10 @@ const topLevelCategories = [
             'IT관리부'
         ]
     }
-];
+]
+
+
+
 // 부서와 팀 데이터
 const departmentData = [
     {
