@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, FormControlLabel, IconButton, InputBase, MenuItem, Modal, Radio, RadioGroup, Select, Typography, useMediaQuery } from "@mui/material";
-import { Table } from "react-bootstrap";
+import { Box, Button, FormControlLabel, IconButton, InputBase, MenuItem, Modal, Radio, RadioGroup, Select, Table, Typography, useMediaQuery } from "@mui/material";
 import { MenuOutlined, SearchOutlined, TableBarOutlined } from "@mui/icons-material";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
@@ -25,8 +24,16 @@ const AdminInfo = () => {
     const [apiDetailData, setApiDetailData] = useState(null);
     const [open, setOpen] = useState(false);
     const [phoneNumber,setPhoneNumber]=useState('');
-
-
+    const [name,setName]=useState('');
+    const [profileFile,setProfileFile]=useState('');
+    const [potalId,setPotalId]=useState('');
+    const [extensionCall,setExtensionCall]=useState('');
+    const [email,setEmail]=useState('')
+    const [position,setPosition]=useState([]);
+    const [membershipStatus,setMembershipStatus]=useState('');
+    const [isAdmin,setIsAdmin]=useState('');
+    const [residentRegistrationNumber,setResidentRegistrationNumber]=useState('');
+    const [companyName,setCompanyName]=useState('')
 
     const fetchData = async () => {
         try {
@@ -57,8 +64,17 @@ const AdminInfo = () => {
         try {
             const response = await fetch(`/api/employee/detail?id=${id}`);
             const data = await response.json();
-            setApiDetailData(data);
+            setName(data.name);
             setPhoneNumber(data.phoneNumber);
+            setProfileFile(data.profileFile);
+            setPotalId(data.potalId);
+            setExtensionCall(data.extensionCall);
+            setEmail(data.email);
+            setPosition(data.position.rank);
+            setMembershipStatus(data.membershipStatus);
+            setIsAdmin(data.isAdmin);
+            setResidentRegistrationNumber(data.residentRegistrationNumber)
+            setCompanyName(data.companyName);
             console.log(data)
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -70,6 +86,10 @@ const AdminInfo = () => {
         setApiDetailData(null);
 
     };
+
+    const changeInfo=()=>{
+        //변경사항 적용
+    }
 
     return (
         <Box style={{ padding: '10px' }}>
@@ -110,7 +130,7 @@ const AdminInfo = () => {
                     </Select>
                 </Box>
                 <Box borderBottom="1px solid #e0e0e0" />
-                <Table>
+                <table>
                     <thead>
                     <tr>
                         <th style={{textAlign: "center", width: '10%'}}>이름</th>
@@ -148,7 +168,7 @@ const AdminInfo = () => {
                             </tr>
                         ))}
                     </tbody>
-                </Table>
+                </table>
                 <Modal
                     open={open}
                     onClose={handleClose}
@@ -160,35 +180,39 @@ const AdminInfo = () => {
                         <Typography id="modal-modal-title" variant="h6" component="h2">
                             상세정보
                         </Typography>
-                        {apiDetailData && (
+                        
                             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                <table style={{ width: "900px" }}>
+                                <Table style={{ width: "900px" }}>
                                     <tbody >
                                         <tr style={{ height: "60px" }}>
-                                            <td rowSpan={4} style={{ border: "1px solid grey", width: "150px" }}><img src={apiDetailData.profileFile} /></td>
+                                            <td rowSpan={4} style={{ border: "1px solid grey", width: "150px" }}>
+                                                <img src={profileFile} style={{width:'100%'}} />
+                                                <input type='file'/>
+                                                <Button variant='contained' coloer="secondary">사진 변경</Button>
+                                            </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>이름</td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>소속</td>
                                             <td colSpan={3} style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={apiDetailData.companyName} />
+                                                <input type='text' value={companyName} onChange={(e)=>setCompanyName(e.target.value)} />
                                             </td>
                                         </tr>
                                         <tr style={{ height: "40px" }}>
                                             <td rowSpan={3} style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={apiDetailData.name} />
+                                                <input type='text' value={name} onChange={(e)=>setName(e.target.value)} />
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>포털 아이디</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={apiDetailData.potalId} />
+                                                <input type='text' value={potalId} onChange={(e)=>setPotalId(e.target.value)}/>
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>내선번호</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={apiDetailData.extensionCall} />
+                                                <input type='text' value={extensionCall} onChange={(e)=>setExtensionCall(e.target.value)}/>
                                             </td>
                                         </tr>
                                         <tr style={{ height: "40px" }}>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>이메일</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type="text" value={apiDetailData.email} />
+                                                <input type="text" value={email} onChange={(e)=>setEmail(e.target.value)}/>
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>휴대전화번호</td>
                                             <td style={{ border: "1px solid grey" }}>
@@ -207,7 +231,7 @@ const AdminInfo = () => {
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>대표전화</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type='text' value="0000-0000" />
+                                                <input type='text' value={extensionCall} onChange={(e)=>setExtensionCall(e.target.value)}/>
                                             </td>
                                         </tr>
                                         <tr style={{ height: "40px" }}>
@@ -215,7 +239,7 @@ const AdminInfo = () => {
                                             <td style={{ border: "1px solid grey" }}>
                                                 <RadioGroup
                                                     aria-labelledby="demo-radio-buttons-group-label"
-                                                    defaultChecked={apiDetailData.membershipStatus}
+                                                    defaultChecked={membershipStatus}
                                                     name="radio-buttons-group"
                                                 >
                                                     <FormControlLabel value="true" control={<Radio />} label="재직중" />
@@ -226,7 +250,7 @@ const AdminInfo = () => {
                                             <td style={{ border: "1px solid grey" }}>
                                                 <RadioGroup
                                                     aria-labelledby="demo-radio-buttons-group-label"
-                                                    defaultValue={apiDetailData.isAdmin}
+                                                    defaultValue={isAdmin}
                                                     name="radio-buttons-group"
                                                 >
                                                     <FormControlLabel value="true" control={<Radio />} label="O" />
@@ -234,12 +258,15 @@ const AdminInfo = () => {
                                                 </RadioGroup>
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>주민등록번호</td>
-                                            <td style={{ border: "1px solid grey" }}>{apiDetailData.residentRegistrationNumber}</td>
+                                            <td style={{ border: "1px solid grey" }}>{residentRegistrationNumber}</td>
+                                        </tr>
+                                        <tr>
+                                            <Button variant='contained' color='secondary' onClick={changeInfo()}>변경</Button>
                                         </tr>
                                     </tbody>
-                                </table>
+                                </Table>
                             </Typography>
-                        )}
+                        
                     </Box>
                 </Modal>
             </Box>
