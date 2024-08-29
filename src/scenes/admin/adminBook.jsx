@@ -211,25 +211,25 @@ const AdminBook = () => {
             <Table>
                 <thead>
                 <tr>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '4%', paddingLeft: '30px'}}>이름</th>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%'}}>차량/회의실</th>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%', paddingLeft: '10px'}}>아이템</th>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%', paddingLeft: '50px'}}>예약시간</th>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%', paddingLeft: '50px'}}>반납시간</th>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '30%', paddingLeft: '30px'}}>사유</th>
-                    <th style={{backgroundColor: '#ffb121', padding: '12px', width: '11%', paddingLeft: '30px'}}>삭제</th>
+                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '8%', color: 'white'}}>이름</th>
+                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center',  width: '10%', color: 'white'}}>차량/회의실</th>
+                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center',  width: '10%', color: 'white'}}>아이템</th>
+                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '15%', color: 'white'}}>예약시간</th>
+                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '15%', color: 'white'}}>반납시간</th>
+                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '32%', color: 'white'}}>사유</th>
+                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '10%', color: 'white'}}>삭제</th>
                 </tr>
                 </thead>
                 <tbody>
                 {currentItems.map((booking, index) => (
                     <tr key={index}>
-                        <td >{booking.memberId}</td>
-                        <td style={{padding: '12px', width: '4%', paddingLeft: '30px'}}>{booking.category}</td>
-                        <td>{booking.type}</td>
-                        <td style={{padding: '12px', width: '4%', paddingLeft: '30px'}}>{formatDateTime(booking.rentDay || booking.enter)}</td>
-                        <td style={{padding: '12px', width: '4%', paddingLeft: '30px'}}>{formatDateTime(booking.returnDay || booking.leave)}</td>
-                        <td>{booking.reason || booking.purpose}</td>
-                        <td>
+                        <td style={{textAlign: 'center'}}>{booking.memberId}</td>
+                        <td style={{textAlign: 'center'}}>{booking.category}</td>
+                        <td style={{textAlign: 'center'}}>{booking.type}</td>
+                        <td style={{textAlign: 'center'}}>{formatDateTime(booking.rentDay || booking.enter)}</td>
+                        <td style={{textAlign: 'center'}}>{formatDateTime(booking.returnDay || booking.leave)}</td>
+                        <td style={{textAlign: 'center'}}>{booking.reason || booking.purpose}</td>
+                        <td style={{textAlign: 'center'}}>
                             <Button
                                 variant=""
                                 size="small"

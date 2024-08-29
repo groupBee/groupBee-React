@@ -12,7 +12,7 @@ import {
     Modal,
     OutlinedInput,
     Tabs,
-    Tab, TableBody, TableRow, TableCell,
+    Tab, TableBody, TableRow, TableCell, TableFooter,
 } from "@mui/material";
 import { tokens, ColorModeContext } from "../../../theme";
 import {
@@ -163,26 +163,14 @@ const checkOriginalPass = () => {
                 justifyContent="space-between"
                 p={2}
             >
-                <Box display="flex" alignItems="center" gap={2}>
-                    <IconButton
-                        sx={{ display: `${isMdDevices ? "flex" : "none"}` }}
-                        onClick={() => setToggled(!toggled)}
-                    >
-                        <MenuOutlined />
-                    </IconButton>
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        bgcolor={colors.primary[400]}
-                        borderRadius="3px"
-                        sx={{ display: `${isXsDevices ? "none" : "flex"}` }}
-                    >
-                        <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
-                        <IconButton type="button" sx={{ p: 1 }}>
-                            <SearchOutlined />
-                        </IconButton>
-                    </Box>
-                </Box>
+                <Button
+                    sx={{
+                        width: '150px',
+                        backgroundColor: 'gray',
+                        height: 'auto',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                    }}>조직도 버튼(미완성)</Button>
 
                 <Box display="flex" alignItems="center" >
                     {/* 타이머 표시 */}
@@ -245,25 +233,25 @@ const checkOriginalPass = () => {
                                         right: 0,
                                         mt: 1,
                                         p: 2,
-                                        zIndex: 1,
+                                        zIndex: 100,
                                         bgcolor: '#primary[400]',
                                         width: '900px',
-                                        height: '500px'
+                                        height: '300px'
                                     }}
                                 >
                                     <Typography variant="h3">내정보</Typography>
                                     <Box borderBottom="1px solid #e0e0e0" marginTop="5px" />
 
                                     {/* 메인 레이아웃 */}
-                                    <Box sx={{ display: 'flex', height: '400px', marginTop: '20px' }}>
+                                    <Box sx={{ display: 'flex', marginTop: '20px' }}>
                                         {/* 왼쪽 사진 */}
                                         <Box sx={{  display: 'flex'}}>
                                             <img
                                                 src=""
                                                 alt="Profile"
                                                 style={{
-                                                    width: '130px',
-                                                    height: '130px',
+                                                    width: '120px',
+                                                    height: '120px',
                                                     objectFit: 'cover',
                                                     border: '1px solid black',
                                                     borderRadius: '50%'
@@ -325,49 +313,54 @@ const checkOriginalPass = () => {
                                                     </TableRow>
                                                 </TableBody>
                                             </Table>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    justifyContent: 'flex-end',
+                                                    alignItems: 'center',
+                                                }}>
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{
+                                                        backgroundColor: '#2c3d4f',
+                                                        color: '#fff',
+                                                        '&:hover': {
+                                                            backgroundColor: '#364d63',
+                                                        }
+                                                    }}
+                                                    onClick={handleLogout}
+                                                >
+                                                    Logout
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{
+                                                        backgroundColor: '#2c3d4f',
+                                                        color: '#fff',
+                                                        '&:hover': {
+                                                            backgroundColor: '#364d63',
+                                                        }
+                                                    }}
+                                                    onClick={handlePassModalOpen}
+                                                >
+                                                    비밀번호 변경
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    sx={{
+                                                        backgroundColor: '#2c3d4f',
+                                                        color: '#fff',
+                                                        '&:hover': {
+                                                            backgroundColor: '#364d63',
+                                                        }
+                                                    }}
+                                                    onClick={organizationModalOpen}
+                                                >
+                                                    조직도
+                                                </Button>
+                                            </Box>
                                         </Box>
-
                                     </Box>
-
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: '#2c3d4f',
-                                            color: '#fff',
-                                            '&:hover': {
-                                                backgroundColor: '#364d63',
-                                            }
-                                        }}
-                                        onClick={handleLogout}
-                                    >
-                                        Logout
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: '#2c3d4f',
-                                            color: '#fff',
-                                            '&:hover': {
-                                                backgroundColor: '#364d63',
-                                            }
-                                        }}
-                                        onClick={handlePassModalOpen}
-                                    >
-                                        비밀번호 변경
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        sx={{
-                                            backgroundColor: '#2c3d4f',
-                                            color: '#fff',
-                                            '&:hover': {
-                                                backgroundColor: '#364d63',
-                                            }
-                                        }}
-                                        onClick={organizationModalOpen}
-                                    >
-                                        조직도
-                                    </Button>
                                 </Paper>
                             )}
 

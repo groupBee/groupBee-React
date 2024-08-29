@@ -22,24 +22,26 @@ const AdminInfo = () => {
     const isMdDevices = useMediaQuery("(max-width:768px)");
     const isXsDevices = useMediaQuery("(max-width:466px)");
     const [apiData, setApiData] = useState([]);
+    const [apiDetailData, setApiDetailData] = useState(null);
     const [open, setOpen] = useState(false);
-    const [selectedInfo, setSelectedInfo] = useState(null); // 모달에서 사용할 데이터를 저장할 상태
+    const [phoneNumber,setPhoneNumber]=useState('');
+
+
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch('/api/employee/list');
+            const data = await response.json();
+            setApiData(data);
+
+
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+       };
+
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch('/api/employee/list');
-                const result = await response.json();
-
-                if (result.status === "OK") {
-                    setApiData(result.data);
-                }
-
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
         fetchData();
     }, []);
 
@@ -48,14 +50,25 @@ const AdminInfo = () => {
         // 선택된 순서에 따른 데이터 정렬 또는 기타 작업을 여기에 추가
     };
 
-    const handleOpen = (info) => {
-        setSelectedInfo(info); // 클릭한 행의 데이터를 저장
+    const handleOpen = async (id) => {
+        console.log(id)
         setOpen(true);
+
+        try {
+            const response = await fetch(`/api/employee/detail?id=${id}`);
+            const data = await response.json();
+            setApiDetailData(data);
+            setPhoneNumber(data.phoneNumber);
+            console.log(data)
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
     };
 
     const handleClose = () => {
         setOpen(false);
-        setSelectedInfo(null); // 모달을 닫을 때 데이터 초기화
+        setApiDetailData(null);
+
     };
 
     return (
@@ -99,35 +112,37 @@ const AdminInfo = () => {
                 <Box borderBottom="1px solid #e0e0e0" />
                 <Table>
                     <thead>
-                        <tr>
-                            <th style={{ textAlign: "left", paddingLeft: "40px" }}>이름</th>
-                            <th style={{ textAlign: "left", paddingLeft: "40px" }}>직책</th>
-                            <th style={{ textAlign: "left", paddingLeft: "40px" }}>부서</th>
-                            <th style={{ textAlign: "left", paddingLeft: "40px" }}>재직여부</th>
-                            <th style={{ textAlign: "left", paddingLeft: "80px" }}>이메일</th>
-                            <th style={{ textAlign: "left", paddingLeft: "30px" }}>상세보기</th>
-                        </tr>
+                    <tr>
+                        <th style={{textAlign: "center", width: '10%'}}>이름</th>
+                        <th style={{textAlign: "center", width: '10%'}}>직책</th>
+                        <th style={{textAlign: "center", width: '10%'}}>부서</th>
+                        <th style={{textAlign: "center", width: '10%'}}>재직여부</th>
+                        <th style={{textAlign: "center", width: '20%'}}>전화번호</th>
+                        <th style={{textAlign: "center", width: '20%'}}>이메일</th>
+                        <th style={{textAlign: "center", width: '10%'}}>상세보기</th>
+                    </tr>
                     </thead>
                     <tbody>
                         {apiData.map((info, index) => (
                             <tr key={index}>
-                                <td style={{ textAlign: "left", paddingLeft: "40px" }}>{info.name}</td>
-                                <td style={{ textAlign: "left", paddingLeft: "40px" }}>{info.position}</td>
-                                <td style={{ textAlign: "left", paddingLeft: "40px" }}>{info.departmentName}</td>
-                                <td style={{ textAlign: "left", paddingLeft: "40px" }}>
+                                <td style={{textAlign: "center", paddingTop: "15px"}}>{info.name}</td>
+                                <td style={{textAlign: "center", paddingTop: "15px"}}>{info.position.rank}</td>
+                                <td style={{textAlign: "center", paddingTop: "15px"}}>{info.department.departmentName}</td>
+                                <td style={{textAlign: "center", paddingTop: "15px"}}>
                                     <span style={{
                                         color: info.membershipStatus ? '#7bd3b5' : 'red',
                                         backgroundColor: info.membershipStatus ? '#e7f9f1' : 'pink',
-                                        padding: '2px 4px',
+                                        padding: '3px 4px',
                                         borderRadius: '4px'
                                     }}>
                                         {info.membershipStatus ? '재직중' : '퇴직'}
                                     </span>
                                 </td>
-                                <td style={{ textAlign: "left", paddingLeft: "40px" }}>{info.email}</td>
-                                <td style={{ textAlign: "left", paddingLeft: "40px" }}>
-                                    <IconButton onClick={() => handleOpen(info)}>
-                                        <MoreHorizIcon />
+                                <td style={{textAlign: "center", paddingTop: "15px"}}>{info.phoneNumber}</td>
+                                <td style={{textAlign: "center", paddingTop: "15px"}}>{info.email}</td>
+                                <td style={{textAlign: "center",}}>
+                                    <IconButton onClick={() => handleOpen(info.id)}>
+                                        <MoreHorizIcon/>
                                     </IconButton>
                                 </td>
                             </tr>
@@ -145,46 +160,46 @@ const AdminInfo = () => {
                         <Typography id="modal-modal-title" variant="h6" component="h2">
                             상세정보
                         </Typography>
-                        {selectedInfo && (
+                        {apiDetailData && (
                             <Typography id="modal-modal-description" sx={{ mt: 2 }}>
                                 <table style={{ width: "900px" }}>
                                     <tbody >
                                         <tr style={{ height: "60px" }}>
-                                            <td rowSpan={4} style={{ border: "1px solid grey", width: "150px" }}><img src={selectedInfo.photo} /></td>
+                                            <td rowSpan={4} style={{ border: "1px solid grey", width: "150px" }}><img src={apiDetailData.profileFile} /></td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>이름</td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>소속</td>
                                             <td colSpan={3} style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={selectedInfo.companyName} />
+                                                <input type='text' value={apiDetailData.companyName} />
                                             </td>
                                         </tr>
                                         <tr style={{ height: "40px" }}>
                                             <td rowSpan={3} style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={selectedInfo.name} />
+                                                <input type='text' value={apiDetailData.name} />
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>포털 아이디</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={selectedInfo.potalId} />
+                                                <input type='text' value={apiDetailData.potalId} />
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>내선번호</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={selectedInfo.extensionCall} />
+                                                <input type='text' value={apiDetailData.extensionCall} />
                                             </td>
                                         </tr>
                                         <tr style={{ height: "40px" }}>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>이메일</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type="text" value={selectedInfo.email} />
+                                                <input type="text" value={apiDetailData.email} />
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>휴대전화번호</td>
                                             <td style={{ border: "1px solid grey" }}>
-                                                <input type='text' value={selectedInfo.phoneNumber} />
+                                                <input type='text' value={phoneNumber} onChange={(e)=>setPhoneNumber((e.target.value))} />
                                             </td>
                                         </tr>
                                         <tr style={{ height: "40px" }}>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>직위/직책</td>
                                             <td style={{ border: "1px solid grey" }}>
                                                 <select>
-                                                    <option>{selectedInfo.position}</option>
+                                                    {/*<option>{apiDetailData.position.rank}</option>*/}
                                                     <option>사장</option>
                                                     <option>어쩌고</option>
                                                     <option>대리</option>
@@ -200,7 +215,7 @@ const AdminInfo = () => {
                                             <td style={{ border: "1px solid grey" }}>
                                                 <RadioGroup
                                                     aria-labelledby="demo-radio-buttons-group-label"
-                                                    defaultChecked={selectedInfo.membershipStatus}
+                                                    defaultChecked={apiDetailData.membershipStatus}
                                                     name="radio-buttons-group"
                                                 >
                                                     <FormControlLabel value="true" control={<Radio />} label="재직중" />
@@ -211,7 +226,7 @@ const AdminInfo = () => {
                                             <td style={{ border: "1px solid grey" }}>
                                                 <RadioGroup
                                                     aria-labelledby="demo-radio-buttons-group-label"
-                                                    defaultValue={selectedInfo.Isadmin}
+                                                    defaultValue={apiDetailData.isAdmin}
                                                     name="radio-buttons-group"
                                                 >
                                                     <FormControlLabel value="true" control={<Radio />} label="O" />
@@ -219,7 +234,7 @@ const AdminInfo = () => {
                                                 </RadioGroup>
                                             </td>
                                             <td style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>주민등록번호</td>
-                                            <td style={{ border: "1px solid grey" }}>{selectedInfo.residentRegistrationNumber}</td>
+                                            <td style={{ border: "1px solid grey" }}>{apiDetailData.residentRegistrationNumber}</td>
                                         </tr>
                                     </tbody>
                                 </table>
