@@ -43,7 +43,7 @@ const BookList = () => {
             const apiPotalResponse = await fetch('/api/employee/info');
             const apiPotalData = await apiPotalResponse.json();
 
-            const potalId=apiPotalData.data.potalId;
+            const potalId=apiPotalData.potalId;
             setPotalId(potalId);
 
             const carResponse = await fetch('/api/cars/list');
