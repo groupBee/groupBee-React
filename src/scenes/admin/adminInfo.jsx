@@ -35,7 +35,6 @@ const AdminInfo = () => {
     const [isAdmin, setIsAdmin] = useState('');
     const [residentRegistrationNumber, setResidentRegistrationNumber] = useState('');
     const [companyName, setCompanyName] = useState('')
-    const [departmentName, setDepartmentName] = useState('');
     const [departmentId, setDepartmentId] = useState('');
     const [positionList, setPositionList] = useState(['사장', '뭐', '어쩌고']);
     const [depList, setDepList] = useState([]);
@@ -76,18 +75,17 @@ const AdminInfo = () => {
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-            // 파일이 선택되었을 때 미리보기 설정
             const reader = new FileReader();
             reader.onloadend = () => {
-                setProfileFile(reader.result); // base64 인코딩된 이미지 데이터를 상태로 설정
+                setProfileFile(reader.result);
             };
-            reader.readAsDataURL(file); // 파일을 읽어 base64 데이터로 변환
+            reader.readAsDataURL(file);
         }
     };
 
 
     const membershipHandleChange = (event) => {
-        setMembershipStatus(event.target.value === 'true'); // 선택된 값에 따라 상태 업데이트
+        setMembershipStatus(event.target.value === 'true');
     };
     const adminHandleChange = (event) => {
         setIsAdmin(event.target.value === 'true');
@@ -132,10 +130,10 @@ const AdminInfo = () => {
             setPosition(data.position.id);
             setMembershipStatus(data.membershipStatus);
             setIsAdmin(data.isAdmin);
-            setDepartmentName(data.department.departmentName);
             setResidentRegistrationNumber(data.residentRegistrationNumber)
             setCompanyName(data.companyName);
             setFirstDay(data.firstDay)
+            setDepartmentId(data.department.id);
             setIdNumber(data.idNumber);
             setFile(data.file);
             setId(data.id);
@@ -155,7 +153,7 @@ const AdminInfo = () => {
     //사원정보 전송
 
     const changeInfo = async () => {
-        try {
+
             const formData = new FormData();
     
             // JSON 데이터 추가
@@ -171,16 +169,15 @@ const AdminInfo = () => {
                 address: address,
                 membershipStatus: membershipStatus,
                 departmentId: departmentId,
-                profileFile: profileFile, // 이 부분은 텍스트로 들어가는 부분입니다
+                profileFile: profileFile,
                 companyName: companyName,
                 isAdmin: isAdmin,
                 idNumber: idNumber,
                 firstDay: firstDay
             };
-    
+            
             formData.append('data', new Blob([JSON.stringify(jsonData)], { type: 'application/json' }));
     
-            // 파일 추가 (파일이 있을 경우에만)
             if (fileInputRef.current && fileInputRef.current.files[0]) {
                 formData.append('file', fileInputRef.current.files[0]);
             }
@@ -190,11 +187,10 @@ const AdminInfo = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-    
-            console.log('Response:', response.data);
-        } catch (error) {
-            console.error('Error sending data:', error);
-        }
+            alert(response.data.message);
+            setOpen(false);
+            fetchData();
+       
     };
     
 
