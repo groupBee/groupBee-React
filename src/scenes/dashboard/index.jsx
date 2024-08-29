@@ -21,6 +21,10 @@ function Dashboard() {
     const [filteredData, setFilteredData] = useState([]);
     const [memberId, setMemberId] = useState("");
     const [status, setStatus] = useState("all"); // 기본 상태는 'all'
+    const [emails, setEmails] = useState([]); // 이메일 목록 상태 추가
+    const [username, setUsername] = useState(''); // 사용자 이름 상태 추가
+    const [password, setPassword] = useState(''); // 비밀번호 상태 추가
+    const [error, setError] = useState(''); // 에러 상태 추가
     const navigate = useNavigate(); // navigate 함수 생성
 
     const handleBoard = () => {
@@ -75,6 +79,48 @@ function Dashboard() {
         }
     };
 
+    // 사용자 이메일 정보를 가져오는 함수
+    const getemail = async () => {
+        try {
+            const res = await axios.get("/api/elecapp/getinfo");
+            const fetchedMemberId = res.data.name;
+            setMemberId(fetchedMemberId);
+            getList(fetchedMemberId); // getinfo 호출 후 getList 호출
+
+            // 이메일 정보 가져오기
+            const emailRes = await axios.get("/api/employee/auth/email");
+            setUsername(emailRes.data.email);
+            setPassword(emailRes.data.password);
+
+        } catch (err) {
+            console.error("Error fetching info:", err);
+        }
+    };
+
+    // 이메일 목록을 가져오는 함수
+    const checkEmail = async () => {
+        try {
+            const response = await fetch('/api/email/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                setEmails(result);
+                setError('');
+            } else {
+                const result = await response.json();
+                setError(result.error || '이메일과 비밀번호를 확인해주세요');
+            }
+        } catch (err) {
+            setError('에러: ' + err.message);
+        }
+    };
+
 
     // 상태 변경 시 getList 호출
     useEffect(() => {
@@ -85,6 +131,7 @@ function Dashboard() {
 
     // 컴포넌트가 마운트될 때 getinfo 호출
     useEffect(() => {
+        getemail();
         getinfo();
     }, []);
 
@@ -162,7 +209,28 @@ function Dashboard() {
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box></Box>
+                    <Box p="15px" maxHeight="200px" overflow="auto">
+                        {error && <div style={{ color: 'red' }}>{error}</div>}
+                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                            <thead>
+                            <tr style={{ borderBottom: '1px solid grey' }}>
+                                <th style={{ width: '50%' }}>제목</th>
+                                <th style={{ width: '20%' }}>발신자</th>
+                                <th style={{ width: '20%' }}>받은 날짜</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {emails.map((email, index) => (
+                                <tr key={index} style={{ borderBottom: '1px solid grey' }}>
+                                    <td>{email.subject}</td>
+                                    <td>{email.from}</td>
+                                    <td>{email.receivedDate}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                        {emails.length === 0 && <p style={{ textAlign: 'center' }}>받은 이메일이 없습니다.</p>}
+                    </Box>
                 </Box>
 
                 {/* Bar Chart */}
