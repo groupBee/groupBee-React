@@ -6,11 +6,18 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
+import { useRef, useEffect, useState } from 'react';
 import { MoreHoriz } from "@mui/icons-material";
 import { tokens } from "../../theme";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from 'axios';
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import googleCalendarPlugin from "@fullcalendar/google-calendar";
+import "../calendar/calendar.css";
 
 function Dashboard() {
     const theme = useTheme();
@@ -21,11 +28,9 @@ function Dashboard() {
     const [filteredData, setFilteredData] = useState([]);
     const [memberId, setMemberId] = useState("");
     const [status, setStatus] = useState("all"); // 기본 상태는 'all'
-    const [emails, setEmails] = useState([]); // 이메일 목록 상태 추가
-    const [username, setUsername] = useState(''); // 사용자 이름 상태 추가
-    const [password, setPassword] = useState(''); // 비밀번호 상태 추가
-    const [error, setError] = useState(''); // 에러 상태 추가
-    const navigate = useNavigate(); // navigate 함수 생성
+    const [events, setEvents] = useState([]);
+    const navigate = useNavigate();
+    const calendarRef = useRef(null); // 캘린더 참조
 
     const handleBoard = () => {
         navigate("/board");
@@ -35,12 +40,10 @@ function Dashboard() {
         navigate("/calendar");
     };
 
-    // 이메일 리스트를 보여주는 버튼
     const handleEmailList = () => {
         navigate("/email", { state: { view: "list" } });
     };
 
-    // 이메일 쓰기 화면을 보여주는 버튼
     const handleEmailWrite = () => {
         navigate("/email", { state: { view: "send" } });
     };
@@ -57,82 +60,79 @@ function Dashboard() {
         navigate("/book/carbook");
     };
 
+    // 데이터 가져오기
     const getinfo = async () => {
         try {
             const res = await axios.get("/api/elecapp/getinfo");
             const fetchedMemberId = res.data.name;
             setMemberId(fetchedMemberId);
-            getList(fetchedMemberId); // getinfo 호출 후 getList 호출
+            getList(fetchedMemberId);
         } catch (err) {
             console.error("Error fetching info:", err);
         }
     };
 
     const getList = async (fetchedMemberId) => {
-        if (!fetchedMemberId) return; // memberId가 비어 있으면 실행하지 않음
+        if (!fetchedMemberId) return;
         try {
             const res = await axios.get(`/api/elecapp/status?memberId=${fetchedMemberId}&status=${status}`);
             setFilteredData(res.data);
-            console.log(res.data);
         } catch (err) {
             console.error("Error fetching list:", err);
         }
     };
 
-    // 사용자 이메일 정보를 가져오는 함수
-    const getemail = async () => {
+    // 캘린더 데이터 가져오기
+    const fetchData = async () => {
         try {
-            const res = await axios.get("/api/elecapp/getinfo");
-            const fetchedMemberId = res.data.name;
-            setMemberId(fetchedMemberId);
-            getList(fetchedMemberId); // getinfo 호출 후 getList 호출
-
-            // 이메일 정보 가져오기
-            const emailRes = await axios.get("/api/employee/auth/email");
-            setUsername(emailRes.data.email);
-            setPassword(emailRes.data.password);
-
-        } catch (err) {
-            console.error("Error fetching info:", err);
-        }
-    };
-
-    // 이메일 목록을 가져오는 함수
-    const checkEmail = async () => {
-        try {
-            const response = await fetch('/api/email/check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                setEmails(result);
-                setError('');
-            } else {
-                const result = await response.json();
-                setError(result.error || '이메일과 비밀번호를 확인해주세요');
+            const calendarResponse = await fetch("/api/calendar/list");
+            // HTTP 상태 코드를 확인하여 200이 아닌 경우 오류 처리
+            if (!calendarResponse.ok) {
+                if (calendarResponse.status === 404) {
+                    console.error("404: 서버에서 데이터를 찾을 수 없습니다.");
+                } else if (calendarResponse.status === 500) {
+                    console.error("500: 서버 오류가 발생했습니다.");
+                } else if (calendarResponse.status === 502) {
+                    console.error("502: Gateway 오류가 발생했습니다.");
+                } else {
+                    console.error(`${calendarResponse.status}: 알 수 없는 오류가 발생했습니다.`);
+                }
+                // FullCalendar 초기화
+                const calendarApi = calendarRef.current.getApi();
+                calendarApi.removeAllEvents();
+                return;
             }
-        } catch (err) {
-            setError('에러: ' + err.message);
+            const calendarData = await calendarResponse.json();
+
+            const eventsData = calendarData.map(event => ({
+                id: event.id,
+                title: event.title,
+                content: event.content,
+                start: event.startDay,
+                end: event.endDay,
+                backgroundColor: '#ffc107',     // 이벤트 배경색
+                borderColor: '#ffc107',         // 이벤트 테두리색
+                textColor: '#111111',
+            }));
+            setEvents(eventsData);
+            console.log(eventsData);
+        } catch (e) {
+            console.log("받아올 데이터가 없습니다.");
+            // 오류 발생 시 FullCalendar 초기화
+            const calendarApi = calendarRef.current.getApi();
+            calendarApi.removeAllEvents();  // 모든 이벤트 제거
         }
     };
 
-
-    // 상태 변경 시 getList 호출
     useEffect(() => {
         if (memberId) {
             getList(memberId);
         }
     }, [status, memberId]);
 
-    // 컴포넌트가 마운트될 때 getinfo 호출
     useEffect(() => {
-        getemail();
         getinfo();
+        fetchData(); // 캘린더 데이터 가져오기
     }, []);
 
     return (
@@ -155,9 +155,7 @@ function Dashboard() {
                 gridAutoRows="140px"
                 gap="20px"
             >
-                {/* ---------------- Row 2 ---------------- */}
-
-                {/* Line Chart */}
+                {/* 공지사항 */}
                 <Box
                     gridColumn={
                         isXlDevices ? "span 8" : isMdDevices ? "span 6" : "span 3"
@@ -176,14 +174,23 @@ function Dashboard() {
                     <Box></Box>
                 </Box>
 
-                {/* Transaction Data */}
+                {/* 캘린더 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 3"
                     bgcolor={colors.primary[400]}
-                    overflow="auto"
+                    display="flex"
+                    flexDirection="column"
+                    height="100%" // Ensure the Box takes up available height
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px">
+                    <Box
+                        borderBottom={`4px solid ${colors.primary[500]}`}
+                        p="15px"
+                        flexShrink={0}
+                        position="sticky"
+                        top="0"
+                        bgcolor={colors.primary[400]}
+                    >
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             캘린더
                             <IconButton onClick={handleCalendar}>
@@ -191,10 +198,38 @@ function Dashboard() {
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box></Box>
+                    <Box p="15px" flexGrow={1} overflow="auto">
+                        <FullCalendar
+                            ref={calendarRef}
+                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
+                            headerToolbar={false}  // 기본 툴바 숨기기
+                            customButtons={{
+                                customPrev: {
+                                    text: '◀',
+                                    click: () => calendarRef.current.getApi().prev()
+                                },
+                                customNext: {
+                                    text: '▶',
+                                    click: () => calendarRef.current.getApi().next()
+                                }
+                            }}
+                            initialView="dayGridMonth"
+                            events={events}
+                            eventClick={(info) => {
+                                alert(`이벤트: ${info.event.title}`);
+                            }}
+                            locale='ko'
+                            height="auto"
+                            headerToolbar={{
+                                left: 'customPrev',
+                                center: 'title',
+                                right: 'customNext'
+                            }}
+                        />
+                    </Box>
                 </Box>
 
-                {/* Revenue Details */}
+                {/* 근테관리 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 2"
@@ -203,37 +238,17 @@ function Dashboard() {
                 >
                     <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
-                            이메일
+                            근테관리
                             <IconButton onClick={handleEmailList}>
                                 <MoreHoriz style={{ color: "gray" }} />
                             </IconButton>
                         </Typography>
                     </Box>
                     <Box p="15px" maxHeight="200px" overflow="auto">
-                        {error && <div style={{ color: 'red' }}>{error}</div>}
-                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                            <thead>
-                            <tr style={{ borderBottom: '1px solid grey' }}>
-                                <th style={{ width: '50%' }}>제목</th>
-                                <th style={{ width: '20%' }}>발신자</th>
-                                <th style={{ width: '20%' }}>받은 날짜</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {emails.map((email, index) => (
-                                <tr key={index} style={{ borderBottom: '1px solid grey' }}>
-                                    <td>{email.subject}</td>
-                                    <td>{email.from}</td>
-                                    <td>{email.receivedDate}</td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
-                        {emails.length === 0 && <p style={{ textAlign: 'center' }}>받은 이메일이 없습니다.</p>}
                     </Box>
                 </Box>
 
-                {/* Bar Chart */}
+                {/* 결제현황 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 2"
@@ -294,7 +309,7 @@ function Dashboard() {
                     </Box>
                 </Box>
 
-                {/* Geography Chart */}
+                {/* 예약현황 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 2"
@@ -309,7 +324,8 @@ function Dashboard() {
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box></Box>
+                    <Box p="15px" maxHeight="200px" overflow="auto">
+                    </Box>
                 </Box>
             </Box>
         </Box>
