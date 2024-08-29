@@ -1,9 +1,10 @@
 import React from 'react';
 import {Box} from "@mui/material";
 import {Header} from "../../components/index.jsx";
-import {Link, Navigate, Route, Routes} from "react-router-dom";
+import {Link, Navigate, NavLink, Route, Routes} from "react-router-dom";
 import AdminInfo from "./adminInfo.jsx";
 import AdminBook from "./adminBook.jsx";
+import AdminWrite from "./adminWrite.jsx";
 
 
 const AdminRoute = () => {
@@ -20,22 +21,40 @@ const AdminRoute = () => {
                         margin: 0
                     }}>
                         <li style={{margin: 0}}>
-                            <Link to="adminInfo" style={{
-                                textDecoration: 'none',
-                                fontSize: '20px',
-                                color: '#000'
-                            }}>
-                                직원 조회
-                            </Link>
+                            <NavLink
+                                to="adminInfo"
+                                style={({isActive}) => ({
+                                    textDecoration: 'none',
+                                    fontSize: '20px',
+                                    color: isActive ? 'black' : '#a1a1a1' // 선택된 경우 색 변경
+                                })}
+                            >
+                                직원조회
+                            </NavLink>
                         </li>
                         <li style={{margin: 0}}>
-                            <Link to="adminBook" style={{
-                                textDecoration: 'none',
-                                fontSize: '20px',
-                                color: '#000'
-                            }}>
-                                예약 관리
-                            </Link>
+                            <NavLink
+                                to="adminBook"
+                                style={({isActive}) => ({
+                                    textDecoration: 'none',
+                                    fontSize: '20px',
+                                    color: isActive ? 'black' : '#a1a1a1'
+                                })}
+                            >
+                                예약관리
+                            </NavLink>
+                        </li>
+                        <li style={{margin: 0}}>
+                            <NavLink
+                                to="adminWrite"
+                                style={({isActive}) => ({
+                                    textDecoration: 'none',
+                                    fontSize: '20px',
+                                    color: isActive ? 'black' : '#a1a1a1'
+                                })}
+                            >
+                                전자결재
+                            </NavLink>
                         </li>
                     </ul>
                 </nav>
@@ -45,6 +64,7 @@ const AdminRoute = () => {
                 <Route path="/" element={<Navigate to="adminInfo"/>}/>
                 <Route path="adminInfo" element={<AdminInfo/>}/>
                 <Route path="adminBook" element={<AdminBook/>}/>
+                <Route path="adminWrite" element={<AdminWrite/>}/>
             </Routes>
         </div>
     );

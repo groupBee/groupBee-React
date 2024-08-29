@@ -44,6 +44,7 @@ const WriteForm = ({}) => {
             getSignForm();
         } else {
             getinfo();
+
         }
     }, [appId]);
 
@@ -88,6 +89,7 @@ const WriteForm = ({}) => {
     const getinfo = () => {
         axios.get("/api/elecapp/getinfo")
             .then(res => {
+                console.log(res.data)
                 // 기본 사용자 정보 세팅
                 setFirstApprover(res.data.name);
                 setWriter(res.data.name);
