@@ -93,8 +93,8 @@ const WriteForm = ({}) => {
                 // 기본 사용자 정보 세팅
                 setFirstApprover(res.data.name);
                 setWriter(res.data.name);
-                setDepartment(res.data.departmentName);
-                setPosition(res.data.position);
+                setDepartment(res.data.department.departmentName);
+                setPosition(res.data.position.rank);
 
                 // 빈 값으로 초기화
                 setSecondApprover('');

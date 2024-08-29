@@ -12,8 +12,8 @@ const GroupModal = ({ open, onClose, onSelect }) => {
     const getinfo = () => {
         axios.get("/api/employee/list")
             .then(res => {
-                setMemberList(res.data.data);
-                console.log(res.data.data);
+                setMemberList(res.data);
+                console.log(res.data);
             });
     }
 
@@ -23,7 +23,7 @@ const GroupModal = ({ open, onClose, onSelect }) => {
 
         // 각 멤버를 부서별로 정리
         memberList.forEach(member => {
-            const departmentName = member.departmentName;
+            const departmentName = member.department.departmentName;
 
             // 부서가 아직 존재하지 않으면 생성
             if (!departmentMap[departmentName]) {
@@ -38,7 +38,7 @@ const GroupModal = ({ open, onClose, onSelect }) => {
             departmentMap[departmentName].people.push({
                 id: member.id,
                 name: member.name,
-                position: member.position,
+                position: member.position.rank,
                 email: member.email,
                 extensionCall: member.extensionCall,
                 phoneNumber: member.phoneNumber
