@@ -18,13 +18,13 @@ const SendEmail = () => {
     const [errorModalOpen, setErrorModalOpen] = useState(false);  // 오류 모달 상태 추가
     const [errorMessage, setErrorMessage] = useState('');  // 오류 메시지 상태 추가
 
-    const getinfo = () => {
-        axios.get("/api/employee/auth/email")
-            .then(res => {
-                setUsername(res.data.email)
-                setPassword(res.data.password)
-            })
-    }
+    // const getinfo = () => {
+    //     axios.get("/api/employee/auth/email")
+    //         .then(res => {
+    //             setUsername(res.data.email)
+    //             setPassword(res.data.password)
+    //         })
+    // }
 
     const openModal = (field) => {
         setTargetField(field); 
@@ -35,6 +35,7 @@ const SendEmail = () => {
         e.preventDefault();
 
         const emailData = {
+            
             to,
             cc,
             subject,
@@ -91,9 +92,9 @@ const SendEmail = () => {
         }
     };
 
-    useEffect(() => {
-        getinfo();
-    }, []);
+    // useEffect(() => {
+    //     getinfo();
+    // }, []);
 
     return (
         <div>

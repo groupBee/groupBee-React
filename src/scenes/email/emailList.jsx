@@ -4,7 +4,8 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import MailOpenIcon from '@mui/icons-material/Drafts';
 
 function EmailList() {
-
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [emails, setEmails] = useState([]);
     const [error, setError] = useState('');
     const [selectedEmail, setSelectedEmail] = useState(null);
@@ -109,10 +110,9 @@ function EmailList() {
 
     // 유저 이름이 설정된 후 이메일 체크
     useEffect(() => {
-        if (username) {
+
             checkEmail();
-        }
-    }, [username]);
+        },[]);
 
     return (
         <div>

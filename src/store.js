@@ -3,9 +3,10 @@ import axios from 'axios';
 
 
 const sendRocketChatInfo=(id,token)=>{
-    data={
+    const data={
         "userId":id,"authToken":token
     };
+    console.log(data);
     axios.post("/api/employee/rocket.chat/session",data)
 }
 
