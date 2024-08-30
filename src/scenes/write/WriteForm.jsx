@@ -74,6 +74,7 @@ const WriteForm = ({}) => {
                     setAttachedFile(res.data.attachedFile);
                     setApproveDate(new Date(res.data.writeday));
                     setLevel(res.data.level);
+                    setOriginalFile(res.data.originalFile ? { name: res.data.originalFile } : null);
                     setAdditionalFields(res.data.additionalFields || {});
                     setApproveStatus(res.data.approveStatus);
                     setIsDocumentLoaded(true); // 문서가 로드되었음을 명시
@@ -103,6 +104,7 @@ const WriteForm = ({}) => {
                 setApproveDate(new Date()); // 현재 날짜로 초기화
                 setLevel(0);
                 setAdditionalFields({});
+                setOriginalFile('');
                 setApproveStatus(null); // 새 문서는 approveStatus를 null로 설정
             })
             .catch(err => {
@@ -238,21 +240,36 @@ const WriteForm = ({}) => {
                 marginBottom: '20px',
                 width: '100%',
                 paddingLeft: '125px',
-                fontSize:'23px'
+                fontSize: '23px'
             }}>
                 <Button
                     onClick={() => changeAppDoc(0)}
-                    style={{backgroundColor: appDocType === 0 ? '#ffb121' : '#fafaf0',fontSize:'20px',color:appDocType === 0 ? 'white' :'#ffb121',border:'1px solid #ffb121'}}>
+                    style={{
+                        backgroundColor: appDocType === 0 ? '#ffb121' : '#fafaf0',
+                        fontSize: '20px',
+                        color: appDocType === 0 ? 'white' : '#ffb121',
+                        border: '1px solid #ffb121'
+                    }}>
                     품의서
                 </Button>
                 <Button
                     onClick={() => changeAppDoc(1)}
-                    style={{backgroundColor: appDocType === 1 ? '#ffb121' : '#fafaf0',fontSize:'20px',color:appDocType === 1 ? 'white' :'#ffb121',border:'1px solid #ffb121'}}>
+                    style={{
+                        backgroundColor: appDocType === 1 ? '#ffb121' : '#fafaf0',
+                        fontSize: '20px',
+                        color: appDocType === 1 ? 'white' : '#ffb121',
+                        border: '1px solid #ffb121'
+                    }}>
                     휴가신청서
                 </Button>
                 <Button
                     onClick={() => changeAppDoc(2)}
-                    style={{backgroundColor: appDocType === 2 ? '#ffb121' : '#fafaf0',fontSize:'20px',color:appDocType === 2 ? 'white' :'#ffb121',border:'1px solid #ffb121'}}>
+                    style={{
+                        backgroundColor: appDocType === 2 ? '#ffb121' : '#fafaf0',
+                        fontSize: '20px',
+                        color: appDocType === 2 ? 'white' : '#ffb121',
+                        border: '1px solid #ffb121'
+                    }}>
                     지출보고서
                 </Button>
             </div>
@@ -277,7 +294,7 @@ const WriteForm = ({}) => {
                         <td colSpan={4} rowSpan={3}
                             style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
                         <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
-                        <td className="fixed-size" style={{height:'50px'}}>최초승인자</td>
+                        <td className="fixed-size" style={{height: '50px'}}>최초승인자</td>
                         <td className="fixed-size">중간승인자</td>
                         <td className="fixed-size">최종승인자</td>
                     </tr>
@@ -327,12 +344,26 @@ const WriteForm = ({}) => {
                                    style={{fontSize: '23px', width: '175px'}}/>
                             {errors.level && <div className="error">{errors.level}</div>}</td>
                     </tr>
-                    {appDocType === 0 && <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
-                    {appDocType === 1 && <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
-                    {appDocType === 2 && <AppDocExpend handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
+                    {appDocType === 0 &&
+                        <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
+                    {appDocType === 1 &&
+                        <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
+                    {appDocType === 2 &&
+                        <AppDocExpend handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
                     <tr style={{fontSize: '23px'}}>
                         <td colSpan={2}>첨부파일</td>
-                        <td colSpan={6}><input type="file" ref={fileRef} onChange={uploadPhoto}/></td>
+                        <td colSpan={6}>
+
+                            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                <Button variant="outlined" onClick={() => fileRef.current.click()}>
+                                    파일 첨부
+                                </Button>
+                                <span>
+                                 {originalFile ? originalFile.name : '파일이 첨부되지 않았습니다.'}
+                           </span>
+                            </div>
+                            <input type="file" ref={fileRef} onChange={uploadPhoto} style={{display: 'none'}}/>
+                        </td>
                     </tr>
                     </tbody>
                     <tbody>
@@ -343,7 +374,7 @@ const WriteForm = ({}) => {
                                 onChange={(data) => setApproveDate(data)}
                                 dateFormat="yyyy년 MM월 dd일"
                                 style={{marginTop: '50px'}}
-                                />
+                            />
                         </td>
                     </tr>
                     <tr style={{fontSize: '23px'}}>
