@@ -163,8 +163,9 @@ function Dashboard() {
                     gridRow="span 3"
                     bgcolor={colors.primary[400]}
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px">
-                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
+                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" style={{backgroundColor:'#ffb121'}}>
+                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between"
+                                    alignItems="center">
                             공지사항
                             <IconButton onClick={handleBoard}>
                                 <MoreHoriz style={{ color: "gray" }} />
@@ -189,7 +190,7 @@ function Dashboard() {
                         flexShrink={0}
                         position="sticky"
                         top="0"
-                        bgcolor={colors.primary[400]}
+                        style={{backgroundColor:'#ffb121'}}
                     >
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             캘린더
@@ -202,7 +203,6 @@ function Dashboard() {
                         <FullCalendar
                             ref={calendarRef}
                             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
-                            headerToolbar={false}  // 기본 툴바 숨기기
                             customButtons={{
                                 customPrev: {
                                     text: '◀',
@@ -236,7 +236,7 @@ function Dashboard() {
                     backgroundColor={colors.primary[400]}
                     overflow="auto"
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px">
+                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" style={{backgroundColor:'#ffb121'}}>
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             근테관리
                             <IconButton onClick={handleEmailList}>
@@ -257,7 +257,7 @@ function Dashboard() {
                     display="flex"
                     flexDirection="column"
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" flexShrink={0}>
+                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" flexShrink={0} style={{backgroundColor:'#ffb121'}}>
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             결제현황
                             <IconButton onClick={handleList}>
@@ -316,7 +316,7 @@ function Dashboard() {
                     backgroundColor={colors.primary[400]}
                     overflow="auto"
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px">
+                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" style={{backgroundColor:'#ffb121'}}>
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             예약현황
                             <IconButton onClick={handleBook}>
