@@ -35,8 +35,6 @@ const SendEmail = () => {
         e.preventDefault();
 
         const emailData = {
-            username,
-            password,
             to,
             cc,
             subject,
