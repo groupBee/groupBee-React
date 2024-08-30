@@ -155,6 +155,7 @@ const WriteForm = ({}) => {
     const createApp = (status) => {
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
+            alert("createpp까지 넘어옴"+status)
             return;
         }
 
@@ -166,11 +167,35 @@ const WriteForm = ({}) => {
         });
 
         // 상태를 기반으로 요청 전송
-        axios.post('/api/elecapp/create', {
-            writer, firstApprover, secondApprover, thirdApprover,
-            originalFile: originalFileName, attachedFile, approveStatus: status, // 전달받은 approveStatus로 상태 설정
-            appDocType, level, approveType, position, department, additionalFields: transformedAdditionalFields
-        })
+        const postData = {
+            writer,
+            firstApprover,
+            secondApprover,
+            thirdApprover,
+            originalFile: originalFileName,
+            attachedFile,
+            approveStatus: status,
+            appDocType,
+            level,
+            approveType,
+            position,
+            department,
+            additionalFields: transformedAdditionalFields
+        };
+
+// appId가 있으면 postData에 appId를 추가
+        if (appId) {
+            postData.id = appId;
+        }
+
+// axios.post 호출
+        axios.post('/api/elecapp/create', postData)
+            .then(res => {
+                console.log('성공:', res);
+            })
+            .catch(err => {
+                console.error('오류:', err);
+            })
             .then(res => {
                 if(status === 1) {
                     alert("전자결재가 임시저장되었습니다.");

@@ -28,18 +28,18 @@ const Detail = () => {
     const [imageSrc, setImageSrc] = useState(null); // 추가된 이미지 상태
 
     // 결재 문서 데이터를 가져오는 함수
-    const getSignForm = () => {
+    const getSignForm = useCallback(() => {
         axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
             .then(res => {
                 setList(res.data);
-                setAppDocType(res.data.appDocType); // appDocType 설정
+                setAppDocType(res.data.appDocType);
                 console.log(res.data);
-
             })
             .catch(err => {
                 console.error("문서 불러오기 실패:", err);
             });
-    };
+    }, [appId]);
+
 
     const getMinioFileUrl = (fileName) => {
         if (!fileName) return '';
@@ -133,6 +133,7 @@ const Detail = () => {
             axios.post('/api/elecapp/chageAppType', { elecAppId: appId })
                 .then(res => {
                     alert('승인되었습니다.');
+                    getSignForm();
                     navi('/list');
                 })
                 .catch(err => {
