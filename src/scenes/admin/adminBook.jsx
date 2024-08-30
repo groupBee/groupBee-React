@@ -1,10 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import {Box, Button, IconButton, InputBase, MenuItem, Select, Typography, useMediaQuery, useTheme} from "@mui/material";
-import { Table } from "react-bootstrap";
-import Swal from "sweetalert2";
+import {
+    Box,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+    InputBase,
+    MenuItem,
+    Select,
+    TextField,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    useMediaQuery
+} from "@mui/material";
 import ReactPaginate from 'react-paginate';
-import './adminBookPagination.css';
-import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
+import { MenuOutlined, SearchOutlined } from "@mui/icons-material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Swal from 'sweetalert2';
 
 const AdminBook = () => {
     const [sortOrder, setSortOrder] = useState('default');
@@ -16,6 +35,97 @@ const AdminBook = () => {
     const [roomData, setRoomData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
     const [itemsPerPage] = useState(4);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+        setAlertMessage("");
+    };
+    const handleCloseModal = () => setIsModalOpen(false);
+
+    const [newBooking, setNewBooking] = useState({
+        category: '',
+        type: '',
+        carId: '',
+        file: null,
+        name: '',
+        imagePreview: ''
+    });
+
+    const handleAddBooking = async () => {
+        if (!newBooking.category || !newBooking.file || (newBooking.category === '0' && !newBooking.carId) || (newBooking.category === '1' && !newBooking.name)) {
+            setAlertMessage("모든 필드를 입력해주세요.");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('file', newBooking.file);
+            formData.append('category', newBooking.category);
+
+            if (newBooking.category === '0') {
+                formData.append('entityData', JSON.stringify({
+                    carId: newBooking.carId,
+                    type: newBooking.type
+                }));
+            } else if (newBooking.category === '1') {
+                formData.append('entityData', JSON.stringify({
+                    name: newBooking.name
+                }));
+            }
+
+            const response = await fetch('/api/admin/book/insert', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('네트워크 응답이 올바르지 않습니다.');
+            }
+
+            const result = await response.json();
+            Swal.fire({
+                title: '<strong>추가 성공</strong>',
+                icon: 'success',
+                html: '새로운 예약이 성공적으로 추가되었습니다.',
+                confirmButtonText: '확인',
+                confirmButtonColor: '#ffb121',
+            });
+
+            setNewBooking({
+                category: '',
+                type: '',
+                carId: '',
+                file: null,
+                name: '',
+                imagePreview: ''
+            });
+            handleCloseModal();
+            fetchData();
+
+        } catch (error) {
+            Swal.fire({
+                title: '<strong>추가 실패</strong>',
+                icon: 'error',
+                html: '예약 추가 중 에러가 발생했습니다.',
+                confirmButtonText: '확인',
+                confirmButtonColor: '#ffb121',
+            });
+        }
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setNewBooking({
+                ...newBooking,
+                file: file,
+                imagePreview: URL.createObjectURL(file),
+            });
+        }
+    };
 
     const fetchData = async () => {
         try {
@@ -36,7 +146,7 @@ const AdminBook = () => {
             setRoomBookings(roomBookingData);
 
         } catch (error) {
-            console.error('Error fetching data:', error);
+            setAlertMessage("데이터를 가져오는 중 오류가 발생했습니다.");
         }
     };
 
@@ -46,7 +156,6 @@ const AdminBook = () => {
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value);
-        // 선택된 순서에 따른 데이터 정렬 또는 기타 작업을 여기에 추가
     };
 
     const handleDelete = async (id, category) => {
@@ -95,7 +204,6 @@ const AdminBook = () => {
                 }
             }
         } catch (error) {
-            console.error('삭제 중 에러 발생:', error);
             Swal.fire({
                 title: '<strong>삭제 실패</strong>',
                 icon: 'error',
@@ -126,6 +234,7 @@ const AdminBook = () => {
             ...booking,
             type: getRoomNameByRoomId(booking.roomId),
             category: '회의실'
+
         }))
     ];
 
@@ -158,7 +267,6 @@ const AdminBook = () => {
         };
     };
 
-    // Calculate the index range for the current page
     const indexOfLastItem = (currentPage + 1) * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = combinedBookings.slice(indexOfFirstItem, indexOfLastItem);
@@ -169,112 +277,167 @@ const AdminBook = () => {
     };
 
     return (
-        <Box style={{padding:'10px'}}>
-        <Box bgcolor="" p={1} height="280px" padding="0px">
-            <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
-                <Box display="flex" alignItems="center" gap={2}>
-                    <IconButton
-                        sx={{ display: `${isMdDevices ? "flex" : "none"}` }}
-                        onClick={() => setToggled(!toggled)}
-                    >
-                        <MenuOutlined />
-                    </IconButton>
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        bgcolor="white"
-                        borderRadius="3px"
-                        sx={{ display: `${isXsDevices ? "none" : "flex"}` }}
-                    >
-                        <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
-                        <IconButton type="button" sx={{ p: 1 }}>
-                            <SearchOutlined />
-                        </IconButton>
+        <Box sx={{ padding: '20px'}}>
+            <Box  p={2}>
+                <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
+                    <Box display="flex" alignItems="center" gap={2}>
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            bgcolor="white"
+                            borderRadius="3px"
+                            sx={{ display: `${isXsDevices ? "none" : "flex"}` }}
+                        >
+                            <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
+                            <IconButton type="button" sx={{ p: 1 }}>
+                                <SearchOutlined />
+                            </IconButton>
+                        </Box>
+                    </Box>
+                    <Box display="flex" alignItems="center" gap={1}>
+                        <Button  onClick={handleOpenModal}
+                                sx={{ textAlign: 'center' , backgroundColor:'#ff7926', fontSize:'13px'
+                        ,color: 'white', padding:'7px'}}>
+                            차량/회의실 추가
+                        </Button>
+                        <Select
+                            value={sortOrder}
+                            onChange={handleSortChange}
+                            size="small"
+                            sx={{ minWidth: 120 }}
+                        >
+                            <MenuItem value="default">기본 순서</MenuItem>
+                            <MenuItem value="ascending">오름차순</MenuItem>
+                            <MenuItem value="descending">내림차순</MenuItem>
+                            <MenuItem value="date">날짜순</MenuItem>
+                        </Select>
                     </Box>
                 </Box>
-                <Select
-                    value={sortOrder}
-                    onChange={handleSortChange}
-
-                    size="small" // Select 컴포넌트의 크기 조절
-                    sx={{
-                        minWidth: 120, // 셀렉트의 최소 너비 설정
-                    }}
-                >
-                    <MenuItem value="default">기본 순서</MenuItem>
-                    <MenuItem value="ascending">오름차순</MenuItem>
-                    <MenuItem value="descending">내림차순</MenuItem>
-                    <MenuItem value="date">날짜순</MenuItem>
-                </Select>
+                <Box borderBottom="1px solid #e0e0e0" />
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem'}}>이름</TableCell>
+                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>차량/회의실</TableCell>
+                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>아이템</TableCell>
+                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>예약시간</TableCell>
+                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>반납시간</TableCell>
+                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>사유</TableCell>
+                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem'}}>삭제</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {currentItems.map((booking, index) => (
+                                <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.memberId}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.category}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.type}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{formatDateTime(booking.rentDay || booking.enter)}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{formatDateTime(booking.returnDay || booking.leave)}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.reason || booking.purpose}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
+                                        <IconButton onClick={() => handleDelete(booking.id, booking.category)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <ReactPaginate
+                    previousLabel={"<"}
+                    nextLabel={">"}
+                    pageCount={Math.ceil(combinedBookings.length / itemsPerPage)}
+                    onPageChange={handlePageClick}
+                    containerClassName={"pagination"}
+                    pageClassName={"page-item"}
+                    pageLinkClassName={"page-link"}
+                    previousClassName={"page-item"}
+                    previousLinkClassName={"page-link"}
+                    nextClassName={"page-item"}
+                    nextLinkClassName={"page-link"}
+                    breakClassName={"page-item"}
+                    breakLinkClassName={"page-link"}
+                    activeClassName={"active"}
+                    sx={{ marginTop: '30px' }}
+                />
             </Box>
-            <Box borderBottom="1px solid #e0e0e0" />
-            <Table>
-                <thead>
-                <tr>
-                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '8%', color: 'white'}}>이름</th>
-                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center',  width: '10%', color: 'white'}}>차량/회의실</th>
-                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center',  width: '10%', color: 'white'}}>아이템</th>
-                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '15%', color: 'white'}}>예약시간</th>
-                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '15%', color: 'white'}}>반납시간</th>
-                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '32%', color: 'white'}}>사유</th>
-                    <th style={{backgroundColor: '#ffb121',fontSize:'16px', textAlign: 'center', width: '10%', color: 'white'}}>삭제</th>
-                </tr>
-                </thead>
-                <tbody>
-                {currentItems.map((booking, index) => (
-                    <tr key={index}>
-                        <td style={{textAlign: 'center'}}>{booking.memberId}</td>
-                        <td style={{textAlign: 'center'}}>{booking.category}</td>
-                        <td style={{textAlign: 'center'}}>{booking.type}</td>
-                        <td style={{textAlign: 'center'}}>{formatDateTime(booking.rentDay || booking.enter)}</td>
-                        <td style={{textAlign: 'center'}}>{formatDateTime(booking.returnDay || booking.leave)}</td>
-                        <td style={{textAlign: 'center'}}>{booking.reason || booking.purpose}</td>
-                        <td style={{textAlign: 'center'}}>
-                            <Button
-                                variant=""
-                                size="small"
-                                onClick={() => handleDelete(booking.id, booking.category)}
-                                sx={{
-                                    backgroundColor: '#ff5b00',
-                                    color: '#fff',
-                                    fontWeight: 'bold',
-                                    textTransform: 'uppercase',
-                                    borderRadius: '5px',
-                                    padding: '6px 12px',
-                                    '&:hover': {
-                                        backgroundColor: '#c82333',
-                                        transform: 'scale(1.05)',
-                                    },
-                                }}
-                            >
-                                삭제
-                            </Button>
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </Table>
+
+
+            <Dialog open={isModalOpen} onClose={handleCloseModal}>
+                <DialogTitle >차량/회의실 추가</DialogTitle>
+                <DialogContent>
+                    {alertMessage && (
+                        <Box sx={{ mb: 2, color: 'red', textAlign: 'center' }}>
+                            {alertMessage}
+                        </Box>
+                    )}
+                    <Select
+                        value={newBooking.category}
+                        onChange={(e) => setNewBooking({ ...newBooking, category: e.target.value })}
+                        fullWidth
+                    >
+                        <MenuItem value="0">차량</MenuItem>
+                        <MenuItem value="1">회의실</MenuItem>
+                    </Select>
+                    {newBooking.imagePreview && (
+                        <Box mt={2} textAlign="center">
+                            <img
+                                src={newBooking.imagePreview}
+                                alt="미리보기"
+                                style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
+                            />
+                        </Box>
+                    )}
+                    <Button variant="contained" component="label" fullWidth sx={{ mt: 2, backgroundColor:'#ffb121' }}>
+                        이미지 업로드
+                        <input
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={handleImageChange}
+                        />
+                    </Button>
+                    {newBooking.category === '0' && (
+                        <>
+                            <TextField
+                                margin="dense"
+                                label="차량번호"
+                                fullWidth
+                                variant="outlined"
+                                value={newBooking.carId}
+                                onChange={(e) => setNewBooking({ ...newBooking, carId: e.target.value })}
+                            />
+                            <TextField
+                                margin="dense"
+                                label="차량종류"
+                                fullWidth
+                                variant="outlined"
+                                value={newBooking.type}
+                                onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
+                            />
+                        </>
+                    )}
+
+                    {newBooking.category === '1' && (
+                        <TextField
+                            margin="dense"
+                            label="회의실 이름"
+                            fullWidth
+                            variant="outlined"
+                            value={newBooking.name}
+                            onChange={(e) => setNewBooking({ ...newBooking, name: e.target.value })}
+                        />
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleAddBooking} color="primary">추가</Button>
+                    <Button onClick={handleCloseModal} color="secondary">취소</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
-    <ReactPaginate
-        previousLabel={"<"}  // 이전 페이지 버튼의 레이블
-        nextLabel={">"}      // 다음 페이지 버튼의 레이블
-        pageCount={Math.ceil(combinedBookings.length / itemsPerPage)}  // 총 페이지 수
-        onPageChange={handlePageClick}  // 페이지 변경 시 호출되는 함수
-        containerClassName={"pagination"}  // 페이지네이션 컨테이너 클래스 이름
-        pageClassName={"page-item"}  // 페이지 번호 버튼 클래스 이름
-        pageLinkClassName={"page-link"}  // 페이지 번호 링크 클래스 이름
-        previousClassName={"page-item"}  // 이전 버튼 클래스 이름
-        previousLinkClassName={"page-link"}  // 이전 버튼 링크 클래스 이름
-        nextClassName={"page-item"}  // 다음 버튼 클래스 이름
-        nextLinkClassName={"page-link"}  // 다음 버튼 링크 클래스 이름
-        breakClassName={"page-item"}  // 생략 아이콘 클래스 이름
-        breakLinkClassName={"page-link"}  // 생략 아이콘 링크 클래스 이름
-        activeClassName={"active"}  // 현재 활성화된 페이지 번호 버튼 클래스 이름
-        sx={{
-            marginTop: '10px'
-        }}
-    />
-    </Box>
     );
 };
 

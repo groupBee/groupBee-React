@@ -219,6 +219,7 @@ const SideBar = () => {
                     </SubMenu>
 
                 </Menu>
+                <Box>조직도 버튼 여기 만들예정</Box>
             </Box>
         </Sidebar>
     );

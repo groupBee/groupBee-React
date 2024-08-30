@@ -89,8 +89,8 @@ const AdminWrite = () => {
     };
 
     return (
-        <Box style={{ padding: '10px' }}>
-            <Box bgcolor="" p={2} height="280px" padding='0px'>
+        <Box style={{ padding: '20px' }}>
+            <Box p={2}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
                     <Box display="flex" alignItems="center" gap={2}>
                         <IconButton
