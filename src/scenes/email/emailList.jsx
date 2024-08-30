@@ -16,14 +16,7 @@ function EmailList() {
     const [pageGroup, setPageGroup] = useState(0); // 페이지 그룹 관리
     const pagesPerGroup = 5; // 그룹당 페이지 수를 5로 설정
 
-    // 로그인한 사람의 이메일 정보를 가져오는 함수
-    const getinfo = () => {
-        axios.get("/api/employee/auth/email")
-            .then(res => {
-                setUsername(res.data.email);
-                setPassword(res.data.password);
-            });
-    };
+  
 
     // 이메일 목록을 가져오는 함수
     const checkEmail = async () => {
@@ -31,11 +24,7 @@ function EmailList() {
 
         try {
             const response = await fetch('/api/email/check', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
+                method: 'get'
             });
 
             if (response.ok) {
@@ -118,17 +107,12 @@ function EmailList() {
         (_, i) => pageGroup * pagesPerGroup + i + 1
     );
 
-    // 컴포넌트가 처음 렌더링될 때 유저 정보 가져오기
-    useEffect(() => {
-        getinfo();
-    }, []);
 
     // 유저 이름이 설정된 후 이메일 체크
     useEffect(() => {
-        if (username) {
+
             checkEmail();
-        }
-    }, [username]);
+        },[]);
 
     return (
         <div>

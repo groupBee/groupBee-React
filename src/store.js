@@ -1,6 +1,16 @@
 import { create } from 'zustand';
 import axios from 'axios';
 
+
+const sendRocketChatInfo=(id,token)=>{
+    const data={
+        "userId":id,"authToken":token
+    };
+    console.log(data);
+    axios.post("/api/employee/rocket.chat/session",data)
+}
+
+
 const useStore = create((set) => ({
     id: '',
     passwd: '',
@@ -29,7 +39,7 @@ const useStore = create((set) => ({
 
             if (response.status === 200) {
                 console.log('로그인 성공', response.data);
-
+                sendRocketChatInfo(response.data.rocketData.data.userId,response.data.rocketData.data.authToken)
                 const { isAdmin } = response.data;
 
                 set({
