@@ -1,106 +1,100 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Typography, Button, TextField, Checkbox, FormControlLabel } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 
 const UpdatePage = () => {
-    const { id } = useParams(); // URL에서 ID 가져오기
-    const navigate = useNavigate();
-    const [post, setPost] = useState(null);
+    const { id } = useParams(); // URL에서 게시글 ID 가져오기
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [mustRead, setMustRead] = useState(false); // 공지사항 체크박스 상태
-    const [mustMustRead, setMustMustRead] = useState(false); // 중요 체크박스 상태
+    const [file, setFile] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        // 게시글 ID로 서버에서 데이터 가져오기
-        axios.get(`/api/board/${id}`)
+        // 서버에서 기존 게시글 정보를 가져와서 상태 업데이트
+        axios.get(`/api/board/list/${id}`)
             .then(response => {
-                const postData = response.data;
-                setPost(postData);
-                setTitle(postData.title);
-                setContent(postData.content);
-                setMustRead(postData.mustRead);
-                setMustMustRead(postData.mustMustRead);
+                const post = response.data;
+                setTitle(post.title);
+                setContent(post.content);
+                setFile(post.file);
             })
             .catch(error => {
                 console.error('Error fetching post:', error);
             });
     }, [id]);
 
-    const handleUpdate = async (e) => {
-        e.preventDefault(); // 기본 제출 방지
-        try {
-            // 게시글 업데이트 요청
-            await axios.put(`/api/board/update/${id}`, {
-                title,
-                content,
-                mustRead,
-                mustMustRead,
-            });
-            navigate(`/board/${id}`); // 업데이트 후 게시글 상세 페이지로 이동
-        } catch (error) {
-            console.error('Error updating post:', error);
-        }
+    const handleTitleChange = (e) => {
+        setTitle(e.target.value);
     };
 
-    if (!post) {
-        return <Typography variant="body1">게시글을 불러오는 중입니다...</Typography>;
-    }
+    const handleContentChange = (e) => {
+        setContent(e.target.value);
+    };
+
+    const handleFileChange = (e) => {
+        setFile(e.target.files[0]);
+    };
+
+    const handleUpdateClick = () => {
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        if (file) {
+            formData.append('file', file);
+        }
+
+        axios.put(`/api/board/update/${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+            .then(response => {
+                alert('게시글이 수정되었습니다.');
+                navigate(`/board/list/${id}`); // 수정 후 게시글 상세 페이지로 이동
+            })
+            .catch(error => {
+                console.error('Error updating post:', error);
+            });
+    };
+
+    const handleCancelClick = () => {
+        navigate(`/board/list/${id}`); // 취소 버튼을 누르면 게시글 상세 페이지로 이동
+    };
 
     return (
         <Box m="20px">
-            <Typography variant="h4">게시글 수정</Typography>
-            <Box mt="20px">
-                <form onSubmit={handleUpdate}>
-                    <div>
-                        <TextField
-                            label="제목"
-                            variant="outlined"
-                            fullWidth
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <Box mt="20px">
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={mustRead}
-                                    onChange={(e) => setMustRead(e.target.checked)}
-                                />
-                            }
-                            label="공지사항"
-                        />
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={mustMustRead}
-                                    onChange={(e) => setMustMustRead(e.target.checked)}
-                                />
-                            }
-                            label="중요"
-                        />
-                    </Box>
-                    <div>
-                        <TextField
-                            label="내용"
-                            variant="outlined"
-                            fullWidth
-                            multiline
-                            rows={10}
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <Box mt="20px">
-                        <Button type="submit" variant="contained" color="primary">
-                            수정 완료
-                        </Button>
-                    </Box>
-                </form>
+            <Typography variant="h4" mb={2}>게시글 수정</Typography>
+            <TextField
+                fullWidth
+                label="제목"
+                value={title}
+                onChange={handleTitleChange}
+                variant="outlined"
+                margin="normal"
+            />
+            <TextField
+                fullWidth
+                label="내용"
+                value={content}
+                onChange={handleContentChange}
+                variant="outlined"
+                margin="normal"
+                multiline
+                rows={10}
+            />
+            <input
+                type="file"
+                onChange={handleFileChange}
+                style={{ marginTop: '10px' }}
+            />
+            <Box mt={2}>
+                <Button variant="contained" color="primary" onClick={handleUpdateClick} style={{ marginRight: '10px' }}>
+                    수정
+                </Button>
+                <Button variant="outlined" onClick={handleCancelClick}>
+                    취소
+                </Button>
             </Box>
         </Box>
     );

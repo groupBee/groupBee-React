@@ -1,126 +1,97 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Header } from "../../components";
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Button } from "@mui/material";
+import { Box, Typography, Button } from '@mui/material';
 
-const BoardWrite = () => {
+const DetailPage = () => {
+    const { id } = useParams(); // URL에서 ID 가져오기
+    const [post, setPost] = useState(null);
+    const [currentUserId, setCurrentUserId] = useState(null);
     const navigate = useNavigate();
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [mustRead, setMustRead] = useState(false); // 공지사항 체크박스 상태
-    const [mustMustRead, setMustMustRead] = useState(false); // 중요 체크박스 상태
-    const [file, setFile] = useState(null); // 파일 상태
 
-    const handleTitleChange = (e) => {
-        setTitle(e.target.value);
+    useEffect(() => {
+        // 게시글 ID로 서버에서 데이터 가져오기
+        axios.get(`/api/board/list/${id}`)
+            .then(response => {
+                setPost(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching post:', error);
+            });
+
+        // 현재 로그인한 사용자 정보 가져오기
+        axios.get('/api/user/current')
+            .then(response => {
+                setCurrentUserId(response.data.memberId);
+            })
+            .catch(error => {
+                console.error('Error fetching current user:', error);
+            });
+    }, [id]);
+
+    const handleEditClick = () => {
+        navigate(`/board/update/${id}`); // 게시글 수정 페이지로 이동
     };
 
-    const handleContentChange = (e) => {
-        setContent(e.target.value);
-    };
-
-    const handleMustReadChange = (e) => {
-        setMustRead(e.target.checked);
-    };
-
-    const handleMustMustReadChange = (e) => {
-        setMustMustRead(e.target.checked);
-    };
-
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // 기본 제출 방지
-
-        const postData = {
-            title,
-            content,
-            mustRead,
-            mustMustRead,
-        };
-
-        try {
-            // 게시글 생성
-            const postResponse = await axios.post('/api/board/insert', postData);
-            const postId = postResponse.data.id; // 서버에서 반환된 게시글 ID
-
-            // 파일이 선택된 경우에만 파일 전송
-            if (file) {
-                const formData = new FormData();
-                formData.append('uploadFile', file);
-
-                await axios.post(`/api/board/upload/${postId}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
+    const handleDeleteClick = () => {
+        if (window.confirm('이 게시글을 삭제하시겠습니까?')) {
+            axios.delete(`/api/board/list/${id}`)
+                .then(() => {
+                    navigate('/board'); // 삭제 후 목록 페이지로 이동
+                })
+                .catch(error => {
+                    console.error('Error deleting post:', error);
                 });
-            }
-
-            navigate('/board'); // 요청이 성공하면 게시판 페이지로 이동
-        } catch (error) {
-            console.error('Error creating post or uploading file:', error); // 에러 발생 시 콘솔에 출력
         }
     };
 
     return (
         <Box m="20px">
-            <Header title="게시글 작성" />
-            <Box height="75vh">
-                <div>
-                    <form onSubmit={handleSubmit}>
-                        <div>
-                            <label htmlFor="title"><b style={{ fontSize: '15px' }}>제목</b></label>
-                            <br />
-                            <input
-                                type="text"
-                                id="title"
-                                value={title}
-                                onChange={handleTitleChange}
-                                required
-                                style={{ width: '800px', height: '30px' }}
-                            />
-                        </div>
-                        <div style={{ display: 'flex' }}>
-                            <input
-                                type="checkbox"
-                                checked={mustRead}
-                                onChange={handleMustReadChange}
-                            /><b style={{ marginTop: '15px', marginLeft: '10px' }}>공지사항</b>
-
-                            <input
-                                type="checkbox"
-                                checked={mustMustRead}
-                                onChange={handleMustMustReadChange}
-                                style={{ marginLeft: '20px' }}
-                            /><b style={{ marginTop: '15px', marginLeft: '10px' }}>중요</b>
-                        </div>
-                        <div>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                style={{ marginTop: '10px' }}
-                            />
-                        </div>
-                        <div>
-                            <label htmlFor="content"></label>
-                            <textarea
-                                id="content"
-                                value={content}
-                                onChange={handleContentChange}
-                                required
-                                style={{ width: '800px', height: '300px' }}
-                                placeholder='중요 체크시 상단 고정!'
-                            ></textarea>
-                        </div>
-                        <Button type="submit" variant='contained' color='info'>등록</Button>
-                    </form>
-                </div>
-            </Box>
+            <Button variant="contained" color="secondary" onClick={() => navigate('/board')}>
+                목록으로 돌아가기
+            </Button>
+            {post ? (
+                <>
+                    <Typography variant="h4" style={{ marginTop: '20px' }}>{post.title}</Typography>
+                    <Typography variant="subtitle1">작성자: {post.memberId}</Typography>
+                    <Typography variant="body1" style={{ marginTop: '20px' }}>
+                        {post.content}
+                    </Typography>
+                    {post.file && (
+                        post.file.endsWith('.jpg') || post.file.endsWith('.jpeg') || post.file.endsWith('.png') ? (
+                            <Box mt={2}>
+                                <img src={post.file} alt="첨부파일" style={{ maxWidth: '100%' }} />
+                            </Box>
+                        ) : (
+                            <Box mt={2}>
+                                <a href={post.file} download>
+                                    <Button variant="contained" color="primary">다운로드</Button>
+                                </a>
+                            </Box>
+                        )
+                    )}
+                    <Typography variant="subtitle2" style={{ marginTop: '20px' }}>
+                        작성일: {new Date(post.createDate).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                        조회수: {post.readCount}
+                    </Typography>
+                    {post.memberId === currentUserId && (
+                        <Box mt={2}>
+                            <Button variant="contained" color="primary" onClick={handleEditClick} style={{ marginRight: '10px' }}>
+                                수정
+                            </Button>
+                            <Button variant="contained" color="error" onClick={handleDeleteClick}>
+                                삭제
+                            </Button>
+                        </Box>
+                    )}
+                </>
+            ) : (
+                <Typography variant="body1">게시글을 불러오는 중입니다...</Typography>
+            )}
         </Box>
     );
 };
 
-export default BoardWrite;
+export default DetailPage;
