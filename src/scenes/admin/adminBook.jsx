@@ -234,6 +234,7 @@ const AdminBook = () => {
             ...booking,
             type: getRoomNameByRoomId(booking.roomId),
             category: '회의실'
+
         }))
     ];
 
