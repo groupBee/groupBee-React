@@ -1,425 +1,210 @@
 import React, { useState, useEffect } from 'react';
-import { Box, IconButton, Modal } from "@mui/material";
+import {Box, Checkbox, IconButton, Modal} from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
-// 상위 개념 데이터
-const departmentList = async () => {
-    const response = await axios.get('/api/department/all');
-    console.log(response.data)
-}
+import {forEach, map} from "react-bootstrap/ElementChildren";
 
-const employeeList = async () => {
-    const response = await axios.get('/api/employee/list');
-    console.log(response.data)
-}
+// 부서 데이터를 계층 구조로 변환하는 함수
+const transformDepartments = (departments) => {
+    const departmentMap = {};
+    const rootDepartments = [];
 
-const employeeDetail = async (employeeId) => {
-    const response = await axios.get('/api/employee/detail?id=' + employeeId);
-    console.log(response.data)
-}
+    // 모든 부서를 맵에 저장
+    departments.forEach(department => {
+        departmentMap[department.id] = { ...department, subDepartments: [] };
+    });
 
-
-
-const topLevelCategories = [
-    {
-        name: '인사',
-        departments: [
-            '인사부',
-            '총무부'
-        ]
-    },
-    {
-        name: '관리',
-        departments: [
-            '기획부',
-            '회계부'
-        ]
-    },
-    {
-        name: '개발',
-        departments: [
-            'IT관리부'
-        ]
-    }
-]
+    // 계층 구조 생성
+    departments.forEach(department => {
+        const id = department.id;
+        const parentId = id % 100 === 0 ? id : id - (id % 10); // 최상위 그룹 또는 두 번째 하위 그룹의 ID를 찾음
+        const grandParentId = id % 100 === 0 ? null : parentId - (parentId % 10); // 두 번째 하위 그룹의 최상위 그룹 ID
 
 
+        // 두 번째 하위 그룹의 부모 (최상위 그룹)과 연결
+        if (grandParentId !== null && departmentMap[grandParentId]) {
+            departmentMap[grandParentId].subDepartments.push(departmentMap[id]);
+        } else if (parentId !== id && departmentMap[parentId]) {
+            departmentMap[parentId].subDepartments.push(departmentMap[id]);
+        } else {
+            rootDepartments.push(departmentMap[id]);
+        }
+    });
 
-// 부서와 팀 데이터
-const departmentData = [
-    {
-        name: '기획부',
-        teams: [
-            {
-                name: '기획1팀',
-                employees: [
-                    { id: 1, name: '김기획', position: '팀장', department: '기획부', team: '기획1팀', email: 'kimk@company.com', phone: '010-1111-2222', photo: '/path/to/photo1.jpg' },
-                    { id: 2, name: '이계획', position: '팀원', department: '기획부', team: '기획1팀', email: 'leek@company.com', phone: '010-3333-4444', photo: '/path/to/photo2.jpg' },
-                ]
-            },
-            {
-                name: '기획2팀',
-                employees: [
-                    { id: 3, name: '박계획', position: '팀원', department: '기획부', team: '기획2팀', email: 'parkp@company.com', phone: '010-5555-6666', photo: '/path/to/photo3.jpg' }
-                ]
-            },
-            { name: '기획3팀', employees: [] },
-            { name: '기획4팀', employees: [] },
-            { name: '기획5팀', employees: [] },
-        ]
-    },
-    {
-        name: '회계부',
-        teams: [
-            {
-                name: '회계1팀',
-                employees: [
-                    { id: 4, name: '정회계', position: '팀장', department: '회계부', team: '회계1팀', email: 'jeongh@company.com', phone: '010-7777-8888', photo: '/path/to/photo4.jpg' }
-                ]
-            },
-            {
-                name: '회계2팀',
-                employees: [
-                    { id: 5, name: '최회계', position: '팀원', department: '회계부', team: '회계2팀', email: 'choic@company.com', phone: '010-9999-0000', photo: '/path/to/photo5.jpg' }
-                ]
-            },
-            { name: '회계3팀', employees: [] },
-            { name: '회계4팀', employees: [] },
-            { name: '회계5팀', employees: [] },
-        ]
-    },
-    {
-        name: '총무부',
-        teams: [
-            {
-                name: '총무1팀',
-                employees: [
-                    { id: 6, name: '윤총무', position: '팀장', department: '총무부', team: '총무1팀', email: 'yoonc@company.com', phone: '010-1212-3434', photo: '/path/to/photo6.jpg' }
-                ]
-            },
-            {
-                name: '총무2팀',
-                employees: [
-                    { id: 7, name: '장총무', position: '팀원', department: '총무부', team: '총무2팀', email: 'jangc@company.com', phone: '010-5656-7878', photo: '/path/to/photo7.jpg' }
-                ]
-            },
-            { name: '총무3팀', employees: [] },
-            { name: '총무4팀', employees: [] },
-            { name: '총무5팀', employees: [] },
-        ]
-    },
-    {
-        name: 'IT관리부',
-        teams: [
-            {
-                name: 'IT관리1팀',
-                employees: [
-                    { id: 8, name: '오IT', position: '팀장', department: 'IT관리부', team: 'IT관리1팀', email: 'oit@company.com', phone: '010-2323-4545', photo: '/path/to/photo8.jpg' }
-                ]
-            },
-            {
-                name: 'IT관리2팀',
-                employees: [
-                    { id: 9, name: '한IT', position: '팀원', department: 'IT관리부', team: 'IT관리2팀', email: 'hanit@company.com', phone: '010-6767-8989', photo: '/path/to/photo9.jpg' }
-                ]
-            },
-            { name: 'IT관리3팀', employees: [] },
-            { name: 'IT관리4팀', employees: [] },
-            { name: 'IT관리5팀', employees: [] },
-        ]
-    },
-    {
-        name: '인사부',
-        teams: [
-            {
-                name: '인사1팀',
-                employees: [
-                    { id: 10, name: '송인사', position: '팀장', department: '인사부', team: '인사1팀', email: 'songi@company.com', phone: '010-9898-1010', photo: '/path/to/photo10.jpg' }
-                ]
-            },
-            {
-                name: '인사2팀',
-                employees: [
-                    { id: 11, name: '강인사', position: '팀원', department: '인사부', team: '인사2팀', email: 'kangin@company.com', phone: '010-2121-3434', photo: '/path/to/photo11.jpg' }
-                ]
-            },
-            { name: '인사3팀', employees: [] },
-            { name: '인사4팀', employees: [] },
-            { name: '인사5팀', employees: [] },
-        ]
-    }
-];
+    return rootDepartments;
+};
 
-// 왼쪽 패널 컴포넌트
-const LeftPanel = ({ onSelectDepartment, onSelectTeam }) => {
-    const [expandedCategories, setExpandedCategories] = useState({});
-    const [expandedDepartments, setExpandedDepartments] = useState({});
+const OrganizationChart = () => {
+    const [departments, setDepartments] = useState([]);
+    const [employees, setEmployees] = useState([]);
+    const [selectedDepartment, setSelectedDepartment] = useState(null);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-    const handleCategoryClick = (category) => {
-        setExpandedCategories(prevState => ({
-            ...prevState,
-            [category.name]: !prevState[category.name]
-        }));
+    useEffect(() => {
+        departmentList();
+        employeeList();
+    }, []);
+
+    const departmentList = async () => {
+        try {
+            const response = await axios.get('/api/department/all');
+            const transformedDepartments = transformDepartments(response.data);
+            setDepartments(transformedDepartments);
+        } catch (error) {
+            console.error('부서 데이터를 가져오는 중 오류 발생:', error);
+        }
+    };
+    const employeeList = async () => {
+        try {
+            const response = await axios.get('/api/employee/list');
+            setEmployees(response.data);
+        } catch (error) {
+            console.error('직원 데이터를 가져오는 중 오류 발생:', error);
+        }
     };
 
-    const handleDepartmentClick = (department) => {
-        setExpandedDepartments(prevState => ({
-            ...prevState,
-            [department.name]: !prevState[department.name]
-        }));
-        onSelectDepartment(department);
-        onSelectTeam(null); // 팀 선택 해제
+    const handleDepartmentSelect = (departmentId) => {
+        setSelectedDepartment(departmentId);
+        setSelectedEmployee(null); // 부서를 선택할 때 직원 선택 해제
     };
 
-    const handleTeamClick = (event, team) => {
-        event.stopPropagation(); // 클릭 시 부서 클릭 방지
-        onSelectTeam(team);
+    const handleEmployeeSelect = (employee) => {
+        if (selectedEmployee?.id === employee.id) {
+            setSelectedEmployee(null); // 이미 선택된 직원 클릭 시 선택 해제
+        } else {
+            setSelectedEmployee(employee); // 직원 선택
+        }
     };
+
+    const filteredEmployees = employees.filter(employee =>
+        selectedDepartment && employee.department.id === selectedDepartment
+    );
+
+// const departmentList = async () => {
+//     const response = await axios.get('/api/department/all');
+//     response.data.forEach((item) =>{
+//             console.log(item.departmentName)
+//             console.log(item.id)
+//         })
+// }
+//
+// const employeeList = async () => {
+//     const response = await axios.get('/api/employee/list');
+//
+//     response.data.forEach((employee) => {
+//         console.log(employee.name)
+//         console.log(employee.position.rank)
+//     })
+// }
 
     return (
-        <div style={{ padding: '10px',backgroundColor:'#f7f7f7',minHeight:'100%' }}>
-            <ul>
-                {topLevelCategories.map((category, categoryIndex) => (
-                    <li key={categoryIndex} style={{ marginBottom: '20px', listStyleType: 'none' }}>
-                        <div
-                            onClick={() => handleCategoryClick(category)}
-                            style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', cursor: 'pointer' }}
+        <div style={{display: 'flex', padding: '20px'}}>
+            <div style={{flex: 1, marginRight: '20px',padding: '10px',backgroundColor:'#f7f7f7',minHeight:'100%'}}>
+                <h2>부서 목록</h2>
+                <ul>
+                    {departments.map(department => (
+                        <li
+                            key={department.id}
+                            onClick={() => handleDepartmentSelect(department.id)}
+                            style={{
+                                cursor: 'pointer',
+                                fontWeight: department.id === selectedDepartment ? 'bold' : 'normal'
+                            }}
                         >
-                            {category.name}
-                            <span style={{
-                                marginLeft: '10px',
-                                transform: expandedCategories[category.name] ? 'rotate(180deg)' : 'rotate(0deg)',
-                                transition: 'transform 0.3s ease'
-                            }}>
-                                ▼
-                            </span>
-                        </div>
-                        {expandedCategories[category.name] && (
-                            <ul style={{ marginLeft: '20px', marginTop: '5px' }}>
-                                {departmentData
-                                    .filter(dept => category.departments.includes(dept.name))
-                                    .map((dept, deptIndex) => (
+                            {department.departmentName}
+                            {department.subDepartments.length > 0 && (
+                                <ul style={{paddingLeft: '20px'}}>
+                                    {department.subDepartments.map(subDepartment => (
                                         <li
-                                            key={deptIndex}
-                                            style={{ marginBottom: '10px', listStyleType: 'none' }}
+                                            key={subDepartment.id}
+                                            onClick={() => handleDepartmentSelect(subDepartment.id)}
+                                            style={{
+                                                cursor: 'pointer',
+                                                fontWeight: subDepartment.id === selectedDepartment ? 'bold' : 'normal'
+                                            }}
                                         >
-                                            <div
-                                                onClick={() => handleDepartmentClick(dept)}
-                                                style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold', cursor: 'pointer' }}
-                                            >
-                                                {dept.name}
-                                                <span style={{
-                                                    marginLeft: '10px',
-                                                    transform: expandedDepartments[dept.name] ? 'rotate(180deg)' : 'rotate(0deg)',
-                                                    transition: 'transform 0.3s ease'
-                                                }}>
-                                                    ▼
-                                                </span>
-                                            </div>
-                                            {expandedDepartments[dept.name] && (
-                                                <ul style={{ marginLeft: '20px', marginTop: '5px' }}>
-                                                    {dept.teams.map((team, teamIndex) => (
+                                            {subDepartment.departmentName}
+                                            {subDepartment.subDepartments.length > 0 && (
+                                                <ul style={{paddingLeft: '20px'}}>
+                                                    {subDepartment.subDepartments.map(subSubDepartment => (
                                                         <li
-                                                            key={teamIndex}
-                                                            onClick={(event) => handleTeamClick(event, team)}
-                                                            style={{ cursor: 'pointer', marginTop: '8px', listStyleType: 'none' }}
+                                                            key={subSubDepartment.id}
+                                                            onClick={() => handleDepartmentSelect(subSubDepartment.id)}
+                                                            style={{
+                                                                cursor: 'pointer',
+                                                                fontWeight: subSubDepartment.id === selectedDepartment ? 'bold' : 'normal'
+                                                            }}
                                                         >
-                                                            {team.name}
+                                                            {subSubDepartment.departmentName}
                                                         </li>
                                                     ))}
                                                 </ul>
                                             )}
                                         </li>
                                     ))}
-                            </ul>
-                        )}
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
-};
-
-
-// 중앙 패널 컴포넌트
-const CenterPanel = ({ selectedDepartment, selectedTeam, onSelectEmployee }) => {
-    const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
-
-    const handleEmployeeChange = (employee) => {
-        if (selectedEmployeeId === employee.id) {
-            // 이미 선택된 직원의 체크박스를 다시 클릭하면 선택 해제
-            setSelectedEmployeeId(null);
-            onSelectEmployee(null);  // 직원 정보도 비워줍니다.
-        } else {
-            // 새로운 직원을 선택
-            setSelectedEmployeeId(employee.id);
-            onSelectEmployee(employee);
-        }
-    };
-
-    const employees = selectedDepartment
-        ? selectedDepartment.teams.flatMap(team => team.employees)
-        : [];
-
-    return (
-        <div style={{ padding: '10px' }}>
-            {selectedTeam ? (
-                <div>
-                    <h2 style={{marginBottom:'50px'}}>{selectedTeam.name}</h2>
-                    <ul>
-                        <li>
-                            <b style={{fontSize: '15px', marginLeft: '80px', display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '30px'}}>이름</span>
-                                <span style={{marginRight: '30px', marginLeft: '100px'}}>부서</span>
-                                <span style={{marginRight: '30px', marginLeft: '80px'}}>소속</span>
-                                <span style={{marginRight: '30px', marginLeft: '100px'}}>이메일</span>
-                                <span style={{marginLeft: '140px'}}>전화번호</span>
-                            </b>
+                                </ul>
+                            )}
                         </li>
-                        {selectedTeam.employees.map(employee => (
-                            <li key={employee.id} style={{
+                    ))}
+                </ul>
+            </div>
+
+            {/* 중간 패널: 직원 목록 */}
+            <div style={{flex: 2, marginRight: '20px'}}>
+                <h2>직원 리스트</h2>
+                <ul>
+                    {filteredEmployees.map(employee => (
+                        <li
+                            key={employee.id}
+                            onClick={() => handleEmployeeSelect(employee)}
+                            style={{
+                                cursor: 'pointer',
+                                fontWeight: selectedEmployee?.id === employee.id ? 'bold' : 'normal',
                                 display: 'flex',
                                 alignItems: 'center',
-                                marginBottom: '10px',
-                                fontSize: '15px'
-                            }}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedEmployeeId === employee.id}
-                                    onChange={() => handleEmployeeChange(employee)}
-                                    style={{marginRight: '15px'}}
-                                />
-                                <img
-                                    src={employee.photo}
-                                    alt={employee.name}
-                                    style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        borderRadius: '50%',
-                                        marginRight: '15px'
-                                    }}
-                                />
-                                <span style={{
-                                    width: '120px',
-                                    marginRight: '30px'
-                                }}>{employee.name} ({employee.position})</span>
-                                <span style={{width: '100px', marginRight: '30px'}}>{employee.department}</span>
-                                <span style={{width: '100px', marginRight: '30px'}}>{employee.team}</span>
-                                <span style={{width: '200px', marginRight: '30px'}}>{employee.email}</span>
-                                <span style={{width: '120px'}}>{employee.phone}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            ) : selectedDepartment ? (
-                <div>
-
-                    <h2  style={{marginBottom:'50px'}}>{selectedDepartment.name}</h2>
-
-                    <ul>
-                        <li>
-                            <b style={{fontSize: '15px', marginLeft: '80px', display: 'flex', alignItems: 'center'}}>
-                                <span style={{marginRight: '30px'}}>이름</span>
-                                <span style={{marginRight: '30px', marginLeft: '100px'}}>부서</span>
-                                <span style={{marginRight: '30px', marginLeft: '80px'}}>소속</span>
-                                <span style={{marginRight: '30px', marginLeft: '100px'}}>이메일</span>
-                                <span style={{marginLeft: '140px'}}>전화번호</span>
-                            </b>
+                                marginBottom: '10px'
+                            }}
+                        >
+                            <Checkbox
+                                checked={selectedEmployee?.id === employee.id}
+                                onChange={() => handleEmployeeSelect(employee)}
+                                style={{marginRight: '10px'}}
+                            />s
+                            <div>
+                                <div>{employee.name}</div>
+                                <div>{employee.position.rank} - {employee.department.departmentName} - {employee.email}</div>
+                            </div>
                         </li>
-
-                        {employees.length > 0 ? (
-                            employees.map(employee => (
-                                <li key={employee.id} style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginBottom: '10px',
-                                    fontSize: '15px'
-                                }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedEmployeeId === employee.id}
-                                        onChange={() => handleEmployeeChange(employee)}
-                                        style={{marginRight: '15px'}}
-                                    />
-                                    <img
-                                        src={employee.photo}
-                                        alt={employee.name}
-                                        style={{
-                                            width: '40px',
-                                            height: '40px',
-                                            borderRadius: '50%',
-                                            marginRight: '15px'
-                                        }}
-                                    />
-                                    <span style={{
-                                        width: '120px',
-                                        marginRight: '30px'
-                                    }}>{employee.name} ({employee.position})</span>
-                                    <span style={{width: '100px', marginRight: '30px'}}>{employee.department}</span>
-                                    <span style={{width: '100px', marginRight: '30px'}}>{employee.team}</span>
-                                    <span style={{width: '200px', marginRight: '30px'}}>{employee.email}</span>
-                                    <span style={{width: '120px'}}>{employee.phone}</span>
-                                </li>
-                            ))
-                        ) : (
-                            <p>직원이 없습니다</p>
-                        )}
-                    </ul>
-                </div>
-            ) : (
-                <p>부서를 선택하세요</p>
-            )}
-        </div>
-    );
-};
-
-// 오른쪽 패널 컴포넌트
-const RightPanel = ({selectedEmployee}) => {
-    return (
-        <div style={{padding: '10px',minHeight:'100%',borderLeft:'3px solid #ffd454',paddingLeft:'40px'}}>
-            {selectedEmployee ? (
-                <div>
-                    <img
-                        src={selectedEmployee.photo}
-                        alt={selectedEmployee.name}
-                        style={{minWidth: '150px', minHeight: '150px', borderRadius: '50%',border:'1px solid black', marginBottom: '50px',marginTop:'50px'}}
-                    />
-                    <h2>{selectedEmployee.name}</h2>
-                    <p>{selectedEmployee.position}</p>
-                    <p>{selectedEmployee.department} - {selectedEmployee.team}</p>
-                    <p>{selectedEmployee.email}</p>
-                    <p>{selectedEmployee.phone}</p>
-                </div>
-            ) : (
-                <p>직원을 선택하세요</p>
-            )}
-        </div>
-    );
-};
-
-// 조직도 컴포넌트
-const OrganizationChart = () => {
-    const [selectedDepartment, setSelectedDepartment] = useState(null);
-    const [selectedTeam, setSelectedTeam] = useState(null);
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
-
-    return (
-        <div style={{display: 'flex', height: '100%'}}>
-            <div style={{flex: 1}}>
-                <LeftPanel onSelectDepartment={setSelectedDepartment} onSelectTeam={setSelectedTeam}/>
+                    ))}
+                </ul>
             </div>
-            <div style={{flex: 3}}>
-                <CenterPanel selectedDepartment={selectedDepartment} selectedTeam={selectedTeam} onSelectEmployee={setSelectedEmployee} />
-            </div>
-            <div style={{ flex: 1 }}>
-                <RightPanel selectedEmployee={selectedEmployee} />
+
+            {/* 오른쪽 패널: 직원 상세 정보 */}
+            <div style={{flex: 2}}>
+                <h2>직원 정보</h2>
+                {selectedEmployee ? (
+                    <div style={{
+                        padding: '10px',
+                        minHeight: '100%',
+                        borderLeft: '3px solid #ffd454',
+                        paddingLeft: '40px'
+                    }}>
+                        <p>이름: {selectedEmployee.name}</p>
+                        <p>직급: {selectedEmployee.position.rank}</p>
+                        <p>이메일: {selectedEmployee.email}</p>
+                        <p>전화번호: {selectedEmployee.phoneNumber}</p>
+                        <p>부서: {selectedEmployee.department.departmentName}</p>
+                        <p>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
+                    </div>
+                ) : (
+                    <p>직원을 선택하세요</p>
+                )}
             </div>
         </div>
     );
 };
-
 // 모달 컴포넌트
-const OrganizationModal = ({ open, onClose }) => {
+const OrganizationModal = ({open, onClose}) => {
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={{
@@ -436,12 +221,12 @@ const OrganizationModal = ({ open, onClose }) => {
                 flexDirection: 'column',
             }}>
                 <IconButton
-                    sx={{ position: 'absolute', top: 16, right: 16 }}
+                    sx={{position: 'absolute', top: 16, right: 16}}
                     onClick={onClose}
                 >
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
-                <OrganizationChart />
+                <OrganizationChart/>
             </Box>
         </Modal>
     );
@@ -457,7 +242,7 @@ const App = () => {
 
     return (
         <div>
-            <OrganizationModal open={isModalOpen} onClose={handleCloseModal} />
+            <OrganizationModal open={isModalOpen} onClose={handleCloseModal}/>
         </div>
     );
 };
