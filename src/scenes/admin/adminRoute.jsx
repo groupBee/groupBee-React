@@ -7,6 +7,7 @@ import AdminBook from "./adminBook.jsx";
 import AdminWrite from "./adminWrite.jsx";
 import AdminBoard from "./adminBoard.jsx";
 import AdminEmail from "./adminEmail.jsx";
+import AdminResources from "./adminResources.jsx";
 
 
 const AdminRoute = () => {
@@ -32,6 +33,18 @@ const AdminRoute = () => {
                                 })}
                             >
                                 직원조회
+                            </NavLink>
+                        </li>
+                        <li style={{margin: 0}}>
+                            <NavLink
+                                to="adminResources"
+                                style={({isActive}) => ({
+                                    textDecoration: 'none',
+                                    fontSize: '20px',
+                                    color: isActive ? 'black' : '#a1a1a1' // 선택된 경우 색 변경
+                                })}
+                            >
+                                자원관리
                             </NavLink>
                         </li>
                         <li style={{margin: 0}}>
@@ -89,6 +102,7 @@ const AdminRoute = () => {
             <Routes>
                 <Route path="/" element={<Navigate to="adminInfo"/>}/>
                 <Route path="adminInfo" element={<AdminInfo/>}/>
+                <Route path="adminResources" element={<AdminResources/>}/>
                 <Route path="adminBook" element={<AdminBook/>}/>
                 <Route path="adminWrite" element={<AdminWrite/>}/>
                 <Route path="adminBoard" element={<AdminBoard/>}/>
