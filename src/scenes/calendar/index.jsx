@@ -43,7 +43,7 @@ const Calendar = () => {
                 borderColor: '#ffc107',
                 textColor: '#111111',
             }));
-            setEvents((prevEvents) => [...prevEvents, ...backendEvents]);
+            setEvents(backendEvents);
         } catch (e) {
             console.error("데이터 로드 중 오류 발생:", e);
         }
@@ -111,36 +111,42 @@ const Calendar = () => {
             };
 
             calendarApi.addEvent(event);
-            fetchData();
+            // fetchData();
         }
     };
 
     const handleEventClick = async (selected) => {
-        try {
-            const eventFromDb = await fetch(`/api/calendar/${selected.event.id}`).then(response => response.json());
-
-            const eventData = {
-                id: eventFromDb.id,
-                title: eventFromDb.title,
-                content: eventFromDb.content,
-                startDay: eventFromDb.startDay,
-                endDay: eventFromDb.endDay,
-                bookType: eventFromDb.bookType,
-                corporateCarId: eventFromDb.corporateCarId,
-            };
-
-            let result;
-            if (eventData.bookType === 0) {
-                result = await showModal(eventData.id, eventData.title, 'confirm', eventData);
-            } else {
-                result = await deleteModal(eventData.id, eventData.title, 'delete', eventData);
+        if (selected.event.url) {
+            // 구글 캘린더 이벤트인 경우 기본 동작을 막습니다.
+            selected.jsEvent.preventDefault(); // 기본 동작 막기
+            selected.jsEvent.stopPropagation(); // 이벤트 전파 막기
+        } else {
+            try {
+                const eventFromDb = await fetch(`/api/calendar/${selected.event.id}`).then(response => response.json());
+                const eventData = {
+                    id: eventFromDb.id,
+                    title: eventFromDb.title,
+                    content: eventFromDb.content,
+                    startDay: eventFromDb.startDay,
+                    endDay: eventFromDb.endDay,
+                    bookType: eventFromDb.bookType,
+                    corporateCarId: eventFromDb.corporateCarId,
+                };
+    
+                let result;
+                if (eventData.bookType === 0) {
+                    result = await showModal(eventData.id, eventData.title, 'confirm', eventData);
+                } else {
+                    result = await deleteModal(eventData.id, eventData.title, 'delete', eventData);
+                }
+    
+                if (result) fetchData();
+            } catch (error) {
+                console.error('이벤트 처리 중 오류 발생:', error);
             }
-
-            if (result) fetchData();
-        } catch (error) {
-            console.error('이벤트 처리 중 오류 발생:', error);
         }
     };
+    
 
     // 무한루프를 방지하기 위해 이벤트가 변경되었을 때만 상태를 업데이트
     const handleEventsSet = (newEvents) => {
@@ -234,7 +240,7 @@ const Calendar = () => {
                         ]}
                         ref={fullcalendarRef}
                         select={handleDateClick} // 날짜 클릭 핸들러 추가
-                        // eventClick={handleEventClick} // 이벤트 클릭 핸들러 추가
+                        eventClick={handleEventClick} // 이벤트 클릭 핸들러 추가
                         // eventsSet={handleEventsSet} // 이벤트가 설정될 때 호출
                         // eventMouseEnter={(info) => {
                         //     setTooltipContent(info.event.extendedProps.content);
