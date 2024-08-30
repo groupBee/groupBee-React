@@ -12,7 +12,7 @@ const Board = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('/api/board')
+        axios.get('/api/board/list')
             .then(res => {
                 // 중요 게시글과 일반 게시글 분리
                 const importantPosts = res.data.filter(post => post.mustMustRead);
