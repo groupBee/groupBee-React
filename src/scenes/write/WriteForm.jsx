@@ -28,11 +28,11 @@ const WriteForm = ({}) => {
     const [errors, setErrors] = useState({});
     const [intentValidator, setIntentValidator] = useState(null);
     const [list, setList] = useState({});
-    const [documentId, setDocumentId] = useState('');  // 추가: documentId 저장 상태
 
     const navigate = useNavigate();
     const location = useLocation();
     const appId = location.state?.itemId || ''; // 기본값 설정
+
 
     // 모달 상태
     const [modalOpen, setModalOpen] = useState(false);
@@ -44,6 +44,7 @@ const WriteForm = ({}) => {
             getSignForm();
         } else {
             getinfo();
+
         }
     }, [appId]);
 
@@ -58,6 +59,10 @@ const WriteForm = ({}) => {
             axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
                 .then(res => {
                     console.log("Data fetched successfully:", res.data); // 성공적인 데이터 가져오기
+                    // 날짜 필드가 유효한지 확인
+                    if (isNaN(new Date(res.data.vacationStartDate)) || isNaN(new Date(res.data.vacationEndDate))) {
+                        console.error("Invalid date in response data");
+                    }
                     setList(res.data);
                     setAppDocType(res.data.appDocType);
                     setFirstApprover(res.data.firstApprover);
@@ -71,7 +76,6 @@ const WriteForm = ({}) => {
                     setLevel(res.data.level);
                     setAdditionalFields(res.data.additionalFields || {});
                     setApproveStatus(res.data.approveStatus);
-                    setDocumentId(res.data.id);  // 문서 ID 저장
                     setIsDocumentLoaded(true); // 문서가 로드되었음을 명시
                 })
                 .catch(err => {
@@ -80,22 +84,26 @@ const WriteForm = ({}) => {
         }
     };
 
-    // 기본 정보 가져오는 함수 (새 문서)
+
+// 기본 정보 가져오는 함수 (새 문서)
     const getinfo = () => {
         axios.get("/api/elecapp/getinfo")
             .then(res => {
-                console.log(res.data);
+                console.log(res.data)
+                // 기본 사용자 정보 세팅
                 setFirstApprover(res.data.name);
                 setWriter(res.data.name);
                 setDepartment(res.data.department.departmentName);
                 setPosition(res.data.position.rank);
+
+                // 빈 값으로 초기화
                 setSecondApprover('');
                 setThirdApprover('');
                 setAttachedFile('');
-                setApproveDate(new Date());
+                setApproveDate(new Date()); // 현재 날짜로 초기화
                 setLevel(0);
                 setAdditionalFields({});
-                setApproveStatus(null);
+                setApproveStatus(null); // 새 문서는 approveStatus를 null로 설정
             })
             .catch(err => {
                 console.error("기본 정보 불러오기 실패:", err);
@@ -117,11 +125,11 @@ const WriteForm = ({}) => {
             .catch(err => {
                 console.error('파일 업로드 중 오류 발생:', err);
             });
-    };
+    }
 
     const changeAppDoc = (value) => {
         setAppDocType(value);
-    };
+    }
 
     const handleAdditionalFieldChange = (key, value) => {
         setAdditionalFields(prevFields => ({
@@ -129,21 +137,25 @@ const WriteForm = ({}) => {
             [key]: value
         }));
     };
-
     const validateForm = () => {
         const newErrors = {};
         if (!secondApprover) newErrors.secondApprover = "중간승인자를 입력하세요.";
         if (!thirdApprover) newErrors.thirdApprover = "최종승인자를 입력하세요.";
         if (!level) newErrors.level = "보안등급을 입력하세요.";
 
+        // if (appDocType === 0 && intentValidator && !intentValidator()) {
+        //     newErrors.intent = "품의서의 필수 항목을 모두 입력하세요.";
+        // }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    // 문서 생성 함수
+
     const createApp = (status) => {
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
+            alert("createpp까지 넘어옴"+status)
             return;
         }
 
@@ -154,17 +166,39 @@ const WriteForm = ({}) => {
             transformedAdditionalFields[newKey] = additionalFields[key];
         });
 
-        axios.post('/api/elecapp/create', {
-            id: documentId,  // 문서 ID가 있으면 수정, 없으면 새로 생성
-            writer, firstApprover, secondApprover, thirdApprover,
-            originalFile: originalFileName, attachedFile, approveStatus: status,
-            appDocType, level, approveType, position, department,
+        // 상태를 기반으로 요청 전송
+        const postData = {
+            writer,
+            firstApprover,
+            secondApprover,
+            thirdApprover,
+            originalFile: originalFileName,
+            attachedFile,
+            approveStatus: status,
+            appDocType,
+            level,
+            approveType,
+            position,
+            department,
             additionalFields: transformedAdditionalFields
-        })
+        };
+
+// appId가 있으면 postData에 appId를 추가
+        if (appId) {
+            postData.id = appId;
+        }
+
+// axios.post 호출
+        axios.post('/api/elecapp/create', postData)
             .then(res => {
-                if (status === 1) {
+                console.log('성공:', res);
+            })
+            .catch(err => {
+                console.error('오류:', err);
+            })
+            .then(res => {
+                if(status === 1) {
                     alert("전자결재가 임시저장되었습니다.");
-                    setDocumentId(res.data.id);  // 문서 ID 저장
                 } else if (status === 0) {
                     alert("전자결제가 등록되었습니다.");
                 }
@@ -173,7 +207,8 @@ const WriteForm = ({}) => {
             .catch(err => {
                 console.error('데이터 전송 중 오류 발생:', err);
             });
-    };
+    }
+
 
     const openModal = (approverType) => {
         setCurrentApproverType(approverType);
@@ -187,7 +222,7 @@ const WriteForm = ({}) => {
             setThirdApprover(value.name);
         }
     };
-    ㅋ
+
     return (
         <div style={{
             display: 'flex',
