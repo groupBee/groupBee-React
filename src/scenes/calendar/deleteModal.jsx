@@ -7,7 +7,7 @@ const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
 
     useEffect(() => {
         if (initialData?.corporateCarId && isOpen) {
-            fetch(`/api/cars/${initialData.corporateCarId}`)
+            fetch(`/api/cars/detail/${initialData.corporateCarId}`)
                 .then(response => response.json())
                 .then(data => {
                     setCarName(data.carId || '')

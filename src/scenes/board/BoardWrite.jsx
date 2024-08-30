@@ -11,7 +11,6 @@ const BoardWrite = () => {
     const [mustRead, setMustRead] = useState(false); // 공지사항 체크박스 상태
     const [mustMustRead, setMustMustRead] = useState(false); // 중요 체크박스 상태
     const [file, setFile] = useState(null); // 파일 상태
-    const writer = 'dd'; // 임시 작성자
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -37,7 +36,6 @@ const BoardWrite = () => {
         e.preventDefault(); // 기본 제출 방지
 
         const postData = {
-            writer,
             title,
             content,
             mustRead,

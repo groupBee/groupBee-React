@@ -12,7 +12,7 @@ const Board = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('/api/board')
+        axios.get('/api/board/list')
             .then(res => {
                 // 중요 게시글과 일반 게시글 분리
                 const importantPosts = res.data.filter(post => post.mustMustRead);
@@ -78,9 +78,9 @@ const Board = () => {
                         } >
                             <td>{row.id}{row.mustMustRead && <span style={{color:'red'}}><b>[중요]</b></span>}</td>
                             <td>{row.mustRead && <span><b>[공지]</b></span>}{row.title}</td>
-                            <td>{row.writer}</td>
-                            <td>{new Date(row.create).toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'})}</td>
-                            <td>{row.readcount}</td>
+                            <td>{row.memberId}</td>
+                            <td>{(row.createDate).toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'})}</td>
+                            <td>{row.readCount}</td>
                         </tr>
                     ))}
                     </tbody>
