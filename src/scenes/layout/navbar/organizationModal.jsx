@@ -67,14 +67,44 @@ const OrganizationChart = () => {
             filterEmployees(id);
         }
     };
-    //부서 눌렀을때 부서 id 값 넘겨받아서 그 부서에 해당하는 사원을 filteredemployees에 넣기
-    const filterEmployees = (num) => {
-        setFilteredEmployees(employeeList.filter(employee => employee.department.id === num));
+    const filterEmployees = (num, hasSubDepartments) => {
+        const employeesInDepartment = employeeList.filter(employee => employee.department.id === num);
+        if (hasSubDepartments) {
+            const subDepartments = findAllSubDepartments(num);
+            const employeesInSubDepartments = subDepartments.flatMap(subDept =>
+                employeeList.filter(employee => employee.department.id === subDept.id)
+            );
+            setFilteredEmployees([...employeesInDepartment, ...employeesInSubDepartments]);
+        } else {
+            setFilteredEmployees(employeesInDepartment);
+        }
     };
+
+    const findAllSubDepartments = (departmentId) => {
+        let subDepartments = [];
+        const traverse = (dept) => {
+            if (dept.subDepartments) {
+                Object.values(dept.subDepartments).forEach(subDept => {
+                    subDepartments.push(subDept);
+                    traverse(subDept);
+                });
+            }
+        };
+        traverse(structuredDepartments[departmentId]);
+        return subDepartments;
+    };
+
+    const toggleSubDepartmentEmployees = (id) => {
+        setShowSubDepartmentEmployees(prevState => ({
+            ...prevState,
+            [id]: !prevState[id]
+        }));
+    };
+
 
     return (
         <div style={{ display: 'flex', padding: '20px' }}>
-            <div style={{ flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '100%' }}>
+            <div style={{flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '100%'}}>
                 <h2>부서 목록</h2>
                 <ul>
                     {Object.entries(structuredDepartments).map(([key, department]) => (
@@ -88,13 +118,14 @@ const OrganizationChart = () => {
                         >
                             {department.departmentName}
                             {expandedDepartments.includes(department.id) && Object.keys(department.subDepartments).length > 0 && (
-                                <ul style={{ paddingLeft: '20px' }}>
+                                <ul style={{paddingLeft: '20px'}}>
                                     {Object.entries(department.subDepartments).map(([subKey, subDepartment]) => (
                                         <li
                                             key={subDepartment.id}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleDepartmentSelect(subDepartment.id, Object.keys(subDepartment.subDepartments).length > 0);
+                                                filterEmployees(subDepartment.id); // 하위 부서 클릭 시 해당 부서의 직원 필터링
                                             }}
                                             style={{
                                                 cursor: 'pointer',
@@ -103,14 +134,14 @@ const OrganizationChart = () => {
                                         >
                                             {subDepartment.departmentName}
                                             {expandedDepartments.includes(subDepartment.id) && Object.keys(subDepartment.subDepartments).length > 0 && (
-                                                <ul style={{ paddingLeft: '20px' }}>
+                                                <ul style={{paddingLeft: '20px'}}>
                                                     {Object.entries(subDepartment.subDepartments).map(([subSubKey, subSubDepartment]) => (
                                                         <li
                                                             key={subSubDepartment.id}
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                handleDepartmentSelect(subDepartment.id, Object.keys(subDepartment.subDepartments).length > 0);
-                                                                filterEmployees(subSubDepartment.id);
+                                                                handleDepartmentSelect(subSubDepartment.id, false); // 최하위 부서일 경우 하위 부서가 없음을 알림
+                                                                filterEmployees(subSubDepartment.id); // 최하위 부서 클릭 시 해당 부서의 직원 필터링
                                                             }}
                                                             style={{
                                                                 cursor: 'pointer',
@@ -131,7 +162,7 @@ const OrganizationChart = () => {
                 </ul>
             </div>
 
-            <div style={{ flex: 2, marginRight: '20px' }}>
+            <div style={{flex: 2, marginRight: '20px'}}>
                 <h2>직원 리스트</h2>
                 <ul>
                     {filteredEmployees.map(employee => (
@@ -148,8 +179,14 @@ const OrganizationChart = () => {
                         >
                             <Checkbox
                                 checked={selectedEmployee?.id === employee.id}
-                                onChange={() => setSelectedEmployee(employee)}
-                                style={{ marginRight: '10px' }}
+                                onChange={() => {
+                                    if (selectedEmployee?.id === employee.id) {
+                                        setSelectedEmployee(null); // 동일한 직원을 다시 클릭하면 선택 해제
+                                    } else {
+                                        setSelectedEmployee(employee); // 새로운 직원을 클릭하면 선택
+                                    }
+                                }}
+                                style={{marginRight: '10px'}}
                             />
                             <div>
                                 <div>{employee.name}</div>
@@ -160,7 +197,7 @@ const OrganizationChart = () => {
                 </ul>
             </div>
 
-            <div style={{ flex: 2 }}>
+            <div style={{flex: 2}}>
                 <h2>직원 정보</h2>
                 {selectedEmployee ? (
                     <div style={{
@@ -184,7 +221,7 @@ const OrganizationChart = () => {
     );
 };
 
-const OrganizationModal = ({ open, onClose }) => {
+const OrganizationModal = ({open, onClose}) => {
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={{
@@ -201,12 +238,12 @@ const OrganizationModal = ({ open, onClose }) => {
                 flexDirection: 'column',
             }}>
                 <IconButton
-                    sx={{ position: 'absolute', top: 16, right: 16 }}
+                    sx={{position: 'absolute', top: 16, right: 16}}
                     onClick={onClose}
                 >
-                    <CloseIcon />
+                    <CloseIcon/>
                 </IconButton>
-                <OrganizationChart />
+                <OrganizationChart/>
             </Box>
         </Modal>
     );
@@ -221,7 +258,7 @@ const App = () => {
 
     return (
         <div>
-            <OrganizationModal open={isModalOpen} onClose={handleCloseModal} />
+            <OrganizationModal open={isModalOpen} onClose={handleCloseModal}/>
         </div>
     );
 };

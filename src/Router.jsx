@@ -20,6 +20,7 @@ import Login from "./scenes/login/login.jsx";
 import ProtectedRoute from './ProtectedRoute';
 import DetailPage from "./scenes/board/DetailPage.jsx";
 import Admin from "./scenes/admin/index.jsx";
+import UpdatePage from "./scenes/board/UpdatePage.jsx";
 
 const AppRouter = () => {
     return (
@@ -36,7 +37,8 @@ const AppRouter = () => {
                     <Route path="/calendar" element={<Calendar/>}/>
                     <Route path="/board" element={<Board/>}/>
                     <Route path="/board/write" element={<BoardWrite/>}/>
-                    <Route path="/board/:id" element={<DetailPage/>}/>
+                    <Route path="/board/list/:id" element={<DetailPage/>}/>
+                    <Route path="/board/update/:id" element={<UpdatePage/>}/>
                     <Route path="/book/*" element={<Book/>}/>
                     <Route path="/hr" element={<Hr/>}/>
                     <Route path="/mypage" element={<Mypage/>}/>

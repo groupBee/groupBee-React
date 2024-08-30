@@ -8,6 +8,7 @@ const BoardWrite = () => {
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
+    const [readCount, setReadCount] = useState(0);
     const [mustRead, setMustRead] = useState(false); // 공지사항 체크박스 상태
     const [mustMustRead, setMustMustRead] = useState(false); // 중요 체크박스 상태
     const [file, setFile] = useState(null); // 파일 상태
@@ -35,29 +36,28 @@ const BoardWrite = () => {
     const handleSubmit = async (e) => {
         e.preventDefault(); // 기본 제출 방지
 
-        const postData = {
+        const boardData = {
             title,
             content,
             mustRead,
             mustMustRead,
+            readCount,
         };
 
+        const formData = new FormData();
+        formData.append('boardData', JSON.stringify(boardData));
+
+        if (file) {
+            formData.append('file', file);
+        }
+
         try {
-            // 게시글 생성
-            const postResponse = await axios.post('/api/board/insert', postData);
-            const postId = postResponse.data.id; // 서버에서 반환된 게시글 ID
-
-            // 파일이 선택된 경우에만 파일 전송
-            if (file) {
-                const formData = new FormData();
-                formData.append('uploadFile', file);
-
-                await axios.post(`/api/board/upload/${postId}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                });
-            }
+            // 게시글과 파일 함께 전송
+            await axios.post('/api/board/insert', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
             navigate('/board'); // 요청이 성공하면 게시판 페이지로 이동
         } catch (error) {
