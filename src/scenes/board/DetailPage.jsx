@@ -1,33 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Typography, Button } from '@mui/material';
+
+const getinfo = () =>{
+    axios.get("/")
+}
 
 const DetailPage = () => {
     const { id } = useParams();
     const [post, setPost] = useState(null);
     const navigate = useNavigate();
-    const currentUserId = "currentUser"; // 나중에 로그인한 사용자 정보를 가져올 때 이 부분을 업데이트해야 함
 
     useEffect(() => {
-        axios.get(`/api/board/list/${id}`)
-            .then(response => {
-                setPost(response.data);
-            })
-            .catch(error => {
-                console.error('Error fetching post:', error);
-            });
+        fetchPost();
     }, [id]);
+
+    const fetchPost = async () => {
+        try {
+            const response = await axios.get(`/api/board/list/${id}`);
+            setPost(response.data);
+        } catch (error) {
+            console.error('Error fetching post:', error);
+        }
+    };
 
     const handleEditClick = () => {
         navigate(`/board/update/${id}`);
     };
 
     const handleDeleteClick = () => {
-        if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+        if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
             axios.delete(`/api/board/delete/${id}`)
-                .then(response => {
-                    alert("게시글이 삭제되었습니다.");
+                .then(() => {
+                    alert('게시글이 삭제되었습니다.');
                     navigate('/board');
                 })
                 .catch(error => {
@@ -37,7 +43,7 @@ const DetailPage = () => {
     };
 
     const handleBackClick = () => {
-        navigate('/board'); // 목록 페이지로 이동
+        navigate('/board');
     };
 
     return (
@@ -54,8 +60,29 @@ const DetailPage = () => {
                             작성자: {post.memberId}
                         </Typography>
                     </Box>
-                    <Box mb={2} style={{ width: '1100px',minHeight:'500px',border: '1px solid black',padding:'20px' }}>
-                        <Typography variant="body1" paragraph style={{fontSize:'15px'}}>
+                    <Box mb={2} style={{ width: '300px', display: 'flex', alignItems: 'center' }}>
+                        <Box
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                marginRight: '20px',
+                            }}
+                        >
+                            <div style={{ width: '16px', height: '16px', border: '1px solid black', backgroundColor: post.mustRead ? 'red' : 'white' }} />
+                            <b style={{ marginLeft: '10px' }}>공지사항</b>
+                        </Box>
+                        <Box
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <div style={{ width: '16px', height: '16px', border: '1px solid black', backgroundColor: post.mustMustRead ? 'red' : 'white' }} />
+                            <b style={{ marginLeft: '10px' }}>중요</b>
+                        </Box>
+                    </Box>
+                    <Box mb={2} style={{ width: '300px' }}>
+                        <Typography variant="body1" paragraph>
                             {post.content}
                         </Typography>
                     </Box>
@@ -78,7 +105,8 @@ const DetailPage = () => {
                             조회수: {post.readCount}
                         </Typography>
                     </Box>
-                    <Box mt={2} style={{ width: '300px'}}>
+
+                    <Box mt={2} style={{ width: '300px' }}>
                         <Button variant="contained" color="primary" onClick={handleEditClick} style={{ marginRight: '10px' }}>
                             수정
                         </Button>
@@ -96,6 +124,5 @@ const DetailPage = () => {
         </Box>
     );
 };
-
 
 export default DetailPage;
