@@ -32,7 +32,11 @@ import { useNavigate } from 'react-router-dom';
 import {Header} from "../../../components/index.jsx";
 import {Table} from "react-bootstrap";
 import OrganizationModal from "./organizationModal.jsx";
-//비밀번호 변경 모달창 css
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import LocalPhoneRoundedIcon from '@mui/icons-material/LocalPhoneRounded';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -112,7 +116,6 @@ const checkOriginalPass = () => {
         // 드롭다운 상태 관리
         const [isDropdownOpen, setIsDropdownOpen] = useState(false);
         const [passModalOpen, setPassMadalOpen] = useState(false);
-        const [orModalOpen, setOrMadalOpen] = useState(false);
 
         const handleLogout = () => {
             logout(); // 로그아웃 함수 실행
@@ -132,14 +135,6 @@ const checkOriginalPass = () => {
         };
         const handlePassModalClose = () => {
             setPassMadalOpen(false);
-        };
-
-        //조직도 모달
-         const organizationModalOpen = () => {
-            setOrMadalOpen((prev => !prev));
-        };
-        const organizationModalClose = () => {
-            setOrMadalOpen(false);
         };
 
 
@@ -267,7 +262,7 @@ const checkOriginalPass = () => {
                                                     display: 'flex',
                                                     alignItems: 'center',
                                                     justifyContent: 'center',
-                                                    mt: 7,
+                                                    mt: 5,
                                                     overflow: 'hidden', // 이미지가 박스 밖으로 나가지 않도록 설정
                                                     border: '0.7px solid #2E2E2E'
                                                 }}
@@ -303,9 +298,18 @@ const checkOriginalPass = () => {
                                                 gap={1}
                                                 width="100%"
                                             >
-                                                <Button variant="contained" color="primary" sx={{backgroundColor:'#ffb121', boxShadow:'0'}} onClick={handleLogout}>로그아웃</Button>
+                                                <Button variant="contained" color="primary"   sx={{
+                                                    backgroundColor: '#ffb121', // 기본 배경색
+                                                    boxShadow: '0', // 그림자 제거
+                                                    transition: 'background-color 0.3s ease',
+                                                    border: '1px solid #ffb121',// 배경색 변화에 애니메이션 추가
+                                                    '&:hover': {
+                                                        backgroundColor: '#ffffff',
+                                                        color: '#ffb121',
+                                                        border: '1px solid #ffb121'
+                                                    }
+                                                }} onClick={handleLogout}>로그아웃</Button>
                                                 <Button variant="outlined" color="primary" onClick={handlePassModalOpen}>비밀번호변경</Button>
-                                                <Button variant="outlined" color="primary" onClick={organizationModalOpen}>조직도</Button>
                                             </Box>
 
                                             <Box
@@ -321,19 +325,19 @@ const checkOriginalPass = () => {
                                             >
                                                 <Box padding="10px" ml={4}>
                                                     <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
-                                                        이메일: <span style={{ fontWeight: 'normal' }}>{infoData.email}</span>
+                                                        <EmailOutlinedIcon sx={{ mr: 1, fontSize: '17px'}} /><span style={{ fontWeight: 'normal' }}>{infoData.email}</span>
                                                     </Typography>
                                                     <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
-                                                        전화번호: <span style={{ fontWeight: 'normal' }}>{infoData.phoneNumber}</span>
+                                                        <PhoneAndroidIcon sx={{ mr: 1, fontSize: '17px'}} /><span style={{ fontWeight: 'normal' }}>{infoData.phoneNumber}</span>
                                                     </Typography>
                                                     <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
-                                                        내선번호: <span style={{ fontWeight: 'normal' }}>{infoData.extensionCall}</span>
+                                                        <LocalPhoneRoundedIcon sx={{ mr: 1, fontSize: '17px'}} /><span style={{ fontWeight: 'normal' }}>{infoData.extensionCall}</span>
                                                     </Typography>
                                                     <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
-                                                        주소: <span style={{ fontWeight: 'normal' }}>{infoData.address}</span>
+                                                        <AccountCircleRoundedIcon sx={{ mr: 1, fontSize: '17px'}} /><span style={{ fontWeight: 'normal' }}>{infoData.idNumber}</span>
                                                     </Typography>
                                                     <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
-                                                        사원번호: <span style={{ fontWeight: 'normal' }}>{infoData.idNumber}</span>
+                                                        <HomeRoundedIcon sx={{ mr: 1, fontSize: '17px'}} /><span style={{ fontWeight: 'normal' }}>{infoData.address}</span>
                                                     </Typography>
                                                 </Box>
                                             </Box>
@@ -352,26 +356,63 @@ const checkOriginalPass = () => {
                                 aria-describedby="modal-modal-description"
                             >
                                 <Box sx={style}>
-                                    <h2>비밀번호 변경</h2>
-                                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                                        기본 비밀번호 : <OutlinedInput type="text" value={originalPass} onChange={(e) => setOriginalPass(e.target.value)} /><br />
-                                        새로운 비밀번호 : <OutlinedInput type="password" value={newPass1} onChange={(e) => setNewPass1(e.target.value)} /><br />
-                                        비밀번호 확인: <OutlinedInput type="password" value={newPass2} onChange={(e) => setNewPass2(e.target.value)} /><br />
-                                        <Button variant="contained" color="warning" size="small" onClick={matchpass}>변경</Button>
-                                        <b style={{ color:'red'}}>{passMessage}</b>
+                                    <Typography variant="h4" component="h2" sx={{ mb: 3, fontWeight: 'bold', textAlign: 'center' }}>
+                                        비밀번호 변경
                                     </Typography>
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                            기본 비밀번호
+                                        </Typography>
+                                        <OutlinedInput
+                                            type="password"
+                                            value={originalPass}
+                                            onChange={(e) => setOriginalPass(e.target.value)}
+                                            fullWidth
+                                            sx={{ borderRadius: '8px', borderColor: 'gray'
+                                        }}
+                                        />
+                                    </Box>
+                                    <Box sx={{ mb: 2 }}>
+                                        <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                            새로운 비밀번호
+                                        </Typography>
+                                        <OutlinedInput
+                                            type="password"
+                                            value={newPass1}
+                                            onChange={(e) => setNewPass1(e.target.value)}
+                                            fullWidth
+                                            sx={{ borderRadius: '8px', borderColor: 'gray' }}
+                                        />
+                                    </Box>
+                                    <Box sx={{ mb: 3 }}>
+                                        <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold' }}>
+                                            비밀번호 확인
+                                        </Typography>
+                                        <OutlinedInput
+                                            type="password"
+                                            value={newPass2}
+                                            onChange={(e) => setNewPass2(e.target.value)}
+                                            fullWidth
+                                            sx={{ borderRadius: '8px', borderColor: 'gray' }}
+                                        />
+                                    </Box>
+                                    <Button
+                                        variant="contained"
+                                        size="large"
+                                        onClick={matchpass}
+                                        fullWidth
+                                        sx={{ mb: 2, borderRadius: '8px', textTransform: 'none', backgroundColor:'#ffb121' }}
+                                    >
+                                        변경
+                                    </Button>
+                                    {passMessage && (
+                                        <Typography variant="body2" color="error" sx={{ textAlign: 'center' }}>
+                                            {passMessage}
+                                        </Typography>
+                                    )}
                                 </Box>
                             </Modal>
 
-                            {/*조직도 모달 */}
-                            <Modal
-                                open={orModalOpen}
-                                onClose={organizationModalClose}
-                                aria-labelledby="modal-modal-title"
-                                aria-describedby="modal-modal-description"
-                            >
-                              <OrganizationModal/>
-                            </Modal>
                         </Box>
                     </ClickAwayListener>
                 </Box>
