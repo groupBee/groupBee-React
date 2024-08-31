@@ -15,28 +15,33 @@ const Board = () => {
     useEffect(() => {
         axios.get('/api/board/list')
             .then(res => {
-                console.log(res.data);
                 // 중요 게시글과 일반 게시글 분리
                 const importantPosts = res.data.filter(post => post.mustMustRead);
                 const regularPosts = res.data.filter(post => !post.mustMustRead);
 
-                // 모든 게시글을 작성일 기준으로 정렬 (최신순)
-                const allPosts = [...importantPosts, ...regularPosts].sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+                // 일반 게시글을 작성일 기준으로 최신순 정렬
+                const sortedRegularPosts = regularPosts.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
 
-                // 페이징 적용
-                const displayedPosts = allPosts.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+                // 총 게시글 수 계산
+                const totalRegularPosts = sortedRegularPosts.length;
+
+                // 페이지네이션 적용: 현재 페이지에 표시할 게시글 계산
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+                const displayedRegularPosts = sortedRegularPosts.slice(startIndex, endIndex);
 
                 // 중요 게시글은 상단에, 일반 게시글은 그 아래에 표시
                 const finalPosts = [
                     ...importantPosts,
-                    ...displayedPosts
+                    ...displayedRegularPosts
                 ].map((post, index) => ({
                     ...post,
-                    displayNumber: index + 1 + (currentPage - 1) * itemsPerPage,
+                    displayNumber: post.mustMustRead ? <b style={{color:'red'}}>[중요]</b> : (totalRegularPosts - startIndex - index +5) // 번호를 올바르게 부여
                 }));
 
+                // 총 페이지 수 계산
                 setBoardList(finalPosts);
-                setTotalPages(Math.ceil(allPosts.length / itemsPerPage));
+                setTotalPages(Math.ceil(totalRegularPosts / itemsPerPage));
             })
             .catch(error => {
                 console.error('Error fetching board list:', error);
@@ -50,6 +55,7 @@ const Board = () => {
     const handlePageChange = (event, page) => {
         setCurrentPage(page);
     };
+
     const handleTitleClick = (id) => {
         navigate(`/board/list/${id}`); // 클릭한 게시글의 상세 페이지로 이동
     };
@@ -58,7 +64,7 @@ const Board = () => {
         <Box m="20px">
             <Header title="사원 게시판" />
             <Box height="75vh">
-                <div style={{float:'right',marginBottom:'20px'}}>
+                <div style={{ float: 'right', marginBottom: '20px' }}>
                     <Button variant='contained' size="small" color="success" onClick={handleWriteClick}>글작성</Button>
                 </div>
                 <table className='table'>
@@ -73,11 +79,11 @@ const Board = () => {
                     </thead>
                     <tbody>
                     {boardList.map((row, idx) => (
-                        <tr key={idx} style={row.mustMustRead
+                        <tr key={row.id} style={row.mustMustRead
                             ? { backgroundColor: '#b3b3b3', fontWeight: 'bold', color: 'blue' } // 상단 고정 게시글 스타일
                             : { backgroundColor: 'transparent' } // 일반 게시글 스타일
                         }>
-                            <td>{row.id}{row.mustMustRead && <span style={{ color: 'red'}}><b>[중요]</b></span>}</td>
+                            <td >{row.displayNumber}</td> {/* 중요 게시물은 번호 표시 X */}
                             <td
                                 style={{ cursor: 'pointer', color: 'black' }}
                                 onClick={() => handleTitleClick(row.id)} // 제목 클릭 이벤트 설정
@@ -87,14 +93,16 @@ const Board = () => {
                                 {row.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
                             </td>
                             <td>{row.memberId}</td>
-                            <td>    {new Date(row.createDate).getFullYear()}-{String(new Date(row.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(row.createDate).getDate()).padStart(2, '0')} &nbsp;
+                            <td>
+                                {new Date(row.createDate).getFullYear()}-{String(new Date(row.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(row.createDate).getDate()).padStart(2, '0')} &nbsp;
                                 {new Date(row.createDate).toLocaleTimeString('ko-KR', {
                                     timeZone: 'Asia/Seoul',
                                     hour12: false,  // 24시간 형식으로 설정
                                     hour: '2-digit',
                                     minute: '2-digit',
                                     second: '2-digit'
-                                })}</td>
+                                })}
+                            </td>
                             <td>{row.readCount}</td>
                         </tr>
                     ))}
