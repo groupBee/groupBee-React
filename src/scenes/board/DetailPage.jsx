@@ -5,7 +5,7 @@ import {Box, Typography, Button} from '@mui/material';
 
 
 const DetailPage = () => {
-    const {id} = useParams();
+    const {id,currentPage} = useParams();
     const [post, setPost] = useState(null);
     const navigate = useNavigate();
     const [myinfoList, setMyinfoList] = useState([]);
@@ -82,7 +82,7 @@ const DetailPage = () => {
 
 
     const handleBackClick = () => {
-        navigate('/board');
+        navigate(`/board/${currentPage}`);
     };
 
     const commentDeleteClick = (commentId) => {
