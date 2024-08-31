@@ -126,6 +126,7 @@ const AdminInfo = () => {
             setEmail(data.email);
             setPosition(data.position.id);
             setMembershipStatus(data.membershipStatus);
+            setDepartmentId(data.department.id);
             setIsAdmin(data.isAdmin);
             setDepartmentName(data.department.departmentName);
             setResidentRegistrationNumber(data.residentRegistrationNumber);
@@ -231,7 +232,7 @@ const AdminInfo = () => {
                         <TableHead>
                             <TableRow
                                 sx={{
-                                    backgroundColor:'#dfdfdf'
+                                    backgroundColor:'#ededed'
                                 }}>
                                 <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem' }}>이름</TableCell>
                                 <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem' }}>직책</TableCell>
@@ -249,9 +250,27 @@ const AdminInfo = () => {
                                         backgroundColor: '#f5f5f5', // 호버 시 배경 색상
                                     }
                                 }}>
-                                    <TableCell align="center" style={{ paddingTop: "15px" ,fontSize: '0.9rem' }}>{info.name}</TableCell>
-                                    <TableCell align="center" style={{ paddingTop: "15px" ,fontSize: '0.9rem' }}>{info.position.rank}</TableCell>
-                                    <TableCell align="center" style={{ paddingTop: "15px" ,fontSize: '0.9rem' }}>{info.department.departmentName}</TableCell>
+                                    <TableCell align="center" style={{paddingTop: "15px", fontSize: '0.9rem'}}>
+                                        <img
+                                            src={info.profileFile}
+                                            alt="Profile"
+                                            style={{
+                                                width: '30px',
+                                                height: '30px',
+                                                borderRadius: '50%',
+                                                marginRight: '10px',
+                                                border: '1px solid #f5f5f5'
+                                            }}
+                                        />
+                                        {info.name}</TableCell>
+                                    <TableCell align="center" style={{
+                                        paddingTop: "15px",
+                                        fontSize: '0.9rem'
+                                    }}>{info.position.rank}</TableCell>
+                                    <TableCell align="center" style={{
+                                        paddingTop: "15px",
+                                        fontSize: '0.9rem'
+                                    }}>{info.department.departmentName}</TableCell>
                                     <TableCell align="center" style={{ paddingTop: "15px" ,fontSize: '0.9rem' }}>
                                         <span style={{
                                             color: info.membershipStatus ? '#7bd3b5' : 'red',
@@ -267,7 +286,7 @@ const AdminInfo = () => {
                                     <TableCell align="center" style={{ paddingTop: "15px",fontSize: '0.9rem'  }}>{info.email}</TableCell>
                                     <TableCell align="center">
                                         <IconButton onClick={() => handleOpen(info.id)}>
-                                            <MoreHorizIcon />
+                                            <MoreHorizIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -282,13 +301,14 @@ const AdminInfo = () => {
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2">
-                            상세정보
-                            <b style={{ float: 'right' }}>
+                        <Box display="flex" justifyContent="space-between">
+                            <Typography id="modal-modal-title" variant="h3" component="h2" textAlign="center">
+                                상세정보
+                            </Typography>
+                            <Typography id="modal-modal-title" variant="h5" component="h2">
                                 사번 : <input value={idNumber} onChange={(e) => setIdNumber(e.target.value)} />
-                            </b>
-                        </Typography>
-
+                            </Typography>
+                        </Box>
                         <Typography id="modal-modal-description" component="div" sx={{ mt: 2 }}>
                             <TableContainer component={Paper}>
                                 <Table>
@@ -308,9 +328,11 @@ const AdminInfo = () => {
                                                     style={{ display: 'none' }}
                                                     onChange={handleFileChange}
                                                 />
+                                                <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px'}}>
                                                 <Button variant='contained' color="secondary" onClick={handleButtonClick}>
                                                     사진 변경
                                                 </Button>
+                                                </div>
                                             </TableCell>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>이름</TableCell>
                                             <TableCell>
@@ -400,7 +422,7 @@ const AdminInfo = () => {
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
-                                            <TableCell colSpan={4} style={{ textAlign: 'center' }}>
+                                            <TableCell colSpan={6} style={{ textAlign: 'center' }}>
                                                 <Button variant='contained' color='secondary' onClick={changeInfo}>변경</Button>
                                             </TableCell>
                                         </TableRow>

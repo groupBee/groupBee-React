@@ -236,6 +236,7 @@ const checkOriginalPass = () => {
                             <IconButton onClick={handleDropdownToggle}>
                                 <PersonOutlined />
                             </IconButton>
+
                             {isDropdownOpen && (
                                 <Paper
                                     elevation={3}
@@ -243,148 +244,104 @@ const checkOriginalPass = () => {
                                         position: "absolute",
                                         right: 0,
                                         mt: 1,
-                                        p: 2,
                                         zIndex: 100,
-                                        bgcolor: '#primary[400]',
-                                        width: '900px',
-                                        height: '300px'
+                                        bgcolor: 'rgba(255, 255, 255, 0.2)', // 투명한 배경색
+                                        width: '350px',
+                                        height: 'auto',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        borderRadius: '12px', // 모서리를 둥글게
+                                        backdropFilter: 'blur(25px)', // 흐림 효과
+                                        border: '1px solid rgba(255, 255, 255, 0.3)', // 테두리 효과
                                     }}
                                 >
-                                    <Typography variant="h3">내정보</Typography>
-                                    <Box borderBottom="1px solid #e0e0e0" marginTop="5px" />
-
-                                    {/* 메인 레이아웃 */}
                                     {infoData && (
-                                    <Box sx={{ display: 'flex', marginTop: '20px' }}>
-                                        {/* 왼쪽 사진 */}
-                                        <Box sx={{  display: 'flex'}}>
-                                            <img
-                                                src={infoData.profileFile}
-                                                alt="Profile"
-                                                style={{
-                                                    width: '120px',
-                                                    height: '120px',
-                                                    objectFit: 'cover',
-                                                    border: '1px solid black',
-                                                    borderRadius: '50%'
-                                                }}
-                                            />
-                                        </Box>
-
-                                        {/* 오른쪽 정보들 */}
-                                        <Box sx={{ width: '100%'}}>
-                                            <Table>
-                                                <TableBody>
-                                                    {/* 첫 번째 줄: 이름과 상태 */}
-                                                    <TableRow>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem', borderBottom: 'none' }}>
-                                                            이름
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem', borderBottom: 'none' }}>{infoData.name}</TableCell>
-                                                        <TableCell sx={{
-                                                            fontSize: '1rem',
-                                                            borderBottom: 'none',
-                                                            fontWeight: 'bold'
-
-                                                        }}>
-                                                            <span style={{ color: '#ff5e16',backgroundColor: '#ffede0', padding:'4px', borderRadius:'5px' }}>
-                                                                {infoData.isAdmin ? '관리자' : ''}
-                                                            </span>
-                                                        </TableCell>
-                                                    </TableRow>
-
-                                                    {/* 두 번째 줄: 정보 4개 */}
-                                                    <TableRow>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            직책
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.position.rank}</TableCell>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            부서
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.department.departmentName}</TableCell>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            이메일
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.email}</TableCell>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            전화번호
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.phoneNumber}</TableCell>
-                                                    </TableRow>
-
-                                                    {/* 세 번째 줄: 추가 정보 4개 */}
-                                                    <TableRow>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            입사일
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.firstDay}</TableCell>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            사번
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.idNumber}</TableCell>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            주소
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.address}</TableCell>
-                                                        <TableCell component="th" scope="row" sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
-                                                            내선전화
-                                                        </TableCell>
-                                                        <TableCell sx={{ fontSize: '1rem' }}>{infoData.extensionCall}</TableCell>
-                                                    </TableRow>
-                                                </TableBody>
-                                            </Table>
+                                        <>
                                             <Box
                                                 sx={{
+                                                    width: '120px',
+                                                    height: '120px',
+                                                    borderRadius: '50%',
+                                                    bgcolor: '#e0e0e0',
                                                     display: 'flex',
-                                                    justifyContent: 'flex-end',
                                                     alignItems: 'center',
-                                                }}>
-                                                <Button
-                                                    variant="contained"
-                                                    sx={{
-                                                        backgroundColor: '#2c3d4f',
-                                                        color: '#fff',
-                                                        '&:hover': {
-                                                            backgroundColor: '#364d63',
-                                                        }
+                                                    justifyContent: 'center',
+                                                    mt: 7,
+                                                    overflow: 'hidden', // 이미지가 박스 밖으로 나가지 않도록 설정
+                                                    border: '0.7px solid #2E2E2E'
+                                                }}
+                                            >
+                                                <img
+                                                    src={infoData.profileFile}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover' // 이미지를 박스 크기에 맞추고 비율 유지
                                                     }}
-                                                    onClick={handleLogout}
-                                                >
-                                                    Logout
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    sx={{
-                                                        backgroundColor: '#2c3d4f',
-                                                        color: '#fff',
-                                                        '&:hover': {
-                                                            backgroundColor: '#364d63',
-                                                        }
-                                                    }}
-                                                    onClick={handlePassModalOpen}
-                                                >
-                                                    비밀번호 변경
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    sx={{
-                                                        backgroundColor: '#2c3d4f',
-                                                        color: '#fff',
-                                                        '&:hover': {
-                                                            backgroundColor: '#364d63',
-                                                        }
-                                                    }}
-                                                    onClick={organizationModalOpen}
-                                                >
-                                                    조직도
-                                                </Button>
+                                                />
                                             </Box>
-                                        </Box>
-                                    </Box>
+
+                                            <Box textAlign="center" mb={2} mt={2}>
+                                                <Typography sx={{ fontSize: '18px' }}>
+                                                    {infoData.name}
+                                                    {infoData.isAdmin && (
+                                                        <span style={{
+                                                            marginLeft: '4px', // 이름과 어드민 표시 사이에 간격을 둠
+                                                            fontSize: '18px', // 어드민 텍스트의 크기 조정
+                                                            color: '#ff5722', // 어드민 텍스트 색상 (예: 오렌지색)
+                                                            fontWeight: 'bold' // 어드민 텍스트 굵기
+                                                        }}>(관리자)</span>
+                                                    )}
+                                                </Typography>
+                                                <Typography sx={{ fontSize: '15px' }} color="textSecondary">{infoData.position.rank}/{infoData.department.departmentName}</Typography>
+                                            </Box>
+
+                                            <Box
+                                                display="flex"
+                                                justifyContent="center"
+                                                gap={1}
+                                                width="100%"
+                                            >
+                                                <Button variant="contained" color="primary" sx={{backgroundColor:'#ffb121', boxShadow:'0'}} onClick={handleLogout}>로그아웃</Button>
+                                                <Button variant="outlined" color="primary" onClick={handlePassModalOpen}>비밀번호변경</Button>
+                                                <Button variant="outlined" color="primary" onClick={organizationModalOpen}>조직도</Button>
+                                            </Box>
+
+                                            <Box
+                                                sx={{
+                                                    width: '100%',
+                                                    bgcolor: '#f9f9f9', // 배경색을 밝은 회색으로 변경하여 가독성 향상
+                                                    flexGrow: 1,
+                                                    mt: 2,
+                                                    p: 3, // padding을 추가하여 내부 여백을 늘립니다.
+                                                    borderRadius: '8px', // 모서리를 둥글게
+                                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // 그림자 추가로 카드 느낌을 줍니다.
+                                                }}
+                                            >
+                                                <Box padding="10px" ml={4}>
+                                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
+                                                        이메일: <span style={{ fontWeight: 'normal' }}>{infoData.email}</span>
+                                                    </Typography>
+                                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
+                                                        전화번호: <span style={{ fontWeight: 'normal' }}>{infoData.phoneNumber}</span>
+                                                    </Typography>
+                                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
+                                                        내선번호: <span style={{ fontWeight: 'normal' }}>{infoData.extensionCall}</span>
+                                                    </Typography>
+                                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
+                                                        주소: <span style={{ fontWeight: 'normal' }}>{infoData.address}</span>
+                                                    </Typography>
+                                                    <Typography variant="body1" sx={{ mb: 1, fontWeight: 'bold', color: '#333' , fontSize: '15px'}}>
+                                                        사원번호: <span style={{ fontWeight: 'normal' }}>{infoData.idNumber}</span>
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </>
                                     )}
                                 </Paper>
                             )}
+
 
                             {/* 비밀번호 변경 모달 */}
 

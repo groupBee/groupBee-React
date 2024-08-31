@@ -136,7 +136,11 @@ const AdminBoard = () => {
                         {boardList.map((list, index) => (
                             <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                                 <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{index + 1}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.title}</TableCell>
+                                <TableCell align="center" sx={{ fontSize: '0.9rem',
+                                    maxWidth: '100px',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap' }}>{list.title}</TableCell>
                                 <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.memberId}</TableCell>
                                 <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.createDate}</TableCell>
                                 <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.readCount}</TableCell>
