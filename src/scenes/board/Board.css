@@ -2,6 +2,6 @@
     white-space: nowrap; /* 텍스트가 길어질 경우 줄바꿈을 방지 */
     overflow: hidden;    /* 넘치는 부분은 숨김 */
     text-overflow: ellipsis; /* 넘치는 부분을 ...으로 표시 */
-    max-width: 1200px;
+    max-width: 500px;
     white-space: nowrap;
 }

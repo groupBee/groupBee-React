@@ -68,7 +68,7 @@ const Board = () => {
                 <div style={{ float: 'right', marginBottom: '20px' }}>
                     <Button variant='contained' size="small" color="success" onClick={handleWriteClick}>글작성</Button>
                 </div>
-                <table className='table' style={{maxWidth:'1000px'}}>
+                <table className='table'>
                     <thead>
                     <tr className='table-danger'>
                         <th style={{ width: '50px' }}>번호</th>
@@ -87,11 +87,11 @@ const Board = () => {
                             <td >{row.displayNumber}</td> {/* 중요 게시물은 번호 표시 X */}
                             <td
                                 className="title-cell"
-                                style={{ cursor: 'pointer', color: 'black',maxWidth:'1000px' }}
+                                style={{ cursor: 'pointer', color: 'black'}}
                                 onClick={() => handleTitleClick(row.id)} // 제목 클릭 이벤트 설정
                             >
-                                {row.mustRead && <span><b>[공지]</b></span>}
-                                <p>{row.title}</p>
+                                {row.mustRead && <span><b>[공지]&nbsp;</b></span>}
+                                {row.title}
                                 {row.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
                             </td>
                             <td>{row.memberId}</td>
