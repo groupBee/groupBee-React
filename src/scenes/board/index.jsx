@@ -3,6 +3,7 @@ import { Header } from "../../components";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import './Board.css';
 
 const Board = () => {
     const [boardList, setBoardList] = useState([]);
@@ -85,10 +86,11 @@ const Board = () => {
                         }>
                             <td >{row.displayNumber}</td> {/* 중요 게시물은 번호 표시 X */}
                             <td
-                                style={{ cursor: 'pointer', color: 'black' }}
+                                className="title-cell"
+                                style={{ cursor: 'pointer', color: 'black'}}
                                 onClick={() => handleTitleClick(row.id)} // 제목 클릭 이벤트 설정
                             >
-                                {row.mustRead && <span><b>[공지]</b></span>}
+                                {row.mustRead && <span><b>[공지]&nbsp;</b></span>}
                                 {row.title}
                                 {row.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
                             </td>

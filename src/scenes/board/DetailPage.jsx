@@ -96,8 +96,18 @@ const DetailPage = () => {
             {post ? (
                 <Box display="flex" flexDirection="column" alignItems="flex-start">
                     <Box mb={2} style={{width: '300px'}}>
-                        <Typography variant="h4" gutterBottom>
-                            {post.title}
+                        <Typography
+                            variant="h4"
+                            gutterBottom
+                            style={{
+                                width: '1000px',
+                                whiteSpace: 'normal', // 줄바꿈 자동 적용
+                                wordWrap: 'break-word', // 긴 단어의 줄바꿈을 허용
+                                border: '1px solid black',
+                                padding: '8px'
+                            }}
+                        >
+                            <b>{post.title}</b>
                         </Typography>
                     </Box>
                     <Box mb={2} style={{width: '300px'}}>
