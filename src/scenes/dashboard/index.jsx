@@ -27,10 +27,13 @@ function Dashboard() {
     const isXsDevices = useMediaQuery("(max-width: 436px)");
     const [filteredData, setFilteredData] = useState([]);
     const [memberId, setMemberId] = useState("");
-    const [status, setStatus] = useState("all"); // 기본 상태는 'all'
+    const [status, setStatus] = useState("all");
     const [events, setEvents] = useState([]);
+    const [boardList, setBoardList] = useState([]);
+    const [totalPages, setTotalPages] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
-    const calendarRef = useRef(null); // 캘린더 참조
+    const calendarRef = useRef(null);
 
     const handleBoard = () => {
         navigate("/board");
@@ -86,18 +89,8 @@ function Dashboard() {
     const fetchData = async () => {
         try {
             const calendarResponse = await fetch("/api/calendar/list");
-            // HTTP 상태 코드를 확인하여 200이 아닌 경우 오류 처리
             if (!calendarResponse.ok) {
-                if (calendarResponse.status === 404) {
-                    console.error("404: 서버에서 데이터를 찾을 수 없습니다.");
-                } else if (calendarResponse.status === 500) {
-                    console.error("500: 서버 오류가 발생했습니다.");
-                } else if (calendarResponse.status === 502) {
-                    console.error("502: Gateway 오류가 발생했습니다.");
-                } else {
-                    console.error(`${calendarResponse.status}: 알 수 없는 오류가 발생했습니다.`);
-                }
-                // FullCalendar 초기화
+                console.error(`${calendarResponse.status}: ${calendarResponse.statusText}`);
                 const calendarApi = calendarRef.current.getApi();
                 calendarApi.removeAllEvents();
                 return;
@@ -110,17 +103,39 @@ function Dashboard() {
                 content: event.content,
                 start: event.startDay,
                 end: event.endDay,
-                backgroundColor: '#ffc107',     // 이벤트 배경색
-                borderColor: '#ffc107',         // 이벤트 테두리색
+                backgroundColor: '#ffc107',
+                borderColor: '#ffc107',
                 textColor: '#111111',
             }));
             setEvents(eventsData);
-            console.log(eventsData);
         } catch (e) {
             console.log("받아올 데이터가 없습니다.");
-            // 오류 발생 시 FullCalendar 초기화
             const calendarApi = calendarRef.current.getApi();
-            calendarApi.removeAllEvents();  // 모든 이벤트 제거
+            calendarApi.removeAllEvents();
+        }
+    };
+
+    // 공지사항 데이터 가져오기
+    const fetchBoardList = async () => {
+        try {
+            const res = await axios.get('/api/board/list');
+            const importantPosts = res.data.filter(post => post.mustMustRead);
+            const regularPosts = res.data.filter(post => !post.mustMustRead);
+
+            // 중요 게시글을 상단에, 일반 게시글을 그 아래에 표시
+            const combinedPosts = [
+                ...importantPosts,
+                ...regularPosts
+            ];
+
+            // 상위 8개 항목을 선택
+            const displayedPosts = combinedPosts.slice(0, 8);
+
+            // 상태 업데이트
+            setBoardList(displayedPosts);
+            setTotalPages(Math.ceil(combinedPosts.length / 8)); // 페이지 수 계산
+        } catch (error) {
+            console.error('Error fetching board list:', error);
         }
     };
 
@@ -132,8 +147,9 @@ function Dashboard() {
 
     useEffect(() => {
         getinfo();
-        fetchData(); // 캘린더 데이터 가져오기
-    }, []);
+        fetchData();
+        fetchBoardList(); // 공지사항 데이터 가져오기
+    }, [currentPage]);
 
     return (
         <Box m="20px">
@@ -142,7 +158,6 @@ function Dashboard() {
                 <Button onClick={handleEmailWrite}>메일보내기</Button>
             </Box>
 
-            {/* GRID & CHARTS */}
             <Box
                 display="grid"
                 gridTemplateColumns={
@@ -164,15 +179,40 @@ function Dashboard() {
                     bgcolor={colors.primary[400]}
                 >
                     <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" style={{backgroundColor:'#ffb121'}}>
-                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between"
-                                    alignItems="center">
+                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             공지사항
                             <IconButton onClick={handleBoard}>
                                 <MoreHoriz style={{ color: "gray" }} />
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box></Box>
+                    <Box p="15px">
+                        {boardList.length > 0 ? (
+                            <table className="table table-bordered">
+                                <thead>
+                                <tr style={{ borderRight: 'none', borderLeft: 'none'}}>
+                                    <td style={{ borderRight: 'none', borderLeft: 'none', width:'60px'}}></td>
+                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>제목</td>
+                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>작성자</td>
+                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>작성일</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {boardList.map(post => (
+                                    <tr key={post.id}>
+                                        <td>{post.mustMustRead &&
+                                            <span style={{color: 'red'}}><b>[중요]</b></span>}</td>
+                                        <td>{post.title}</td>
+                                        <td>{post.memberId}</td>
+                                        <td>{new Date(post.createDate).toLocaleDateString()}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        ) : (
+                            <Typography variant="body1" color="textSecondary">게시글이 없습니다.</Typography>
+                        )}
+                    </Box>
                 </Box>
 
                 {/* 캘린더 */}
@@ -182,7 +222,7 @@ function Dashboard() {
                     bgcolor={colors.primary[400]}
                     display="flex"
                     flexDirection="column"
-                    height="100%" // Ensure the Box takes up available height
+                    height="100%"
                 >
                     <Box
                         borderBottom={`4px solid ${colors.primary[500]}`}
@@ -253,7 +293,7 @@ function Dashboard() {
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 2"
                     backgroundColor={colors.primary[400]}
-                    overflow="hidden" // 스크롤을 추가할 박스 아래쪽
+                    overflow="hidden"
                     display="flex"
                     flexDirection="column"
                 >
@@ -266,7 +306,6 @@ function Dashboard() {
                         </Typography>
                     </Box>
                     <Box p="15px" flexGrow={1} overflow="auto">
-                        {/* 결제 상태 필터 버튼 */}
                         <Box display="flex" justifyContent="space-around" mb="10px">
                             <Button style={{ color: '#ffb121' }} onClick={() => setStatus("rejected")}>반려</Button>
                             <Button style={{ color: '#ffb121' }} onClick={() => setStatus("ready")}>결재 대기</Button>
@@ -274,8 +313,6 @@ function Dashboard() {
                             <Button style={{ color: '#ffb121' }} onClick={() => setStatus("done")}>결제 완료</Button>
                             <Button style={{ color: '#ffb121' }} onClick={() => setStatus("all")}>모두 보기</Button>
                         </Box>
-
-                        {/* 필터링된 데이터 표시 */}
                         {filteredData.length > 0 ? (
                             <table className="table table-bordered">
                                 <thead>

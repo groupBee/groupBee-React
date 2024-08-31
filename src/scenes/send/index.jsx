@@ -26,8 +26,9 @@ const Invoices = () => {
     const getList = () => {
         axios.post("/api/elecapp/sentapp", { writer: writer })
             .then(res => {
-                setList(res.data);
-                applyFilter(activeFilter, res.data); // 현재 필터 적용
+                const sortedData = res.data.sort((a, b) => new Date(b.writeday) - new Date(a.writeday));
+                setList(sortedData);
+                applyFilter(activeFilter, sortedData); // 현재 필터 적용
             })
             .catch(err => {
                 console.error('데이터를 가져오는 중 오류 발생:', err);
@@ -80,6 +81,19 @@ const Invoices = () => {
 
     // 총 페이지 수 계산
     const totalPage = Math.ceil(filteredList.length / PageCount);
+
+    // 날짜를 포맷팅하는 함수
+    const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return ''; // 유효하지 않은 날짜일 경우 빈 문자열 반환
+        const today = new Date();
+        if (date.toDateString() === today.toDateString()) {
+            // 오늘 날짜일 경우 시간 정보를 "시:분"으로 출력
+            return date.toTimeString().split(' ')[0].substring(0, 5);
+        }
+        // 기타 날짜일 경우 "YYYY-MM-DD" 형식으로 출력
+        return date.toISOString().split('T')[0];
+    };
 
     // 디테일 페이지 이동
     const moveDetail = (item) => {
@@ -153,10 +167,10 @@ const Invoices = () => {
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.department}</td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>
                                     {
-                                        item.writeday.substring(0, 10)
+                                        formatDate(item.writeday)
                                     }
                                 </td>
-                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.approveStatus === 1?'임시저장':item.approveType === 0 ? '반려' : item.approveType === 1 ? '제출완료' : item.approveType === 2 ? '진행중' : '결재완료'}</td>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.approveStatus === 1 ? '임시저장' : item.approveType === 0 ? '반려' : item.approveType === 1 ? '제출완료' : item.approveType === 2 ? '진행중' : '결재완료'}</td>
                             </tr>
                         ))
                     }
