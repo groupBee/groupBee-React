@@ -5,3 +5,16 @@
     max-width: 500px;
     white-space: nowrap;
 }
+.title-board {
+    font-family: "Nanum Gothic";
+    text-transform: uppercase;
+    display: block;
+    font-size: 33px;
+    color: #241a00;
+    text-shadow: 0 8px 9px #c4b59d, 0px -2px 1px #fff;
+    font-weight: bold;
+    letter-spacing: -4px;
+    border-radius: 20px;
+    padding-left: 13px;
+    width: 200px;
+}

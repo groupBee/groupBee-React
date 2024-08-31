@@ -129,7 +129,7 @@ const OrganizationChart = () => {
 
     return (
         <div style={{display: 'flex', padding: '20px'}}>
-            <div style={{flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '100%'}}>
+            <div style={{flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '100%',paddingLeft:'20px'}}>
                 <h2>부서 목록</h2>
                 <ul>
                     {Object.entries(structuredDepartments).map(([key, department]) => (
@@ -225,7 +225,7 @@ const OrganizationChart = () => {
                                 <div>
 
                                     <div>{employee.name}</div>
-                                    <div>{employee.position.rank} - {employee.department.departmentName} - {employee.email}</div>
+                                    <div>{employee.position.rank}&nbsp;&nbsp; -&nbsp; {employee.department.departmentName}&nbsp; - &nbsp;&nbsp;{employee.email}</div>
                                 </div>
                             </li>
                         ))
@@ -235,14 +235,15 @@ const OrganizationChart = () => {
                 </ul>
             </div>
 
-            <div style={{flex: 2}}>
-                <h2>직원 정보</h2>
+            <div style={{flex: 2,paddingLeft:'40px'}}>
+                <h2 style={{marginLeft:'50px'}}>직원 정보</h2>
                 {selectedEmployee ? (
                     <div style={{
                         padding: '10px',
                         minHeight: '100%',
                         borderLeft: '3px solid #ffd454',
-                        paddingLeft: '40px'
+                        paddingLeft: '40px',
+                        marginLeft:'50px'
                     }}>
                         <img
                             src={selectedEmployee.profileFile}
@@ -295,6 +296,7 @@ const OrganizationModal = ({open, onClose}) => {
                 >
                     <CloseIcon/>
                 </IconButton>
+                <div><b style={{marginBottom:'50px',fontSize:'40px',marginLeft:'50px',color:'#fac337'}}>GroupBee&nbsp;</b><b style={{fontSize:'30px'}}>조직도</b></div>
                 <OrganizationChart/>
             </Box>
         </Modal>
