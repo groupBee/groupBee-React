@@ -76,7 +76,7 @@ const Board = () => {
                 </div>
                 <table className='table'>
                     <thead>
-                    <tr className='table-danger'>
+                    <tr className='table-warning' style={{border:'1px solid black'}}>
                         <th style={{ width: '50px' }}>번호</th>
                         <th style={{ width: '300px' }}>제목</th>
                         <th style={{ width: '100px' }}>작성자</th>
@@ -84,7 +84,7 @@ const Board = () => {
                         <th style={{ width: '50px' }}>조회</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={{border:'1px solid grey'}}>
                     {boardList.map((row, idx) => (
                         <tr key={row.id} style={row.mustMustRead
                             ? { backgroundColor: '#b3b3b3', fontWeight: 'bold', color: 'blue' } // 상단 고정 게시글 스타일

@@ -86,11 +86,20 @@ const DetailPage = () => {
     };
 
     const commentDeleteClick = (commentId) => {
-        axios.delete(`/api/comment/delete/${commentId}`)
-        alert("댓글이 삭제되었습니다")
-        getcomment();
-        // alert("dd")
-    }
+        const isConfirmed = window.confirm('정말로 이 댓글을 삭제하시겠습니까?');
+
+        if (isConfirmed) {
+            axios.delete(`/api/comment/delete/${commentId}`)
+                .then(() => {
+                    alert("댓글이 삭제되었습니다");
+                    getcomment();
+                })
+                .catch(error => {
+                    console.error('Error deleting comment:', error);
+                    alert('댓글 삭제 중 오류가 발생했습니다.');
+                });
+        }
+    };
     return (
         <Box p={3}>
             {post ? (
@@ -103,7 +112,6 @@ const DetailPage = () => {
                                 width: '1000px',
                                 whiteSpace: 'normal', // 줄바꿈 자동 적용
                                 wordWrap: 'break-word', // 긴 단어의 줄바꿈을 허용
-                                border: '1px solid black',
                                 padding: '8px'
                             }}
                         >
@@ -111,10 +119,14 @@ const DetailPage = () => {
                         </Typography>
                     </Box>
                     <Box mb={2} style={{width: '300px'}}>
-                        <Typography variant="subtitle1">
-                            작성자: {post.memberId}
+                        <Typography variant="subtitle1" style={{marginLeft:'800px',width:'400px'}}>
+                            작성자: {post.memberId}&nbsp;&nbsp;&nbsp;
+                            작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                         </Typography>
-                    </Box>
+                        <Typography style={{marginLeft:'1050px',width:'400px'}}>
+                            조회수: {post.readCount}
+                        </Typography>
+
                     <Box mb={2} style={{width: '300px', display: 'flex', alignItems: 'center'}}>
                         <Box
                             style={{
@@ -127,7 +139,7 @@ const DetailPage = () => {
                                 width: '16px',
                                 height: '16px',
                                 border: '1px solid black',
-                                backgroundColor: post.mustRead ? 'red' : 'white'
+                                backgroundColor: post.mustRead ? '#00154a' : 'white'
                             }}/>
                             <b style={{marginLeft: '10px'}}>공지사항</b>
                         </Box>
@@ -145,10 +157,12 @@ const DetailPage = () => {
                             }}/>
                             <b style={{marginLeft: '10px'}}>중요</b>
                         </Box>
+
+                    </Box>
                     </Box>
                     <Box mb={2} style={{width: '300px'}}>
                         <Typography variant="body1" paragraph>
-                            {post.content}
+                            <p style={{minWidth:'1100px',minHeight:'500px',border:'1px solid black',backgroundColor:'white'}}>{post.content}</p>
                         </Typography>
                     </Box>
                     {post.file && (
@@ -162,52 +176,76 @@ const DetailPage = () => {
                             )}
                         </Box>
                     )}
-                    <Box mb={2} style={{width: '300px'}}>
-                        <Typography variant="subtitle2">
-                            작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
-                        </Typography>
-                        <Typography variant="subtitle2">
-                            조회수: {post.readCount}
-                        </Typography>
-                    </Box>
+
 
                     <Box mt={2} style={{width: '300px'}}>
                         {
                             myinfoList.potalId == post.memberId ?
                                 <>
-                                    <Button variant="contained" color="primary" onClick={handleEditClick}
-                                            style={{marginRight: '10px'}}>
+                                    <Button variant="contained" onClick={handleEditClick}
+                                            style={{marginRight: '10px',color:'white', backgroundColor:'#3af0b6'}}>
                                         수정
                                     </Button>
-                                    <Button variant="contained" color="secondary" onClick={handleDeleteClick}
-                                            style={{marginRight: '10px'}}>
+                                    <Button variant="contained"  onClick={handleDeleteClick}
+                                            style={{marginRight: '10px',color:'white', backgroundColor:'#fc9a38'}}>
                                         삭제
                                     </Button> </> : ''}
-                        <Button variant="outlined" onClick={handleBackClick}>
+                        <Button variant="contained" style={{color:'white', backgroundColor:'#8c8b89'}} onClick={handleBackClick}>
                             목록
                         </Button>
                     </Box>
+                    <hr/>
                     <div>
-                        <textarea value={comment} onChange={(e)=>setComment(e.target.value)}>
-                        </textarea>
-                        <Button  onClick={writeComment} variant='contained' color='info'>댓글작성</Button>
+                        댓글
                     </div>
+                    <div>
+                        <textarea style={{width:'1080px',height:'100px'}} value={comment} onChange={(e) => setComment(e.target.value)}>
+                        </textarea>
+                        <Button onClick={writeComment} variant='contained' color='info' style={{marginLeft:'20px',marginBottom:'20px'}}>댓글작성</Button>
+                    </div><br/>
+
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th><p  style={{width: '100px'}}>작성자</p></th>
+                            <th><p  style={{minWidth:'400px',marginLeft:'20px',marginRight:'200px'}}>내용</p></th>
+                            <th><p  style={{marginLeft:'280px',width: '100px'}}>작성일</p></th>
+                        </tr>
+                        </tbody>
+                    </table>
                     {
                         commentList &&
                         commentList.map((item, idx) =>
                             <table>
                                 <tbody>
                                 <tr>
-                                    <td>{item.memberId}</td>
-                                    <td>{item.content}</td>
+                                    <td style={{fontSize:'15px'}}>{item.memberId}</td>
+                                    <td style={{marginRight:'200px',minWidth:'350px',fontSize:'15px'}}><p  style={{
+                                        width: '850px',
+                                        whiteSpace: 'normal', // 줄바꿈 자동 적용
+                                        wordWrap: 'break-word', // 긴 단어의 줄바꿈을 허용
+                                        padding: '8px',
+                                        marginTop:'5px',
+                                        paddingTop:'15px',
+                                        marginLeft:'50px'
+                                    }}>{item.content}</p></td>
+                                    <td>     {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
+                                        {new Date(item.createDate).toLocaleTimeString('ko-KR', {
+                                            timeZone: 'Asia/Seoul',
+                                            hour12: false,  // 24시간 형식으로 설정
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit'
+                                        })}</td>
                                     {
                                         myinfoList.potalId == item.memberId ?
                                             <>
-                                                <Button variant="contained" color="secondary"
-                                                       style={{marginRight: '10px'}} onClick={(e)=>commentDeleteClick(item.id)}
+                                                <Button variant="contained" color="error"
+                                                        style={{marginRight: '10px',marginLeft:'20px',marginTop:'20px'}}
+                                                        onClick={(e) => commentDeleteClick(item.id)}
                                                 >
                                                     삭제
-                                                </Button> </> :''}
+                                                </Button> </> : ''}
 
                                 </tr>
 
