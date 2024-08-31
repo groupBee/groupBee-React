@@ -250,12 +250,12 @@ const checkOriginalPass = () => {
                                         height: '300px'
                                     }}
                                 >
-                                    <Typography variant="h3">내정보</Typography>
+                                    <Typography variant="h4" padding="5px">내정보</Typography>
                                     <Box borderBottom="1px solid #e0e0e0" marginTop="5px" />
 
                                     {/* 메인 레이아웃 */}
                                     {infoData && (
-                                    <Box sx={{ display: 'flex', marginTop: '20px' }}>
+                                    <Box sx={{ display: 'flex', marginTop: '15px' }}>
                                         {/* 왼쪽 사진 */}
                                         <Box sx={{  display: 'flex'}}>
                                             <img
@@ -272,7 +272,7 @@ const checkOriginalPass = () => {
                                         </Box>
 
                                         {/* 오른쪽 정보들 */}
-                                        <Box sx={{ width: '100%'}}>
+                                        <Box sx={{ marginLeft: '35px' }}>
                                             <Table>
                                                 <TableBody>
                                                     {/* 첫 번째 줄: 이름과 상태 */}
