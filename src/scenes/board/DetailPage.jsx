@@ -114,7 +114,7 @@ const DetailPage = () => {
                                 wordWrap: 'break-word', // 긴 단어의 줄바꿈을 허용
                                 padding: '8px'
                             }}
-                        >
+                        >{post.mustRead && <span><b>[공지]&nbsp;</b></span>}
                             <b>{post.title}</b>
                         </Typography>
                     </Box>
