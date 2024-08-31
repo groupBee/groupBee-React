@@ -36,9 +36,11 @@ const AppRouter = () => {
                     <Route path="/list" element={<List/>}/>
                     <Route path="/send" element={<Send/>}/>
                     <Route path="/calendar" element={<Calendar/>}/>
-                    <Route path="/board" element={<Board/>}/>
+                    <Route path="/board" element={<Board/>}>
+                        <Route path="/board/:Page" element={<Board/>}/>
+                    </Route>
                     <Route path="/board/write" element={<BoardWrite/>}/>
-                    <Route path="/board/list/:id" element={<DetailPage/>}/>
+                    <Route path="/board/list/:id/:currentPage" element={<DetailPage/>}/>
                     <Route path="/board/update/:id" element={<UpdatePage/>}/>
                     <Route path="/book/*" element={<Book/>}/>
                     <Route path="/hr" element={<Hr/>}/>

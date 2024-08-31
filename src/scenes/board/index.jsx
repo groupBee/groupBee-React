@@ -2,16 +2,22 @@ import { Box, Button, Pagination } from "@mui/material";
 import { Header } from "../../components";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import './Board.css';
 
 const Board = () => {
+    const {Page}=useParams();
     const [boardList, setBoardList] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 15;
     const navigate = useNavigate();
 
+    useEffect(()=>{
+        if(Page){
+        setCurrentPage(Page)}
+
+    },[])
 
     useEffect(() => {
         axios.get('/api/board/list')
@@ -58,7 +64,7 @@ const Board = () => {
     };
 
     const handleTitleClick = (id) => {
-        navigate(`/board/list/${id}`); // 클릭한 게시글의 상세 페이지로 이동
+        navigate(`/board/list/${id}/${currentPage}`); // 클릭한 게시글의 상세 페이지로 이동
     };
 
     return (
