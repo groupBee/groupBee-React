@@ -153,9 +153,15 @@ function Dashboard() {
 
     return (
         <Box m="20px">
-            <Box display="flex" justifyContent="flex-end" mb="20px">
-                <Button style={{ marginRight: '10px' }} onClick={handleCarBook}>예약하기</Button>
-                <Button onClick={handleEmailWrite}>메일보내기</Button>
+            <Box display="flex" justifyContent="space-between" mb="20px" alignItems="center">
+                <Box display="flex">
+                    <Button>출근</Button>
+                    <Button>퇴근</Button>
+                </Box>
+                <Box display="flex">
+                    <Button style={{ marginRight: '10px' }} onClick={handleCarBook}>예약하기</Button>
+                    <Button onClick={handleEmailWrite}>메일보내기</Button>
+                </Box>
             </Box>
 
             <Box
@@ -191,20 +197,28 @@ function Dashboard() {
                             <table className="table table-bordered">
                                 <thead>
                                 <tr style={{ borderRight: 'none', borderLeft: 'none'}}>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', width:'60px'}}></td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>제목</td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>작성자</td>
+                                    <td style={{ borderRight: 'none', borderLeft: 'none', width:'50px'}}></td>
+                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center', width:'450px'}}>제목</td>
+                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center', width:'200px'}}>작성자</td>
                                     <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>작성일</td>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {boardList.map(post => (
-                                    <tr key={post.id}>
-                                        <td>{post.mustMustRead &&
+                                    <tr key={post.id} style={{ borderRight: 'none', borderLeft: 'none'}}>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none'}}>{post.mustMustRead &&
                                             <span style={{color: 'red'}}><b>[중요]</b></span>}</td>
-                                        <td>{post.title}</td>
-                                        <td>{post.memberId}</td>
-                                        <td>{new Date(post.createDate).toLocaleDateString()}</td>
+                                        <td
+                                            style={{ borderRight: 'none', borderLeft: 'none',
+                                                fontWeight: post.mustMustRead ? 'bold' : 'normal',
+                                                maxWidth: '450px',         // 최대 너비 설정
+                                                overflow: 'hidden',       // 넘치는 내용 숨기기
+                                                textOverflow: 'ellipsis',  // 넘치는 내용에 '...' 추가
+                                                whiteSpace: 'nowrap' }}>
+                                            {post.title}
+                                        </td>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>{post.memberId}</td>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>{new Date(post.createDate).toLocaleDateString()}</td>
                                     </tr>
                                 ))}
                                 </tbody>
