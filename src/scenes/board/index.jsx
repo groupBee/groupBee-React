@@ -12,12 +12,17 @@ const Board = () => {
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 15;
     const navigate = useNavigate();
+    const [commentCount, setCommentCount] = useState(0);
 
     useEffect(()=>{
         if(Page){
         setCurrentPage(Page)}
 
     },[])
+
+    // useEffect(() => {
+    //     getCommentCount();  // 컴포넌트 마운트 시 댓글 수 가져오기
+    // }, [commentCount]);
 
     useEffect(() => {
         axios.get('/api/board/list')
@@ -49,9 +54,11 @@ const Board = () => {
                     ...post,
                     // 전체 게시글에서 최신 게시글이 가장 높은 번호, 오래된 게시글이 1번이 되도록 번호 부여
                     displayNumber: post.mustMustRead
-                        ? <b style={{ color: 'red' }}>[중요]</b>
+                        ? <b style={{ color: 'red',marginLeft:'-5px' }}>[중요]</b>
                         : totalRegularPosts - (startIndex + index)+8
                 }));
+
+
 
                 // 총 페이지 수 계산
                 setBoardList(finalPosts);
@@ -61,6 +68,17 @@ const Board = () => {
                 console.error('Error fetching board list:', error);
             });
     }, [currentPage]);
+
+    const getCommentCount = () => {
+        axios.get(`/api/comment/list?boardId=${id}`)
+            .then(res => {
+                const commentCount = res.data.length;  // 댓글 수 계산
+                setCommentCount(commentCount);  // 상태에 저장
+            })
+            .catch(error => {
+                console.error('Error fetching comment count:', error);
+            });
+    };
 
     const handleWriteClick = () => {
         navigate('/board/write');
@@ -76,19 +94,19 @@ const Board = () => {
 
     return (
         <Box m="20px">
-            <Header title="사원 게시판" />
+            <p className='title-board'>사내 게시판</p>
             <Box height="75vh">
                 <div style={{ float: 'right', marginBottom: '20px' }}>
-                    <Button variant='contained' size="small" color="success" onClick={handleWriteClick}>글작성</Button>
+                    <Button variant='outlined' style={{backgroundColor:'#22a1e6',color:'white',fontSize:'15px'}} onClick={handleWriteClick}>글작성</Button>
                 </div>
                 <table className='table'>
                     <thead>
-                    <tr className='table-warning' style={{border:'1px solid black'}}>
-                        <th style={{ width: '50px' }}>번호</th>
-                        <th style={{ width: '300px' }}>제목</th>
-                        <th style={{ width: '100px' }}>작성자</th>
-                        <th style={{ width: '100px' }}>작성일</th>
-                        <th style={{ width: '50px' }}>조회</th>
+                    <tr style={{border:'1px solid black'}}>
+                        <th style={{ width: '50px' ,backgroundColor: 'rgb(255, 177, 33)'}}>번호</th>
+                        <th style={{ width: '300px' ,backgroundColor: 'rgb(255, 177, 33)'}}>제목</th>
+                        <th style={{ width: '100px' ,backgroundColor: 'rgb(255, 177, 33)'}}>작성자</th>
+                        <th style={{ width: '100px' ,backgroundColor: 'rgb(255, 177, 33)'}}>작성일</th>
+                        <th style={{ width: '50px' ,backgroundColor: 'rgb(255, 177, 33)'}}>조회</th>
                     </tr>
                     </thead>
                     <tbody style={{border:'1px solid grey'}}>
@@ -97,7 +115,7 @@ const Board = () => {
                             ? { backgroundColor: '#b3b3b3', fontWeight: 'bold', color: 'blue' } // 상단 고정 게시글 스타일
                             : { backgroundColor: 'transparent' } // 일반 게시글 스타일
                         }>
-                            <td >{row.displayNumber}</td> {/* 중요 게시물은 번호 표시 X */}
+                            <td >&nbsp;&nbsp;{row.displayNumber}</td> {/* 중요 게시물은 번호 표시 X */}
                             <td
                                 className="title-cell"
                                 style={{ cursor: 'pointer', color: 'black'}}
@@ -105,6 +123,7 @@ const Board = () => {
                             >
                                 {row.mustRead && <span><b>[공지]&nbsp;</b></span>}
                                 {row.title}
+                                {row.commentCount > 0 && <span style={{ marginLeft: '10px', color: 'gray' }}>({row.commentList.length})</span>}
                                 {row.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
                             </td>
                             <td>{row.memberId}</td>

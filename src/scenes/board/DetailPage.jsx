@@ -139,7 +139,7 @@ const DetailPage = () => {
                                 width: '16px',
                                 height: '16px',
                                 border: '1px solid black',
-                                backgroundColor: post.mustRead ? '#00154a' : 'white'
+                                backgroundColor: post.mustRead ? '#171fb3' : 'white'
                             }}/>
                             <b style={{marginLeft: '10px'}}>공지사항</b>
                         </Box>
@@ -169,7 +169,8 @@ const DetailPage = () => {
                                     border: '1px solid black',
                                     backgroundColor: 'white',
                                     whiteSpace: 'pre-wrap', // 공백과 줄바꿈을 유지
-                                    padding: '8px'
+                                    padding: '8px',
+                                    fontSize:'15px'
                                 }}>
                                 {post.content}
                             </div>
