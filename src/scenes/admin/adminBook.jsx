@@ -36,96 +36,11 @@ const AdminBook = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [itemsPerPage] = useState(4);
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+
     const [alertMessage, setAlertMessage] = useState("");
 
-    const handleOpenModal = () => {
-        setIsModalOpen(true);
-        setAlertMessage("");
-    };
-    const handleCloseModal = () => setIsModalOpen(false);
 
-    const [newBooking, setNewBooking] = useState({
-        category: '',
-        type: '',
-        carId: '',
-        file: null,
-        name: '',
-        imagePreview: ''
-    });
 
-    const handleAddBooking = async () => {
-        if (!newBooking.category || !newBooking.file || (newBooking.category === '0' && !newBooking.carId) || (newBooking.category === '1' && !newBooking.name)) {
-            setAlertMessage("모든 필드를 입력해주세요.");
-            return;
-        }
-
-        try {
-            const formData = new FormData();
-            formData.append('file', newBooking.file);
-            formData.append('category', newBooking.category);
-
-            if (newBooking.category === '0') {
-                formData.append('entityData', JSON.stringify({
-                    carId: newBooking.carId,
-                    type: newBooking.type
-                }));
-            } else if (newBooking.category === '1') {
-                formData.append('entityData', JSON.stringify({
-                    name: newBooking.name
-                }));
-            }
-
-            const response = await fetch('/api/admin/book/insert', {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error('네트워크 응답이 올바르지 않습니다.');
-            }
-
-            const result = await response.json();
-            Swal.fire({
-                title: '<strong>추가 성공</strong>',
-                icon: 'success',
-                html: '새로운 예약이 성공적으로 추가되었습니다.',
-                confirmButtonText: '확인',
-                confirmButtonColor: '#ffb121',
-            });
-
-            setNewBooking({
-                category: '',
-                type: '',
-                carId: '',
-                file: null,
-                name: '',
-                imagePreview: ''
-            });
-            handleCloseModal();
-            fetchData();
-
-        } catch (error) {
-            Swal.fire({
-                title: '<strong>추가 실패</strong>',
-                icon: 'error',
-                html: '예약 추가 중 에러가 발생했습니다.',
-                confirmButtonText: '확인',
-                confirmButtonColor: '#ffb121',
-            });
-        }
-    };
-
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setNewBooking({
-                ...newBooking,
-                file: file,
-                imagePreview: URL.createObjectURL(file),
-            });
-        }
-    };
 
     const fetchData = async () => {
         try {
@@ -295,11 +210,7 @@ const AdminBook = () => {
                         </Box>
                     </Box>
                     <Box display="flex" alignItems="center" gap={1}>
-                        <Button  onClick={handleOpenModal}
-                                sx={{ textAlign: 'center' , backgroundColor:'#ff7926', fontSize:'13px'
-                        ,color: 'white', padding:'7px'}}>
-                            차량/회의실 추가
-                        </Button>
+
                         <Select
                             value={sortOrder}
                             onChange={handleSortChange}
@@ -366,77 +277,6 @@ const AdminBook = () => {
             </Box>
 
 
-            <Dialog open={isModalOpen} onClose={handleCloseModal}>
-                <DialogTitle >차량/회의실 추가</DialogTitle>
-                <DialogContent>
-                    {alertMessage && (
-                        <Box sx={{ mb: 2, color: 'red', textAlign: 'center' }}>
-                            {alertMessage}
-                        </Box>
-                    )}
-                    <Select
-                        value={newBooking.category}
-                        onChange={(e) => setNewBooking({ ...newBooking, category: e.target.value })}
-                        fullWidth
-                    >
-                        <MenuItem value="0">차량</MenuItem>
-                        <MenuItem value="1">회의실</MenuItem>
-                    </Select>
-                    {newBooking.imagePreview && (
-                        <Box mt={2} textAlign="center">
-                            <img
-                                src={newBooking.imagePreview}
-                                alt="미리보기"
-                                style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
-                            />
-                        </Box>
-                    )}
-                    <Button variant="contained" component="label" fullWidth sx={{ mt: 2, backgroundColor:'#ffb121' }}>
-                        이미지 업로드
-                        <input
-                            type="file"
-                            hidden
-                            accept="image/*"
-                            onChange={handleImageChange}
-                        />
-                    </Button>
-                    {newBooking.category === '0' && (
-                        <>
-                            <TextField
-                                margin="dense"
-                                label="차량번호"
-                                fullWidth
-                                variant="outlined"
-                                value={newBooking.carId}
-                                onChange={(e) => setNewBooking({ ...newBooking, carId: e.target.value })}
-                            />
-                            <TextField
-                                margin="dense"
-                                label="차량종류"
-                                fullWidth
-                                variant="outlined"
-                                value={newBooking.type}
-                                onChange={(e) => setNewBooking({ ...newBooking, type: e.target.value })}
-                            />
-                        </>
-                    )}
-
-                    {newBooking.category === '1' && (
-                        <TextField
-                            margin="dense"
-                            label="회의실 이름"
-                            fullWidth
-                            variant="outlined"
-                            value={newBooking.name}
-                            onChange={(e) => setNewBooking({ ...newBooking, name: e.target.value })}
-                        />
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleAddBooking} color="primary">추가</Button>
-                    <Button onClick={handleCloseModal} color="secondary">취소</Button>
-                </DialogActions>
-            </Dialog>
         </Box>
     );
 };

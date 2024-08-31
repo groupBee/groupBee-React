@@ -259,7 +259,8 @@ const AdminInfo = () => {
                                                 height: '30px',
                                                 borderRadius: '50%',
                                                 marginRight: '10px',
-                                                border: '1px solid #f5f5f5'
+                                                border: '1px solid #f5f5f5',
+                                                objectFit:'cover'
                                             }}
                                         />
                                         {info.name}</TableCell>

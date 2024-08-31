@@ -1,0 +1,17 @@
+.tab-bar {
+    position: relative;
+}
+
+.tab {
+    position: relative;
+}
+
+.active-indicator {
+    position: absolute;
+    bottom: -5px; /* Adjust based on your needs */
+    left: 0;
+    height: 4px;
+    width: 100%; /* Adjust width as needed */
+    background-color: #ffb121; /* Yellow bar color */
+    transition: background-color 0.3s ease; /* Smooth transition for color change */
+}

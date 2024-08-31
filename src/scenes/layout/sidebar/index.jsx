@@ -1,5 +1,5 @@
 import React from "react";
-import {Avatar, Box, IconButton, Typography, useTheme} from "@mui/material";
+import {Avatar, Box, Button, IconButton, Modal, Typography, useTheme} from "@mui/material";
 import {useContext, useState} from "react";
 import {tokens} from "../../../theme";
 import {Menu, MenuItem, Sidebar, SubMenu} from "react-pro-sidebar";
@@ -24,12 +24,23 @@ import logo from "../../../assets/images/logo.png";
 import Item from "./Item";
 import {ToggledContext} from "../../../App";
 import CommuteList from "../../Commute/CommuteList.jsx";
+import OrganizationModal from "../navbar/organizationModal.jsx";
 
 const SideBar = () => {
     const [collapsed, setCollapsed] = useState(false);
     const {toggled, setToggled} = useContext(ToggledContext);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const [orModalOpen, setOrMadalOpen] = useState(false);
+
+    //조직도 모달
+    const organizationModalOpen = () => {
+        setOrMadalOpen((prev => !prev));
+    };
+
+    const organizationModalClose = () => {
+        setOrMadalOpen(false);
+    };
 
     return (
         <Sidebar
@@ -234,8 +245,50 @@ const SideBar = () => {
                         />
                     </SubMenu>
                 </Menu>
-                <Box>조직도 버튼 여기 만들예정</Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center', // 가로 중앙 정렬
+                        alignItems: 'center', // 세로 중앙 정렬
+                    }}
+                >
+                    <Button
+                        sx={{
+                            width: '80%',
+                            height: '50px',
+                            fontSize: '15px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '2.5px',
+                            color: '#ffb121',
+                            backgroundColor: '#fff',
+                            border: '1px solid #ffb121',
+                            borderRadius: '4px',
+                            transition: 'all 0.3s ease 0s',
+                            cursor: 'pointer',
+                            marginTop: '20px',
+                            '&:hover': {
+                                backgroundColor: '#ffb121',
+                                boxShadow: '0px 15px 20px rgba(255, 177, 33, 0.4)',
+                                color: '#fff',
+                                transform: 'translateY(-7px)'
+                            }
+                        }}
+                        onClick={organizationModalOpen}
+                    >
+                        조직도
+                    </Button>
+                </Box>
             </Box>
+
+            {/*조직도 모달 */}
+            <Modal
+                open={orModalOpen}
+                onClose={organizationModalClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <OrganizationModal/>
+            </Modal>
         </Sidebar>
     );
 };
