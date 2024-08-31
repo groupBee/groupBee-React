@@ -106,6 +106,7 @@ const UpdatePage = () => {
                             required
                             fullWidth
                             variant="outlined"
+                            style={{backgroundColor:'white',width:'1100px'}}
                         />
                     </div>
                     <Box mb={2} mt={2} style={{ display: 'flex', alignItems: 'center' }}>
@@ -148,13 +149,14 @@ const UpdatePage = () => {
                             fullWidth
                             variant="outlined"
                             placeholder="내용을 입력하세요"
+                            style={{backgroundColor:'white',width:'1100px'}}
                         />
                     </div>
                     <Box mt={2}>
                         <Button type="submit" variant='contained' color='primary' style={{ marginRight: '10px' }}>
                             저장
                         </Button>
-                        <Button variant='outlined' color='secondary' onClick={handleCancelClick}>
+                        <Button variant='contained' color='secondary' onClick={handleCancelClick}>
                             취소
                         </Button>
                     </Box>

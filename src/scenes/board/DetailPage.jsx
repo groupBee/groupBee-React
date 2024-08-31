@@ -124,7 +124,7 @@ const DetailPage = () => {
                             작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                         </Typography>
                         <Typography style={{marginLeft:'1050px',width:'400px'}}>
-                            조회수: {post.readCount}
+                            조회수: {Math.floor(post.readCount / 2)}
                         </Typography>
 
                     <Box mb={2} style={{width: '300px', display: 'flex', alignItems: 'center'}}>
@@ -160,9 +160,19 @@ const DetailPage = () => {
 
                     </Box>
                     </Box>
-                    <Box mb={2} style={{width: '300px'}}>
+                    <Box mb={2} style={{ width: '300px' }}>
                         <Typography variant="body1" paragraph>
-                            <p style={{minWidth:'1100px',minHeight:'500px',border:'1px solid black',backgroundColor:'white'}}>{post.content}</p>
+                            <div
+                                style={{
+                                    minWidth: '1100px',
+                                    minHeight: '500px',
+                                    border: '1px solid black',
+                                    backgroundColor: 'white',
+                                    whiteSpace: 'pre-wrap', // 공백과 줄바꿈을 유지
+                                    padding: '8px'
+                                }}>
+                                {post.content}
+                            </div>
                         </Typography>
                     </Box>
                     {post.file && (

@@ -10,6 +10,7 @@ const OrganizationChart = () => {
     const [employeeList, setEmployeeList] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState([]);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [selectedDepartmentNames, setSelectedDepartmentNames] = useState([]);
 
     //시작하자마자 정보들 불러오기
     useEffect(() => {
@@ -59,6 +60,9 @@ const OrganizationChart = () => {
     }, {});
     //부서 눌렀을때 하위부서 있으면 하위부서로 출력되고 없으면 해당 부서의 사윈 목록 출력
     const handleDepartmentSelect = (id, hasSubDepartments) => {
+        const departmentNames = findDepartmentNames(id);
+        setSelectedDepartmentNames(departmentNames);
+
         if (hasSubDepartments) {
             setExpandedDepartments(prevState =>
                 prevState.includes(id) ? prevState.filter(expandedId => expandedId !== id) : [...prevState, id]
@@ -66,6 +70,27 @@ const OrganizationChart = () => {
         } else {
             filterEmployees(id);
         }
+    };
+
+// 선택된 부서의 이름을 찾는 함수
+    const findDepartmentNames = (departmentId) => {
+        let names = [];
+        const traverse = (dept, acc) => {
+            if (dept.id === departmentId) {
+                acc.push(dept.departmentName);
+                return acc;
+            }
+
+            if (dept.subDepartments) {
+                for (const subDept of Object.values(dept.subDepartments)) {
+                    const result = traverse(subDept, [...acc, dept.departmentName]);
+                    if (result.length) return result;
+                }
+            }
+            return [];
+        };
+
+        return traverse(structuredDepartments[Math.floor(departmentId / 100) * 100], []);
     };
     const filterEmployees = (num, hasSubDepartments) => {
         const employeesInDepartment = employeeList.filter(employee => employee.department.id === num);
@@ -103,14 +128,17 @@ const OrganizationChart = () => {
 
 
     return (
-        <div style={{ display: 'flex', padding: '20px' }}>
+        <div style={{display: 'flex', padding: '20px'}}>
             <div style={{flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '100%'}}>
                 <h2>부서 목록</h2>
                 <ul>
                     {Object.entries(structuredDepartments).map(([key, department]) => (
                         <li
                             key={department.id}
-                            onClick={() =>{ handleDepartmentSelect(department.id, Object.keys(department.subDepartments).length > 0);filterEmployees(department.id);}}
+                            onClick={() => {
+                                handleDepartmentSelect(department.id, Object.keys(department.subDepartments).length > 0);
+                                filterEmployees(department.id);
+                            }}
                             style={{
                                 cursor: 'pointer',
                                 fontWeight: expandedDepartments.includes(department.id) ? 'bold' : 'normal'
@@ -164,36 +192,46 @@ const OrganizationChart = () => {
 
             <div style={{flex: 2, marginRight: '20px'}}>
                 <h2>직원 리스트</h2>
+                {selectedDepartmentNames.length > 0 && (
+                    <h5>
+                        {selectedDepartmentNames.join(' > ')}
+                    </h5>
+                )}
                 <ul>
-                    {filteredEmployees.map(employee => (
-                        <li
-                            key={employee.id}
-                            onClick={() => setSelectedEmployee(employee)}
-                            style={{
-                                cursor: 'pointer',
-                                fontWeight: selectedEmployee?.id === employee.id ? 'bold' : 'normal',
-                                display: 'flex',
-                                alignItems: 'center',
-                                marginBottom: '10px'
-                            }}
-                        >
-                            <Checkbox
-                                checked={selectedEmployee?.id === employee.id}
-                                onChange={() => {
-                                    if (selectedEmployee?.id === employee.id) {
-                                        setSelectedEmployee(null); // 동일한 직원을 다시 클릭하면 선택 해제
-                                    } else {
-                                        setSelectedEmployee(employee); // 새로운 직원을 클릭하면 선택
-                                    }
+                    {filteredEmployees.length > 0 ? (
+                        filteredEmployees.map(employee => (
+                            <li
+                                key={employee.id}
+                                onClick={() => setSelectedEmployee(employee)}
+                                style={{
+                                    cursor: 'pointer',
+                                    fontWeight: selectedEmployee?.id === employee.id ? 'bold' : 'normal',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginBottom: '10px'
                                 }}
-                                style={{marginRight: '10px'}}
-                            />
-                            <div>
-                                <div>{employee.name}</div>
-                                <div>{employee.position.rank} - {employee.department.departmentName} - {employee.email}</div>
-                            </div>
-                        </li>
-                    ))}
+                            >
+                                <Checkbox
+                                    checked={selectedEmployee?.id === employee.id}
+                                    onChange={() => {
+                                        if (selectedEmployee?.id === employee.id) {
+                                            setSelectedEmployee(null); // 동일한 직원을 다시 클릭하면 선택 해제
+                                        } else {
+                                            setSelectedEmployee(employee); // 새로운 직원을 클릭하면 선택
+                                        }
+                                    }}
+                                    style={{marginRight: '10px'}}
+                                />
+                                <div>
+
+                                    <div>{employee.name}</div>
+                                    <div>{employee.position.rank} - {employee.department.departmentName} - {employee.email}</div>
+                                </div>
+                            </li>
+                        ))
+                    ) : (
+                        <p>직원이 없습니다</p>
+                    )}
                 </ul>
             </div>
 
@@ -206,6 +244,20 @@ const OrganizationChart = () => {
                         borderLeft: '3px solid #ffd454',
                         paddingLeft: '40px'
                     }}>
+                        <img
+                            src={selectedEmployee.profileFile}
+                            alt={`${selectedEmployee.name}의 프로필`}
+                            style={{
+                                minWidth: '200px',
+                                maxWidth: '200px',
+                                minHeight: '200px',
+                                maxHeight: '200px',
+                                borderRadius: '50%',
+                                border:'1px solid grey',
+                                objectFit: 'cover',
+                                marginBottom: '20px'
+                            }}
+                        />
                         <p>이름: {selectedEmployee.name}</p>
                         <p>직급: {selectedEmployee.position.rank}</p>
                         <p>이메일: {selectedEmployee.email}</p>
