@@ -26,11 +26,15 @@ const Board = () => {
                 const importantPosts = res.data.filter(post => post.mustMustRead);
                 const regularPosts = res.data.filter(post => !post.mustMustRead);
 
+                // 중요 게시글을 작성일 기준으로 최신순 정렬
+                const sortedImportantPosts = importantPosts.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+
                 // 일반 게시글을 작성일 기준으로 최신순 정렬
                 const sortedRegularPosts = regularPosts.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
 
                 // 총 게시글 수 계산
                 const totalRegularPosts = sortedRegularPosts.length;
+
 
                 // 페이지네이션 적용: 현재 페이지에 표시할 게시글 계산
                 const startIndex = (currentPage - 1) * itemsPerPage;
@@ -43,7 +47,10 @@ const Board = () => {
                     ...displayedRegularPosts
                 ].map((post, index) => ({
                     ...post,
-                    displayNumber: post.mustMustRead ? <b style={{color:'red'}}>[중요]</b> : (totalRegularPosts - startIndex - index +5) // 번호를 올바르게 부여
+                    // 전체 게시글에서 최신 게시글이 가장 높은 번호, 오래된 게시글이 1번이 되도록 번호 부여
+                    displayNumber: post.mustMustRead
+                        ? <b style={{ color: 'red' }}>[중요]</b>
+                        : totalRegularPosts - (startIndex + index)+8
                 }));
 
                 // 총 페이지 수 계산
@@ -111,7 +118,7 @@ const Board = () => {
                                     second: '2-digit'
                                 })}
                             </td>
-                            <td>{row.readCount}</td>
+                            <td>{Math.floor(row.readCount / 2)}</td>
                         </tr>
                     ))}
                     </tbody>
