@@ -110,7 +110,7 @@ const OrganizationChart = () => {
                     {Object.entries(structuredDepartments).map(([key, department]) => (
                         <li
                             key={department.id}
-                            onClick={() => handleDepartmentSelect(department.id, Object.keys(department.subDepartments).length > 0)}
+                            onClick={() =>{ handleDepartmentSelect(department.id, Object.keys(department.subDepartments).length > 0);filterEmployees(department.id);}}
                             style={{
                                 cursor: 'pointer',
                                 fontWeight: expandedDepartments.includes(department.id) ? 'bold' : 'normal'
