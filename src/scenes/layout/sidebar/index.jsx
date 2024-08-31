@@ -17,12 +17,13 @@ import {
     CalendarViewMonthOutlined,
     TextsmsOutlined,
     ListAltOutlined,
-    DescriptionOutlined,
+    DescriptionOutlined, WorkOutlineOutlined, Chat,
 } from "@mui/icons-material";
 import avatar from "../../../assets/images/avatar.png";
 import logo from "../../../assets/images/logo.png";
 import Item from "./Item";
 import {ToggledContext} from "../../../App";
+import CommuteList from "../../Commute/CommuteList.jsx";
 
 const SideBar = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -196,9 +197,24 @@ const SideBar = () => {
                         icon={<TextsmsOutlined/>}
                     />
 
+                    <Item
+                        title="출퇴근목록"
+                        path="/commutelist"
+                        colors={colors}
+                        icon={<WorkOutlineOutlined/>}
+                    />
+                    <Box
+                        onClick={() => window.open('https://chat.groupbee.co.kr', '_blank')}
+                        sx={{ display: "flex", alignItems: "center", cursor: "pointer", marginTop:'13px', marginBottom:'13px',
+                            ":hover": {color: "#ffb121"}}}
+                    >
+                    <Chat style={{marginLeft:'27px', cursor:'pointer'}}/>
+                    <a href="https://chat.groupbee.co.kr" target="_blank"
+                       style={{color: 'inherit', textDecoration: 'none',fontWeight: '500', marginLeft:'17px'}}>채팅</a>
+                    </Box>
                     <SubMenu
                         label={
-                            <Typography variant="h6" color={colors.gray[300]}>
+                            <Typography variant="h6" color={colors}>
                                 {!collapsed ? "설정" : " "}
                             </Typography>
                         }
@@ -217,7 +233,6 @@ const SideBar = () => {
                             icon={<BarChartOutlined/>}
                         />
                     </SubMenu>
-
                 </Menu>
                 <Box>조직도 버튼 여기 만들예정</Box>
             </Box>
