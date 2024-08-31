@@ -17,6 +17,7 @@ const SendEmail = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [errorModalOpen, setErrorModalOpen] = useState(false);  // 오류 모달 상태 추가
     const [errorMessage, setErrorMessage] = useState('');  // 오류 메시지 상태 추가
+    const [textareaHeight, setTextareaHeight] = useState(500);
 
     // const getinfo = () => {
     //     axios.get("/api/employee/auth/email")
@@ -25,6 +26,13 @@ const SendEmail = () => {
     //             setPassword(res.data.password)
     //         })
     // }
+
+    // 참조인 및 받는 사람 추가 및 삭제에 따른 텍스트 영역 크기 조절 로직
+    useEffect(() => {
+        const totalRecipients = to.length + cc.length;
+        // 기본 크기 설정 및 추가된 이메일 수에 따라 높이 조정
+        setTextareaHeight(500 - totalRecipients * 40);
+    }, [to, cc]);
 
     const openModal = (field) => {
         setTargetField(field); 
@@ -101,81 +109,118 @@ const SendEmail = () => {
             <h2 style={{ marginTop: '20px' }}>메일 보내기</h2>
             <form onSubmit={handleSendEmail}>
                 <hr />
-                <b>받는사람</b>
-                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '5px', width: '700px' }}>
+                <div style={{
+                    backgroundColor: 'white',
+                    borderRadius: '4px',
+                    border: '1px solid #ddd',
+                    padding: '10px 30px'
+                }}>
+                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                        <button type="submit"
+                                style={{
+                                    marginTop: '5px', backgroundColor: 'transparent', border: '1px solid #ffb121'
+                                    , padding: '3px 6px', borderRadius: '4px', color: '#ffb121'
+                                }}>
+                            보내기
+                        </button>
+                    </Box>
+                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                        <b style={{width: '70px', textAlign: 'center'}}>받는사람</b>
+                        <TextField
+                            value={toInput}
+                            onChange={(e) => setToInput(e.target.value)}
+                            placeholder="이메일 추가"
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                                width: '100%', marginLeft: '20px', '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {border: 'none'},
+                                    borderBottom: '2px solid #dddd', borderRadius: '0',
+                                }
+                            }}
+                        />
+                        <Button variant='contained' color='warning' onClick={() => openModal('to')}>
+                            주소록
+                        </Button>
+                        <Button variant='contained' color='primary' onClick={() => handleAddEmail('to')}>
+                            추가
+                        </Button>
+                    </Box>
+                    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: '5px', width: '700px',marginLeft:'85px'}}>
                         {to.map((email, index) => (
                             <Chip
                                 key={index}
                                 label={email}
                                 onDelete={() => handleDelete(email, 'to')}
-                                sx={{ marginBottom: '5px' }}
+                                sx={{marginBottom: '5px'}}
                             />
                         ))}
                     </Box>
-                    <Button variant='contained' color='warning' onClick={() => openModal('to')}>
-                        찾아보기
-                    </Button>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <TextField
-                        value={toInput}
-                        onChange={(e) => setToInput(e.target.value)}
-                        placeholder="이메일 추가"
-                        variant="outlined"
-                        size="small"
-                        sx={{ width: '700px' }}
-                    />
-                    <Button variant='contained' color='primary' onClick={() => handleAddEmail('to')}>
-                        추가
-                    </Button>
-                </Box>
-                <b>참조</b>
-                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '5px', width: '700px' }}>
+                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                    </Box>
+                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                        <b style={{width: '70px', textAlign: 'center'}}>참조</b>
+                        <TextField
+                            value={ccInput}
+                            onChange={(e) => setCcInput(e.target.value)}
+                            placeholder="참조 이메일 추가"
+                            variant="outlined"
+                            size="small"
+                            sx={{
+                                width: '100%', marginLeft: '20px', '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {border: 'none'},
+                                    borderBottom: '2px solid #dddd', borderRadius: '0',
+                                }
+                            }}
+                        />
+                        <Button variant='contained' color='warning' onClick={() => openModal('cc')}>
+                            주소록
+                        </Button>
+                        <Button variant='contained' color='primary' onClick={() => handleAddEmail('cc')}>
+                            추가
+                        </Button>
+                    </Box>
+                    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: '5px', width: '700px',marginLeft:'85px'}}>
                         {cc.map((email, index) => (
                             <Chip
                                 key={index}
                                 label={email}
                                 onDelete={() => handleDelete(email, 'cc')}
-                                sx={{ marginBottom: '5px' }}
+                                sx={{marginBottom: '5px'}}
                             />
                         ))}
                     </Box>
-                    <Button variant='contained' color='warning' onClick={() => openModal('cc')}>
-                        찾아보기
-                    </Button>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                    <TextField
-                        value={ccInput}
-                        onChange={(e) => setCcInput(e.target.value)}
-                        placeholder="참조 이메일 추가"
-                        variant="outlined"
-                        size="small"
-                        sx={{ width: '700px' }}
+                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                        <b style={{width: '65px', textAlign: 'center'}}>제목</b>
+                        <TextField
+                            fullWidth
+                            value={subject}
+                            onChange={(e) => setSubject(e.target.value)}
+                            placeholder="Subject"
+                            sx={{
+                                width: '100%', marginLeft: '20px', '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {border: 'none'},
+                                    borderBottom: '2px solid #dddd', borderRadius: '0',
+                                }
+                            }}
+                        />
+                    </Box>
+                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                        <b style={{width: '65px', textAlign: 'center'}}>첨부파일</b>
+
+                    </Box>
+                    <Box sx={{display: 'flex'}}>
+                        <b style={{width: '62px', textAlign: 'center'}}>내용</b>
+                    </Box>
+                    <Box>
+                    <textarea
+                        style={{width: '100%', height: `${textareaHeight}px`,marginTop:'10px', borderColor:'#dddd',resize: 'none',outline: 'none', padding:'10px'}}
+                        value={body}
+                        onChange={(e) => setBody(e.target.value)}
+                        placeholder="Your message"
                     />
-                    <Button variant='contained' color='primary' onClick={() => handleAddEmail('cc')}>
-                        추가
-                    </Button>
-                </Box>
-                <b>제목</b>
-                <TextField
-                    fullWidth
-                    style={{ marginTop: '10px', marginBottom: '10px' }}
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    placeholder="Subject"
-                />
-                <b>내용</b>
-                <textarea
-                    style={{ width: '700px', height: '400px', marginTop: '10px' }}
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    placeholder="Your message"
-                />
-                <br />
-                <button type="submit" style={{ marginTop: '10px' }}>Send</button>
+                    </Box>
+                </div>
             </form>
             <GroupModal
                 open={modalOpen}
