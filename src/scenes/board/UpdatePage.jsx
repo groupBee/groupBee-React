@@ -12,10 +12,17 @@ const UpdatePage = () => {
     const [mustRead, setMustRead] = useState(false);
     const [mustMustRead, setMustMustRead] = useState(false);
     const [file, setFile] = useState(null);
-
+    const {Page}=useParams();
+    const [currentPage, setCurrentPage] = useState(1);
     useEffect(() => {
         fetchPost();
     }, [id]);
+
+    useEffect(()=>{
+        if(Page){
+            setCurrentPage(Page)}
+
+    },[])
 
     const fetchPost = async () => {
         try {
@@ -75,14 +82,14 @@ const UpdatePage = () => {
                 },
             });
 
-            navigate(`/board/list/${id}`); // 수정 후 상세 페이지로 이동
+            navigate(`/board/list/${id}/${currentPage}`); // 수정 후 상세 페이지로 이동
         } catch (error) {
             console.error('Error updating post or uploading file:', error);
         }
     };
 
     const handleCancelClick = () => {
-        navigate(`/board/list/${id}`);
+        navigate(`/board/list/${id}/${currentPage}`);
     };
 
     return (
