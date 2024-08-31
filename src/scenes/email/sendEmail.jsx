@@ -2,6 +2,14 @@ import { Box, Button, Chip, TextField, Alert, Modal, Typography } from '@mui/mat
 import { useEffect, useState } from 'react';
 import GroupModal from '../../components/groupModal';
 import axios from 'axios';
+import { useDropzone } from 'react-dropzone';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+
+const isValidEmail = (email) => {
+    // 간단한 이메일 검증 정규식
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+};
 
 const SendEmail = () => {
     const [username, setUsername] = useState('');
@@ -10,14 +18,14 @@ const SendEmail = () => {
     const [cc, setCc] = useState([]);  // CC 필드를 배열로 변경
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
-    const [attachment, setAttachment] = useState(null);
-    const [toInput, setToInput] = useState('');  
-    const [ccInput, setCcInput] = useState('');  
-    const [targetField, setTargetField] = useState(null); 
+    const [attachment, setAttachment] = useState('');
+    const [toInput, setToInput] = useState([]);
+    const [ccInput, setCcInput] = useState('');
+    const [targetField, setTargetField] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [errorModalOpen, setErrorModalOpen] = useState(false);  // 오류 모달 상태 추가
     const [errorMessage, setErrorMessage] = useState('');  // 오류 메시지 상태 추가
-    const [textareaHeight, setTextareaHeight] = useState(500);
+    const [textareaHeight, setTextareaHeight] = useState(350);
 
     // const getinfo = () => {
     //     axios.get("/api/employee/auth/email")
@@ -31,11 +39,11 @@ const SendEmail = () => {
     useEffect(() => {
         const totalRecipients = to.length + cc.length;
         // 기본 크기 설정 및 추가된 이메일 수에 따라 높이 조정
-        setTextareaHeight(500 - totalRecipients * 40);
+        setTextareaHeight(350 - totalRecipients * 40);
     }, [to, cc]);
 
     const openModal = (field) => {
-        setTargetField(field); 
+        setTargetField(field);
         setModalOpen(true);
     };
 
@@ -43,11 +51,12 @@ const SendEmail = () => {
         e.preventDefault();
 
         const emailData = {
-            
+
             to,
             cc,
             subject,
             body,
+            attachment,
         };
 
         try {
@@ -91,6 +100,13 @@ const SendEmail = () => {
     };
 
     const handleAddEmail = (field) => {
+        let email = field === 'to' ? toInput.trim() : ccInput.trim();
+
+        if (!isValidEmail(email)) {
+            alert('유효하지 않은 이메일 주소입니다.');
+            return;
+        }
+
         if (field === 'to' && toInput.trim()) {
             setTo(prev => [...prev, toInput]);
             setToInput('');
@@ -98,6 +114,32 @@ const SendEmail = () => {
             setCc(prev => [...prev, ccInput]);
             setCcInput('');
         }
+    };
+
+    // react-dropzone을 사용한 드래그 앤 드롭 구현
+    const onDrop = (acceptedFiles) => {
+        setAttachment(prev => [...prev, ...acceptedFiles]);
+    };
+
+    const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
+        onDrop,
+        noClick: true, // 기본 클릭으로 파일 선택을 하지 않게 함
+        noKeyboard: true, // 키보드로 선택 불가능
+    });
+
+    // 첨부파일 삭제 기능
+    const DeleteAttachment = (fileToRemove) => {
+        setAttachment(prev => prev.filter(file => file !== fileToRemove));
+    };
+
+    // 전체 첨부파일 삭제 기능
+    const DeleteAllAttachment = () => {
+        setAttachment([]);
+    };
+
+    const FileAttachClick = () => {
+        event.preventDefault();
+        open();
     };
 
     // useEffect(() => {
@@ -118,8 +160,8 @@ const SendEmail = () => {
                     <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                         <button type="submit"
                                 style={{
-                                    marginTop: '5px', backgroundColor: 'transparent', border: '1px solid #ffb121'
-                                    , padding: '3px 6px', borderRadius: '4px', color: '#ffb121'
+                                    marginTop: '5px', backgroundColor: 'transparent', border: '1px solid black'
+                                    , padding: '6px 20px', borderRadius: '4px'
                                 }}>
                             보내기
                         </button>
@@ -207,7 +249,55 @@ const SendEmail = () => {
                     </Box>
                     <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                         <b style={{width: '65px', textAlign: 'center'}}>첨부파일</b>
-
+                        <button
+                            onClick={FileAttachClick}  // 파일첨부 버튼 클릭 시 파일 선택 창 열기
+                            style={{ marginLeft: '20px', border:'1px solid #dddd', backgroundColor: 'transparent', borderRadius:'4px',padding: '3px 6px'}}
+                        >
+                            파일첨부하기
+                        </button>
+                        {attachment.length > 0 && (
+                            <button
+                                onClick={DeleteAllAttachment}
+                                style={{ marginLeft: '10px', border:'1px solid #dddd', backgroundColor: 'transparent', borderRadius:'4px',padding: '3px 6px'}}
+                            >
+                                전체삭제
+                            </button>
+                        )}
+                    </Box>
+                    <Box
+                        {...getRootProps()}
+                        sx={{
+                            border: '2px dashed #dddddd',
+                            borderRadius: '4px',
+                            padding: '20px',
+                            textAlign: 'center',
+                            backgroundColor: isDragActive ? '#f0f0f0' : 'white',
+                            marginBottom: '20px',
+                        }}
+                    >
+                        <input {...getInputProps()} />
+                        {attachment.length > 0 ? (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', width: '100%' }}>
+                                {attachment.map((file, index) => (
+                                    <Chip
+                                        key={index}
+                                        label={file.name}
+                                        onDelete={() => DeleteAttachment(file)}
+                                        sx={{
+                                            maxWidth: '200px', // 파일명이 너무 길 경우 잘리게 함
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden'
+                                        }}
+                                    />
+                                ))}
+                            </Box>
+                        ) : (
+                            <>
+                            <UploadFileIcon style={{color:'gray', marginBottom:'5px'}}/>
+                            <p style={{color:'gray'}}>파일을 여기에 드래그하여 파일을 선택하세요.</p>
+                            </>
+                        )}
                     </Box>
                     <Box sx={{display: 'flex'}}>
                         <b style={{width: '62px', textAlign: 'center'}}>내용</b>
