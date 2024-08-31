@@ -255,15 +255,15 @@ const OrganizationChart = () => {
                                 borderRadius: '50%',
                                 border:'1px solid grey',
                                 objectFit: 'cover',
-                                marginBottom: '20px'
+                                marginBottom: '50px'
                             }}
                         />
-                        <p>이름: {selectedEmployee.name}</p>
-                        <p>직급: {selectedEmployee.position.rank}</p>
-                        <p>이메일: {selectedEmployee.email}</p>
-                        <p>전화번호: {selectedEmployee.phoneNumber}</p>
-                        <p>부서: {selectedEmployee.department.departmentName}</p>
-                        <p>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
+                        <p style={{fontSize:'15px'}}>이름: {selectedEmployee.name}</p>
+                        <p  style={{fontSize:'15px'}}>직급: {selectedEmployee.position.rank}</p>
+                        <p  style={{fontSize:'15px'}}>이메일: {selectedEmployee.email}</p>
+                        <p  style={{fontSize:'15px'}}>전화번호: {selectedEmployee.phoneNumber}</p>
+                        <p  style={{fontSize:'15px'}}>부서: {selectedEmployee.department.departmentName}</p>
+                        <p  style={{fontSize:'15px'}}>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
                     </div>
                 ) : (
                     <p>직원을 선택하세요</p>
