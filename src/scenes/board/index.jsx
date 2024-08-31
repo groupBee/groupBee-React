@@ -11,9 +11,11 @@ const Board = () => {
     const itemsPerPage = 15;
     const navigate = useNavigate();
 
+
     useEffect(() => {
         axios.get('/api/board/list')
             .then(res => {
+                console.log(res.data);
                 // 중요 게시글과 일반 게시글 분리
                 const importantPosts = res.data.filter(post => post.mustMustRead);
                 const regularPosts = res.data.filter(post => !post.mustMustRead);
