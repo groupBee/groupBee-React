@@ -4,6 +4,7 @@ import GroupModal from '../../components/groupModal';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import { useLocation } from 'react-router-dom';
 
 const isValidEmail = (email) => {
     // 간단한 이메일 검증 정규식
@@ -12,6 +13,7 @@ const isValidEmail = (email) => {
 };
 
 const SendEmail = () => {
+    const location = useLocation();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [to, setTo] = useState([]);  // To 필드를 배열로 변경
@@ -34,6 +36,13 @@ const SendEmail = () => {
     //             setPassword(res.data.password)
     //         })
     // }
+
+    // 이전 페이지에서 이메일 값을 가져오는 useEffect
+    useEffect(() => {
+        if (location.state && location.state.email) {
+            setToInput(location.state.email); // 이전 페이지에서 전달된 이메일이 있을 경우 설정
+        }
+    }, [location.state]);
 
     // 참조인 및 받는 사람 추가 및 삭제에 따른 텍스트 영역 크기 조절 로직
     useEffect(() => {

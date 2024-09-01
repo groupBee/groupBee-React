@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { Box, Checkbox, IconButton, Modal } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
+import ChatIcon from '@mui/icons-material/Chat';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import { useNavigate } from "react-router-dom";
 
 //부서 리스트, 멤버리스트, 멤버디테일
 const OrganizationChart = () => {
@@ -29,7 +32,6 @@ const OrganizationChart = () => {
         axios.get("/api/employee/list")
             .then(res => {
                 setEmployeeList(res.data);
-                console.log(res.data);
             });
     };
     //부서 분류하기 함수 -->바뀔때마다 호출
@@ -125,7 +127,17 @@ const OrganizationChart = () => {
             [id]: !prevState[id]
         }));
     };
+    const navigate = useNavigate();
 
+    const handleChatClick = () => {
+        window.open("https://chat.groupbee.co.kr", "_blank"); // 새 창에서 채팅 URL 열기
+    };
+
+    const handleEmailClick = () => {
+        navigate("/email", { state: { email: selectedEmployee.email } }); // 이메일 페이지로 이동
+        setIsModalOpen(false);
+
+    };
 
     return (
         <div style={{display: 'flex', padding: '20px'}}>
@@ -243,7 +255,7 @@ const OrganizationChart = () => {
                         minHeight: '100%',
                         borderLeft: '3px solid #ffd454',
                         paddingLeft: '40px',
-                        marginLeft:'50px'
+                        marginLeft: '50px'
                     }}>
                         <img
                             src={selectedEmployee.profileFile}
@@ -254,17 +266,50 @@ const OrganizationChart = () => {
                                 minHeight: '200px',
                                 maxHeight: '200px',
                                 borderRadius: '50%',
-                                border:'1px solid grey',
+                                border: '1px solid grey',
                                 objectFit: 'cover',
-                                marginBottom: '50px'
+                                marginBottom: '20px'
                             }}
                         />
-                        <p style={{fontSize:'15px'}}>이름: {selectedEmployee.name}</p>
-                        <p  style={{fontSize:'15px'}}>직급: {selectedEmployee.position.rank}</p>
-                        <p  style={{fontSize:'15px'}}>이메일: {selectedEmployee.email}</p>
-                        <p  style={{fontSize:'15px'}}>전화번호: {selectedEmployee.phoneNumber}</p>
-                        <p  style={{fontSize:'15px'}}>부서: {selectedEmployee.department.departmentName}</p>
-                        <p  style={{fontSize:'15px'}}>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
+                        <div style={{display: 'flex', gap: '10px',marginBottom:'40px'}}>
+                            <button style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '10px 20px',
+                                fontSize: '15px',
+                                backgroundColor: '#007bff',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer'
+                            }}
+                                    onClick={handleChatClick}>
+                                <ChatIcon/>&nbsp;
+                                채팅
+                            </button>&nbsp;&nbsp;
+                            <button style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                padding: '10px 20px',
+                                fontSize: '15px',
+                                backgroundColor: '#28a745',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '5px',
+                                cursor: 'pointer'
+                            }}
+                                    onClick={handleEmailClick}>
+
+                                <MailOutlineIcon/>&nbsp;
+                                메일
+                            </button>
+                        </div>
+                        <p style={{fontSize: '15px'}}>이름: {selectedEmployee.name}</p>
+                        <p style={{fontSize: '15px'}}>직급: {selectedEmployee.position.rank}</p>
+                        <p style={{fontSize: '15px'}}>이메일: {selectedEmployee.email}</p>
+                        <p style={{fontSize: '15px'}}>전화번호: {selectedEmployee.phoneNumber}</p>
+                        <p style={{fontSize: '15px'}}>부서: {selectedEmployee.department.departmentName}</p>
+                        <p style={{fontSize: '15px'}}>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
                     </div>
                 ) : (
                     <p>직원을 선택하세요</p>
@@ -296,7 +341,12 @@ const OrganizationModal = ({open, onClose}) => {
                 >
                     <CloseIcon/>
                 </IconButton>
-                <div><b style={{marginBottom:'50px',fontSize:'40px',marginLeft:'50px',color:'#fac337'}}>GroupBee&nbsp;</b><b style={{fontSize:'30px'}}>조직도</b></div>
+                <div><b style={{
+                    marginBottom: '50px',
+                    fontSize: '40px',
+                    marginLeft: '50px',
+                    color: '#fac337'
+                }}>GroupBee&nbsp;</b><b style={{fontSize: '30px'}}>조직도</b></div>
                 <OrganizationChart/>
             </Box>
         </Modal>
