@@ -18,6 +18,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import "./dashboardcss.css";
+import "./clock.css";
 
 function Dashboard() {
     const theme = useTheme();
@@ -32,6 +33,9 @@ function Dashboard() {
     const [boardList, setBoardList] = useState([]);
     const [totalPages, setTotalPages] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
+    const [currentTime, setCurrentTime] = useState("");
+    const [currentDay, setCurrentDay] = useState("");
+    const [midday, setMidday] = useState("");
     const navigate = useNavigate();
     const calendarRef = useRef(null);
 
@@ -155,17 +159,47 @@ function Dashboard() {
         fetchBoardList(); // 공지사항 데이터 가져오기
     }, [currentPage]);
 
+    useEffect(() => {
+        const updateTime = () => {
+            const now = new Date();
+            let hour = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            const day = now.getDay();
+
+            // 오전/오후 설정
+            const middayStr = hour >= 12 ? "PM" : "AM";
+            setMidday(middayStr);
+
+            // 12시간 형식으로 변경
+            hour = hour % 12 || 12;
+
+            // 시간 형식 지정
+            setCurrentTime(
+                `${hour.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+            );
+
+            // 요일 설정
+            const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            setCurrentDay(dayNames[day]);
+        };
+
+        const intervalId = setInterval(updateTime, 1000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+
+
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" mb="20px" alignItems="center">
-                <Box display="flex">
-                    <Button>출근</Button>
-                    <Button>퇴근</Button>
-                </Box>
+
                 <Box display="flex">
                     <Button style={{ marginRight: '10px' }} onClick={handleCarBook}>예약하기</Button>
                     <Button onClick={handleEmailWrite}>메일보내기</Button>
                 </Box>
+
             </Box>
 
             <Box
@@ -182,80 +216,131 @@ function Dashboard() {
             >
                 {/* 공지사항 */}
                 <Box
-                    gridColumn={
-                        isXlDevices ? "span 8" : isMdDevices ? "span 6" : "span 3"
-                    }
+                    gridColumn={isXlDevices ? "span 8" : isMdDevices ? "span 6" : "span 3"}
                     gridRow="span 3"
-                    bgcolor={colors.primary[400]}
+                    sx={{
+                        borderRadius: "8px",
+                        backgroundColor: "white",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // 부드러운 그림자 효과 추가
+                    }}
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" style={{backgroundColor:'#ffb121'}}>
-                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
+                    <Box borderBottom={`2px solid #ffb121`} p="15px">
+                        <Typography
+                            color={colors.gray[100]}
+                            variant="h5"
+                            fontWeight="600"
+                            display="flex"
+                            justifyContent="space-between"
+                            alignItems="center"
+                        >
                             공지사항
                             <IconButton onClick={handleBoard}>
-                                <MoreHoriz style={{ color: "gray" }} />
+                                <MoreHoriz style={{ color: "#555" }} /> {/* 더 어두운 회색으로 변경 */}
                             </IconButton>
                         </Typography>
                     </Box>
                     <Box p="15px">
                         {boardList.length > 0 ? (
-                            <table className="table table-bordered">
+                            <table className="table table-hover"> {/* 테이블에 hover 효과 추가 */}
                                 <thead>
-                                <tr style={{ borderRight: 'none', borderLeft: 'none'}}>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', width:'50px'}}></td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center', width:'450px'}}>제목</td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center', width:'200px'}}>작성자</td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>작성일</td>
+                                <tr>
+                                    <td style={{ width: "50px" }}></td>
+                                    <td style={{ textAlign: "center", width: "450px", fontWeight: "bold" }}>
+                                        제목
+                                    </td>
+                                    <td style={{ textAlign: "center", width: "200px", fontWeight: "bold" }}>
+                                        작성자
+                                    </td>
+                                    <td style={{ textAlign: "center", fontWeight: "bold" }}>작성일</td>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {boardList.map(post => (
-                                    <tr key={post.id} style={{ borderRight: 'none', borderLeft: 'none'}}>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none'}}>{post.mustMustRead &&
-                                            <span style={{color: 'red'}}><b>[중요]</b></span>}</td>
+                                {boardList.map((post) => (
+                                    <tr key={post.id}>
+                                        <td>
+                                            {post.mustMustRead && (
+                                                <span style={{ color: "#ff4d4f" }}> {/* 눈에 띄는 붉은색 강조 */}
+                                                    <b>[중요]</b>
+                  </span>
+                                            )}
+                                        </td>
                                         <td
-                                            style={{ borderRight: 'none', borderLeft: 'none',
-                                                fontWeight: post.mustMustRead ? 'bold' : 'normal',
-                                                maxWidth: '450px',         // 최대 너비 설정
-                                                overflow: 'hidden',       // 넘치는 내용 숨기기
-                                                textOverflow: 'ellipsis',  // 넘치는 내용에 '...' 추가
-                                                whiteSpace: 'nowrap',
-                                                cursor:'pointer'}}
-                                                onClick={()=>handleTitleClick(post.id)}>
+                                            style={{
+                                                fontWeight: post.mustMustRead ? "bold" : "normal",
+                                                maxWidth: "410px", // 최대 너비 설정
+                                                overflow: "hidden", // 넘치는 내용 숨기기
+                                                textOverflow: "ellipsis", // 넘치는 내용에 '...' 추가
+                                                whiteSpace: "nowrap",
+                                                cursor: "pointer",
+                                                transition: "color 0.3s", // 마우스 오버 시 부드러운 색상 전환 효과
+                                            }}
+                                            onClick={() => handleTitleClick(post.id)}
+                                            onMouseOver={(e) => (e.target.style.color = "#ffb121")} // 마우스 오버 시 색상 변경
+                                            onMouseOut={(e) => (e.target.style.color = "inherit")} // 마우스 아웃 시 원래 색상으로 복구
+                                        >
                                             {post.title}
                                         </td>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>{post.memberId}</td>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>{new Date(post.createDate).toLocaleDateString()}</td>
+                                        <td style={{ textAlign: "center" }}>{post.memberId}</td>
+                                        <td style={{ textAlign: "center" }}>
+                                            {new Date(post.createDate).toLocaleDateString()}
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
                             </table>
                         ) : (
-                            <Typography variant="body1" color="textSecondary">게시글이 없습니다.</Typography>
+                            <Typography variant="body1" color="textSecondary">
+                                게시글이 없습니다.
+                            </Typography>
                         )}
                     </Box>
+                </Box>
+
+
+                {/* 시계 */}
+                <Box
+                    gridColumn={isXlDevices ? "span 4" : "span 3"}
+                    gridRow="span 3"
+                    display="flex"
+                    flexDirection="column"
+                    height="100%"
+                    sx={{
+                        backgroundColor: "#1e1e2f",  // 어두운 배경색
+                        borderRadius: "12px",  // 부드러운 모서리
+                        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",  // 부드러운 그림자
+                        padding: "20px",  // 패딩 추가
+                    }}
+                >
+                    <div class="clockBox">
+                        <div class="clockContainer">
+                            <div class="clock">
+                                <div id="day">{currentDay}</div>
+                                <div class="wrapper">
+                                    <div id="time">{currentTime}</div>
+                                    <div id="midday">{midday}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </Box>
 
                 {/* 캘린더 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 3"
-                    bgcolor={colors.primary[400]}
-                    display="flex"
-                    flexDirection="column"
-                    height="100%"
+                    sx={{
+                        borderRadius: "8px",
+                        backgroundColor: "white",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // 부드러운 그림자 효과 추가
+                        height:'auto'
+                    }}
                 >
-                    <Box
-                        borderBottom={`4px solid ${colors.primary[500]}`}
-                        p="15px"
-                        flexShrink={0}
-                        position="sticky"
-                        top="0"
-                        style={{backgroundColor:'#ffb121'}}
-                    >
-                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
+                    <Box borderBottom={`2px solid #ffb121`} p="15px">
+                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex"
+                                    justifyContent="space-between" alignItems="center">
                             캘린더
                             <IconButton onClick={handleCalendar}>
-                                <MoreHoriz style={{ color: "gray" }} />
+                                <MoreHoriz style={{color: "gray"}}/>
                             </IconButton>
                         </Typography>
                     </Box>
@@ -298,37 +383,19 @@ function Dashboard() {
                     </Box>
                 </Box>
 
-                {/* 근테관리 */}
+                {/* 결재현황 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
-                    gridRow="span 2"
-                    backgroundColor={colors.primary[400]}
-                    overflow="auto"
+                    gridRow="span 3"
+                    sx={{
+                        borderRadius: "8px",
+                        backgroundColor: "white",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    }}
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" style={{backgroundColor:'#ffb121'}}>
+                    <Box borderBottom={`2px solid #ffb121`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
-                            근테관리
-                            <IconButton onClick={handleEmailList}>
-                                <MoreHoriz style={{ color: "gray" }} />
-                            </IconButton>
-                        </Typography>
-                    </Box>
-                    <Box p="15px" maxHeight="200px" overflow="auto">
-                    </Box>
-                </Box>
-
-                {/* 결제현황 */}
-                <Box
-                    gridColumn={isXlDevices ? "span 4" : "span 3"}
-                    gridRow="span 2"
-                    backgroundColor={colors.primary[400]}
-                    overflow="hidden"
-                    display="flex"
-                    flexDirection="column"
-                >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" flexShrink={0} style={{backgroundColor:'#ffb121'}}>
-                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
-                            결제현황
+                            결재현황
                             <IconButton onClick={handleList}>
                                 <MoreHoriz style={{ color: "gray" }} />
                             </IconButton>
@@ -378,11 +445,14 @@ function Dashboard() {
                 {/* 예약현황 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
-                    gridRow="span 2"
-                    backgroundColor={colors.primary[400]}
-                    overflow="auto"
+                    gridRow="span 3"
+                    sx={{
+                        borderRadius: "8px",
+                        backgroundColor: "white",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    }}
                 >
-                    <Box borderBottom={`4px solid ${colors.primary[500]}`} p="15px" style={{backgroundColor:'#ffb121'}}>
+                    <Box borderBottom={`2px solid #ffb121`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             예약현황
                             <IconButton onClick={handleBook}>
