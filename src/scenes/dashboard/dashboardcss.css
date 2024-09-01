@@ -1,0 +1,50 @@
+/* FullCalendar의 기본 스크롤바 숨기기 */
+.fc .fc-scrollgrid {
+    overflow: hidden; /* 전체 그리드에서 스크롤바 숨기기 */
+}
+
+
+.fc .fc-daygrid-day-frame::-webkit-scrollbar {
+    width: 0; /* 스크롤바의 너비를 0으로 설정하여 숨기기 */
+    background: transparent; /* 배경을 투명으로 설정 */
+}
+
+.fc .fc-daygrid-day-frame {
+    scrollbar-width: none; /* Firefox에서 스크롤바 숨기기 */
+    -ms-overflow-style: none; /* IE 및 Edge에서 스크롤바 숨기기 */
+}
+
+
+/* 전체 캘린더 영역의 스타일링 */
+.fc .fc-view-harness {
+    height: 100% !important; /* 캘린더의 전체 높이를 100%로 설정 */
+}
+
+.fc .fc-toolbar-title,
+.fc .fc-col-header-cell-cushion {
+    text-decoration: none !important;
+    color: black !important; /* 텍스트 색상 검정 */
+}
+
+.fc .fc-button-active {
+    border-color: #ffb121 !important;
+    background-color: #ffb121 !important;
+    color: #000 !important;
+    font-weight: bold !important;
+}
+
+/* 일요일 텍스트 색상 변경 */
+.fc-day-sun a {
+    color: red !important;
+}
+
+/* 토요일 텍스트 색상 변경 */
+.fc-day-sat a {
+    color: blue !important;
+}
+.fc-header-toolbar {
+    position: sticky;
+    top: -15px;
+    z-index: 10; /* Ensure it appears above other content */
+    background: white; /* Match the background color */
+}

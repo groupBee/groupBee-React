@@ -17,7 +17,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
-import "../calendar/calendar.css";
+import "./dashboardcss.css";
 
 function Dashboard() {
     const theme = useTheme();
@@ -139,9 +139,9 @@ function Dashboard() {
         }
     };
 
-    const bookList = async () => {
-
-    }
+    const handleTitleClick = (id) => {
+        navigate(`/board/list/${id}/${currentPage}`); // 클릭한 게시글의 상세 페이지로 이동
+    };
 
     useEffect(() => {
         if (memberId) {
@@ -218,7 +218,9 @@ function Dashboard() {
                                                 maxWidth: '450px',         // 최대 너비 설정
                                                 overflow: 'hidden',       // 넘치는 내용 숨기기
                                                 textOverflow: 'ellipsis',  // 넘치는 내용에 '...' 추가
-                                                whiteSpace: 'nowrap' }}>
+                                                whiteSpace: 'nowrap',
+                                                cursor:'pointer'}}
+                                                onClick={()=>handleTitleClick(post.id)}>
                                             {post.title}
                                         </td>
                                         <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>{post.memberId}</td>
@@ -257,7 +259,13 @@ function Dashboard() {
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box p="15px" flexGrow={1} overflow="auto">
+                    <Box p="15px" flexGrow={1} overflow="auto" sx={{
+                        '&::-webkit-scrollbar': {
+                            display: 'none',
+                        },
+                        '-ms-overflow-style': 'none',  /* IE and Edge */
+                        'scrollbar-width': 'none',  /* Firefox */
+                    }}>
                         <FullCalendar
                             ref={calendarRef}
                             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
@@ -283,6 +291,9 @@ function Dashboard() {
                                 center: 'title',
                                 right: 'customNext'
                             }}
+                            showNonCurrentDates={false}
+                            contentHeight="auto"
+                            dayMaxEventRows={2}  // 한 날짜에 표시할 최대 이벤트 개수
                         />
                     </Box>
                 </Box>
