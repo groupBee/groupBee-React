@@ -28,6 +28,7 @@ const SendEmail = () => {
     const [errorModalOpen, setErrorModalOpen] = useState(false);  // 오류 모달 상태 추가
     const [errorMessage, setErrorMessage] = useState('');  // 오류 메시지 상태 추가
     const [textareaHeight, setTextareaHeight] = useState(350);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // const getinfo = () => {
     //     axios.get("/api/employee/auth/email")
