@@ -14,6 +14,8 @@ import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
 import {Table} from "react-bootstrap";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ReactPaginate from 'react-paginate';
+import {useNavigate} from "react-router-dom";
+import axios from "axios";
 
 const AdminWrite = () => {
     const [sortOrder, setSortOrder] = useState('default');
@@ -22,6 +24,9 @@ const AdminWrite = () => {
     const [apiData, setApiData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
     const [itemsPerPage] = useState(12); // 페이지당 항목 수
+    const [memberId, setMemberId] = useState("");
+    const navigate = useNavigate();
+
 
     const fetchData = async () => {
         try {
@@ -29,10 +34,25 @@ const AdminWrite = () => {
             const data = await response.json();  // 데이터를 JSON으로 변환
             console.log(data);
             setApiData(data);
+            const res = await axios.get("/api/elecapp/getinfo");
+            const fetchedMemberId = res.data.name;
+            setMemberId(fetchedMemberId);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
     };
+    const moveDetail = (itemId) => {
+        navigate("/detail", {
+            state: {
+                memberId: memberId,
+                itemId: itemId
+            }
+        });
+    };
+
+    useEffect(() => {
+        console.log('Detail page received memberId:', memberId); // 추가된 로그
+    }, [memberId]);
 
     useEffect(() => {
         fetchData();
@@ -143,7 +163,7 @@ const AdminWrite = () => {
                     <tbody>
                     {currentItems.map((elec, index) => (
                         <tr key={index}
-                         >
+                            onClick={() => moveDetail(elec.id)}>
                             <td style={{textAlign: "center",  paddingTop: "15px"}}>{index+1}</td>
                             <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
                             <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.additionalFields.title === '' ? '제목없음' : elec.additionalFields.title}</td>
