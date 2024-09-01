@@ -13,6 +13,7 @@ const WriteForm = ({}) => {
     const [writer, setWriter] = useState('');
     const [secondApprover, setSecondApprover] = useState('');
     const [firstApprover, setFirstApprover] = useState('');
+    const [idNumber,serIdNumber]=useState('');
     const [thirdApprover, setThirdApprover] = useState('');
     const fileRef = useRef(null);
     const [originalFile, setOriginalFile] = useState(null);
@@ -66,6 +67,7 @@ const WriteForm = ({}) => {
                     setList(res.data);
                     setAppDocType(res.data.appDocType);
                     setFirstApprover(res.data.firstApprover);
+                    serIdNumber(res.data.idNumber);
                     setSecondApprover(res.data.secondApprover);
                     setThirdApprover(res.data.thirdApprover);
                     setWriter(res.data.writer);
@@ -94,6 +96,7 @@ const WriteForm = ({}) => {
                 // 기본 사용자 정보 세팅
                 setFirstApprover(res.data.name);
                 setWriter(res.data.name);
+                serIdNumber(res.data.idNumber);
                 setDepartment(res.data.department.departmentName);
                 setPosition(res.data.position.rank);
 
@@ -173,6 +176,7 @@ const WriteForm = ({}) => {
             writer,
             firstApprover,
             secondApprover,
+            idNumber,
             thirdApprover,
             originalFile: originalFileName,
             attachedFile,
