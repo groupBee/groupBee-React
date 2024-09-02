@@ -119,8 +119,8 @@ const DetailPage = () => {
                         </Typography>
                     </Box>
                     <Box mb={2} style={{width: '300px'}}>
-                        <Typography variant="subtitle1" style={{marginLeft:'800px',width:'400px'}}>
-                            작성자: {post.memberId}&nbsp;&nbsp;&nbsp;
+                        <Typography variant="subtitle1" style={{marginLeft:'822px',width:'400px'}}>
+                            작성자: {post.writer}&nbsp;&nbsp;&nbsp;
                             작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                         </Typography>
                         <Typography style={{marginLeft:'1050px',width:'400px'}}>
@@ -193,15 +193,67 @@ const DetailPage = () => {
                         {
                             myinfoList.potalId == post.memberId ?
                                 <>
-                                    <Button variant="contained" onClick={handleEditClick}
-                                            style={{marginRight: '10px',color:'white', backgroundColor:'#3af0b6'}}>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleEditClick}
+                                        style={{
+                                            marginRight: '10px',
+                                            color: 'white',
+                                            backgroundColor: '#3af0b6',
+                                            backgroundImage: 'linear-gradient(135deg, #3af0b6 0%, #2bb48c 100%)', // 에메랄드 그라데이션
+                                            border: 'none',
+                                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                            transition: 'background-color 0.3s ease',
+                                        }}
+                                        onMouseOver={(e) => {
+                                            e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                            e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                            e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                        }}
+                                        onMouseOut={(e) => {
+                                            e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                            e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                            e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                        }}
+                                    >
                                         수정
                                     </Button>
                                     <Button variant="contained"  onClick={handleDeleteClick}
-                                            style={{marginRight: '10px',color:'white', backgroundColor:'#fc9a38'}}>
+                                            style={{  marginRight: '10px',
+                                                color: 'white',
+                                                backgroundColor: '#fc9a38',
+                                                backgroundImage: 'linear-gradient(135deg, #fc9a38 0%, #f77f00 100%)', // 주황색 그라데이션
+                                                border: 'none',
+                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                                transition: 'background-color 0.3s ease',}}
+                                            onMouseOver={(e) => {
+                                                e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                                e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                            }}
+                                            onMouseOut={(e) => {
+                                                e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                                e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                            }}>
                                         삭제
                                     </Button> </> : ''}
-                        <Button variant="contained" style={{color:'white', backgroundColor:'#8c8b89'}} onClick={handleBackClick}>
+                        <Button variant="contained" style={{        color: 'white',
+                            backgroundColor: '#8c8b89',
+                            backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)', // 회색 그라데이션
+                            border: 'none',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                            transition: 'background-color 0.3s ease',}} onClick={handleBackClick}
+                                onMouseOver={(e) => {
+                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                }}>
                             목록
                         </Button>
                     </Box>
@@ -212,7 +264,32 @@ const DetailPage = () => {
                     <div>
                         <textarea style={{width:'1080px',height:'100px'}} value={comment} onChange={(e) => setComment(e.target.value)}>
                         </textarea>
-                        <Button onClick={writeComment} variant='contained' color='info' style={{marginLeft:'20px',marginBottom:'20px'}}>댓글작성</Button>
+                        <Button
+                            onClick={writeComment}
+                            variant='contained'
+                            style={{
+                                marginLeft: '20px',
+                                marginBottom: '20px',
+                                color: 'white',
+                                backgroundColor: '#4e73df',
+                                backgroundImage: 'linear-gradient(135deg, #4e73df 0%, #6f42c1 100%)', // 파란색에서 보라색으로 그라데이션
+                                border: 'none',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                transition: 'background-color 0.3s ease',
+                            }}
+                            onMouseOver={(e) => {
+                                e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                            }}
+                            onMouseOut={(e) => {
+                                e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                            }}
+                        >
+                            댓글작성
+                        </Button>
                     </div><br/>
 
                     <table>
@@ -251,9 +328,30 @@ const DetailPage = () => {
                                     {
                                         myinfoList.potalId == item.memberId ?
                                             <>
-                                                <Button variant="contained" color="error"
-                                                        style={{marginRight: '10px',marginLeft:'20px',marginTop:'20px'}}
-                                                        onClick={(e) => commentDeleteClick(item.id)}
+                                                <Button
+                                                    variant="contained"
+                                                    style={{
+                                                        marginRight: '10px',
+                                                        marginLeft: '20px',
+                                                        marginTop: '20px',
+                                                        color: 'white',
+                                                        backgroundColor: '#d9534f',
+                                                        backgroundImage: 'linear-gradient(135deg, #d9534f 0%, #c9302c 100%)', // 빨간색 그라데이션
+                                                        border: 'none',
+                                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                                        transition: 'background-color 0.3s ease',
+                                                    }}
+                                                    onClick={(e) => commentDeleteClick(item.id)}
+                                                    onMouseOver={(e) => {
+                                                        e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                                        e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                                        e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                                    }}
+                                                    onMouseOut={(e) => {
+                                                        e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                                        e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                                        e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                                    }}
                                                 >
                                                     삭제
                                                 </Button> </> : ''}
