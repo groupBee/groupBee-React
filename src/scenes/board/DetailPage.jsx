@@ -177,13 +177,31 @@ const DetailPage = () => {
                         </Typography>
                     </Box>
                     {post.file && (
-                        <Box mb={2} style={{width: '300px'}}>
+                        <Box mb={2} style={{ width: '300px' }}>
+                            {/* 파일 확장자에 따라 다르게 처리 */}
                             {post.file.endsWith('.jpg') || post.file.endsWith('.png') || post.file.endsWith('.jpeg') ? (
-                                <img src={`/uploads/${post.file}`} alt="첨부파일" style={{maxWidth: '100%'}}/>
+                                <img
+                                    src={`/uploads/${post.file}`}
+                                    alt="첨부파일"
+                                    style={{ maxWidth: '100%', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                                />
                             ) : (
-                                <a href={`/uploads/${post.file}`} download>
-                                    첨부파일 다운로드
-                                </a>
+                                <Box>
+                                    <Typography variant="body1" style={{ marginBottom: '10px' }}>
+                                        첨부파일:
+                                        <a
+                                            href={`/uploads/${post.file}`}
+                                            download
+                                            style={{
+                                                color: '#1e90ff',
+                                                textDecoration: 'none',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            {post.file}
+                                        </a>
+                                    </Typography>
+                                </Box>
                             )}
                         </Box>
                     )}
@@ -307,7 +325,7 @@ const DetailPage = () => {
                             <table>
                                 <tbody>
                                 <tr>
-                                    <td style={{fontSize:'15px'}}>{item.memberId}</td>
+                                    <td style={{fontSize:'15px'}}>{item.writer}</td>
                                     <td style={{marginRight:'200px',minWidth:'350px',fontSize:'15px'}}><p  style={{
                                         width: '850px',
                                         whiteSpace: 'normal', // 줄바꿈 자동 적용
@@ -315,7 +333,7 @@ const DetailPage = () => {
                                         padding: '8px',
                                         marginTop:'5px',
                                         paddingTop:'15px',
-                                        marginLeft:'50px'
+                                        marginLeft:'70px'
                                     }}>{item.content}</p></td>
                                     <td>     {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
                                         {new Date(item.createDate).toLocaleTimeString('ko-KR', {

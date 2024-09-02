@@ -7,7 +7,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { useNavigate } from "react-router-dom";
 
 //부서 리스트, 멤버리스트, 멤버디테일
-const OrganizationChart = () => {
+const OrganizationChart = ({open,onClose}) => {
     const [departmentList, setDepartmentList] = useState([]);
     const [expandedDepartments, setExpandedDepartments] = useState([]);
     const [employeeList, setEmployeeList] = useState([]);
@@ -134,8 +134,7 @@ const OrganizationChart = () => {
     };
 
     const handleEmailClick = () => {
-        navigate("/email", { state: { email: selectedEmployee.email } }); // 이메일 페이지로 이동
-        setIsModalOpen(false);
+        window.open(`/email?email=${encodeURIComponent(selectedEmployee.email)}`, '_blank'); // 이메일 페이지로 이동
 
     };
 
@@ -313,9 +312,11 @@ const OrganizationChart = () => {
                                 borderRadius: '5px',
                                 cursor: 'pointer'
                             }}
-                                    onClick={handleEmailClick}>
+                                    onClick={handleEmailClick}
+                            >
 
                                 <MailOutlineIcon/>&nbsp;
+
                                 메일
                             </button>
                         </div>
@@ -334,39 +335,7 @@ const OrganizationChart = () => {
     );
 };
 
-const OrganizationModal = ({open, onClose}) => {
-    return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '95%',
-                height: '90%',
-                bgcolor: 'background.paper',
-                boxShadow: 24,
-                p: 4,
-                display: 'flex',
-                flexDirection: 'column',
-            }}>
-                <IconButton
-                    sx={{position: 'absolute', top: 16, right: 16}}
-                    onClick={onClose}
-                >
-                    <CloseIcon/>
-                </IconButton>
-                <div><b style={{
-                    marginBottom: '50px',
-                    fontSize: '40px',
-                    marginLeft: '50px',
-                    color: '#fac337'
-                }}>GroupBee&nbsp;</b><b style={{fontSize: '30px'}}>조직도</b></div>
-                <OrganizationChart/>
-            </Box>
-        </Modal>
-    );
-};
+
 
 const App = () => {
     const [isModalOpen, setIsModalOpen] = useState(true);
@@ -379,6 +348,40 @@ const App = () => {
         <div>
             <OrganizationModal open={isModalOpen} onClose={handleCloseModal}/>
         </div>
+    );
+};
+
+const OrganizationModal = ({open, onClose}) => {
+    if(!open) return null;
+    return (
+        <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '95%',
+            height: '90%',
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            display: 'flex',
+            flexDirection: 'column',
+        }}>
+            <IconButton
+                sx={{position: 'absolute', top: 16, right: 16}}
+                onClick={onClose}
+
+            >
+                <CloseIcon/>
+            </IconButton>
+            <div><b style={{
+                marginBottom: '50px',
+                fontSize: '40px',
+                marginLeft: '50px',
+                color: '#fac337'
+            }}>GroupBee&nbsp;</b><b style={{fontSize: '30px'}}>조직도</b></div>
+            <OrganizationChart/>
+        </Box>
     );
 };
 

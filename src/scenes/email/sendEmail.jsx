@@ -38,12 +38,14 @@ const SendEmail = () => {
     //         })
     // }
 
-    // 이전 페이지에서 이메일 값을 가져오는 useEffect
     useEffect(() => {
-        if (location.state && location.state.email) {
-            setToInput(location.state.email); // 이전 페이지에서 전달된 이메일이 있을 경우 설정
+        // 쿼리 파라미터에서 이메일 주소 가져오기
+        const queryParams = new URLSearchParams(location.search);
+        const email = queryParams.get('email');
+        if (email) {
+            setToInput(email);
         }
-    }, [location.state]);
+    }, [location.search]);
 
     // 참조인 및 받는 사람 추가 및 삭제에 따른 텍스트 영역 크기 조절 로직
     useEffect(() => {

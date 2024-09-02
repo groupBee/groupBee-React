@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './Board.css';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 const Board = () => {
     const { Page } = useParams();
@@ -158,10 +159,11 @@ const Board = () => {
                                     >
                                         {row.board.mustRead && <span><b>[공지]&nbsp;</b></span>}
                                         {row.board.title}
+                                        {row.board.file && <AttachFileIcon style={{width:'15px',height:'15px'}}/>}
                                         {row.commentCount > 0 && <span style={{ marginLeft: '10px' }}>({row.commentCount})</span>}
-                                        {row.board.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
+
                                     </td>
-                                    <td style={{ textAlign: "center" }}>{row.writer}</td>
+                                    <td style={{ textAlign: "center" }}>{row.board.writer}</td>
                                     <td style={{ textAlign: "center" }}>
                                         {new Date(row.board.createDate).getFullYear()}-{String(new Date(row.board.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(row.board.createDate).getDate()).padStart(2, '0')} &nbsp;
                                         {new Date(row.board.createDate).toLocaleTimeString('ko-KR', {
