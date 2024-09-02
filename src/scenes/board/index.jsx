@@ -26,11 +26,11 @@ const Board = () => {
                 const boardListResponse = await axios.get('/api/board/list');
                 const boardListData = boardListResponse.data;
 
-                const importantPosts = boardListData.filter(post => post.mustMustRead);
-                const regularPosts = boardListData.filter(post => !post.mustMustRead);
+                const importantPosts = boardListData.filter(post => post.board.mustMustRead);
+                const regularPosts = boardListData.filter(post => !post.board.mustMustRead);
 
-                const sortedImportantPosts = importantPosts.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
-                const sortedRegularPosts = regularPosts.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+                const sortedImportantPosts = importantPosts.sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
+                const sortedRegularPosts = regularPosts.sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
 
                 const totalRegularPosts = sortedRegularPosts.length;
 
@@ -43,7 +43,7 @@ const Board = () => {
                     ...displayedRegularPosts
                 ].map((post, index) => ({
                     ...post,
-                    displayNumber: post.mustMustRead
+                    displayNumber: post.board.mustMustRead
                         ? <b style={{ color: 'red', marginLeft: '-5px' }}>[중요]</b>
                         : totalRegularPosts - (startIndex + index) + 8
                 }));
@@ -52,7 +52,7 @@ const Board = () => {
                 setTotalPages(Math.ceil(totalRegularPosts / itemsPerPage));
 
                 const commentRequests = finalPosts.map(post =>
-                    axios.get(`/api/comment/list?boardId=${post.id}`).then(res => ({ id: post.id, count: res.data.length }))
+                    axios.get(`/api/comment/list?boardId=${post.board.id}`).then(res => ({ id: post.id, count: res.data.length }))
                 );
                 const commentResponses = await Promise.all(commentRequests);
 
@@ -110,8 +110,18 @@ const Board = () => {
                         사내게시판
                         <div style={{float: 'right', marginBottom: '20px'}}>
                             <Button variant='outlined'
-                                    style={{backgroundColor: '#22a1e6', color: 'white', fontSize: '15px',marginTop:'20px'}}
+                                    style={{
+                                        backgroundColor: '#f6d365',
+                                        backgroundImage: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)', // 주황색 계열의 그라데이션
+                                        color: 'white',
+                                        fontSize: '15px',
+                                        marginTop: '40px',
+                                        border: 'none', // 경계선을 없애서 그라데이션이 더 돋보이게 함
+                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // 그림자 효과 추가
+                                        transition: 'background-color 0.3s ease', // 부드러운 전환 효과
+                                    }}
                                     onClick={handleWriteClick}>글작성</Button>
+
                         </div>
                     </Typography>
 
@@ -137,7 +147,7 @@ const Board = () => {
                             </thead>
                             <tbody style={{ borderBottom: '1px solid #dbd9d9' }}>
                             {boardList.map((row) => (
-                                <tr key={row.id} style={row.mustMustRead
+                                <tr key={row.board.id} style={row.board.mustMustRead
                                     ? { backgroundColor: '#b3b3b3', fontWeight: 'bold', color: 'blue' } // 상단 고정 게시글 스타일
                                     : { backgroundColor: 'transparent' } // 일반 게시글 스타일
                                 }>
@@ -147,26 +157,26 @@ const Board = () => {
                                         style={{
                                             cursor: 'pointer',
                                             color: 'black',
-                                            fontWeight: row.mustMustRead ? "bold" : "normal",
+                                            fontWeight: row.board.mustMustRead ? "bold" : "normal",
                                             maxWidth: "300px", // 최대 너비 설정
                                             overflow: "hidden", // 넘치는 내용 숨기기
                                             textOverflow: "ellipsis", // 넘치는 내용에 '...' 추가
                                             whiteSpace: "nowrap",
                                             transition: "color 0.3s", // 마우스 오버 시 부드러운 색상 전환 효과
                                         }}
-                                        onClick={() => handleTitleClick(row.id)} // 제목 클릭 이벤트 설정
+                                        onClick={() => handleTitleClick(row.board.id)} // 제목 클릭 이벤트 설정
                                         onMouseOver={(e) => (e.target.style.color = "#ffb121")} // 마우스 오버 시 색상 변경
                                         onMouseOut={(e) => (e.target.style.color = "inherit")} // 마우스 아웃 시 원래 색상으로 복구
                                     >
-                                        {row.mustRead && <span><b>[공지]&nbsp;</b></span>}
-                                        {row.title}
-                                        {commentCounts[row.id] > 0 && <span style={{ marginLeft: '10px', color: 'gray' }}>({commentCounts[row.id]})</span>}
-                                        {row.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
+                                        {row.board.mustRead && <span><b>[공지]&nbsp;</b></span>}
+                                        {row.board.title}
+                                        {row.commentCount > 0 && <span style={{ marginLeft: '10px', color: 'gray' }}>({row.commentCount})</span>}
+                                        {row.board.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
                                     </td>
-                                    <td style={{ textAlign: "center" }}>{row.memberId}</td>
+                                    <td style={{ textAlign: "center" }}>{row.writer}</td>
                                     <td style={{ textAlign: "center" }}>
-                                        {new Date(row.createDate).getFullYear()}-{String(new Date(row.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(row.createDate).getDate()).padStart(2, '0')} &nbsp;
-                                        {new Date(row.createDate).toLocaleTimeString('ko-KR', {
+                                        {new Date(row.board.createDate).getFullYear()}-{String(new Date(row.board.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(row.board.createDate).getDate()).padStart(2, '0')} &nbsp;
+                                        {new Date(row.board.createDate).toLocaleTimeString('ko-KR', {
                                             timeZone: 'Asia/Seoul',
                                             hour12: false,  // 24시간 형식으로 설정
                                             hour: '2-digit',
@@ -174,7 +184,7 @@ const Board = () => {
                                             second: '2-digit'
                                         })}
                                     </td>
-                                    <td>{Math.floor(row.readCount / 2)}</td>
+                                    <td>{Math.floor(row.board.readCount / 2)}</td>
                                 </tr>
                             ))}
                             </tbody>

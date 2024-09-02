@@ -115,7 +115,31 @@ const BoardWrite = () => {
                                 placeholder='중요 체크시 상단 고정!'
                             ></textarea>
                         </div>
-                        <Button type="submit" variant='contained' color='info'>등록</Button>
+
+                        <Button
+                            type="submit"
+                            variant='contained'
+                            style={{
+                                color: 'white',
+                                backgroundColor: '#36c3ff', // 하늘색 기본 색상
+                                backgroundImage: 'linear-gradient(135deg, #36c3ff 0%, #74d2ff 100%)', // 하늘색에서 약간 밝은 하늘색으로 그라데이션
+                                border: 'none',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                transition: 'all 0.3s ease', // 모든 속성의 변화를 부드럽게
+                            }}
+                            onMouseOver={(e) => {
+                                e.target.style.backgroundColor = '#74d2ff'; // 마우스 오버 시 밝은 하늘색으로 변경
+                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                            }}
+                            onMouseOut={(e) => {
+                                e.target.style.backgroundColor = '#36c3ff'; // 마우스가 벗어났을 때 원래 색상으로 돌아옴
+                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                            }}
+                        >
+                            등록
+                        </Button>
                     </form>
                 </div>
             </Box>

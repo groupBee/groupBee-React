@@ -153,10 +153,44 @@ const UpdatePage = () => {
                         />
                     </div>
                     <Box mt={2}>
-                        <Button type="submit" variant='contained' color='primary' style={{ marginRight: '10px' }}>
+                        <Button type="submit" variant='contained'   style={{
+                            color: 'white',
+                            backgroundColor: '#4e73df',
+                            backgroundImage: 'linear-gradient(135deg, #4e73df 0%, #6f42c1 100%)', // 파란색에서 보라색으로 그라데이션
+                            border: 'none',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                            transition: 'background-color 0.3s ease',
+                            marginRight:'20px'
+                        }}
+                                onMouseOver={(e) => {
+                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                }}>
                             저장
                         </Button>
-                        <Button variant='contained' color='secondary' onClick={handleCancelClick}>
+                        <Button variant='contained' onClick={handleCancelClick}
+                                style={{        color: 'white',
+                                    backgroundColor: '#8c8b89',
+                                    backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)', // 회색 그라데이션
+                                    border: 'none',
+                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                    transition: 'background-color 0.3s ease',}}
+                                onMouseOver={(e) => {
+                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                }}
+                                onMouseOut={(e) => {
+                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                }}>
                             취소
                         </Button>
                     </Box>
