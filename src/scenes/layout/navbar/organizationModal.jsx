@@ -234,10 +234,25 @@ const OrganizationChart = () => {
                                     }}
                                     style={{marginRight: '10px'}}
                                 />
-                                <div>
-
+                                <div style={{display:'flex',marginTop:'10px'}}>
+                                    <img
+                                        src={employee.profileFile}
+                                        alt={`${employee.name}의 프로필`}
+                                        style={{
+                                            minWidth: '40px',
+                                            maxWidth: '40px',
+                                            minHeight: '40px',
+                                            maxHeight: '40px',
+                                            borderRadius: '50%',
+                                            border: '1px solid grey',
+                                            objectFit: 'cover',
+                                            marginBottom: '20px'
+                                        }}
+                                    />
+                                    <div style={{marginLeft:'20px'}}>
                                     <div>{employee.name}</div>
                                     <div>{employee.position.rank}&nbsp;&nbsp; -&nbsp; {employee.department.departmentName}&nbsp; - &nbsp;&nbsp;{employee.email}</div>
+                                    </div>
                                 </div>
                             </li>
                         ))

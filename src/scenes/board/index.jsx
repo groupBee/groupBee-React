@@ -51,18 +51,6 @@ const Board = () => {
                 setBoardList(finalPosts);
                 setTotalPages(Math.ceil(totalRegularPosts / itemsPerPage));
 
-                const commentRequests = finalPosts.map(post =>
-                    axios.get(`/api/comment/list?boardId=${post.board.id}`).then(res => ({ id: post.id, count: res.data.length }))
-                );
-                const commentResponses = await Promise.all(commentRequests);
-
-                const commentCountMap = commentResponses.reduce((acc, { id, count }) => {
-                    acc[id] = count;
-                    return acc;
-                }, {});
-
-                setCommentCounts(commentCountMap);
-
             } catch (error) {
                 console.error('Error fetching board list and comments:', error);
             }
@@ -170,7 +158,7 @@ const Board = () => {
                                     >
                                         {row.board.mustRead && <span><b>[공지]&nbsp;</b></span>}
                                         {row.board.title}
-                                        {row.commentCount > 0 && <span style={{ marginLeft: '10px', color: 'gray' }}>({row.commentCount})</span>}
+                                        {row.commentCount > 0 && <span style={{ marginLeft: '10px' }}>({row.commentCount})</span>}
                                         {row.board.file && <i className="bi bi-paperclip" style={{ marginLeft: '10px', color: 'gray' }}></i>}
                                     </td>
                                     <td style={{ textAlign: "center" }}>{row.writer}</td>
