@@ -137,7 +137,7 @@ const Board = () => {
                             <tbody style={{ borderBottom: '1px solid #dbd9d9' }}>
                             {boardList.map((row) => (
                                 <tr key={row.board.id} style={row.board.mustMustRead
-                                    ? { backgroundColor: '#b3b3b3', fontWeight: 'bold', color: 'blue' } // 상단 고정 게시글 스타일
+                                    ? { backgroundColor: '#b3b3b3', fontWeight: 'bold'} // 상단 고정 게시글 스타일
                                     : { backgroundColor: 'transparent' } // 일반 게시글 스타일
                                 }>
                                     <td>&nbsp;&nbsp;{row.displayNumber}</td>

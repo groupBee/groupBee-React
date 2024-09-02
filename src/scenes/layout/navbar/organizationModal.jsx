@@ -7,7 +7,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { useNavigate } from "react-router-dom";
 
 //부서 리스트, 멤버리스트, 멤버디테일
-const OrganizationChart = ({open,onClose}) => {
+const OrganizationChart = () => {
     const [departmentList, setDepartmentList] = useState([]);
     const [expandedDepartments, setExpandedDepartments] = useState([]);
     const [employeeList, setEmployeeList] = useState([]);
