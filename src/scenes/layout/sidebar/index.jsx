@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {Avatar, Box, Button, IconButton, Modal, Typography, useTheme} from "@mui/material";
 import {useContext, useState} from "react";
 import {tokens} from "../../../theme";
@@ -23,8 +23,8 @@ import avatar from "../../../assets/images/avatar.png";
 import logo from "../../../assets/images/logo.png";
 import Item from "./Item";
 import {ToggledContext} from "../../../App";
-import CommuteList from "../../Commute/CommuteList.jsx";
 import OrganizationModal from "../navbar/organizationModal.jsx";
+import axios from "axios";
 
 const SideBar = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -32,6 +32,7 @@ const SideBar = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const [orModalOpen, setOrMadalOpen] = useState(false);
+    const [infoData, setInfoData] = useState([]);
 
     //조직도 모달
     const organizationModalOpen = () => {
@@ -41,6 +42,14 @@ const SideBar = () => {
     const organizationModalClose = () => {
         setOrMadalOpen(false);
     };
+
+    useEffect(() => {
+        fetch("/api/employee/info")
+            .then((res) => res.json())
+            .then((data) => setInfoData(data))
+            .catch(error => console.error("Error fetching user data in sidebar index: ", error))
+        console.log(infoData)
+    },[]);
 
     return (
         <Sidebar
@@ -105,19 +114,19 @@ const SideBar = () => {
                     {/* 메인페이지 프로필 사진 및 개인정보 띄우기 창 */}
                     <Avatar
                         alt="avatar"
-                        src={avatar}
+                        src={infoData.profileFile}
                         sx={{width: "100px", height: "100px"}}
                     />
                     <Box sx={{textAlign: "center"}}>
                         <Typography variant="h3" fontWeight="bold" color={colors.gray[100]}>
-                            손 가 원
+                            {infoData.name}
                         </Typography>
                         <Typography
                             variant="h6"
                             fontWeight="500"
                             color={colors.yellowAccent[1000]}
                         >
-                            CEO
+                            {infoData?.position?.rank}
                         </Typography>
                     </Box>
                 </Box>
