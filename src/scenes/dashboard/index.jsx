@@ -123,8 +123,8 @@ function Dashboard() {
     const fetchBoardList = async () => {
         try {
             const res = await axios.get('/api/board/list');
-            const importantPosts = res.data.filter(post => post.mustMustRead);
-            const regularPosts = res.data.filter(post => !post.mustMustRead);
+            const importantPosts = res.data.filter(post => post.board.mustMustRead);
+            const regularPosts = res.data.filter(post => !post.board.mustMustRead);
 
             // 중요 게시글을 상단에, 일반 게시글을 그 아래에 표시
             const combinedPosts = [
@@ -258,7 +258,7 @@ function Dashboard() {
                                 {boardList.map((post) => (
                                     <tr key={post.id}>
                                         <td>
-                                            {post.mustMustRead && (
+                                            {post.board.mustMustRead && (
                                                 <span style={{ color: "#ff4d4f" }}> {/* 눈에 띄는 붉은색 강조 */}
                                                     <b>[중요]</b>
                   </span>
@@ -266,7 +266,7 @@ function Dashboard() {
                                         </td>
                                         <td
                                             style={{
-                                                fontWeight: post.mustMustRead ? "bold" : "normal",
+                                                fontWeight: post.board.mustMustRead ? "bold" : "normal",
                                                 maxWidth: "410px", // 최대 너비 설정
                                                 overflow: "hidden", // 넘치는 내용 숨기기
                                                 textOverflow: "ellipsis", // 넘치는 내용에 '...' 추가
@@ -278,11 +278,11 @@ function Dashboard() {
                                             onMouseOver={(e) => (e.target.style.color = "#ffb121")} // 마우스 오버 시 색상 변경
                                             onMouseOut={(e) => (e.target.style.color = "inherit")} // 마우스 아웃 시 원래 색상으로 복구
                                         >
-                                            {post.title}
+                                            {post.board.title}
                                         </td>
-                                        <td style={{ textAlign: "center" }}>{post.memberId}</td>
+                                        <td style={{ textAlign: "center" }}>{post.board.writer}</td>
                                         <td style={{ textAlign: "center" }}>
-                                            {new Date(post.createDate).toLocaleDateString()}
+                                            {new Date(post.board.createDate).toLocaleDateString()}
                                         </td>
                                     </tr>
                                 ))}
