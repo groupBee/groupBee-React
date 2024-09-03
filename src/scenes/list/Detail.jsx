@@ -26,6 +26,7 @@ const Detail = () => {
     const [appDocType, setAppDocType] = useState(null); // appDocType 상태 추가
     const [approvalStatus, setApprovalStatus] = useState('');
     const [imageSrc, setImageSrc] = useState(null); // 추가된 이미지 상태
+    const [openRejectionDetail, setOpenRejectionDetail] = useState(false);
 
     // 결재 문서 데이터를 가져오는 함수
     const getSignForm = useCallback(() => {
@@ -116,6 +117,15 @@ const Detail = () => {
                 console.error("Rejection failed:", err);
             });
     };
+    // 반려 사유 버튼 클릭 시 사유를 설정하고 다이얼로그 열기
+    const handleRejectionDetailOpen = () => {
+        // setRejectionDetail(rejectionReasonMap[approverType] || '반려 사유가 없습니다.');
+        setOpenRejectionDetail(true);
+    };
+
+    const handleRejectionDetailClose = () => {
+        setOpenRejectionDetail(false);
+    };
 
     const formatDateForInput = (dateString) => {
         if (!dateString) return '';
@@ -186,7 +196,7 @@ const Detail = () => {
                                 <div style={{ marginBottom: '10px', textAlign: 'center' }}>
                                     <img src={approveimg()} style={{width: '100px', height: '100px'}} />
                                 </div>
-                            ):list.approveStatus===0&&list.approveType===0?(
+                            ):list.secondApprover &&list.approveStatus===0&&list.approveType===0?(
                             <div style={{ marginBottom: '10px', textAlign: 'center' }}>
                                 <img src={approveimg2()} style={{width: '100px', height: '100px'}} />
                             </div>):
@@ -313,7 +323,6 @@ const Detail = () => {
                                     <DatePicker
                                         value={formatDateToKorean(list.additionalFields?.requestDate) || ''}
                                         dateFormat="yyyy년 MM월 dd일"
-                                        className="custom-datepicker"
                                         readOnly/>
                                 </td>
                                 <td>지출유형</td>
@@ -322,13 +331,17 @@ const Detail = () => {
                                         <option value={0}>자재비</option>
                                         <option value={1}>배송비</option>
                                         <option value={2}>교육비</option>
+                                        <option value={4}>식대</option>
+                                        <option value={5}>출장</option>
+                                        <option value={6}>마일리지</option>
+                                        <option value={7}>선물</option>
                                         <option value={3}>기타</option>
                                     </select>
                                 </td>
                             </tr>
                             <tr style={{fontSize: '23px'}}>
                                 <td>제목</td>
-                                <td colSpan={7} style={{height:'50px',textAlign:'left',paddingLeft:'20px'}}>
+                                <td colSpan={7} style={{height: '50px',textAlign:'left',paddingLeft:'20px'}}>
                                     {list.additionalFields?.title || ''}
                                 </td>
                             </tr>
@@ -371,13 +384,15 @@ const Detail = () => {
                 }
                 <tr>
                     <td style={{fontSize: '23px'}} colSpan={2}>첨부파일</td>
-                    <td style={{fontSize: '20px'}} colSpan={6}>
+                    <td style={{fontSize: '20px', height:'200px'}} colSpan={6}>
+                        {list.originalFile ? (
                         <a
                             onClick={() => onClickImgLink(list.attachedFile, list.originalFile)}
                             style={{cursor: 'pointer', textDecoration: 'underline', color: 'blue'}} // 클릭 가능한 스타일 추가
                         >
                             {list.originalFile} {/* 파일 이름을 텍스트로 표시 */}
                         </a>
+                        ) : (<span>첨부파일이 없습니다.</span>)}
                     </td>
                 </tr>
                 </tbody>
@@ -399,11 +414,28 @@ const Detail = () => {
                     <td>(인)</td>
                 </tr>
                 <tr>
-                    <td colSpan={8} style={{height:'50px'}}></td>
+                    <td colSpan={8} style={{height:'50px'}}>
+                        {list.approveStatus === 0 && (
+                            <Button variant='outlined' color='warning' onClick={() => handleRejectionDetailOpen('second')}>
+                                중간 승인자 반려 사유
+                            </Button>
+                        )}
+                    </td>
                 </tr>
                 </tbody>
             </table>
 
+                <Dialog open={openRejectionDetail} onClose={handleRejectionDetailClose}>
+                    <DialogTitle>반려 사유</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText style={{width:'500px'}}>
+                            {list.rejectionReason}
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleRejectionDetailClose}>닫기</Button>
+                    </DialogActions>
+                </Dialog>
                 <Dialog open={open} onClose={handleRejectionClose}>
                     <DialogTitle>반려 사유 입력</DialogTitle>
                     <DialogContent>
