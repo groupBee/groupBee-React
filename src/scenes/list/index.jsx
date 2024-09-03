@@ -80,6 +80,23 @@ const List = () => {
 
     // 총 페이지 수 계산
     const totalPage = Math.ceil(filteredData.length / PageCount);
+    // 날짜를 포맷팅하는 함수
+    const formatDate = (dateStr) => {
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return ''; // 유효하지 않은 날짜일 경우 빈 문자열 반환
+        const today = new Date();
+        if (date.toDateString() === today.toDateString()) {
+            // 오늘 날짜일 경우 시간 정보를 "시:분"으로 출력
+            const hours = date.getHours().toString().padStart(2, '0');  // 시를 두 자리로 맞춤
+            const minutes = date.getMinutes().toString().padStart(2, '0');  // 분을 두 자리로 맞춤
+            return `${hours}시 ${minutes}분`;
+        }
+        // 기타 날짜일 경우 "YYYY-MM-DD" 형식으로 출력
+        const year = date.getFullYear();  // 년도
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');  // 월 (0부터 시작하므로 +1)
+        const day = date.getDate().toString().padStart(2, '0');  // 일
+        return `${year}년 ${month}월 ${day}일`;
+    };
 
 
     return (
@@ -111,20 +128,32 @@ const List = () => {
                 <tbody>
                     {currentData.length > 0 ? (
                         currentData.map((item, idx) => (
-                            <tr key={idx} style={{ lineHeight: '30px', cursor: 'pointer' }}>
+                            <tr key={idx} style={{ lineHeight: '30px', cursor: 'pointer' }}
+                                onMouseOver={(e) => {
+                                    const tds = e.currentTarget.querySelectorAll('td');
+                                    tds.forEach(td => td.style.color = "#ffb121"); // 모든 td 색상 변경
+                                }}
+                                onMouseOut={(e) => {
+                                    const tds = e.currentTarget.querySelectorAll('td');
+                                    tds.forEach(td => td.style.color = "inherit"); // 색상 원래대로 복원
+                                }}
+                                onClick={() => moveDetail(item.id)} // 행을 클릭했을 때 상세 페이지로 이동
+                            >
                                 <td style={{ borderRight: 'none', borderLeft: 'none', paddingLeft: '1.5%' }}>{(currentPage - 1) * PageCount + idx + 1}</td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>
                                     {item.appDocType === 0 ? '품의서' :
                                         item.appDocType === 1 ? '휴가신청서' :
                                             item.appDocType === 2 ? '지출보고서' : ''}
                                 </td>
-                                <td style={{ borderRight: 'none', borderLeft: 'none' }} onClick={() => moveDetail(item.id)}>
+                                <td style={{ borderRight: 'none', borderLeft: 'none' }}>
                                     {item.additionalFields.title ? item.additionalFields.title : '휴가신청서'}
                                 </td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.writer}</td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.department}</td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-                                    {item.writeday.substring(0, 10)}
+                                    {
+                                        formatDate(item.writeday)
+                                    }
                                 </td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>
                                     {item.additionalFields.status}
