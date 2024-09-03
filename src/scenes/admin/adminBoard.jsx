@@ -79,6 +79,12 @@ const AdminBoard = () => {
             }
         }
     };
+    // 날짜와 시간을 원하는 형식으로 추출하는 함수
+    const formatDateTimeString = (dateString) => {
+        // 날짜 문자열에서 필요한 부분만 추출
+        // 예: '2024-08-31T16:43:41.290512' -> '2024-08-31 16:43:41'
+        return dateString.substring(0, 19).replace('T', ' ');
+    };
 
 
     return (
@@ -140,10 +146,12 @@ const AdminBoard = () => {
                                     maxWidth: '100px',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap' }}>{list.title}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.memberId}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.createDate}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.readCount}</TableCell>
+                                    whiteSpace: 'nowrap' }}>{list.board.title}</TableCell>
+                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.id}</TableCell>
+                                <TableCell align="center" sx={{ fontSize: '0.9rem' }}>
+                                    {formatDateTimeString(list.board.createDate)}
+                                </TableCell>
+                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.readCount}</TableCell>
                                 <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
                                     <IconButton onClick={() => handleDelete(list.id)}>
                                         <DeleteIcon />
