@@ -191,6 +191,39 @@ function Dashboard() {
         return () => clearInterval(intervalId);
     }, []);
 
+    //attendance 체크인
+    const checkin = async () => {
+        try {
+            // 현재 로컬 시간을 가져옵니다.
+            const localDateTime = new Date().toISOString(); // ISO 8601 형식으로 변환
+
+            // 서버에 POST 요청을 보냅니다.
+            const res = await axios.post("/api/attendance/checkin", {
+                checkIn: localDateTime
+            });
+
+            // 응답 처리
+            console.log("Check-in successful:", res.data);
+            alert('출근')
+        } catch (err) {
+            console.error("Error checking in:", err);
+        }
+    };
+
+    //attendance 체크아웃
+    const checkout = async () => {
+        try {
+            const localDateTime = new Date().toISOString();
+
+            const res = await axios.post("/api/attendance/checkout", {
+                checkOut: localDateTime
+            });
+            alert('퇴근')
+        } catch (err) {
+            console.error("Error fetching info:", err);
+        }
+    };
+
 
 
 
@@ -227,9 +260,8 @@ function Dashboard() {
                         overflow: "hidden", // 박스 넘침 방지
                     }}
                 >
-                    <Box borderBottom={`2px solid #ffb121`} p="15px">
+                    <Box borderBottom={`2px solid #ffb121`} p="13px">
                         <Typography
-                            color={colors.gray[100]}
                             variant="h5"
                             fontWeight="600"
                             display="flex"
@@ -309,10 +341,6 @@ function Dashboard() {
 
 
 
-
-
-
-
                 {/* 시계 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
@@ -321,10 +349,10 @@ function Dashboard() {
                     flexDirection="column"
                     height="100%"
                     sx={{
-                        backgroundColor: "#1e1e2f",  // 어두운 배경색
+                        background: 'linear-gradient(135deg, #FFB300 20%, #FF6F00 100%)',
                         borderRadius: "8px",  // 부드러운 모서리
                         boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",  // 부드러운 그림자
-                        padding: "20px",  // 패딩 추가
+                        padding: "10px",  // 패딩 추가
                     }}
                 >
                     <div class="clockBox">
@@ -337,6 +365,10 @@ function Dashboard() {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="buttonbox">
+                    <Button class="button" onClick={checkin}>출근</Button>
+                        <Button class="button" onClick={checkout}>퇴근</Button>
                     </div>
                 </Box>
                 {/*날씨*/}
@@ -366,7 +398,7 @@ function Dashboard() {
                         overflow: "hidden", // 박스 넘침 방지
                     }}
                 >
-                    <Box borderBottom={`2px solid #ffb121`} p="15px">
+                    <Box borderBottom={`2px solid #ffb121`} p="13px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex"
                                     justifyContent="space-between" alignItems="center">
                             결재현황
@@ -439,7 +471,7 @@ function Dashboard() {
                             overflow: 'hidden',
                           }}
                 >
-                    <Box borderBottom={`2px solid #ffb121`} p="15px">
+                    <Box borderBottom={`2px solid #ffb121`} p="13px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             예약현황
                             <IconButton onClick={handleBook}>
@@ -464,7 +496,7 @@ function Dashboard() {
                         overflow: 'hidden',
                     }}
                 >
-                    <Box borderBottom={`2px solid #ffb121`} p="15px">
+                    <Box borderBottom={`2px solid #ffb121`} p="13px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             캘린더
                             <IconButton onClick={handleCalendar}>
