@@ -20,6 +20,7 @@ import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import "./dashboardcss.css";
 import "./clock.css";
 import Weather from "./weather.jsx";
+import DashboardBook from "./dashboardBook.jsx";
 
 function Dashboard() {
     const theme = useTheme();
@@ -192,13 +193,13 @@ function Dashboard() {
 
 
 
+
     return (
         <Box m="20px">
-            <Box display="flex" justifyContent="space-between" mb="20px" alignItems="center">
+            <Box display="flex" justifyContent="space-between" mb="10px" alignItems="center">
 
                 <Box display="flex">
-                    <Button style={{ marginRight: '10px' }} onClick={handleCarBook}>예약하기</Button>
-                    <Button onClick={handleEmailWrite}>메일보내기</Button>
+
                 </Box>
 
             </Box>
@@ -222,7 +223,8 @@ function Dashboard() {
                     sx={{
                         borderRadius: "8px",
                         backgroundColor: "white",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // 부드러운 그림자 효과 추가
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        overflow: "hidden", // 박스 넘침 방지
                     }}
                 >
                     <Box borderBottom={`2px solid #ffb121`} p="15px">
@@ -236,59 +238,67 @@ function Dashboard() {
                         >
                             공지사항
                             <IconButton onClick={handleBoard}>
-                                <MoreHoriz style={{ color: "#555" }} /> {/* 더 어두운 회색으로 변경 */}
+                                <MoreHoriz style={{ color: "#555" }} />
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box p="15px">
+                    <Box p="8px" height="100%" sx={{ overflow: "auto",}}>
                         {boardList.length > 0 ? (
-                            <table className="table table-hover"> {/* 테이블에 hover 효과 추가 */}
-                                <thead>
-                                <tr>
-                                    <td style={{ width: "50px" }}></td>
-                                    <td style={{ textAlign: "center", width: "450px", fontWeight: "bold" }}>
-                                        제목
-                                    </td>
-                                    <td style={{ textAlign: "center", width: "200px", fontWeight: "bold" }}>
-                                        작성자
-                                    </td>
-                                    <td style={{ textAlign: "center", fontWeight: "bold" }}>작성일</td>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {boardList.map((post) => (
-                                    <tr key={post.id}>
-                                        <td>
-                                            {post.board.mustMustRead && (
-                                                <span style={{ color: "#ff4d4f" }}> {/* 눈에 띄는 붉은색 강조 */}
-                                                    <b>[중요]</b>
-                  </span>
-                                            )}
+                            <div style={{
+                                overflowX: "auto",
+                                overflowY: "auto",
+                                scrollbarWidth: "none", /* Firefox */
+                                msOverflowStyle: "none", /* IE and Edge */
+                                "&::-webkit-scrollbar": { display: "none" } /* Webkit */
+                            }}>
+                                <table className="table table-hover" style={{ minWidth: "100%" }}> {/* 테이블의 최소 너비 설정 */}
+                                    <thead>
+                                    <tr>
+                                        <td style={{ width: "50px" }}></td>
+                                        <td style={{ textAlign: "center", width: "450px", fontWeight: "bold" }}>
+                                            제목
                                         </td>
-                                        <td
-                                            style={{
-                                                fontWeight: post.board.mustMustRead ? "bold" : "normal",
-                                                maxWidth: "410px", // 최대 너비 설정
-                                                overflow: "hidden", // 넘치는 내용 숨기기
-                                                textOverflow: "ellipsis", // 넘치는 내용에 '...' 추가
-                                                whiteSpace: "nowrap",
-                                                cursor: "pointer",
-                                                transition: "color 0.3s", // 마우스 오버 시 부드러운 색상 전환 효과
-                                            }}
-                                            onClick={() => handleTitleClick(post.id)}
-                                            onMouseOver={(e) => (e.target.style.color = "#ffb121")} // 마우스 오버 시 색상 변경
-                                            onMouseOut={(e) => (e.target.style.color = "inherit")} // 마우스 아웃 시 원래 색상으로 복구
-                                        >
-                                            {post.board.title}
+                                        <td style={{ textAlign: "center", width: "200px", fontWeight: "bold" }}>
+                                            작성자
                                         </td>
-                                        <td style={{ textAlign: "center" }}>{post.board.writer}</td>
-                                        <td style={{ textAlign: "center" }}>
-                                            {new Date(post.board.createDate).toLocaleDateString()}
-                                        </td>
+                                        <td style={{ textAlign: "center", fontWeight: "bold" }}>작성일</td>
                                     </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                    {boardList.map((post) => (
+                                        <tr key={post.id}>
+                                            <td>
+                                                {post.board.mustMustRead && (
+                                                    <span style={{ color: "#ff4d4f" }}>
+                                <b>[중요]</b>
+                            </span>
+                                                )}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    fontWeight: post.board.mustMustRead ? "bold" : "normal",
+                                                    maxWidth: "410px",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    whiteSpace: "nowrap",
+                                                    cursor: "pointer",
+                                                    transition: "color 0.3s",
+                                                }}
+                                                onClick={() => handleTitleClick(post.id)}
+                                                onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                                onMouseOut={(e) => (e.target.style.color = "inherit")}
+                                            >
+                                                {post.board.title}
+                                            </td>
+                                            <td style={{ textAlign: "center" }}>{post.board.writer}</td>
+                                            <td style={{ textAlign: "center" }}>
+                                                {new Date(post.board.createDate).toLocaleDateString()}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         ) : (
                             <Typography variant="body1" color="textSecondary">
                                 게시글이 없습니다.
@@ -296,6 +306,11 @@ function Dashboard() {
                         )}
                     </Box>
                 </Box>
+
+
+
+
+
 
 
                 {/* 시계 */}
@@ -307,7 +322,7 @@ function Dashboard() {
                     height="100%"
                     sx={{
                         backgroundColor: "#1e1e2f",  // 어두운 배경색
-                        borderRadius: "12px",  // 부드러운 모서리
+                        borderRadius: "8px",  // 부드러운 모서리
                         boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",  // 부드러운 그림자
                         padding: "20px",  // 패딩 추가
                     }}
@@ -331,8 +346,8 @@ function Dashboard() {
                     display="flex"
 
                     sx={{
-                        backgroundColor: "WHITE",  // 어두운 배경색
-                        borderRadius: "12px",  // 부드러운 모서리
+                        backgroundColor: "WHITE",
+                        borderRadius: "8px",  // 부드러운 모서리
                         boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",  // 부드러운 그림자
                         overflow: "hidden", // 콘텐츠가 Box의 경계를 넘지 않도록 설정
                     }}
@@ -348,55 +363,64 @@ function Dashboard() {
                         borderRadius: "8px",
                         backgroundColor: "white",
                         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // 부드러운 그림자 효과 추가
-                        height:'auto'
+                        overflow: "hidden", // 박스 넘침 방지
                     }}
                 >
                     <Box borderBottom={`2px solid #ffb121`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex"
                                     justifyContent="space-between" alignItems="center">
                             결재현황
-                            <IconButton onClick={handleCalendar}>
+                            <IconButton onClick={handleList}>
                                 <MoreHoriz style={{color: "gray"}}/>
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box p="15px" flexGrow={1} overflow="auto">
-                        <Box display="flex" justifyContent="space-around" mb="10px">
-                            <Button style={{ color: '#ffb121' }} onClick={() => setStatus("rejected")}>반려</Button>
-                            <Button style={{ color: '#ffb121' }} onClick={() => setStatus("ready")}>결재 대기</Button>
-                            <Button style={{ color: '#ffb121' }} onClick={() => setStatus("ing")}>결재 중</Button>
-                            <Button style={{ color: '#ffb121' }} onClick={() => setStatus("done")}>결제 완료</Button>
-                            <Button style={{ color: '#ffb121' }} onClick={() => setStatus("all")}>모두 보기</Button>
-                        </Box>
+                    <Box  sx={{padding: '5px', alignItems:'center', display:'flex', gap:'5px', justifyContent:'center',marginTop:'10px'}} >
+                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("all")}>모두 보기</Button>
+                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("rejected")}>반려</Button>
+                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("ready")}>결재 대기</Button>
+                        <Button style={{color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("ing")}>결재 중</Button>
+                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("done")}>결제 완료</Button>
+
+                    </Box>
+                    <Box p="10px" flexGrow={1} overflow="auto">
                         {filteredData.length > 0 ? (
-                            <table className="table table-bordered">
+                            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop:'10px'}}>
                                 <thead>
-                                <tr style={{ borderRight: 'none', borderLeft: 'none' }}>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>종류</td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>제목</td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>작성자</td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>부서</td>
-                                    <td style={{ borderRight: 'none', borderLeft: 'none', textAlign:'center'}}>상태</td>
+                                <tr style={{ borderBottom: '2px solid #e0e0e0' }}>
+                                    <th style={{ padding: '12px', textAlign: 'center', color: '#333', fontWeight: 'bold' }}>종류</th>
+                                    <th style={{ padding: '12px', textAlign: 'center', color: '#333', fontWeight: 'bold' }}>제목</th>
+                                    <th style={{ padding: '12px', textAlign: 'center', color: '#333', fontWeight: 'bold' }}>작성자</th>
+                                    <th style={{ padding: '12px', textAlign: 'center', color: '#333', fontWeight: 'bold' }}>상태</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {filteredData.map((item, idx) => (
-                                    <tr key={idx}>
-                                        <td style={{width:'15%', textAlign:'center'}}>
+                                    <tr key={idx} style={{ borderBottom: '1px solid #e0e0e0' }}>
+                                        <td style={{ padding: '12px', textAlign: 'center', color: '#555' }}>
                                             {item.appDocType === 0 ? '품의서' :
                                                 item.appDocType === 1 ? '휴가신청서' :
                                                     item.appDocType === 2 ? '지출보고서' : ''}
                                         </td>
-                                        <td style={{width:'37%'}}>{item.additionalFields.title || '제목 없음'}</td>
-                                        <td style={{width:'15%', textAlign:'center'}}>{item.writer}</td>
-                                        <td style={{width:'16%', textAlign:'center'}}>{item.department}</td>
-                                        <td style={{width:'17%', textAlign:'center'}}>{item.additionalFields.status}</td>
+                                        <td style={{ padding: '12px',textAlign: 'center', color: '#333' }}>
+                                            {item.additionalFields.title || '제목 없음'}
+                                        </td>
+                                        <td style={{ padding: '12px', textAlign: 'center', color: '#555' }}>
+                                            {item.writer}
+                                        </td>
+                                        <td style={{ padding: '12px', textAlign: 'center',
+                                            color: item.additionalFields.status ===
+                                            '결재 완료' ? '#22ba8a' : item.additionalFields.status === '반려' ? '#ff7133' : '#555'}}>
+                                            {item.additionalFields.status}
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
                             </table>
                         ) : (
-                            <Typography variant="body1" color="textSecondary">데이터가 없습니다.</Typography>
+                            <Typography variant="body1" color="textSecondary" align="center" mt="20px">
+                                데이터가 없습니다.
+                            </Typography>
                         )}
                     </Box>
                 </Box>
@@ -406,22 +430,27 @@ function Dashboard() {
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 3"
                     sx={{
-                        borderRadius: "8px",
-                        backgroundColor: "white",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    }}
+                            borderRadius: "8px",
+                            backgroundColor: "white",
+                            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                            flexDirection: 'column',
+                            height: '100%',
+                            display: 'flex',
+                            overflow: 'hidden',
+                          }}
                 >
                     <Box borderBottom={`2px solid #ffb121`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             예약현황
-                            <IconButton onClick={handleList}>
+                            <IconButton onClick={handleBook}>
                                 <MoreHoriz style={{ color: "gray" }} />
                             </IconButton>
                         </Typography>
                     </Box>
+                    <DashboardBook/>
                 </Box>
 
-                {/* 예약현황 */}
+                {/* 캘린더 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 3"
@@ -429,12 +458,16 @@ function Dashboard() {
                         borderRadius: "8px",
                         backgroundColor: "white",
                         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                        flexDirection: 'column',
+                        height: '100%',
+                        display: 'flex',
+                        overflow: 'hidden',
                     }}
                 >
                     <Box borderBottom={`2px solid #ffb121`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             캘린더
-                            <IconButton onClick={handleBook}>
+                            <IconButton onClick={handleCalendar}>
                                 <MoreHoriz style={{ color: "gray" }} />
                             </IconButton>
                         </Typography>
@@ -465,7 +498,7 @@ function Dashboard() {
                                 alert(`이벤트: ${info.event.title}`);
                             }}
                             locale='ko'
-                            height="auto"
+                            height="100%" // FullCalendar 높이를 부모 박스에 맞게 설정
                             headerToolbar={{
                                 left: 'customPrev',
                                 center: 'title',
@@ -477,6 +510,7 @@ function Dashboard() {
                         />
                     </Box>
                 </Box>
+
             </Box>
         </Box>
     );

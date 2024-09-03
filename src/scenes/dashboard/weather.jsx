@@ -45,8 +45,8 @@ function Weather() {
 
     const { city, list } = weather;
 
-    // Filter data for the next 7 days (every 8th entry roughly represents a day)
-    const dailyForecasts = list.filter((item, index) => index % 8 === 0).slice(0, 7);
+    // Filter data for the next 4 days (every 8th entry roughly represents a day)
+    const dailyForecasts = list.filter((item, index) => index % 8 === 0).slice(0, 4);
 
     // Korean weekdays mapping
     const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
@@ -56,7 +56,7 @@ function Weather() {
 
     return (
         <div className="weather-widget">
-            <h2 className="weather-header">{city.name}</h2>
+            <h2 className="weather-header">날씨({city.name})</h2>
             <div className="forecast">
                 {dailyForecasts.map((item, index) => {
                     const { main, weather: weatherDetails, dt_txt } = item;
@@ -73,12 +73,12 @@ function Weather() {
                             <div className="date">
                                 {`${month}/${day}`}
                             </div>
+                            <div className="weekday">
+                               {weekday}
+                            </div>
                             <i className={iconClass} style={{ fontSize: '60px' }}></i>
                             <div className="temperature">
                                 <span>{Math.round(main.temp)}°C</span>
-                            </div>
-                            <div className="weekday">
-                                {weekday}
                             </div>
                         </div>
                     );

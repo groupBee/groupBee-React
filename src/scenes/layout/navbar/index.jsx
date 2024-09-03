@@ -211,16 +211,14 @@ const checkOriginalPass = () => {
                                 }} />
                         </IconButton>
                     </Box>
-                    <IconButton onClick={colorMode.toggleColorMode}>
-                        {theme.palette.mode === "dark" ? (
-                            <LightModeOutlined />
-                        ) : (
-                            <DarkModeOutlined />
-                        )}
-                    </IconButton>
-                    <IconButton>
-                        <NotificationsOutlined />
-                    </IconButton>
+                    {/*<IconButton onClick={colorMode.toggleColorMode}>*/}
+                    {/*    {theme.palette.mode === "dark" ? (*/}
+                    {/*        <LightModeOutlined />*/}
+                    {/*    ) : (*/}
+                    {/*        <DarkModeOutlined />*/}
+                    {/*    )}*/}
+                    {/*</IconButton>*/}
+
                     {isAdmin ?
                     <IconButton>
                         <SettingsOutlined onClick={handleIconClick}/>
