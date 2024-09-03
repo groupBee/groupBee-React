@@ -1,6 +1,6 @@
 // GroupModal.jsx
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Box, Typography, Collapse, List, ListItem } from '@mui/material';
+import {Modal, Button, Box, Typography, Collapse, List, ListItem, Checkbox} from '@mui/material';
 import axios from 'axios';
 
 const GroupModal = ({ open, onClose, onSelect }) => {
@@ -70,6 +70,13 @@ const GroupModal = ({ open, onClose, onSelect }) => {
         );
     };
 
+    const handleSelectPerson = (person) => {
+        setSelectedPerson(person); // 단일 선택만 가능
+    };
+
+
+    const isSelected = (person) => selectedPerson.id === person.id;
+
     const handleSelect = () => {
         onSelect(selectedPerson);
         onClose();
@@ -106,6 +113,10 @@ const GroupModal = ({ open, onClose, onSelect }) => {
                                         key={person.id}
                                         onClick={() => setSelectedPerson(person)}
                                     >
+                                        <Checkbox
+                                            checked={isSelected(person)} // 단일 선택
+                                            onChange={() => handleSelectPerson(person)}
+                                        />
                                         {person.name} &lt;{person.position}&gt;<br/>{person.email}
                                     </ListItem>
                                 ))}
