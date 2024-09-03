@@ -331,13 +331,17 @@ const Detail = () => {
                                         <option value={0}>자재비</option>
                                         <option value={1}>배송비</option>
                                         <option value={2}>교육비</option>
+                                        <option value={4}>식대</option>
+                                        <option value={5}>출장</option>
+                                        <option value={6}>마일리지</option>
+                                        <option value={7}>선물</option>
                                         <option value={3}>기타</option>
                                     </select>
                                 </td>
                             </tr>
                             <tr style={{fontSize: '23px'}}>
                                 <td>제목</td>
-                                <td colSpan={7} style={{height:'50px',textAlign:'left',paddingLeft:'20px'}}>
+                                <td colSpan={7} style={{height: '50px',textAlign:'left',paddingLeft:'20px'}}>
                                     {list.additionalFields?.title || ''}
                                 </td>
                             </tr>
