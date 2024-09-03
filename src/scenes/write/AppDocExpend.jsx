@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import axios from "axios";
 
-const AppDocExpend = ({ handleAdditionalFieldChange, appId }) => {
+const AppDocExpend = ({ handleAdditionalFieldChange, appId}) => {
     // 상태 변수
     const [expendType, setExpendType] = useState(0);
     const [title, setTitle] = useState('');
@@ -20,11 +20,11 @@ const AppDocExpend = ({ handleAdditionalFieldChange, appId }) => {
     }, [details]);
 
     useEffect(() => {
-        // 컴포넌트가 마운트될 때 기본 날짜 저장 (오늘 날짜)
+        // // 컴포넌트가 마운트될 때 기본 날짜 저장 (오늘 날짜)
         const formattedDate = new Date().toISOString().split('T')[0]; // "YYYY-MM-DD" 형식으로 변환
         handleAdditionalFieldChange("requestDate", formattedDate);
     }, []);  // 빈 배열로 주면 컴포넌트가 처음 렌더링될 때 한 번만 실행
-
+if(appId){
     useEffect(() => {
         // 초기 데이터 로드
         const getFormData = async () => {
@@ -62,7 +62,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange, appId }) => {
         };
         getFormData();
     }, [appId]);
-
+}
     const handleRequestDateChange = (date) => {
         setRequestDate(date);
         const formattedDate = date.toISOString().split('T')[0]; // "YYYY-MM-DD" 형식으로 변환
@@ -128,7 +128,7 @@ const AppDocExpend = ({ handleAdditionalFieldChange, appId }) => {
                 </td>
                 <td>지출유형</td>
                 <td colSpan={3}>
-                    <select value={expendType} onChange={handleExpendTypeChange} name='expend_type' style={{ width: '300px', textAlign: 'center' }}>
+                    <select value={expendType} onChange={handleExpendTypeChange} name='expendType' style={{ width: '300px', textAlign: 'center' }}>
                         <option value={0}>자재비</option>
                         <option value={1}>배송비</option>
                         <option value={2}>교육비</option>
