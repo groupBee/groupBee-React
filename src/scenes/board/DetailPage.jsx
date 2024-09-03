@@ -154,15 +154,15 @@ const DetailPage = () => {
                                 borderTop:'1px solid grey',
                                 backgroundColor:'#f0f3fa'
                             }}
-                        >{post.mustRead && <span><b>[공지]&nbsp;</b></span>}
-                            <b>{post.title}</b>
+                        >{post.mustRead && <span><b style={{fontSize:'15px'}}>[공지]&nbsp;</b></span>}
+                            <b style={{fontSize:'15px'}}>{post.title}</b>
                         </Typography>
                         <Typography variant="subtitle1" style={{width:'400px',paddingLeft:'5px',marginTop:'-3px'}}>
                             작성자: {post.writer}&nbsp;&nbsp;&nbsp;
                         </Typography>
                     </Box>
                     <Box mb={2} style={{width: '300px',marginTop:'-50px'}}>
-                        <Typography variant="subtitle1" style={{marginLeft:'900px',width:'400px',marginTop:'-24px'}}>
+                        <Typography variant="subtitle1" style={{marginLeft:'910px',width:'400px',marginTop:'-20px'}}>
                             작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                         </Typography>
                         <Typography style={{marginLeft:'1035px',width:'400px',paddingTop:'10px'}}>
@@ -329,10 +329,10 @@ const DetailPage = () => {
                     </Box>
                     <hr/>
                     <div>
-                        <b>댓글</b>
+                        <b>댓글</b><br/>
                     </div>
                     <div>
-                        <textarea style={{width:'1100px',height:'100px'}} value={comment} onChange={(e) => setComment(e.target.value)}>
+                        <textarea style={{width:'1100px',height:'100px',borderRadius:'10px'}} value={comment} onChange={(e) => setComment(e.target.value)}>
                         </textarea>
                         <Button
                             onClick={writeComment}
@@ -374,9 +374,9 @@ const DetailPage = () => {
                         commentList.map((item, idx) =>
                             <table>
                                 <tbody>
-                                <tr style={{borderBottom:'1px solid grey'}}>
-                                    <td style={{fontSize:'15px',width:'55px'}}>{item.writer}</td>
-                                    <td style={{marginRight:'200px',minWidth:'350px',fontSize:'15px'}}><p  style={{
+                                <tr style={{borderBottom:'0.5px solid grey',maxHeight:'100px'}}>
+                                    <td style={{fontSize:'15px',width:'55px',maxHeight:'50px'}}>{item.writer}</td>
+                                    <td style={{marginRight:'200px',minWidth:'350px',fontSize:'15px',maxHeight:'50px'}}><p  style={{
                                         width: '700px',
                                         whiteSpace: 'normal', // 줄바꿈 자동 적용
                                         wordWrap: 'break-word', // 긴 단어의 줄바꿈을 허용
@@ -386,7 +386,7 @@ const DetailPage = () => {
                                         marginLeft:'55px'
                                         ,marginRight:'50px'
                                     }}>{item.content}</p></td>
-                                    <td style={{width:'200px'}}>     {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
+                                    <td style={{width:'200px',maxHeight:'50px'}}>     {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
                                         {new Date(item.createDate).toLocaleTimeString('ko-KR', {
                                             timeZone: 'Asia/Seoul',
                                             hour12: false,  // 24시간 형식으로 설정

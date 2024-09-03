@@ -174,7 +174,7 @@ const Board = () => {
                                             second: '2-digit'
                                         })}
                                     </td>
-                                    <td>{Math.floor(row.board.readCount / 2)}</td>
+                                    <td>&nbsp;{Math.floor(row.board.readCount / 2)}</td>
                                 </tr>
                             ))}
                             </tbody>
