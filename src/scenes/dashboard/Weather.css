@@ -1,21 +1,21 @@
 .weather-widget {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    padding: 20px;
+
 }
 
 .weather-header {
-    font-size: 20px;
-    margin-bottom: 20px;
+    font-size: 16px;
+    margin-bottom: 10px;
+    flex-wrap: wrap; /* 내부 요소가 박스 크기에 맞게 줄 바꿈 */
+    justify-content: space-between; /* 요소 간의 공간을 자동으로 분배 */
 }
 
 .forecast {
     display: flex;
-    overflow-x: auto; /* 가로 스크롤 가능하도록 설정 */
-    overflow-y: hidden; /* 세로 스크롤 숨기기 */
-    white-space: nowrap; /* 항목들을 가로로 나열 */
     gap: 10px; /* 각 날씨 항목 사이의 간격 */
-    padding: 10px 0; /* 상하 패딩 추가 */
-    scroll-snap-type: x mandatory; /* 스크롤 스냅 기능 활성화 */
+    padding: 10px 10px; /* 상하 패딩 추가 */
+
 }
 
 .forecast-day {
@@ -27,18 +27,23 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     background-color: white;
     flex: 0 0 auto; /* flex 항목이 자동으로 크기를 조절하지 않도록 설정 */
-    max-width: 120px; /* 최대 너비를 설정하여 크기를 제한 */
-    scroll-snap-align: start; /* 스크롤 시 항목이 시작 부분에 맞추어지도록 설정 */
+    max-width: 140px; /* 최대 너비를 설정하여 크기를 제한 */
+
 }
 
 .forecast-day.today {
     border: 3px solid #ffb121; /* 오늘의 날씨 항목에만 노란색 테두리 추가 */
-
     color: #FFA800;
+    background-color: #fffdfa;
+    background-image: url('src/assets/images/sun.jpg'); /* 배경 이미지 설정 */
+    background-size: cover; /* 배경 이미지가 요소를 덮도록 설정 */
+    background-position: center; /* 배경 이미지의 위치를 중앙으로 설정 */
+    background-repeat: no-repeat; /* 배경 이미지가 반복되지 않도록 설정 */
 }
 
+
 .date {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
     margin-bottom: 8px;
 }
@@ -51,9 +56,12 @@
 .weekday {
     font-size: 14px;
     color: #666;
+    margin-bottom: 8px;
 }
 
 .loading-message, .error-message {
     font-size: 18px;
     color: #333;
 }
+
+

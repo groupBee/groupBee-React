@@ -25,6 +25,7 @@ import Item from "./Item";
 import {ToggledContext} from "../../../App";
 import OrganizationModal from "../navbar/organizationModal.jsx";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const SideBar = () => {
     const [collapsed, setCollapsed] = useState(false);
@@ -33,6 +34,7 @@ const SideBar = () => {
     const colors = tokens(theme.palette.mode);
     const [orModalOpen, setOrMadalOpen] = useState(false);
     const [infoData, setInfoData] = useState([]);
+    const navigate = useNavigate();
 
     //조직도 모달
     const organizationModalOpen = () => {
@@ -50,6 +52,10 @@ const SideBar = () => {
             .catch(error => console.error("Error fetching user data in sidebar index: ", error))
         console.log(infoData)
     },[]);
+
+    const handleClick = () => {
+        navigate('/'); // 홈 경로로 이동
+    };
 
     return (
         <Sidebar
@@ -87,6 +93,7 @@ const SideBar = () => {
                                 alignItems="center"
                                 gap="12px"
                                 sx={{transition: ".3s ease"}}
+                                onClick={handleClick}
                             >
                                 <img
                                     style={{height: "55px", borderRadius: "8px", marginTop: "3px"}}
