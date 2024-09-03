@@ -139,9 +139,9 @@ const OrganizationChart = () => {
     };
 
     return (
-        <div style={{display: 'flex', padding: '20px'}}>
+        <div style={{display: 'flex', padding: '20px',marginTop:'-15px'}}>
             <div style={{flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '90%',paddingLeft:'20px'}}>
-                <h2>부서 목록</h2>
+                <h2 style={{marginBottom:'25px'}}>부서 목록</h2>
                 <ul>
                     {Object.entries(structuredDepartments).map(([key, department]) => (
                         <li
@@ -201,8 +201,8 @@ const OrganizationChart = () => {
                 </ul>
             </div>
 
-            <div style={{flex: 2, marginRight: '20px'}}>
-                <h2>직원 리스트</h2>
+            <div style={{flex: 2, marginRight: '30px'}}>
+                <h2 style={{marginBottom:'25px',marginTop:'10px'}}>직원 리스트</h2>
                 {selectedDepartmentNames.length > 0 && (
                     <h5>
                         {selectedDepartmentNames.join(' > ')}
@@ -262,27 +262,28 @@ const OrganizationChart = () => {
             </div>
 
             <div style={{flex: 2,paddingLeft:'40px'}}>
-                <h2 style={{marginLeft:'50px'}}>직원 정보</h2>
+                <h2 style={{marginLeft:'170px'}}>직원 정보</h2>
                 {selectedEmployee ? (
                     <div style={{
                         padding: '10px',
                         minHeight: 'auto',
                         borderLeft: '3px solid #ffd454',
                         paddingLeft: '40px',
-                        marginLeft: '50px'
+                        marginLeft: '140px'
                     }}>
                         <img
                             src={selectedEmployee.profileFile}
                             alt={`${selectedEmployee.name}의 프로필`}
                             style={{
-                                minWidth: '200px',
-                                maxWidth: '200px',
-                                minHeight: '200px',
-                                maxHeight: '200px',
+                                minWidth: '150px',
+                                maxWidth: '150px',
+                                minHeight: '150px',
+                                maxHeight: '150px',
                                 borderRadius: '50%',
                                 border: '1px solid grey',
                                 objectFit: 'cover',
-                                marginBottom: '20px'
+                                marginBottom: '20px',
+                                marginTop:'20px'
                             }}
                         />
                         <div style={{display: 'flex', gap: '10px',marginBottom:'40px'}}>
@@ -345,12 +346,12 @@ const OrganizationChart = () => {
                                 메일
                             </Button>
                         </div>
-                        <p style={{fontSize: '15px'}}>이름: {selectedEmployee.name}</p>
-                        <p style={{fontSize: '15px'}}>직급: {selectedEmployee.position.rank}</p>
-                        <p style={{fontSize: '15px'}}>이메일: {selectedEmployee.email}</p>
-                        <p style={{fontSize: '15px'}}>전화번호: {selectedEmployee.phoneNumber}</p>
-                        <p style={{fontSize: '15px'}}>부서: {selectedEmployee.department.departmentName}</p>
-                        <p style={{fontSize: '15px'}}>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
+                        <p style={{fontSize: '13px',marginTop:'-15px'}}>이름: {selectedEmployee.name}</p>
+                        <p style={{fontSize: '13px'}}>직급: {selectedEmployee.position.rank}</p>
+                        <p style={{fontSize: '13px'}}>이메일: {selectedEmployee.email}</p>
+                        <p style={{fontSize: '13px'}}>전화번호: {selectedEmployee.phoneNumber}</p>
+                        <p style={{fontSize: '13px'}}>부서: {selectedEmployee.department.departmentName}</p>
+                        <p style={{fontSize: '13px'}}>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
                     </div>
                 ) : (
                     <p>직원을 선택하세요</p>
@@ -383,11 +384,11 @@ const OrganizationModal = ({open, onClose}) => {
                     <CloseIcon/>
                 </IconButton>
                 <div><b style={{
-                    marginBottom: '50px',
-                    fontSize: '40px',
+                    marginBottom: '20px',
+                    fontSize: '30px',
                     marginLeft: '50px',
                     color: '#fac337'
-                }}>GroupBee&nbsp;</b><b style={{fontSize: '30px'}}>조직도</b></div>
+                }}>GroupBee&nbsp;</b><b style={{fontSize: '25px'}}>조직도</b></div>
                 <OrganizationChart/>
             </Box>
     );

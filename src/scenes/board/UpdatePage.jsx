@@ -178,30 +178,30 @@ const UpdatePage = () => {
                             value={content}
                             onChange={handleContentChange} // 값 변경 핸들러
                             modules={{ toolbar: toolbarOptions }}
-                            style={{ width: '1100px', height: '500px' }}
+                            style={{ width: '1100px', height: '500px',backgroundColor:'white' }}
                             placeholder='내용을 입력하세요!'
                         />
                     </div>
                     <Box mt={2}>
-                        <Button type="submit" variant="contained" style={{
+                        <Button type="submit" variant="contained"    style={{
+                            marginRight: '20px',
+                            marginTop:'50px',
                             color: 'white',
-                            backgroundColor: '#4e73df',
-                            backgroundImage: 'linear-gradient(135deg, #4e73df 0%, #6f42c1 100%)',
+                            backgroundColor: '#f7d774', // 기본 노란색
+                            backgroundImage: 'linear-gradient(135deg, #f7d774 0%, #f1c40f 100%)', // 노란색 그라데이션
                             border: 'none',
                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                             transition: 'background-color 0.3s ease',
-                            marginRight: '20px',
-                            marginTop:'50px'
                         }}
                                 onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#2bb48c';
-                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                    e.target.style.transform = 'scale(1.05)';
+                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
+                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
+                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
                                 }}
                                 onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#3af0b6';
-                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                    e.target.style.transform = 'scale(1)';
+                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
+                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
                                 }}>
                             저장
                         </Button>
