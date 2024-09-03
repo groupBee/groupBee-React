@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Button, TextField, Checkbox, FormControlLabel } from '@mui/material';
+import { Box, Button, TextField, Checkbox, FormControlLabel, Typography, Link } from '@mui/material';
 
 const UpdatePage = () => {
-    const { id } = useParams();
+    const { id, Page } = useParams();
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
     const [title, setTitle] = useState('');
@@ -12,17 +12,18 @@ const UpdatePage = () => {
     const [mustRead, setMustRead] = useState(false);
     const [mustMustRead, setMustMustRead] = useState(false);
     const [file, setFile] = useState(null);
-    const {Page}=useParams();
+    const [originalFileName, setOriginalFileName] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+
     useEffect(() => {
         fetchPost();
     }, [id]);
 
-    useEffect(()=>{
-        if(Page){
-            setCurrentPage(Page)}
-
-    },[])
+    useEffect(() => {
+        if (Page) {
+            setCurrentPage(Page);
+        }
+    }, [Page]);
 
     const fetchPost = async () => {
         try {
@@ -33,6 +34,9 @@ const UpdatePage = () => {
             setContent(data.content);
             setMustRead(data.mustRead);
             setMustMustRead(data.mustMustRead);
+            if (data.file) {
+                setOriginalFileName(data.originalFileName);
+            }
         } catch (error) {
             console.error('Error fetching post:', error);
         }
@@ -106,7 +110,7 @@ const UpdatePage = () => {
                             required
                             fullWidth
                             variant="outlined"
-                            style={{backgroundColor:'white',width:'1100px'}}
+                            style={{ backgroundColor: 'white', width: '1100px' }}
                         />
                     </div>
                     <Box mb={2} mt={2} style={{ display: 'flex', alignItems: 'center' }}>
@@ -137,6 +141,14 @@ const UpdatePage = () => {
                             style={{ marginTop: '10px' }}
                         />
                     </div>
+                    {originalFileName && (
+                        <Box mt={2}>
+                            <Typography variant="body1">기존 첨부 파일: </Typography>
+                            <Link href={`/api/download/${id}`} target="_blank" rel="noopener noreferrer">
+                                {originalFileName}
+                            </Link>
+                        </Box>
+                    )}
                     <div>
                         <label htmlFor="content"></label>
                         <TextField
@@ -149,47 +161,49 @@ const UpdatePage = () => {
                             fullWidth
                             variant="outlined"
                             placeholder="내용을 입력하세요"
-                            style={{backgroundColor:'white',width:'1100px'}}
+                            style={{ backgroundColor: 'white', width: '1100px' }}
                         />
                     </div>
                     <Box mt={2}>
-                        <Button type="submit" variant='contained'   style={{
+                        <Button type="submit" variant="contained" style={{
                             color: 'white',
                             backgroundColor: '#4e73df',
-                            backgroundImage: 'linear-gradient(135deg, #4e73df 0%, #6f42c1 100%)', // 파란색에서 보라색으로 그라데이션
+                            backgroundImage: 'linear-gradient(135deg, #4e73df 0%, #6f42c1 100%)',
                             border: 'none',
                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                             transition: 'background-color 0.3s ease',
-                            marginRight:'20px'
+                            marginRight: '20px'
                         }}
                                 onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
-                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
-                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                    e.target.style.backgroundColor = '#2bb48c';
+                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
+                                    e.target.style.transform = 'scale(1.05)';
                                 }}
                                 onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
-                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
-                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                    e.target.style.backgroundColor = '#3af0b6';
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                                    e.target.style.transform = 'scale(1)';
                                 }}>
                             저장
                         </Button>
-                        <Button variant='contained' onClick={handleCancelClick}
-                                style={{        color: 'white',
+                        <Button variant="contained" onClick={handleCancelClick}
+                                style={{
+                                    color: 'white',
                                     backgroundColor: '#8c8b89',
-                                    backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)', // 회색 그라데이션
+                                    backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
                                     border: 'none',
                                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                    transition: 'background-color 0.3s ease',}}
+                                    transition: 'background-color 0.3s ease',
+                                }}
                                 onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
-                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
-                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                    e.target.style.backgroundColor = '#2bb48c';
+                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
+                                    e.target.style.transform = 'scale(1.05)';
                                 }}
                                 onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
-                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
-                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                    e.target.style.backgroundColor = '#3af0b6';
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                                    e.target.style.transform = 'scale(1)';
                                 }}>
                             취소
                         </Button>
