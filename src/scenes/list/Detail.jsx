@@ -246,7 +246,7 @@ const Detail = () => {
                             <tr>
                                 <td colSpan={8}>
                                     <textarea value={list.additionalFields?.content || ''}
-                                           style={{height: '650px', width: '100%', fontSize: '23px',border:'none',resize:'none'}} readOnly/>
+                                           style={{height: '650px', width: '100%', fontSize: '23px',border:'none',resize:'none',outline:'none'}} readOnly/>
                                 </td>
                             </tr>
                             <tr>
@@ -388,7 +388,6 @@ const Detail = () => {
                             value={formatDateToKorean(list.writeday) || ''}
                             dateFormat="yyyy년 MM월 dd일"
                             style={{marginTop: '50px', outline: 'none'}}
-                            className="custom-datepicker"
                             readOnly/>
                     </td>
                 </tr>
@@ -398,6 +397,9 @@ const Detail = () => {
                     <td>신청자 : {list.writer}</td>
                     <td></td>
                     <td>(인)</td>
+                </tr>
+                <tr>
+                    <td colSpan={8} style={{height:'50px'}}></td>
                 </tr>
                 </tbody>
             </table>

@@ -34,6 +34,8 @@ const WriteForm = ({}) => {
     const location = useLocation();
     const appId = location.state?.itemId || ''; // 기본값 설정
 
+    // 드래그 상태 관리
+    const [isDragOver, setIsDragOver] = useState(false);
 
     // 모달 상태
     const [modalOpen, setModalOpen] = useState(false);
@@ -115,22 +117,50 @@ const WriteForm = ({}) => {
             });
     };
 
-    const uploadPhoto = (e) => {
-        const uploadFile = e.target.files[0];
+    // 파일 드래그 앤 드롭 처리
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragOver(true);  // 드래그 중임을 표시
+    };
+
+    const handleDragLeave = () => {
+        setIsDragOver(false); // 드래그 상태 해제
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+
+        const uploadFile = e.dataTransfer.files[0];
+        if (uploadFile) {
+            uploadPhoto(uploadFile);
+        }
+    };
+
+    // 파일 업로드 처리 함수 (드래그 앤 드롭 및 버튼 첨부 공통 처리)
+    const uploadPhoto = (uploadFile) => {
         setOriginalFile(uploadFile);
         const uploadForm = new FormData();
         uploadForm.append("file", uploadFile);
+
         axios.post('/api/elecapp/uploadfile', uploadForm, {
             headers: { "Content-Type": "multipart/form-data" }
         })
             .then(res => {
-                console.log(res.data);
                 setAttachedFile(res.data);
             })
             .catch(err => {
                 console.error('파일 업로드 중 오류 발생:', err);
             });
-    }
+    };
+
+    // 기존 파일 첨부 버튼 클릭 처리
+    const handleFileChange = (e) => {
+        const uploadFile = e.target.files[0];
+        if (uploadFile) {
+            uploadPhoto(uploadFile);
+        }
+    };
 
     const changeAppDoc = (value) => {
         setAppDocType(value);
@@ -160,7 +190,6 @@ const WriteForm = ({}) => {
     const createApp = (status) => {
         if (!validateForm()) {
             alert("필수항목을 모두 입력하세요.");
-            alert("createpp까지 넘어옴"+status)
             return;
         }
 
@@ -358,13 +387,41 @@ const WriteForm = ({}) => {
                         <td colSpan={2}>첨부파일</td>
                         <td colSpan={6}>
 
-                            <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                                <Button variant="outlined" onClick={() => fileRef.current.click()}>
-                                    파일 첨부
-                                </Button>
-                                <span>
-                                 {originalFile ? originalFile.name : '파일이 첨부되지 않았습니다.'}
-                           </span>
+                            <div
+                                style={{
+                                    border: 'none', padding: '10px', width: '900px',
+                                    display: 'flex', flexDirection: 'column', alignItems: 'center'
+                                }}
+                                onDragOver={handleDragOver}
+                                onDrop={handleDrop}
+                                onDragLeave={handleDragLeave}
+                            >
+                                <div
+                                    style={{
+                                        border: isDragOver ? '2px dashed #ffb121' : '2px dashed #ccc',
+                                        padding: '10px',
+                                        textAlign: 'center',
+                                        color: '#888'
+                                    }}
+                                >
+                                    {originalFile ? (
+                                        <p>첨부된 파일: {originalFile.name}</p>
+                                    ) : (
+                                        <p>파일을 여기에 드래그하거나 클릭하여 업로드하세요.</p>
+                                    )}
+                                    <input
+                                        type="file"
+                                        ref={fileRef}
+                                        style={{display: 'none'}}
+                                        onChange={handleFileChange}
+                                    />
+                                    <Button
+                                        onClick={() => fileRef.current.click()}
+                                        style={{marginTop: '20px', backgroundColor: '#ffb121', color: 'white'}}
+                                    >
+                                        파일 선택
+                                    </Button>
+                                </div>
                             </div>
                             <input type="file" ref={fileRef} onChange={uploadPhoto} style={{display: 'none'}}/>
                         </td>
