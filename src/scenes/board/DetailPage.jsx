@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import {Box, Typography, Button} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 const DetailPage = () => {
@@ -47,20 +48,27 @@ const DetailPage = () => {
             console.error('Error fetching post:', error);
         }
     };
-    const writeComment =() =>{
-        const data={
-         "content":comment, "boardId":post.id
+    const writeComment = () => {
+        if (!comment) {  // comment가 비어있을 때
+            alert("댓글을 입력하세요");
+            return;  // 함수 종료
         }
 
+        const data = {
+            "content": comment,
+            "boardId": post.id
+        }
 
-        axios.post('/api/comment/insert',data)
-            .then(res=>
-            {
+        axios.post('/api/comment/insert', data)
+            .then(res => {
                 alert("댓글이 작성되었습니다")
                 getcomment();
                 setComment('');
             })
-
+            .catch(error => {
+                console.error('Error posting comment:', error);
+                alert('댓글 작성 중 오류가 발생했습니다.');
+            });
     }
 
     const handleEditClick = () => {
@@ -131,27 +139,33 @@ const DetailPage = () => {
     return (
         <Box p={3}>
             {post ? (
-                <Box display="flex" flexDirection="column" alignItems="flex-start">
+                <Box display="flex" flexDirection="column" alignItems="flex-start" style={{backgroundColor:'white',maxWidth:'1155px',marginLeft:'-24px',paddingLeft:'30px'}}>
                     <Box mb={2} style={{width: '300px'}}>
                         <Typography
                             variant="h4"
                             gutterBottom
                             style={{
-                                width: '1000px',
+                                width: '1100px',
                                 whiteSpace: 'normal', // 줄바꿈 자동 적용
                                 wordWrap: 'break-word', // 긴 단어의 줄바꿈을 허용
-                                padding: '8px'
+                                padding: '3px',
+                                marginTop:'20px',
+                                borderBottom:'1px solid grey',
+                                borderTop:'1px solid grey',
+                                backgroundColor:'#f0f3fa'
                             }}
                         >{post.mustRead && <span><b>[공지]&nbsp;</b></span>}
                             <b>{post.title}</b>
                         </Typography>
-                    </Box>
-                    <Box mb={2} style={{width: '300px'}}>
-                        <Typography variant="subtitle1" style={{marginLeft:'822px',width:'400px'}}>
+                        <Typography variant="subtitle1" style={{width:'400px',paddingLeft:'5px',marginTop:'-3px'}}>
                             작성자: {post.writer}&nbsp;&nbsp;&nbsp;
+                        </Typography>
+                    </Box>
+                    <Box mb={2} style={{width: '300px',marginTop:'-50px'}}>
+                        <Typography variant="subtitle1" style={{marginLeft:'900px',width:'400px',marginTop:'-24px'}}>
                             작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                         </Typography>
-                        <Typography style={{marginLeft:'1050px',width:'400px'}}>
+                        <Typography style={{marginLeft:'1035px',width:'400px',paddingTop:'10px'}}>
                             조회수: {Math.floor(post.readCount / 2)}
                         </Typography>
 
@@ -161,12 +175,14 @@ const DetailPage = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 marginRight: '20px',
+                                visibility:'hidden'
                             }}
                         >
                             <div style={{
                                 width: '16px',
                                 height: '16px',
                                 border: '1px solid black',
+                                marginLeft:'10px',
                                 backgroundColor: post.mustRead ? '#171fb3' : 'white'
                             }}/>
                             <b style={{marginLeft: '10px'}}>공지사항</b>
@@ -175,6 +191,7 @@ const DetailPage = () => {
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
+                                visibility:'hidden'
                             }}
                         >
                             <div style={{
@@ -201,9 +218,10 @@ const DetailPage = () => {
                             >
                                 <div
                                     style={{
-                                        minWidth: '100%',
+                                        width: '1100px',
                                         minHeight: '300px',
-                                        border: '1px solid #ddd',
+                                        marginTop:'-30px',
+                                        border: '1px solid black',
                                         borderRadius: '8px',
                                         backgroundColor: '#fafafa',
                                         padding: '16px',
@@ -251,8 +269,8 @@ const DetailPage = () => {
                                         style={{
                                             marginRight: '10px',
                                             color: 'white',
-                                            backgroundColor: '#3af0b6',
-                                            backgroundImage: 'linear-gradient(135deg, #3af0b6 0%, #2bb48c 100%)', // 에메랄드 그라데이션
+                                            backgroundColor: '#f7d774', // 기본 노란색
+                                            backgroundImage: 'linear-gradient(135deg, #f7d774 0%, #f1c40f 100%)', // 노란색 그라데이션
                                             border: 'none',
                                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                             transition: 'background-color 0.3s ease',
@@ -311,36 +329,34 @@ const DetailPage = () => {
                     </Box>
                     <hr/>
                     <div>
-                        댓글
+                        <b>댓글</b>
                     </div>
                     <div>
-                        <textarea style={{width:'1080px',height:'100px'}} value={comment} onChange={(e) => setComment(e.target.value)}>
+                        <textarea style={{width:'1100px',height:'100px'}} value={comment} onChange={(e) => setComment(e.target.value)}>
                         </textarea>
                         <Button
                             onClick={writeComment}
                             variant='contained'
                             style={{
-                                marginLeft: '20px',
+                                marginRight: '20px',
+                                float: 'right',
                                 marginBottom: '20px',
-                                color: 'white',
-                                backgroundColor: '#4e73df',
-                                backgroundImage: 'linear-gradient(135deg, #4e73df 0%, #6f42c1 100%)', // 파란색에서 보라색으로 그라데이션
-                                border: 'none',
+                                color: 'black',
+                                border:'1px solid grey',
+                                backgroundColor: '#e1e1f5', // 기본 하늘색
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                 transition: 'background-color 0.3s ease',
                             }}
                             onMouseOver={(e) => {
-                                e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
                                 e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
                                 e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
                             }}
                             onMouseOut={(e) => {
-                                e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
                                 e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
                                 e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
                             }}
                         >
-                            댓글작성
+                            등록
                         </Button>
                     </div><br/>
 
@@ -349,7 +365,7 @@ const DetailPage = () => {
                         <tr>
                             <th><p  style={{width: '100px'}}>작성자</p></th>
                             <th><p  style={{minWidth:'400px',marginLeft:'20px',marginRight:'200px'}}>내용</p></th>
-                            <th><p  style={{marginLeft:'280px',width: '100px'}}>작성일</p></th>
+                            <th><p  style={{marginLeft:'180px',width: '100px'}}>작성일</p></th>
                         </tr>
                         </tbody>
                     </table>
@@ -358,18 +374,19 @@ const DetailPage = () => {
                         commentList.map((item, idx) =>
                             <table>
                                 <tbody>
-                                <tr>
-                                    <td style={{fontSize:'15px'}}>{item.writer}</td>
+                                <tr style={{borderBottom:'1px solid grey'}}>
+                                    <td style={{fontSize:'15px',width:'55px'}}>{item.writer}</td>
                                     <td style={{marginRight:'200px',minWidth:'350px',fontSize:'15px'}}><p  style={{
-                                        width: '850px',
+                                        width: '700px',
                                         whiteSpace: 'normal', // 줄바꿈 자동 적용
                                         wordWrap: 'break-word', // 긴 단어의 줄바꿈을 허용
                                         padding: '8px',
                                         marginTop:'5px',
                                         paddingTop:'15px',
-                                        marginLeft:'70px'
+                                        marginLeft:'55px'
+                                        ,marginRight:'50px'
                                     }}>{item.content}</p></td>
-                                    <td>     {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
+                                    <td style={{width:'200px'}}>     {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
                                         {new Date(item.createDate).toLocaleTimeString('ko-KR', {
                                             timeZone: 'Asia/Seoul',
                                             hour12: false,  // 24시간 형식으로 설정
@@ -381,31 +398,11 @@ const DetailPage = () => {
                                         myinfoList.potalId == item.memberId ?
                                             <>
                                                 <Button
-                                                    variant="contained"
-                                                    style={{
-                                                        marginRight: '10px',
-                                                        marginLeft: '20px',
-                                                        marginTop: '20px',
-                                                        color: 'white',
-                                                        backgroundColor: '#d9534f',
-                                                        backgroundImage: 'linear-gradient(135deg, #d9534f 0%, #c9302c 100%)', // 빨간색 그라데이션
-                                                        border: 'none',
-                                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                                        transition: 'background-color 0.3s ease',
-                                                    }}
+                                                    style={{marginTop:'30%'}}
                                                     onClick={(e) => commentDeleteClick(item.id)}
-                                                    onMouseOver={(e) => {
-                                                        e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
-                                                        e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
-                                                        e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
-                                                    }}
-                                                    onMouseOut={(e) => {
-                                                        e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
-                                                        e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
-                                                        e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
-                                                    }}
+
                                                 >
-                                                    삭제
+                                                    <CloseIcon />
                                                 </Button> </> : ''}
 
                                 </tr>
