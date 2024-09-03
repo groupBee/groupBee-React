@@ -24,9 +24,9 @@ const Calendar = () => {
     const API_KEY = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY;
 
     /* 백엔드 데이터 리스트 출력 */
-    const fetchData = async () => {
+    const fetchData = async (year) => {
         try {
-            const calendarResponse = await fetch("/api/calendar/list");
+            const calendarResponse = await fetch(`/api/calendar/korea/2024`);
             if (!calendarResponse.ok) {
                 console.error(`${calendarResponse.status}: 오류가 발생했습니다.`);
                 return;
@@ -227,17 +227,18 @@ const Calendar = () => {
                         selectMirror={true}
                         dayMaxEvents={true}
                         googleCalendarApiKey={API_KEY}
-                        eventSources={[
-                            {
-                                googleCalendarId: CALENDAR_ID,
-                                className: 'public-holiday',
-                                color: '#ff0000', // 공휴일은 빨간색으로
-                                textColor: '#ffffff', // 공휴일 텍스트 색상
-                            },
-                            {
-                                events, // 기존 이벤트
-                            },
-                        ]}
+                        // eventSources={[
+                        //     {
+                        //         googleCalendarId: CALENDAR_ID,
+                        //         className: 'public-holiday',
+                        //         color: '#ff0000', // 공휴일은 빨간색으로
+                        //         textColor: '#ffffff', // 공휴일 텍스트 색상
+                        //     },
+                        //     {
+                        //         events, // 기존 이벤트
+                        //     },
+                        // ]}
+                        eventSources={events}
                         ref={fullcalendarRef}
                         select={handleDateClick} // 날짜 클릭 핸들러 추가
                         eventClick={handleEventClick} // 이벤트 클릭 핸들러 추가
