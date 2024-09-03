@@ -8,7 +8,7 @@ const AppDocVacation = ({ handleAdditionalFieldChange, appId }) => {
     const [endDate, setEndDate] = useState(new Date());
     const [type, setType] = useState('');
     const [detail, setDetail] = useState('');
-
+    const [days,setDays]=useState('');
     useEffect(() => {
         if (appId) {
             getFormData();
@@ -19,9 +19,23 @@ const AppDocVacation = ({ handleAdditionalFieldChange, appId }) => {
             handleAdditionalFieldChange("end", formattedDate);
             setType('');
             setDetail('');
+
         }
     }, [appId]);
 
+
+    //잔여 휴가일수 불러오기
+    const getLeaveDays=()=>{
+        axios.get("/api/elecapp/days")
+        .then(res=>{
+            console.log(res.data)
+            setDays(res.data);
+        })
+    }
+
+    useEffect(()=>{
+        getLeaveDays();
+    },[])
     const getFormData = async () => {
         try {
             const res = await axios.get(`/api/elecapp/findById?elecAppId=${appId}`);
@@ -71,6 +85,7 @@ const AppDocVacation = ({ handleAdditionalFieldChange, appId }) => {
                            style={{ width: '20px' }} />병가
                     <input type="radio" value="기타" checked={type === "기타"} onChange={handleTypeChange}
                            style={{ width: '20px' }} />기타
+                           <div>남은 일 수 : {days}일</div>
                 </td>
             </tr>
             <tr style={{ fontSize: '23px' }}>

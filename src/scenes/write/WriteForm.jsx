@@ -52,20 +52,14 @@ const WriteForm = ({}) => {
         }
     }, [appId]);
 
-    useEffect(() => {
-        console.log("appDocType 숫자 :", appDocType);  // appDocType이 업데이트될 때 로그 확인
-    }, [appDocType]);
 
     // 결재 문서 데이터를 가져오는 함수
     const getSignForm = () => {
-        console.log("Fetching data for appId:", appId); // 디버깅을 위한 로그
         if (appId) {
             axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
                 .then(res => {
-                    console.log("Data fetched successfully:", res.data); // 성공적인 데이터 가져오기
                     // 날짜 필드가 유효한지 확인
                     if (isNaN(new Date(res.data.vacationStartDate)) || isNaN(new Date(res.data.vacationEndDate))) {
-                        console.error("Invalid date in response data");
                     }
                     setList(res.data);
                     setAppDocType(res.data.appDocType);
@@ -96,7 +90,6 @@ const WriteForm = ({}) => {
     const getinfo = () => {
         axios.get("/api/elecapp/getinfo")
             .then(res => {
-                console.log(res.data)
                 // 기본 사용자 정보 세팅
                 setFirstApprover(res.data.name);
                 setWriter(res.data.name);
@@ -169,7 +162,6 @@ const WriteForm = ({}) => {
     }
 
     const handleAdditionalFieldChange = (key, value) => {
-        console.log(key+value)
         setAdditionalFields(prevFields => ({
             ...prevFields,
             [key]: value
@@ -198,7 +190,6 @@ const WriteForm = ({}) => {
 
         const originalFileName = originalFile ? originalFile.name : '';
         const transformedAdditionalFields = {};
-        console.log("addtionalFie.."+additionalFields.expendType);
         Object.keys(additionalFields).forEach(key => {
             const newKey = key.replace(/__/g, '.');
             transformedAdditionalFields[newKey] = additionalFields[key];
@@ -221,7 +212,7 @@ const WriteForm = ({}) => {
             position,
             department,
             additionalFields: transformedAdditionalFields
-        };console.log(postData)
+        };
 
 // appId가 있으면 postData에 appId를 추가
         if (appId) {
@@ -383,7 +374,7 @@ const WriteForm = ({}) => {
                             {errors.level && <div className="error">{errors.level}</div>}</td>
                     </tr>
                     {appDocType === 0 &&
-                        <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
+                        <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange} days={additionalFields.leaveDays} appId={appId}/>}
                     {appDocType === 1 &&
                         <AppDocVacation handleAdditionalFieldChange={handleAdditionalFieldChange} appId={appId}/>}
                     {appDocType === 2 &&
