@@ -2,6 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Button, TextField, Checkbox, FormControlLabel, Typography, Link } from '@mui/material';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Quill의 기본 스타일을 불러옵니다.
+
+// 툴바의 모듈을 설정합니다.
+const toolbarOptions = [
+    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['bold', 'italic', 'underline'],
+    ['link', 'image'],
+    [{ 'align': [] }],
+    ['clean'] // 글자 지우기 버튼
+];
 
 const UpdatePage = () => {
     const { id, Page } = useParams();
@@ -151,17 +163,13 @@ const UpdatePage = () => {
                     )}
                     <div>
                         <label htmlFor="content"></label>
-                        <TextField
+                        <ReactQuill
                             id="content"
                             value={content}
                             onChange={handleContentChange}
-                            required
-                            multiline
-                            rows={10}
-                            fullWidth
-                            variant="outlined"
-                            placeholder="내용을 입력하세요"
-                            style={{ backgroundColor: 'white', width: '1100px' }}
+                            modules={{ toolbar: toolbarOptions }}
+                            style={{ width: '1100px', height: '500px' }}
+                            placeholder='내용을 입력하세요!'
                         />
                     </div>
                     <Box mt={2}>
@@ -172,7 +180,8 @@ const UpdatePage = () => {
                             border: 'none',
                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                             transition: 'background-color 0.3s ease',
-                            marginRight: '20px'
+                            marginRight: '20px',
+                            marginTop:'50px'
                         }}
                                 onMouseOver={(e) => {
                                     e.target.style.backgroundColor = '#2bb48c';
@@ -194,6 +203,7 @@ const UpdatePage = () => {
                                     border: 'none',
                                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                     transition: 'background-color 0.3s ease',
+                                    marginTop:'50px'
                                 }}
                                 onMouseOver={(e) => {
                                     e.target.style.backgroundColor = '#2bb48c';

@@ -100,6 +100,34 @@ const DetailPage = () => {
                 });
         }
     };
+
+    const downloadFile = async (fileUrl, fileName) => {
+        try {
+            // 파일을 fetch
+            const response = await fetch(fileUrl);
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+
+            // 파일을 Blob 형태로 변환
+            const blob = await response.blob();
+
+            // Blob URL 생성
+            const url = window.URL.createObjectURL(blob);
+
+            // 다운로드 링크 생성
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+
+            // Blob URL 해제
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download error:', error);
+        }
+    };
     return (
         <Box p={3}>
             {post ? (
@@ -160,51 +188,57 @@ const DetailPage = () => {
 
                     </Box>
                     </Box>
-                    <Box mb={2} style={{ width: '300px' }}>
-                        <Typography variant="body1" paragraph>
-                            <div
+                    <Box mb={2} style={{ width: '69%' }}>
+
+                            <Typography
+                                variant="body1"
+                                paragraph
                                 style={{
-                                    minWidth: '1100px',
-                                    minHeight: '500px',
-                                    border: '1px solid black',
-                                    backgroundColor: 'white',
-                                    whiteSpace: 'pre-wrap', // 공백과 줄바꿈을 유지
-                                    padding: '8px',
-                                    fontSize:'15px'
-                                }}>
-                                {post.content}
-                            </div>
-                        </Typography>
+                                    fontSize: '16px',
+                                    lineHeight: '1.6',
+                                    color: '#444'
+                                }}
+                            >
+                                <div
+                                    style={{
+                                        minWidth: '100%',
+                                        minHeight: '300px',
+                                        border: '1px solid #ddd',
+                                        borderRadius: '8px',
+                                        backgroundColor: '#fafafa',
+                                        padding: '16px',
+                                        fontSize: '15px',
+                                        overflow: 'auto'
+                                    }}
+                                    dangerouslySetInnerHTML={{ __html: post.content }}
+                                />
+                            </Typography>
                     </Box>
                     {/* 첨부파일 부분 */}
-                    {post.file && post.originalFileName && (
-                        <Box mb={2} style={{width: '300px'}}>
-                            {post.file.endsWith('.jpg') || post.file.endsWith('.png') || post.file.endsWith('.jpeg') ? (
-                                <img
-                                    src={`/insert/${post.file}`}
-                                    alt={post.originalFileName}
-                                    style={{maxWidth: '100%', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'}}
-                                />
-                            ) : (
-                                <Box>
-                                    <Typography variant="body1" style={{marginBottom: '10px'}}>
-                                        첨부파일:
-                                        <a
-                                            href={`/insert/${post.file}`}
-                                            download={post.originalFileName}
-                                            style={{
-                                                color: '#1e90ff',
-                                                textDecoration: 'none',
-                                                fontWeight: 'bold'
-                                            }}
-                                        >
-                                            {post.originalFileName}
-                                        </a>
-                                    </Typography>
-                                </Box>
-                            )}
-                        </Box>
-                    )}
+                    <Box mb={2} style={{ width: '300px' }}>
+                        {post.file && post.originalFileName && (
+                            <Box>
+                                <Typography variant="body1" style={{ marginBottom: '10px',fontSize:'15px' }}>
+                                    첨부파일:
+                                    <Button
+                                        onClick={() => downloadFile(`https://minio.bmops.kro.kr/groupbee/board/${post.file}`, post.originalFileName)}
+                                        style={{
+                                            color: '#1e90ff',
+                                            textDecoration: 'none',
+                                            fontWeight: 'bold',
+                                            backgroundColor: 'transparent',
+                                            border: 'none',
+                                            padding: '0',
+                                            cursor: 'pointer',
+                                            fontSize:'15px'
+                                        }}
+                                    >
+                                        {post.originalFileName}
+                                    </Button>
+                                </Typography>
+                            </Box>
+                        )}
+                    </Box>
 
 
                     <Box mt={2} style={{width: '300px'}}>

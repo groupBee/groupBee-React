@@ -5,23 +5,36 @@ import axios from 'axios';
 import { Box, Button, Chip } from "@mui/material";
 import { useDropzone } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
+// 툴바의 모듈을 설정합니다.
+const toolbarOptions = [
+    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    ['bold', 'italic', 'underline'],
+    ['link', 'image'],
+    [{ 'align': [] }],
+    ['clean'] // 글자 지우기 버튼
+];
 
 const BoardWrite = () => {
     const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [readCount, setReadCount] = useState(0);
-    const [mustRead, setMustRead] = useState(false); // 공지사항 체크박스 상태
-    const [mustMustRead, setMustMustRead] = useState(false); // 중요 체크박스 상태
-    const [file, setFile] = useState(null); // 파일 데이터
-    const [originalFileName, setOriginalFileName] = useState(''); // 파일명
+    const [mustRead, setMustRead] = useState(false);
+    const [mustMustRead, setMustMustRead] = useState(false);
+    const [file, setFile] = useState(null);
+    const [originalFileName, setOriginalFileName] = useState('');
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
     };
 
-    const handleContentChange = (e) => {
-        setContent(e.target.value);
+    const handleContentChange = (value) => {
+        console.log('Content updated:', value); // 디버깅을 위한 로그
+        setContent(value);
     };
 
     const handleMustReadChange = (e) => {
@@ -32,21 +45,19 @@ const BoardWrite = () => {
         setMustMustRead(e.target.checked);
     };
 
-    // react-dropzone을 사용한 드래그 앤 드롭 구현
     const onDrop = (acceptedFiles) => {
         if (acceptedFiles.length > 0) {
-            setFile(acceptedFiles[0]); // 첫 번째 파일을 저장
-            setOriginalFileName(acceptedFiles[0].name); // 파일명을 저장
+            setFile(acceptedFiles[0]);
+            setOriginalFileName(acceptedFiles[0].name);
         }
     };
 
     const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
         onDrop,
-        noClick: true, // 기본 클릭으로 파일 선택을 하지 않게 함
-        noKeyboard: true, // 키보드로 선택 불가능
+        noClick: true,
+        noKeyboard: true,
     });
 
-    // 첨부파일 삭제 기능
     const DeleteAttachment = () => {
         setFile(null);
         setOriginalFileName('');
@@ -58,7 +69,7 @@ const BoardWrite = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 기본 제출 방지
+        e.preventDefault();
 
         const boardData = {
             title,
@@ -72,21 +83,20 @@ const BoardWrite = () => {
         formData.append('boardData', JSON.stringify(boardData));
 
         if (file) {
-            formData.append('file', file); // 파일 데이터
-            formData.append('originalFileName', originalFileName); // 파일명
+            formData.append('file', file);
+            formData.append('originalFileName', originalFileName);
         }
 
         try {
-            // 게시글과 파일 함께 전송
             await axios.post('/api/board/insert', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            navigate('/board'); // 요청이 성공하면 게시판 페이지로 이동
+            navigate('/board');
         } catch (error) {
-            console.error('Error creating post or uploading file:', error); // 에러 발생 시 콘솔에 출력
+            console.error('Error creating post or uploading file:', error);
         }
     };
 
@@ -97,43 +107,55 @@ const BoardWrite = () => {
                 <div>
                     <form onSubmit={handleSubmit}>
                         <div>
-                            <label htmlFor="title"><b style={{ fontSize: '15px' }}>제목</b></label>
-                            <br />
+                            <label htmlFor="title"><b style={{fontSize: '15px'}}>제목</b></label>
+                            <br/>
                             <input
                                 type="text"
                                 id="title"
                                 value={title}
                                 onChange={handleTitleChange}
                                 required
-                                style={{ width: '800px', height: '30px' }}
+                                style={{width: '800px', height: '30px'}}
                             />
                         </div>
-                        <div style={{ display: 'flex' }}>
+                        <div style={{display: 'flex'}}>
                             <input
                                 type="checkbox"
                                 checked={mustRead}
                                 onChange={handleMustReadChange}
-                            /><b style={{ marginTop: '15px', marginLeft: '10px' }}>공지사항</b>
+                            /><b style={{marginTop: '15px', marginLeft: '10px'}}>공지사항</b>
 
                             <input
                                 type="checkbox"
                                 checked={mustMustRead}
                                 onChange={handleMustMustReadChange}
-                                style={{ marginLeft: '20px' }}
-                            /><b style={{ marginTop: '15px', marginLeft: '10px' }}>중요</b>
+                                style={{marginLeft: '20px'}}
+                            /><b style={{marginTop: '15px', marginLeft: '10px'}}>중요</b>
                         </div>
-                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                            <b style={{ width: '65px', textAlign: 'center' }}>첨부파일</b>
+                        <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                            <b style={{width: '65px', textAlign: 'center'}}>첨부파일</b>
                             <button
-                                onClick={FileAttachClick}  // 파일첨부 버튼 클릭 시 파일 선택 창 열기
-                                style={{ marginLeft: '20px', border: '1px solid #dddd', backgroundColor: 'transparent', borderRadius: '4px', padding: '3px 6px' }}
+                                onClick={FileAttachClick}
+                                style={{
+                                    marginLeft: '20px',
+                                    border: '1px solid #dddd',
+                                    backgroundColor: 'transparent',
+                                    borderRadius: '4px',
+                                    padding: '3px 6px'
+                                }}
                             >
                                 파일첨부하기
                             </button>
                             {file && (
                                 <button
                                     onClick={DeleteAttachment}
-                                    style={{ marginLeft: '10px', border: '1px solid #dddd', backgroundColor: 'transparent', borderRadius: '4px', padding: '3px 6px' }}
+                                    style={{
+                                        marginLeft: '10px',
+                                        border: '1px solid #dddd',
+                                        backgroundColor: 'transparent',
+                                        borderRadius: '4px',
+                                        padding: '3px 6px'
+                                    }}
                                 >
                                     삭제
                                 </button>
@@ -148,7 +170,8 @@ const BoardWrite = () => {
                                 textAlign: 'center',
                                 backgroundColor: isDragActive ? '#f0f0f0' : 'white',
                                 marginBottom: '20px',
-                                width:'800px'
+                                width: '800px',
+                                height:'100px'
                             }}
                         >
                             <input {...getInputProps()} />
@@ -157,7 +180,7 @@ const BoardWrite = () => {
                                     label={originalFileName}
                                     onDelete={DeleteAttachment}
                                     sx={{
-                                        maxWidth: '200px', // 파일명이 너무 길 경우 잘리게 함
+                                        maxWidth: '200px',
                                         textOverflow: 'ellipsis',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden'
@@ -165,21 +188,21 @@ const BoardWrite = () => {
                                 />
                             ) : (
                                 <>
-                                    <UploadFileIcon style={{ color: 'gray', marginBottom: '5px' }} />
-                                    <p style={{ color: 'gray' }}>파일을 여기에 드래그하여 파일을 선택하세요.</p>
+                                    <UploadFileIcon style={{color: 'gray', marginBottom: '5px'}}/>
+                                    <p style={{color: 'gray'}}>파일을 여기에 드래그하여 파일을 선택하세요.</p>
                                 </>
                             )}
                         </Box>
                         <div>
                             <label htmlFor="content"></label>
-                            <textarea
+                            <ReactQuill
                                 id="content"
                                 value={content}
                                 onChange={handleContentChange}
-                                required
-                                style={{ width: '800px', height: '300px' }}
-                                placeholder='중요 체크시 상단 고정!'
-                            ></textarea>
+                                modules={{toolbar: toolbarOptions}}
+                                style={{width: '800px', height: '400px'}}
+                                placeholder='내용을 입력하세요!'
+                            />
                         </div>
 
                         <Button
@@ -187,21 +210,22 @@ const BoardWrite = () => {
                             variant='contained'
                             style={{
                                 color: 'white',
-                                backgroundColor: '#36c3ff', // 하늘색 기본 색상
-                                backgroundImage: 'linear-gradient(135deg, #36c3ff 0%, #74d2ff 100%)', // 하늘색에서 약간 밝은 하늘색으로 그라데이션
+                                backgroundColor: '#36c3ff',
+                                backgroundImage: 'linear-gradient(135deg, #36c3ff 0%, #74d2ff 100%)',
                                 border: 'none',
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                transition: 'all 0.3s ease', // 모든 속성의 변화를 부드럽게
+                                transition: 'all 0.3s ease',
+                                marginTop:'50px'
                             }}
                             onMouseOver={(e) => {
-                                e.target.style.backgroundColor = '#74d2ff'; // 마우스 오버 시 밝은 하늘색으로 변경
-                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
-                                e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
+                                e.target.style.backgroundColor = '#74d2ff';
+                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
+                                e.target.style.transform = 'scale(1.05)';
                             }}
                             onMouseOut={(e) => {
-                                e.target.style.backgroundColor = '#36c3ff'; // 마우스가 벗어났을 때 원래 색상으로 돌아옴
-                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
-                                e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
+                                e.target.style.backgroundColor = '#36c3ff';
+                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                                e.target.style.transform = 'scale(1)';
                             }}
                         >
                             등록
