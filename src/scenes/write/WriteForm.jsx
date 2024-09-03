@@ -10,6 +10,7 @@ import GroupModal from "../../components/groupModal.jsx";
 import {useLocation, useNavigate} from "react-router-dom";
 
 const WriteForm = ({}) => {
+    const [writerIdNumber,setWriterIdNumber]=useState('');
     const [writer, setWriter] = useState('');
     const [secondApprover, setSecondApprover] = useState('');
     const [firstApprover, setFirstApprover] = useState('');
@@ -72,6 +73,7 @@ const WriteForm = ({}) => {
                     serIdNumber(res.data.idNumber);
                     setSecondApprover(res.data.secondApprover);
                     setThirdApprover(res.data.thirdApprover);
+                    setWriterIdNumber(res.data.idNumber);
                     setWriter(res.data.writer);
                     setDepartment(res.data.department);
                     setPosition(res.data.position);
@@ -101,7 +103,7 @@ const WriteForm = ({}) => {
                 serIdNumber(res.data.idNumber);
                 setDepartment(res.data.department.departmentName);
                 setPosition(res.data.position.rank);
-
+                setWriterIdNumber(res.data.idNumber);
                 // 빈 값으로 초기화
                 setSecondApprover('');
                 setThirdApprover('');
@@ -167,6 +169,7 @@ const WriteForm = ({}) => {
     }
 
     const handleAdditionalFieldChange = (key, value) => {
+        console.log(key+value)
         setAdditionalFields(prevFields => ({
             ...prevFields,
             [key]: value
@@ -195,6 +198,7 @@ const WriteForm = ({}) => {
 
         const originalFileName = originalFile ? originalFile.name : '';
         const transformedAdditionalFields = {};
+        console.log("addtionalFie.."+additionalFields.expendType);
         Object.keys(additionalFields).forEach(key => {
             const newKey = key.replace(/__/g, '.');
             transformedAdditionalFields[newKey] = additionalFields[key];
@@ -203,6 +207,7 @@ const WriteForm = ({}) => {
         // 상태를 기반으로 요청 전송
         const postData = {
             writer,
+            writerIdNumber,
             firstApprover,
             secondApprover,
             idNumber,
@@ -216,7 +221,7 @@ const WriteForm = ({}) => {
             position,
             department,
             additionalFields: transformedAdditionalFields
-        };
+        };console.log(postData)
 
 // appId가 있으면 postData에 appId를 추가
         if (appId) {
