@@ -3,16 +3,26 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Box, Button, TextField, Checkbox, FormControlLabel, Typography, Link } from '@mui/material';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // Quill의 기본 스타일을 불러옵니다.
+import 'react-quill/dist/quill.snow.css';
 
 // 툴바의 모듈을 설정합니다.
 const toolbarOptions = [
-    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
+
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    ['bold', 'italic', 'underline'],
-    ['link', 'image'],
+    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+    [{ 'direction': 'rtl' }],                         // text direction
+
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    ['link', 'image', 'video'],
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'font': [] }],
     [{ 'align': [] }],
-    ['clean'] // 글자 지우기 버튼
+
+    ['clean']
 ];
 
 const UpdatePage = () => {
@@ -58,8 +68,8 @@ const UpdatePage = () => {
         setTitle(e.target.value);
     };
 
-    const handleContentChange = (e) => {
-        setContent(e.target.value);
+    const handleContentChange = (value) => {
+        setContent(value); // ReactQuill에서 값을 받을 때
     };
 
     const handleMustReadChange = (e) => {
@@ -166,7 +176,7 @@ const UpdatePage = () => {
                         <ReactQuill
                             id="content"
                             value={content}
-                            onChange={handleContentChange}
+                            onChange={handleContentChange} // 값 변경 핸들러
                             modules={{ toolbar: toolbarOptions }}
                             style={{ width: '1100px', height: '500px' }}
                             placeholder='내용을 입력하세요!'

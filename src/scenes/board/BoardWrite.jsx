@@ -7,15 +7,27 @@ import { useDropzone } from 'react-dropzone';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import './Board.css';
+
 
 // 툴바의 모듈을 설정합니다.
 const toolbarOptions = [
-    [{ 'header': '1'}, {'header': '2'}, { 'font': [] }],
+    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['blockquote', 'code-block'],
+
+    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    ['bold', 'italic', 'underline'],
-    ['link', 'image'],
+    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+    [{ 'direction': 'rtl' }],                         // text direction
+
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    ['link', 'image', 'video'],
+    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'font': [] }],
     [{ 'align': [] }],
-    ['clean'] // 글자 지우기 버튼
+
+    ['clean']
 ];
 
 const BoardWrite = () => {
@@ -193,10 +205,11 @@ const BoardWrite = () => {
                                 </>
                             )}
                         </Box>
-                        <div>
+                        <div style={{marginTop:'-20px'}}>
                             <label htmlFor="content"></label>
                             <ReactQuill
                                 id="content"
+                                theme="snow"
                                 value={content}
                                 onChange={handleContentChange}
                                 modules={{toolbar: toolbarOptions}}
@@ -215,7 +228,7 @@ const BoardWrite = () => {
                                 border: 'none',
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                 transition: 'all 0.3s ease',
-                                marginTop:'50px'
+                                marginTop:'80px'
                             }}
                             onMouseOver={(e) => {
                                 e.target.style.backgroundColor = '#74d2ff';
