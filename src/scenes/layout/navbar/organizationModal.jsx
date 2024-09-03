@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
-import { Box, Checkbox, IconButton, Modal } from "@mui/material";
+import {Button, Box, Checkbox, IconButton, Modal } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import ChatIcon from '@mui/icons-material/Chat';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
@@ -140,7 +140,7 @@ const OrganizationChart = () => {
 
     return (
         <div style={{display: 'flex', padding: '20px'}}>
-            <div style={{flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '100%',paddingLeft:'20px'}}>
+            <div style={{flex: 1, marginRight: '20px', padding: '10px', backgroundColor: '#f7f7f7', minHeight: '90%',paddingLeft:'20px'}}>
                 <h2>부서 목록</h2>
                 <ul>
                     {Object.entries(structuredDepartments).map(([key, department]) => (
@@ -266,7 +266,7 @@ const OrganizationChart = () => {
                 {selectedEmployee ? (
                     <div style={{
                         padding: '10px',
-                        minHeight: '100%',
+                        minHeight: 'auto',
                         borderLeft: '3px solid #ffd454',
                         paddingLeft: '40px',
                         marginLeft: '50px'
@@ -286,39 +286,64 @@ const OrganizationChart = () => {
                             }}
                         />
                         <div style={{display: 'flex', gap: '10px',marginBottom:'40px'}}>
-                            <button style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: '10px 20px',
-                                fontSize: '15px',
-                                backgroundColor: '#007bff',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer'
-                            }}
-                                    onClick={handleChatClick}>
-                                <ChatIcon/>&nbsp;
-                                채팅
-                            </button>&nbsp;&nbsp;
-                            <button style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: '10px 20px',
-                                fontSize: '15px',
-                                backgroundColor: '#28a745',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer'
-                            }}
-                                    onClick={handleEmailClick}
+                            <Button
+                                variant="contained"
+                                startIcon={<ChatIcon />}
+                                sx={{
+                                    backgroundColor: '#007bff',
+                                    backgroundImage: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                                    color: 'white',
+                                    fontSize: '12vpx',
+                                    padding: '10px 20px',
+                                    border: 'none',
+                                    borderRadius: '5px',
+                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                    transition: 'all 0.3s ease', // 모든 속성에 대한 부드러운 전환
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                        backgroundColor: '#0056b3',
+                                        backgroundImage: 'linear-gradient(135deg, #0056b3 0%, #003d80 100%)',
+                                        transform: 'scale(1.05)', // 버튼을 약간 확대
+                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)', // 그림자 효과 강화
+                                    },
+                                    '&:focus': {
+                                        outline: 'none', // 포커스 시 기본 윤곽선 제거
+                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)', // 포커스 시 그림자 강화
+                                    },
+                                }}
+                                onClick={handleChatClick}
                             >
-
-                                <MailOutlineIcon/>&nbsp;
-
+                                채팅
+                            </Button>
+                            <Button
+                                variant="contained"
+                                startIcon={<MailOutlineIcon />}
+                                sx={{
+                                    backgroundColor: '#28a745',
+                                    backgroundImage: 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)',
+                                    color: 'white',
+                                    fontSize: '12px',
+                                    padding: '10px 20px',
+                                    border: 'none',
+                                    borderRadius: '5px',
+                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                    transition: 'all 0.3s ease', // 모든 속성에 대한 부드러운 전환
+                                    textTransform: 'none',
+                                    '&:hover': {
+                                        backgroundColor: '#1e7e34',
+                                        backgroundImage: 'linear-gradient(135deg, #1e7e34 0%, #155d27 100%)',
+                                        transform: 'scale(1.05)', // 버튼을 약간 확대
+                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)', // 그림자 효과 강화
+                                    },
+                                    '&:focus': {
+                                        outline: 'none', // 포커스 시 기본 윤곽선 제거
+                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)', // 포커스 시 그림자 강화
+                                    },
+                                }}
+                                onClick={handleEmailClick}
+                            >
                                 메일
-                            </button>
+                            </Button>
                         </div>
                         <p style={{fontSize: '15px'}}>이름: {selectedEmployee.name}</p>
                         <p style={{fontSize: '15px'}}>직급: {selectedEmployee.position.rank}</p>
@@ -335,7 +360,38 @@ const OrganizationChart = () => {
     );
 };
 
-
+const OrganizationModal = ({open, onClose}) => {
+    if(!open) return null;
+    return (
+            <Box sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '95%',
+                height: '90%',
+                bgcolor: 'background.paper',
+                boxShadow: 24,
+                p: 4,
+                display: 'flex',
+                flexDirection: 'column',
+            }}>
+                <IconButton
+                    sx={{position: 'absolute', top: 16, right: 16}}
+                    onClick={onClose}
+                >
+                    <CloseIcon/>
+                </IconButton>
+                <div><b style={{
+                    marginBottom: '50px',
+                    fontSize: '40px',
+                    marginLeft: '50px',
+                    color: '#fac337'
+                }}>GroupBee&nbsp;</b><b style={{fontSize: '30px'}}>조직도</b></div>
+                <OrganizationChart/>
+            </Box>
+    );
+};
 
 const App = () => {
     const [isModalOpen, setIsModalOpen] = useState(true);
@@ -348,40 +404,6 @@ const App = () => {
         <div>
             <OrganizationModal open={isModalOpen} onClose={handleCloseModal}/>
         </div>
-    );
-};
-
-const OrganizationModal = ({open, onClose}) => {
-    if(!open) return null;
-    return (
-        <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '95%',
-            height: '90%',
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            display: 'flex',
-            flexDirection: 'column',
-        }}>
-            <IconButton
-                sx={{position: 'absolute', top: 16, right: 16}}
-                onClick={onClose}
-
-            >
-                <CloseIcon/>
-            </IconButton>
-            <div><b style={{
-                marginBottom: '50px',
-                fontSize: '40px',
-                marginLeft: '50px',
-                color: '#fac337'
-            }}>GroupBee&nbsp;</b><b style={{fontSize: '30px'}}>조직도</b></div>
-            <OrganizationChart/>
-        </Box>
     );
 };
 

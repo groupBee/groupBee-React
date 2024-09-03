@@ -19,6 +19,7 @@ import listPlugin from "@fullcalendar/list";
 import googleCalendarPlugin from "@fullcalendar/google-calendar";
 import "./dashboardcss.css";
 import "./clock.css";
+import Weather from "./weather.jsx";
 
 function Dashboard() {
     const theme = useTheme();
@@ -300,7 +301,7 @@ function Dashboard() {
                 {/* 시계 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
-                    gridRow="span 3"
+                    gridRow="span 1"
                     display="flex"
                     flexDirection="column"
                     height="100%"
@@ -323,8 +324,23 @@ function Dashboard() {
                         </div>
                     </div>
                 </Box>
+                {/*날씨*/}
+                <Box
+                    gridColumn={isXlDevices ? "span 4" : "span 3"}
+                    gridRow="span 2"
+                    display="flex"
 
-                {/* 캘린더 */}
+                    sx={{
+                        backgroundColor: "WHITE",  // 어두운 배경색
+                        borderRadius: "12px",  // 부드러운 모서리
+                        boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",  // 부드러운 그림자
+                        overflow: "hidden", // 콘텐츠가 Box의 경계를 넘지 않도록 설정
+                    }}
+                >
+                    <Weather/>
+                </Box>
+
+                {/* 결재현황 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 3"
@@ -338,66 +354,9 @@ function Dashboard() {
                     <Box borderBottom={`2px solid #ffb121`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex"
                                     justifyContent="space-between" alignItems="center">
-                            캘린더
+                            결재현황
                             <IconButton onClick={handleCalendar}>
                                 <MoreHoriz style={{color: "gray"}}/>
-                            </IconButton>
-                        </Typography>
-                    </Box>
-                    <Box p="15px" flexGrow={1} overflow="auto" sx={{
-                        '&::-webkit-scrollbar': {
-                            display: 'none',
-                        },
-                        '-ms-overflow-style': 'none',  /* IE and Edge */
-                        'scrollbar-width': 'none',  /* Firefox */
-                    }}>
-                        <FullCalendar
-                            ref={calendarRef}
-                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
-                            customButtons={{
-                                customPrev: {
-                                    text: '◀',
-                                    click: () => calendarRef.current.getApi().prev()
-                                },
-                                customNext: {
-                                    text: '▶',
-                                    click: () => calendarRef.current.getApi().next()
-                                }
-                            }}
-                            initialView="dayGridMonth"
-                            events={events}
-                            eventClick={(info) => {
-                                alert(`이벤트: ${info.event.title}`);
-                            }}
-                            locale='ko'
-                            height="auto"
-                            headerToolbar={{
-                                left: 'customPrev',
-                                center: 'title',
-                                right: 'customNext'
-                            }}
-                            showNonCurrentDates={false}
-                            contentHeight="auto"
-                            dayMaxEventRows={2}  // 한 날짜에 표시할 최대 이벤트 개수
-                        />
-                    </Box>
-                </Box>
-
-                {/* 결재현황 */}
-                <Box
-                    gridColumn={isXlDevices ? "span 4" : "span 3"}
-                    gridRow="span 3"
-                    sx={{
-                        borderRadius: "8px",
-                        backgroundColor: "white",
-                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    }}
-                >
-                    <Box borderBottom={`2px solid #ffb121`} p="15px">
-                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
-                            결재현황
-                            <IconButton onClick={handleList}>
-                                <MoreHoriz style={{ color: "gray" }} />
                             </IconButton>
                         </Typography>
                     </Box>
@@ -442,7 +401,7 @@ function Dashboard() {
                     </Box>
                 </Box>
 
-                {/* 예약현황 */}
+                {/* 예약 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 3"
@@ -455,12 +414,67 @@ function Dashboard() {
                     <Box borderBottom={`2px solid #ffb121`} p="15px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
                             예약현황
+                            <IconButton onClick={handleList}>
+                                <MoreHoriz style={{ color: "gray" }} />
+                            </IconButton>
+                        </Typography>
+                    </Box>
+                </Box>
+
+                {/* 예약현황 */}
+                <Box
+                    gridColumn={isXlDevices ? "span 4" : "span 3"}
+                    gridRow="span 3"
+                    sx={{
+                        borderRadius: "8px",
+                        backgroundColor: "white",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    }}
+                >
+                    <Box borderBottom={`2px solid #ffb121`} p="15px">
+                        <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex" justifyContent="space-between" alignItems="center">
+                            캘린더
                             <IconButton onClick={handleBook}>
                                 <MoreHoriz style={{ color: "gray" }} />
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box p="15px" maxHeight="200px" overflow="auto">
+                    <Box p="15px" flexGrow={1} overflow="auto" sx={{
+                        '&::-webkit-scrollbar': {
+                            display: 'none',
+                        },
+                        '-ms-overflow-style': 'none',  /* IE and Edge */
+                        'scrollbar-width': 'none',  /* Firefox */
+                    }}>
+                        <FullCalendar
+                            ref={calendarRef}
+                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
+                            customButtons={{
+                                customPrev: {
+                                    text: '◀',
+                                    click: () => calendarRef.current.getApi().prev()
+                                },
+                                customNext: {
+                                    text: '▶',
+                                    click: () => calendarRef.current.getApi().next()
+                                }
+                            }}
+                            initialView="dayGridMonth"
+                            events={events}
+                            eventClick={(info) => {
+                                alert(`이벤트: ${info.event.title}`);
+                            }}
+                            locale='ko'
+                            height="auto"
+                            headerToolbar={{
+                                left: 'customPrev',
+                                center: 'title',
+                                right: 'customNext'
+                            }}
+                            showNonCurrentDates={false}
+                            contentHeight="auto"
+                            dayMaxEventRows={2}  // 한 날짜에 표시할 최대 이벤트 개수
+                        />
                     </Box>
                 </Box>
             </Box>

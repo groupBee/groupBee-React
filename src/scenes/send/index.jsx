@@ -89,10 +89,15 @@ const Invoices = () => {
         const today = new Date();
         if (date.toDateString() === today.toDateString()) {
             // 오늘 날짜일 경우 시간 정보를 "시:분"으로 출력
-            return date.toTimeString().split(' ')[0].substring(0, 5);
+            const hours = date.getHours().toString().padStart(2, '0');  // 시를 두 자리로 맞춤
+            const minutes = date.getMinutes().toString().padStart(2, '0');  // 분을 두 자리로 맞춤
+            return `${hours}시 ${minutes}분`;
         }
         // 기타 날짜일 경우 "YYYY-MM-DD" 형식으로 출력
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();  // 년도
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');  // 월 (0부터 시작하므로 +1)
+        const day = date.getDate().toString().padStart(2, '0');  // 일
+        return `${year}년 ${month}월 ${day}일`;
     };
 
     // 디테일 페이지 이동
@@ -151,7 +156,17 @@ const Invoices = () => {
                     <tbody>
                     {currentData &&
                         currentData.map((item, idx) => (
-                            <tr key={idx} style={{ lineHeight: '30px' }} onClick={() => moveDetail(item)}>
+                            <tr key={idx} style={{ lineHeight: '30px', cursor:'pointer'}}
+                                onMouseOver={(e) => {
+                                    const tds = e.currentTarget.querySelectorAll('td');
+                                    tds.forEach(td => td.style.color = "#ffb121"); // 모든 td 색상 변경
+                                }}
+                                onMouseOut={(e) => {
+                                    const tds = e.currentTarget.querySelectorAll('td');
+                                    tds.forEach(td => td.style.color = "inherit"); // 색상 원래대로 복원
+                                }}
+                                onClick={() => moveDetail(item)} // 행을 클릭했을 때 상세 페이지로 이동
+                            >
                                 <td style={{ borderRight: 'none', borderLeft: 'none', paddingLeft: '1.5%' }}>{(currentPage - 1) * PageCount + idx + 1}</td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>
                                     {item.appDocType === 0 ? '품의서' :
