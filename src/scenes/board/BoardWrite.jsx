@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from "../../components";
 import axios from 'axios';
-import { Box, Button } from "@mui/material";
+import { Box, Button, Chip } from "@mui/material";
+import { useDropzone } from 'react-dropzone';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 const BoardWrite = () => {
     const navigate = useNavigate();
@@ -11,7 +13,8 @@ const BoardWrite = () => {
     const [readCount, setReadCount] = useState(0);
     const [mustRead, setMustRead] = useState(false); // 공지사항 체크박스 상태
     const [mustMustRead, setMustMustRead] = useState(false); // 중요 체크박스 상태
-    const [file, setFile] = useState(null); // 파일 상태
+    const [file, setFile] = useState(null); // 파일 데이터
+    const [originalFileName, setOriginalFileName] = useState(''); // 파일명
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -29,8 +32,29 @@ const BoardWrite = () => {
         setMustMustRead(e.target.checked);
     };
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+    // react-dropzone을 사용한 드래그 앤 드롭 구현
+    const onDrop = (acceptedFiles) => {
+        if (acceptedFiles.length > 0) {
+            setFile(acceptedFiles[0]); // 첫 번째 파일을 저장
+            setOriginalFileName(acceptedFiles[0].name); // 파일명을 저장
+        }
+    };
+
+    const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
+        onDrop,
+        noClick: true, // 기본 클릭으로 파일 선택을 하지 않게 함
+        noKeyboard: true, // 키보드로 선택 불가능
+    });
+
+    // 첨부파일 삭제 기능
+    const DeleteAttachment = () => {
+        setFile(null);
+        setOriginalFileName('');
+    };
+
+    const FileAttachClick = (event) => {
+        event.preventDefault();
+        open();
     };
 
     const handleSubmit = async (e) => {
@@ -48,7 +72,8 @@ const BoardWrite = () => {
         formData.append('boardData', JSON.stringify(boardData));
 
         if (file) {
-            formData.append('file', file);
+            formData.append('file', file); // 파일 데이터
+            formData.append('originalFileName', originalFileName); // 파일명
         }
 
         try {
@@ -97,13 +122,54 @@ const BoardWrite = () => {
                                 style={{ marginLeft: '20px' }}
                             /><b style={{ marginTop: '15px', marginLeft: '10px' }}>중요</b>
                         </div>
-                        <div>
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                style={{ marginTop: '10px' }}
-                            />
-                        </div>
+                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                            <b style={{ width: '65px', textAlign: 'center' }}>첨부파일</b>
+                            <button
+                                onClick={FileAttachClick}  // 파일첨부 버튼 클릭 시 파일 선택 창 열기
+                                style={{ marginLeft: '20px', border: '1px solid #dddd', backgroundColor: 'transparent', borderRadius: '4px', padding: '3px 6px' }}
+                            >
+                                파일첨부하기
+                            </button>
+                            {file && (
+                                <button
+                                    onClick={DeleteAttachment}
+                                    style={{ marginLeft: '10px', border: '1px solid #dddd', backgroundColor: 'transparent', borderRadius: '4px', padding: '3px 6px' }}
+                                >
+                                    삭제
+                                </button>
+                            )}
+                        </Box>
+                        <Box
+                            {...getRootProps()}
+                            sx={{
+                                border: '2px dashed #dddddd',
+                                borderRadius: '4px',
+                                padding: '20px',
+                                textAlign: 'center',
+                                backgroundColor: isDragActive ? '#f0f0f0' : 'white',
+                                marginBottom: '20px',
+                                width:'800px'
+                            }}
+                        >
+                            <input {...getInputProps()} />
+                            {file ? (
+                                <Chip
+                                    label={originalFileName}
+                                    onDelete={DeleteAttachment}
+                                    sx={{
+                                        maxWidth: '200px', // 파일명이 너무 길 경우 잘리게 함
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        overflow: 'hidden'
+                                    }}
+                                />
+                            ) : (
+                                <>
+                                    <UploadFileIcon style={{ color: 'gray', marginBottom: '5px' }} />
+                                    <p style={{ color: 'gray' }}>파일을 여기에 드래그하여 파일을 선택하세요.</p>
+                                </>
+                            )}
+                        </Box>
                         <div>
                             <label htmlFor="content"></label>
                             <textarea

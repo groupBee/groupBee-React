@@ -176,29 +176,29 @@ const DetailPage = () => {
                             </div>
                         </Typography>
                     </Box>
-                    {post.file && (
-                        <Box mb={2} style={{ width: '300px' }}>
-                            {/* 파일 확장자에 따라 다르게 처리 */}
+                    {/* 첨부파일 부분 */}
+                    {post.file && post.originalFileName && (
+                        <Box mb={2} style={{width: '300px'}}>
                             {post.file.endsWith('.jpg') || post.file.endsWith('.png') || post.file.endsWith('.jpeg') ? (
                                 <img
-                                    src={`/uploads/${post.file}`}
-                                    alt="첨부파일"
-                                    style={{ maxWidth: '100%', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}
+                                    src={`/insert/${post.file}`}
+                                    alt={post.originalFileName}
+                                    style={{maxWidth: '100%', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)'}}
                                 />
                             ) : (
                                 <Box>
-                                    <Typography variant="body1" style={{ marginBottom: '10px' }}>
+                                    <Typography variant="body1" style={{marginBottom: '10px'}}>
                                         첨부파일:
                                         <a
-                                            href={`/uploads/${post.file}`}
-                                            download
+                                            href={`/insert/${post.file}`}
+                                            download={post.originalFileName}
                                             style={{
                                                 color: '#1e90ff',
                                                 textDecoration: 'none',
                                                 fontWeight: 'bold'
                                             }}
                                         >
-                                            {post.file}
+                                            {post.originalFileName}
                                         </a>
                                     </Typography>
                                 </Box>
