@@ -21,7 +21,6 @@ const WriteForm = ({ }) => {
     const [attachedFiles, setAttachedFiles] = useState([]);
     const [approveStatus, setApproveStatus] = useState(0);
     const [approveType, setApproveType] = useState(1);
-
     const [approveDate, setApproveDate] = useState(new Date());
     const [appDocType, setAppDocType] = useState(0);
     const [position, setPosition] = useState('');
