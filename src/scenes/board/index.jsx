@@ -1,5 +1,4 @@
-import { Box, Button, Pagination, Typography, IconButton } from "@mui/material";
-import { MoreHoriz } from "@mui/icons-material"; // 아이콘 사용을 위해 import 추가
+import { Box, Button, Pagination, Typography, TextField, MenuItem, Select, InputLabel, FormControl } from "@mui/material";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -13,7 +12,10 @@ const Board = () => {
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 10;
     const navigate = useNavigate();
-    const [commentCounts, setCommentCounts] = useState({}); // 댓글 수 상태
+    const [myinfoList, setMyinfoList] = useState(null); // myinfoList 상태 추가
+    const [showMyPosts, setShowMyPosts] = useState(false); // 현재 모드 상태
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchType, setSearchType] = useState('title'); // 'title' or 'writer'
 
     useEffect(() => {
         if (Page) {
@@ -22,13 +24,42 @@ const Board = () => {
     }, [Page]);
 
     useEffect(() => {
-        const fetchBoardListAndComments = async () => {
+        const fetchMyInfo = async () => {
             try {
-                const boardListResponse = await axios.get('/api/board/list');
-                const boardListData = boardListResponse.data;
+                const response = await axios.get('/api/employee/info');
+                setMyinfoList(response.data);
+            } catch (error) {
+                console.error('Error fetching employee info:', error);
+            }
+        };
 
-                const importantPosts = boardListData.filter(post => post.board.mustMustRead);
-                const regularPosts = boardListData.filter(post => !post.board.mustMustRead);
+        fetchMyInfo();
+    }, []);
+
+    useEffect(() => {
+        const fetchBoardList = async () => {
+            try {
+                const response = await axios.get('/api/board/list');
+                const boardListData = response.data;
+
+                // 내 글 보기 모드일 경우 필터링
+                let filteredPosts = boardListData;
+                if (showMyPosts && myinfoList) {
+                    filteredPosts = boardListData.filter(post => post.board.memberId === myinfoList.potalId);
+                }
+
+                // 검색 필터링
+                filteredPosts = filteredPosts.filter(post => {
+                    if (searchType === 'title') {
+                        return post.board.title.toLowerCase().includes(searchQuery.toLowerCase());
+                    } else if (searchType === 'writer') {
+                        return post.board.writer.toLowerCase().includes(searchQuery.toLowerCase());
+                    }
+                    return true;
+                });
+
+                const importantPosts = filteredPosts.filter(post => post.board.mustMustRead);
+                const regularPosts = filteredPosts.filter(post => !post.board.mustMustRead);
 
                 const sortedImportantPosts = importantPosts.sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
                 const sortedRegularPosts = regularPosts.sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
@@ -51,17 +82,21 @@ const Board = () => {
 
                 setBoardList(finalPosts);
                 setTotalPages(Math.ceil(totalRegularPosts / itemsPerPage));
-
             } catch (error) {
-                console.error('Error fetching board list and comments:', error);
+                console.error('Error fetching board list:', error);
             }
         };
 
-        fetchBoardListAndComments();
-    }, [currentPage]);
+        fetchBoardList();
+    }, [currentPage, showMyPosts, myinfoList, searchQuery, searchType]);
 
     const handleWriteClick = () => {
         navigate('/board/write');
+    };
+
+    const handleTogglePosts = () => {
+        setShowMyPosts(!showMyPosts);
+        setCurrentPage(1); // 페이지를 첫 페이지로 초기화
     };
 
     const handlePageChange = (event, page) => {
@@ -72,10 +107,6 @@ const Board = () => {
         navigate(`/board/list/${id}/${currentPage}`);
     };
 
-    const handleBoard = () => {
-        navigate('/board');
-    };
-
     return (
         <Box m="20px">
             <Box
@@ -83,7 +114,7 @@ const Board = () => {
                 sx={{
                     borderRadius: "8px",
                     backgroundColor: "white",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", // 부드러운 그림자 효과 추가
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                 }}
             >
                 <Box borderBottom={`2px solid #ffb121`} p="15px">
@@ -97,28 +128,76 @@ const Board = () => {
                         alignItems="center"
                     >
                         사내게시판
-                        <div style={{float: 'right', marginBottom: '20px'}}>
+                        <div style={{ float: 'right', marginBottom: '20px' }}>
+                            <Button variant='outlined'
+                                    style={{
+                                        backgroundColor: showMyPosts ? '#a1c4fd' : '#8ec6ff',
+                                        backgroundImage: showMyPosts ? 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' : 'linear-gradient(135deg, #8ec6ff 0%, #e0f7ff 100%)',
+                                        color: 'white',
+                                        fontSize: '15px',
+                                        marginLeft: '10px',
+                                        marginTop: '40px',
+                                        marginBottom:'-50px',
+                                        border: 'none',
+                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                        transition: 'background-color 0.3s ease',
+                                    }}
+                                    onClick={handleTogglePosts}>
+                                {showMyPosts ? '전체 글' : '내 작성글'}
+                            </Button>
                             <Button variant='outlined'
                                     style={{
                                         backgroundColor: '#f6d365',
-                                        backgroundImage: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)', // 주황색 계열의 그라데이션
+                                        backgroundImage: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
                                         color: 'white',
                                         fontSize: '15px',
                                         marginTop: '40px',
-                                        border: 'none', // 경계선을 없애서 그라데이션이 더 돋보이게 함
-                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', // 그림자 효과 추가
-                                        transition: 'background-color 0.3s ease', // 부드러운 전환 효과
+                                        marginBottom:'-50px',
+                                        border: 'none',
+                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                        transition: 'background-color 0.3s ease',
+                                        marginLeft: '20px'
                                     }}
                                     onClick={handleWriteClick}>글작성</Button>
-
                         </div>
                     </Typography>
-
+                    <Box mt={2} mb={2} sx={{ display: 'flex', alignItems: 'center',marginTop:'-10px',marginBottom:'-2px',marginLeft:'-15px'}}>
+                        <TextField
+                            label=" &nbsp;&nbsp;검색어"
+                            variant="outlined"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{
+                                marginRight: '10px',
+                                width: '200px',
+                                // 스타일 추가로 위아래 크기 조정
+                                padding: '8px 12px',
+                                fontSize: '14px'
+                            }}
+                            InputLabelProps={{
+                                style: { fontSize: '14px' }
+                            }}
+                            InputProps={{
+                                style: { height: '40px' } // 높이 조정
+                            }}
+                        />
+                        <FormControl variant="outlined" style={{ minWidth: 100 }}>
+                            <InputLabel style={{ fontSize: '14px' }}>검색 기준</InputLabel>
+                            <Select
+                                value={searchType}
+                                onChange={(e) => setSearchType(e.target.value)}
+                                label="검색 기준"
+                                style={{ fontSize: '14px', height: '40px' }} // 높이 조정
+                            >
+                                <MenuItem value="title">제목</MenuItem>
+                                <MenuItem value="writer">작성자</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
                 </Box>
                 <Box p="15px">
-
                     {boardList.length > 0 ? (
-                        <table className="table table-hover"> {/* 테이블에 hover 효과 추가 */}
+                        <table className="table table-hover">
                             <thead>
                             <tr>
                                 <th style={{ width: '50px'}}>번호</th>
@@ -137,8 +216,8 @@ const Board = () => {
                             <tbody style={{ borderBottom: '1px solid #dbd9d9' }}>
                             {boardList.map((row) => (
                                 <tr key={row.board.id} style={row.board.mustMustRead
-                                    ? { backgroundColor: '#b3b3b3', fontWeight: 'bold'} // 상단 고정 게시글 스타일
-                                    : { backgroundColor: 'transparent' } // 일반 게시글 스타일
+                                    ? { backgroundColor: '#b3b3b3', fontWeight: 'bold'}
+                                    : { backgroundColor: 'transparent' }
                                 }>
                                     <td>&nbsp;&nbsp;{row.displayNumber}</td>
                                     <td
@@ -147,28 +226,27 @@ const Board = () => {
                                             cursor: 'pointer',
                                             color: 'black',
                                             fontWeight: row.board.mustMustRead ? "bold" : "normal",
-                                            maxWidth: "300px", // 최대 너비 설정
-                                            overflow: "hidden", // 넘치는 내용 숨기기
-                                            textOverflow: "ellipsis", // 넘치는 내용에 '...' 추가
+                                            maxWidth: "300px",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
                                             whiteSpace: "nowrap",
-                                            transition: "color 0.3s", // 마우스 오버 시 부드러운 색상 전환 효과
+                                            transition: "color 0.3s",
                                         }}
-                                        onClick={() => handleTitleClick(row.board.id)} // 제목 클릭 이벤트 설정
-                                        onMouseOver={(e) => (e.target.style.color = "#ffb121")} // 마우스 오버 시 색상 변경
-                                        onMouseOut={(e) => (e.target.style.color = "inherit")} // 마우스 아웃 시 원래 색상으로 복구
+                                        onClick={() => handleTitleClick(row.board.id)}
+                                        onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                        onMouseOut={(e) => (e.target.style.color = "inherit")}
                                     >
                                         {row.board.mustRead && <span><b>[공지]&nbsp;</b></span>}
                                         {row.board.title}
-                                        {row.board.file && <AttachFileIcon style={{width:'15px',height:'15px'}}/>}
+                                        {row.board.file && <AttachFileIcon style={{ width: '15px', height: '15px' }} />}
                                         {row.commentCount > 0 && <span style={{ marginLeft: '10px' }}>({row.commentCount})</span>}
-
                                     </td>
                                     <td style={{ textAlign: "center" }}>{row.board.writer}</td>
                                     <td style={{ textAlign: "center" }}>
                                         {new Date(row.board.createDate).getFullYear()}-{String(new Date(row.board.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(row.board.createDate).getDate()).padStart(2, '0')} &nbsp;
                                         {new Date(row.board.createDate).toLocaleTimeString('ko-KR', {
                                             timeZone: 'Asia/Seoul',
-                                            hour12: false,  // 24시간 형식으로 설정
+                                            hour12: false,
                                             hour: '2-digit',
                                             minute: '2-digit',
                                             second: '2-digit'

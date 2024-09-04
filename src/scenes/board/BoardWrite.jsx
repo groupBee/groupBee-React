@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from "../../components";
 import axios from 'axios';
@@ -9,24 +9,20 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './Board.css';
 
-
 // 툴바의 모듈을 설정합니다.
 const toolbarOptions = [
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['bold', 'italic', 'underline', 'strike'],
     ['blockquote', 'code-block'],
-
-    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+    [{ 'header': 1 }, { 'header': 2 }],
     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-    [{ 'direction': 'rtl' }],                         // text direction
-
+    [{ 'script': 'sub'}, { 'script': 'super' }],
+    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    [{ 'direction': 'rtl' }],
     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
     ['link', 'image', 'video'],
-    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'color': [] }, { 'background': [] }],
     [{ 'font': [] }],
     [{ 'align': [] }],
-
     ['clean']
 ];
 
@@ -39,6 +35,23 @@ const BoardWrite = () => {
     const [mustMustRead, setMustMustRead] = useState(false);
     const [file, setFile] = useState(null);
     const [originalFileName, setOriginalFileName] = useState('');
+    const [mustMustReadCount, setMustMustReadCount] = useState(0);
+
+    useEffect(() => {
+        // 게시물 리스트를 가져와서 mustMustRead 게시글 수를 계산합니다.
+        const fetchMustMustReadCount = async () => {
+            try {
+                const response = await axios.get('/api/board/list');
+                const posts = response.data; // Array of posts
+                const count = posts.filter(p => p.board.mustMustRead).length;
+                setMustMustReadCount(count);
+            } catch (error) {
+                console.error('Error fetching mustMustRead count:', error);
+            }
+        };
+
+        fetchMustMustReadCount();
+    }, []);
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -54,6 +67,10 @@ const BoardWrite = () => {
     };
 
     const handleMustMustReadChange = (e) => {
+        if (!e.target.checked && mustMustReadCount >= 8) {
+            alert('중요 게시글은 8개까지만 설정할 수 있습니다.');
+            return;
+        }
         setMustMustRead(e.target.checked);
     };
 
@@ -63,6 +80,7 @@ const BoardWrite = () => {
             setOriginalFileName(acceptedFiles[0].name);
         }
     };
+
     const handleBackClick = () => {
         navigate(`/board`);
     };
@@ -122,7 +140,7 @@ const BoardWrite = () => {
                 <div>
                     <form onSubmit={handleSubmit}>
                         <div>
-                            <label htmlFor="title"><b style={{fontSize: '15px'}}>제목</b></label>
+                            <label htmlFor="title"><b style={{ fontSize: '15px' }}>제목</b></label>
                             <br/>
                             <input
                                 type="text"
@@ -130,7 +148,7 @@ const BoardWrite = () => {
                                 value={title}
                                 onChange={handleTitleChange}
                                 required
-                                style={{width: '800px', height: '30px'}}
+                                style={{ width: '800px', height: '30px' }}
                             />
                         </div>
                         <div style={{display: 'flex'}}>
@@ -140,12 +158,20 @@ const BoardWrite = () => {
                                 onChange={handleMustReadChange}
                             /><b style={{marginTop: '15px', marginLeft: '10px'}}>공지사항</b>
 
-                            <input
-                                type="checkbox"
-                                checked={mustMustRead}
-                                onChange={handleMustMustReadChange}
-                                style={{marginLeft: '20px'}}
-                            /><b style={{marginTop: '15px', marginLeft: '10px'}}>중요</b>
+                            <div style={{display: 'flex', alignItems: 'center', marginLeft: '20px'}}>
+                                <input
+                                    type="checkbox"
+                                    checked={mustMustRead}
+                                    onChange={handleMustMustReadChange}
+                                    disabled={mustMustReadCount >= 8 && !mustMustRead}
+                                />
+                                <b style={{marginTop:'2px', marginLeft: '10px',fontSize:'15px'}}>중요</b>
+                                {mustMustReadCount >= 8 && !mustMustRead && (
+                                    <span style={{color: 'red', marginLeft: '10px',fontSize:'12px'}}>
+                                        중요게시글이 8개를 넘을 수 없습니다.
+                                    </span>
+                                )}
+                            </div>
                         </div>
                         <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                             <b style={{width: '65px', textAlign: 'center'}}>첨부파일</b>
@@ -186,7 +212,7 @@ const BoardWrite = () => {
                                 backgroundColor: isDragActive ? '#f0f0f0' : 'white',
                                 marginBottom: '20px',
                                 width: '800px',
-                                height:'100px'
+                                height: '100px'
                             }}
                         >
                             <input {...getInputProps()} />
@@ -203,20 +229,20 @@ const BoardWrite = () => {
                                 />
                             ) : (
                                 <>
-                                    <UploadFileIcon style={{color: 'gray', marginBottom: '5px'}}/>
-                                    <p style={{color: 'gray'}}>파일을 여기에 드래그하여 파일을 선택하세요.</p>
+                                    <UploadFileIcon style={{ color: 'gray', marginBottom: '5px' }}/>
+                                    <p style={{ color: 'gray' }}>파일을 여기에 드래그하여 파일을 선택하세요.</p>
                                 </>
                             )}
                         </Box>
-                        <div style={{marginTop:'-20px'}}>
+                        <div style={{ marginTop: '-20px' }}>
                             <label htmlFor="content"></label>
                             <ReactQuill
                                 id="content"
                                 theme="snow"
                                 value={content}
                                 onChange={handleContentChange}
-                                modules={{toolbar: toolbarOptions}}
-                                style={{width: '800px', height: '400px',backgroundColor:'white'}}
+                                modules={{ toolbar: toolbarOptions }}
+                                style={{ width: '800px', height: '400px', backgroundColor: 'white' }}
                                 placeholder='내용을 입력하세요!'
                             />
                         </div>
@@ -231,7 +257,7 @@ const BoardWrite = () => {
                                 border: 'none',
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                 transition: 'all 0.3s ease',
-                                marginTop:'80px'
+                                marginTop: '80px'
                             }}
                             onMouseOver={(e) => {
                                 e.target.style.backgroundColor = '#74d2ff';
@@ -246,24 +272,30 @@ const BoardWrite = () => {
                         >
                             등록
                         </Button>
-                        <Button variant="contained" style={{        color: 'white',
-                            backgroundColor: '#8c8b89',
-                            backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)', // 회색 그라데이션
-                            border: 'none',
-                            marginTop:'80px',
-                            marginLeft:'20px',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                            transition: 'background-color 0.3s ease',}} onClick={handleBackClick}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
-                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
-                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
-                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
-                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
-                                }}>
+                        <Button
+                            variant="contained"
+                            style={{
+                                color: 'white',
+                                backgroundColor: '#8c8b89',
+                                backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
+                                border: 'none',
+                                marginTop: '80px',
+                                marginLeft: '20px',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                transition: 'background-color 0.3s ease'
+                            }}
+                            onClick={handleBackClick}
+                            onMouseOver={(e) => {
+                                e.target.style.backgroundColor = '#2bb48c';
+                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
+                                e.target.style.transform = 'scale(1.05)';
+                            }}
+                            onMouseOut={(e) => {
+                                e.target.style.backgroundColor = '#3af0b6';
+                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                                e.target.style.transform = 'scale(1)';
+                            }}
+                        >
                             목록
                         </Button>
                     </form>
