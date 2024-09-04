@@ -318,7 +318,7 @@ function Dashboard() {
                                                         cursor: "pointer",
                                                         transition: "color 0.3s",
                                                     }}
-                                                    onClick={() => handleTitleClick(post.id)}
+                                                    onClick={() => handleTitleClick(post.board.id)}
                                                     onMouseOver={(e) => (e.target.style.color = "#ffb121")}
                                                     onMouseOut={(e) => (e.target.style.color = "inherit")}
                                                 >

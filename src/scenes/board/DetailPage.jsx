@@ -162,9 +162,15 @@ const DetailPage = () => {
                         </Typography>
                     </Box>
                     <Box mb={2} style={{width: '300px',marginTop:'-50px'}}>
-                        <Typography variant="subtitle1" style={{marginLeft:'910px',width:'400px',marginTop:'-20px'}}>
+                        <Typography variant="subtitle1" style={{ marginLeft: '910px', width: '400px', marginTop: '-20px' }}>
                             작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                         </Typography>
+
+                        {post.updateDate && new Date(post.updateDate) > new Date(post.createDate) && (
+                            <Typography variant="subtitle1" style={{ marginLeft: '910px', width: '400px', marginTop: '5px' }}>
+                                수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
+                            </Typography>
+                        )}
                         <Typography style={{marginLeft:'1035px',width:'400px',paddingTop:'10px'}}>
                             조회수: {Math.floor(post.readCount / 2)}
                         </Typography>
