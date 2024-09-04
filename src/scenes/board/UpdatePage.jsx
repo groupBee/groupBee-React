@@ -149,7 +149,7 @@ const UpdatePage = () => {
                             control={
                                 <Checkbox
                                     checked={mustMustRead}
-                                    onChange={handleMustMustReadChange}
+                                    disabled
                                     style={{ marginLeft: '20px' }}
                                 />
                             }
