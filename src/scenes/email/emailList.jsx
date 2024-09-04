@@ -4,8 +4,6 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import MailOpenIcon from '@mui/icons-material/Drafts';
 
 function EmailList() {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [emails, setEmails] = useState([]);
     const [error, setError] = useState('');
     const [selectedEmail, setSelectedEmail] = useState(null);
@@ -20,7 +18,6 @@ function EmailList() {
 
     // 이메일 목록을 가져오는 함수
     const checkEmail = async () => {
-        console.log(username, password);
 
         try {
             const response = await fetch('/api/email/check', {
@@ -45,6 +42,7 @@ function EmailList() {
 
     // 특정 이메일 내용을 보여주는 함수
     const showMail = (content) => {
+        alert(content)
         setSelectedEmail(content);
         setShowModal(true);
     };
@@ -152,9 +150,11 @@ function EmailList() {
                                     fontWeight: readEmails[index] ? 'normal' : 'bold'}}>{formatDate(email.receivedDate)}</td>
                             </tr>
                         ))}
+                        
                         </tbody>
                     </table>
                 </ul>
+               
             </div>
 
             {/* 페이지네이션 버튼 */}
@@ -212,15 +212,7 @@ function EmailList() {
                 )}
             </div>
 
-            {showModal && (
-                <div className="modal">
-                    <div className="modal-content">
-                        <span className="close" onClick={closeModal}>&times;</span>
-                        <h3>Email Content</h3>
-                        <div dangerouslySetInnerHTML={{ __html: selectedEmail }} />
-                    </div>
-                </div>
-            )}
+        
         </div>
     );
 }

@@ -128,17 +128,19 @@ if(appId){
                 </td>
                 <td>지출유형</td>
                 <td colSpan={3}>
-                    <select value={expendType} onChange={handleExpendTypeChange} name='expendType'
-                            style={{width: '300px', textAlign: 'center'}}>
-                        <option value={0}>자재비</option>
-                        <option value={1}>배송비</option>
-                        <option value={2}>교육비</option>
-                        <option value={4}>식대</option>
-                        <option value={5}>출장</option>
-                        <option value={6}>마일리지</option>
-                        <option value={7}>선물</option>
-                        <option value={3}>기타</option>
-                    </select>
+                <select value={expendType} onChange={handleExpendTypeChange} name='expendType'
+                    style={{width: '300px', textAlign: 'center'}}>
+                    <option value="" disabled>지출유형을 선택해주세요</option> {/* 기본 선택, 비활성화 */}
+                    <option value={0}>자재비</option>
+                    <option value={1}>배송비</option>
+                    <option value={2}>교육비</option>
+                    <option value={4}>식대</option>
+                    <option value={5}>출장</option>
+                    <option value={6}>마일리지</option>
+                    <option value={7}>선물</option>
+                    <option value={3}>기타</option>
+                </select>
+
                 </td>
             </tr>
             <tr style={{ fontSize: '23px' }}>

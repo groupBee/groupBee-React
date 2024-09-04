@@ -21,7 +21,7 @@ const WriteForm = ({ }) => {
     const [attachedFiles, setAttachedFiles] = useState([]);
     const [approveStatus, setApproveStatus] = useState(0);
     const [approveType, setApproveType] = useState(1);
-    const [level, setLevel] = useState(0);
+
     const [approveDate, setApproveDate] = useState(new Date());
     const [appDocType, setAppDocType] = useState(0);
     const [position, setPosition] = useState('');
@@ -71,7 +71,7 @@ const WriteForm = ({ }) => {
                     setAttachedFiles(res.data.attachedFiles || []);
                     setOriginalFiles(res.data.originalFiles || []);
                     setApproveDate(new Date(res.data.writeday));
-                    setLevel(res.data.level);
+
                     setAdditionalFields(res.data.additionalFields || {});
                     setApproveStatus(res.data.approveStatus);
                     setIsDocumentLoaded(true); // 문서가 로드되었음을 명시
@@ -98,7 +98,7 @@ const WriteForm = ({ }) => {
                 setAttachedFiles([]);
                 setOriginalFiles([]);
                 setApproveDate(new Date());
-                setLevel(0);
+
                 setAdditionalFields({});
                 setApproveStatus(null);
             })
@@ -175,7 +175,7 @@ const WriteForm = ({ }) => {
         const newErrors = {};
         if (!secondApprover) newErrors.secondApprover = "중간승인자를 입력하세요.";
         if (!thirdApprover) newErrors.thirdApprover = "최종승인자를 입력하세요.";
-        if (!level) newErrors.level = "보안등급을 입력하세요.";
+
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -193,7 +193,6 @@ const WriteForm = ({ }) => {
             const newKey = key.replace(/__/g, '.');
             transformedAdditionalFields[newKey] = additionalFields[key];
         });
-
         const postData = {
             writer,
             writerIdNumber,
@@ -205,7 +204,6 @@ const WriteForm = ({ }) => {
             attachedFiles, // 서버에서 반환된 파일 경로 배열
             approveStatus: status,
             appDocType,
-            level,
             approveType,
             position,
             department,
@@ -242,12 +240,31 @@ const WriteForm = ({ }) => {
     };
 
     const handleModalSelect = (value) => {
+        // 본인 체크: 선택된 사람이 작성자(writer)와 같으면 경고 메시지를 띄움
+        if (value.name === writer) {
+            alert('본인은 승인자로 지정할 수 없습니다.');
+            return;
+        }
+    
+        // 승인자 중복 체크: secondApprover와 thirdApprover가 같으면 경고
+        if (currentApproverType === 'second' && value.name === thirdApprover) {
+            alert('중간 승인자와 최종 승인자는 같을 수 없습니다.');
+            return;
+        }
+    
+        if (currentApproverType === 'third' && value.name === secondApprover) {
+            alert('최종 승인자와 중간 승인자는 같을 수 없습니다.');
+            return;
+        }
+    
+        // 현재 승인자 타입에 따라 승인자 설정
         if (currentApproverType === 'second') {
             setSecondApprover(value.name);
         } else if (currentApproverType === 'third') {
             setThirdApprover(value.name);
         }
     };
+    
 
     return (
         <div style={{
@@ -359,14 +376,13 @@ const WriteForm = ({ }) => {
                             <td><input type="text" defaultValue={department}
                                 style={{ fontSize: '23px', width: '175px' }} readOnly />
                             </td>
-                            <td style={{ minWidth: '90px', fontSize: '23px' }}>직급</td>
-                            <td><input type="text" defaultValue={position}
+                            <td></td>
+                            <td  style={{ minWidth: '90px', fontSize: '23px' }}>직급</td>
+                            <td colSpan={2}><input type="text" defaultValue={position}
                                 style={{ fontSize: '23px', width: '175px' }} readOnly />
                             </td>
-                            <td style={{ minWidth: '70px', fontSize: '23px' }}>보안등급</td>
-                            <td><input type="number" value={level} onChange={(e) => setLevel(e.target.value)}
-                                style={{ fontSize: '23px', width: '175px' }} />
-                                {errors.level && <div className="error">{errors.level}</div>}</td>
+
+                       
                         </tr>
                         {appDocType === 0 &&
                             <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange} days={additionalFields.leaveDays} appId={appId} />}
