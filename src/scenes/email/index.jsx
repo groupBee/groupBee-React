@@ -1,8 +1,7 @@
-import {Box,Button} from "@mui/material";
+import { Box, Button } from "@mui/material";
 import SendMail from "./sendEmail";
 import { useState } from "react";
 import EmailList from "./emailList";
-import {Header} from "../../components/index.jsx";
 
 const EmailMain = () => {
     const [view, setView] = useState("send");
@@ -27,19 +26,35 @@ const EmailMain = () => {
                 <div>
                     <div>
                         <Button
-                            variant='contained'
-                            sx={{ backgroundColor: sendMailButtonColor }}
                             onClick={handleSendMailButtonClick}
-                            style={{fontSize:'15px'}}
+                            sx={{
+                                backgroundColor: 'transparent',
+                                color: sendMailButtonColor,
+                                fontSize: '15px',
+                                padding: '0',
+                                textTransform: 'none',
+                                '&:hover': {
+                                    backgroundColor: 'transparent',
+                                    color: '#f7b552',  // hover 시 색상 변경
+                                }
+                            }}
                         >
                             메일 보내기
                         </Button>
                         &nbsp;&nbsp;&nbsp;
                         <Button
-                            variant="contained"
-                            sx={{ backgroundColor: listMailButtonColor }}
                             onClick={handleListMailButtonClick}
-                            style={{fontSize:'15px'}}
+                            sx={{
+                                backgroundColor: 'transparent',
+                                color: listMailButtonColor,
+                                fontSize: '15px',
+                                padding: '0',
+                                textTransform: 'none',
+                                '&:hover': {
+                                    backgroundColor: 'transparent',
+                                    color: '#f7b552',  // hover 시 색상 변경
+                                }
+                            }}
                         >
                             받은 메일함
                         </Button>

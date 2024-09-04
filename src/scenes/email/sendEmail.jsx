@@ -14,8 +14,6 @@ const isValidEmail = (email) => {
 
 const SendEmail = () => {
     const location = useLocation();
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [to, setTo] = useState([]);  // To 필드를 배열로 변경
     const [cc, setCc] = useState([]);  // CC 필드를 배열로 변경
     const [subject, setSubject] = useState('');
@@ -29,14 +27,19 @@ const SendEmail = () => {
     const [errorMessage, setErrorMessage] = useState('');  // 오류 메시지 상태 추가
     const [textareaHeight, setTextareaHeight] = useState(350);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [userEmail,setUserEmail]=useState("");
 
-    // const getinfo = () => {
-    //     axios.get("/api/employee/auth/email")
-    //         .then(res => {
-    //             setUsername(res.data.email)
-    //             setPassword(res.data.password)
-    //         })
-    // }
+    //내정보 구하기
+    const getInfo =()=>{
+        axios.get("/api/elecapp/getinfo")
+        .then(res => {
+           setUserEmail(res.data.email);
+        })
+    }
+
+    useEffect(()=>{
+        getInfo();
+    },[])
 
     useEffect(() => {
         // 쿼리 파라미터에서 이메일 주소 가져오기
@@ -63,7 +66,6 @@ const SendEmail = () => {
         e.preventDefault();
 
         const emailData = {
-
             to,
             cc,
             subject,
@@ -96,10 +98,23 @@ const SendEmail = () => {
     };
 
     const handleModalSelect = (value) => {
+        if (value.email === userEmail) {
+            alert('본인은 수신자로 추가할 수 없습니다.');
+            return;
+        }
+    
         if (targetField === 'to') {
-            setTo(prev => [...prev, value.email]);
+            if (!to.includes(value.email) && !cc.includes(value.email)) {  // 중복 체크: to와 cc 간
+                setTo(prev => [...prev, value.email]);
+            } else {
+                alert('이미 추가된 이메일입니다.');
+            }
         } else if (targetField === 'cc') {
-            setCc(prev => [...prev, value.email]);
+            if (!cc.includes(value.email) && !to.includes(value.email)) {  // 중복 체크: cc와 to 간
+                setCc(prev => [...prev, value.email]);
+            } else {
+                alert('이미 추가된 이메일입니다.');
+            }
         }
     };
 
@@ -113,18 +128,31 @@ const SendEmail = () => {
 
     const handleAddEmail = (field) => {
         let email = field === 'to' ? toInput.trim() : ccInput.trim();
-
+    
+        if (email === userEmail) {
+            alert('본인은 수신자로 추가할 수 없습니다.');
+            return;
+        }
+    
         if (!isValidEmail(email)) {
             alert('유효하지 않은 이메일 주소입니다.');
             return;
         }
-
+    
         if (field === 'to' && toInput.trim()) {
-            setTo(prev => [...prev, toInput]);
-            setToInput('');
+            if (!to.includes(toInput) && !cc.includes(toInput)) {  // 중복 체크: to와 cc 간
+                setTo(prev => [...prev, toInput]);
+                setToInput('');
+            } else {
+                alert('이미 추가된 이메일입니다.');
+            }
         } else if (field === 'cc' && ccInput.trim()) {
-            setCc(prev => [...prev, ccInput]);
-            setCcInput('');
+            if (!cc.includes(ccInput) && !to.includes(ccInput)) {  // 중복 체크: cc와 to 간
+                setCc(prev => [...prev, ccInput]);
+                setCcInput('');
+            } else {
+                alert('이미 추가된 이메일입니다.');
+            }
         }
     };
 
@@ -154,13 +182,8 @@ const SendEmail = () => {
         open();
     };
 
-    // useEffect(() => {
-    //     getinfo();
-    // }, []);
-
     return (
         <div>
-            <h2 style={{ marginTop: '20px' }}>메일 보내기</h2>
             <form onSubmit={handleSendEmail}>
                 <hr />
                 <div style={{
@@ -169,15 +192,6 @@ const SendEmail = () => {
                     border: '1px solid #ddd',
                     padding: '10px 30px'
                 }}>
-                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                        <button type="submit"
-                                style={{
-                                    marginTop: '5px', backgroundColor: 'transparent', border: '1px solid black'
-                                    , padding: '6px 20px', borderRadius: '4px'
-                                }}>
-                            보내기
-                        </button>
-                    </Box>
                     <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                         <b style={{width: '70px', textAlign: 'center'}}>받는사람</b>
                         <TextField
@@ -323,6 +337,15 @@ const SendEmail = () => {
                     />
                     </Box>
                 </div>
+                 <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                        <button type="submit"
+                                style={{
+                                    marginTop: '5px', backgroundColor: 'transparent', border: '1px solid black'
+                                    , padding: '6px 20px', borderRadius: '4px'
+                                }}>
+                            보내기
+                        </button>
+                    </Box>
             </form>
             <GroupModal
                 open={modalOpen}
