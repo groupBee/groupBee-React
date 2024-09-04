@@ -70,15 +70,17 @@ const Board = () => {
                 const endIndex = startIndex + itemsPerPage;
                 const displayedRegularPosts = sortedRegularPosts.slice(startIndex, endIndex);
 
+                // Must-read posts are numbered first, followed by the regular posts
                 const finalPosts = [
-                    ...sortedImportantPosts,
-                    ...displayedRegularPosts
-                ].map((post, index) => ({
-                    ...post,
-                    displayNumber: post.board.mustMustRead
-                        ? <b style={{ color: 'red', marginLeft: '-5px' }}>[중요]</b>
-                        : totalRegularPosts - (startIndex + index) + 8
-                }));
+                    ...sortedImportantPosts.map((post, index) => ({
+                        ...post,
+                        displayNumber: <b style={{ color: 'red', marginLeft: '-5px' }}>[중요]</b>
+                    })),
+                    ...displayedRegularPosts.map((post, index) => ({
+                        ...post,
+                        displayNumber: totalRegularPosts - (startIndex + index)
+                    }))
+                ];
 
                 setBoardList(finalPosts);
                 setTotalPages(Math.ceil(totalRegularPosts / itemsPerPage));
