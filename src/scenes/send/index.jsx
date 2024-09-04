@@ -1,4 +1,4 @@
-import { Box, Button, Typography, useTheme } from "@mui/material";
+import {Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, useTheme} from "@mui/material";
 import { Header } from "../../components";
 import { tokens } from "../../theme";
 import { useEffect, useState } from "react";
@@ -58,7 +58,8 @@ const Invoices = () => {
     };
 
     // 버튼 클릭 핸들러
-    const handleFilterClick = (filterType) => {
+    const handleFilterChange = (event) => {
+        const filterType = event.target.value;
         setActiveFilter(filterType); // 필터 상태 업데이트
         applyFilter(filterType); // 필터 적용
     };
@@ -123,9 +124,20 @@ const Invoices = () => {
         <Box m="20px">
             <Header title="발신목록" subtitle="List of Invoice Balances" />
             <Box mt="40px" height="75vh" maxWidth="100%">
-                <Button onClick={() => handleFilterClick("모두보기")}>모두보기</Button>
-                <Button onClick={() => handleFilterClick("발신")}>발신</Button>
-                <Button onClick={() => handleFilterClick("임시저장")}>임시저장</Button>
+                <Box mb="20px" display="flex" justifyContent="flex-end">
+                <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
+                    <InputLabel>상태</InputLabel>
+                    <Select
+                        value={activeFilter}
+                        onChange={handleFilterChange}
+                        label="상태"
+                    >
+                        <MenuItem value="모두보기">모두보기</MenuItem>
+                        <MenuItem value="발신">발신</MenuItem>
+                        <MenuItem value="임시저장">임시저장</MenuItem>
+                    </Select>
+                </FormControl>
+                </Box>
 
                 <table className="table table-bordered">
                     <caption></caption>

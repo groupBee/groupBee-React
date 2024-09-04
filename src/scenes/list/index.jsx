@@ -47,8 +47,8 @@ const List = () => {
         }
     };
 
-    const handleChange = (e) => {
-        setStatus(e);
+    const handleChange = (event) => {
+        setStatus(event.target.value);
         setCurrentPage(1); // 상태가 바뀔 때 페이지 번호 초기화
     };
 
@@ -102,15 +102,21 @@ const List = () => {
     return (
         <Box m="20px">
             <Header title="결재현황" subtitle="List of Contacts for Future Reference" />
-            <Box mb="20px" display="flex" justifyContent="center">
-                <div >
-                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("all")}>모두 보기</Button>
-                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("rejected")}>반려 </Button>
-                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("ready")}>결재 대기</Button>
-                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("ing")}>결재 중</Button>
-                    <Button variant="outlined" color='warning' onClick={(e) => handleChange("done")}>결재 완료</Button>
-                </div>
-
+            <Box mb="20px" display="flex" justifyContent="flex-end">
+                <FormControl variant="outlined" size="small" style={{ minWidth: 120 }}>
+                    <InputLabel>상태</InputLabel>
+                    <Select
+                        value={status}
+                        onChange={handleChange}
+                        label="상태"
+                    >
+                        <MenuItem value="all">모두 보기</MenuItem>
+                        <MenuItem value="rejected">반려</MenuItem>
+                        <MenuItem value="ready">결재 대기</MenuItem>
+                        <MenuItem value="ing">결재 중</MenuItem>
+                        <MenuItem value="done">결재 완료</MenuItem>
+                    </Select>
+                </FormControl>
             </Box>
 
             <table className="table table-bordered">
