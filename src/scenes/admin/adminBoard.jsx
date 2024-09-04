@@ -139,27 +139,37 @@ const AdminBoard = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {boardList.map((list, index) => (
-                            <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{index + 1}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem',
-                                    maxWidth: '100px',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis',
-                                    whiteSpace: 'nowrap' }}>{list.board.title}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.id}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem' }}>
-                                    {formatDateTimeString(list.board.createDate)}
-                                </TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.readCount}</TableCell>
-                                <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
-                                    <IconButton onClick={() => handleDelete(list.id)}>
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </TableCell>
-                            </TableRow>
-                        ))}
+                        {boardList
+                            .sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate)) // 최신순 정렬
+                            .map((list, index) => (
+                                <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
+                                        {boardList.length - index} {/* 최신 게시물부터 번호 부여 */}
+                                    </TableCell>
+                                    <TableCell align="center" sx={{
+                                        fontSize: '0.9rem',
+                                        maxWidth: '100px',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        {list.board.title}
+                                    </TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.writer}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem' }}>
+                                        {formatDateTimeString(list.board.createDate)}
+                                    </TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.readCount}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
+                                        <IconButton onClick={() => handleDelete(list.id)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                     </TableBody>
+
+
                 </Table>
             </Box>
             </Box>
