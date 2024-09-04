@@ -283,7 +283,7 @@ function Dashboard() {
                                 msOverflowStyle: "none", /* IE and Edge */
                                 "&::-webkit-scrollbar": { display: "none" } /* Webkit */
                             }}>
-                                <table className="table table-hover" style={{ minWidth: "100%" }}> {/* 테이블의 최소 너비 설정 */}
+                                <table className="table table-hover" style={{ minWidth: "100%" }}>
                                     <thead>
                                     <tr>
                                         <td style={{ width: "50px" }}></td>
@@ -297,37 +297,39 @@ function Dashboard() {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {boardList.map((post) => (
-                                        <tr key={post.id}>
-                                            <td>
-                                                {post.board.mustMustRead && (
-                                                    <span style={{ color: "#ff4d4f" }}>
-                                <b>[중요]</b>
-                            </span>
-                                                )}
-                                            </td>
-                                            <td
-                                                style={{
-                                                    fontWeight: post.board.mustMustRead ? "bold" : "normal",
-                                                    maxWidth: "410px",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    whiteSpace: "nowrap",
-                                                    cursor: "pointer",
-                                                    transition: "color 0.3s",
-                                                }}
-                                                onClick={() => handleTitleClick(post.id)}
-                                                onMouseOver={(e) => (e.target.style.color = "#ffb121")}
-                                                onMouseOut={(e) => (e.target.style.color = "inherit")}
-                                            >
-                                                {post.board.title}
-                                            </td>
-                                            <td style={{ textAlign: "center" }}>{post.board.writer}</td>
-                                            <td style={{ textAlign: "center" }}>
-                                                {new Date(post.board.createDate).toLocaleDateString()}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                    {boardList
+                                        .sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate)) // 최신순 정렬
+                                        .map((post) => (
+                                            <tr key={post.id}>
+                                                <td>
+                                                    {post.board.mustMustRead && (
+                                                        <span style={{ color: "#ff4d4f" }}>
+                                        <b>[중요]</b>
+                                    </span>
+                                                    )}
+                                                </td>
+                                                <td
+                                                    style={{
+                                                        fontWeight: post.board.mustMustRead ? "bold" : "normal",
+                                                        maxWidth: "410px",
+                                                        overflow: "hidden",
+                                                        textOverflow: "ellipsis",
+                                                        whiteSpace: "nowrap",
+                                                        cursor: "pointer",
+                                                        transition: "color 0.3s",
+                                                    }}
+                                                    onClick={() => handleTitleClick(post.id)}
+                                                    onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                                    onMouseOut={(e) => (e.target.style.color = "inherit")}
+                                                >
+                                                    {post.board.title}
+                                                </td>
+                                                <td style={{ textAlign: "center" }}>{post.board.writer}</td>
+                                                <td style={{ textAlign: "center" }}>
+                                                    {new Date(post.board.createDate).toLocaleDateString()}
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
