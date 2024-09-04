@@ -188,12 +188,41 @@ const AdminInfo = () => {
         }
     };
 
+    //초기화 버튼
+    const reset = async () => {
+        const resetData = {
+            data: "reset-password"  // 서버와의 약속된 문자열 또는 초기화 요청 값
+        };
+
+        try {
+            const response = await axios.put('/api/employee/auth/reset', resetData);
+            console.log('Password reset successful:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            throw error;
+        }
+    };
+
+    //동기화 버튼
+    const synchronization = async (data) => {
+        try {
+            const response = await axios.put('/api/employee/sync', data);
+            console.log('Data successfully sent:', response.data);
+            return response.data; // 필요시 반환
+        } catch (error) {
+            console.error('Error sending data:', error);
+            throw error; // 필요시 에러 재던짐
+        }
+    };
+
+
     return (
         <Box style={{ padding: '20px' }}>
             <Box p={2}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
-                    <Box display="flex" alignItems="center" gap={2}>
-
+                    <Box display="flex" alignItems="" gap={2} >
+                        <Button variant='contained' color='secondary' onClick={synchronization}>동기화</Button>
                     </Box>
                 </Box>
                 <Box borderBottom="1px solid #e0e0e0" />
@@ -393,8 +422,9 @@ const AdminInfo = () => {
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
-                                            <TableCell colSpan={6} style={{ textAlign: 'center' }}>
-                                                <Button variant='contained' color='secondary' onClick={changeInfo}>변경</Button>
+                                            <TableCell colSpan={6} style={{ textAlign: 'center'}}>
+                                                <Button variant='contained' color='secondary' onClick={changeInfo} >변경</Button>
+                                                <Button variant='contained' color='secondary' onClick={reset}>비밀번호 초기화</Button>
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>

@@ -19,12 +19,10 @@ import {
     ListAltOutlined,
     DescriptionOutlined, WorkOutlineOutlined, Chat,
 } from "@mui/icons-material";
-import avatar from "../../../assets/images/avatar.png";
 import logo from "../../../assets/images/logo.png";
 import Item from "./Item";
 import {ToggledContext} from "../../../App";
 import OrganizationModal from "../navbar/organizationModal.jsx";
-import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
 const SideBar = () => {
