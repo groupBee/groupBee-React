@@ -403,7 +403,7 @@ function Dashboard() {
                     <Box borderBottom={`2px solid #ffb121`} p="13px">
                         <Typography color={colors.gray[100]} variant="h5" fontWeight="600" display="flex"
                                     justifyContent="space-between" alignItems="center">
-                            결재현황
+                            결재수신현황
                             <IconButton onClick={handleList}>
                                 <MoreHoriz style={{color: "gray"}}/>
                             </IconButton>

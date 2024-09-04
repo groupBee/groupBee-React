@@ -37,7 +37,7 @@ const List = () => {
     };
 
     const getList = async (fetchedMemberId) => {
-        if (!fetchedMemberId) return; // memberId가 비어 있으면 실행하지 않음
+        // if (!fetchedMemberId) return; // memberId가 비어 있으면 실행하지 않음
         try {
             const res = await axios.get(`/api/elecapp/status?memberId=${fetchedMemberId}&status=${status}`);
             setFilteredData(res.data);
