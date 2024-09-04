@@ -20,9 +20,6 @@ const Calendar = () => {
     const [filteredEvents, setFilteredEvents] = useState([]);
     const [initialLoad, setInitialLoad] = useState(true);  // 무한루프 방지를 위한 플래그
 
-    const CALENDAR_ID = 'ko.south_korea#holiday@group.v.calendar.google.com';
-    const API_KEY = import.meta.env.VITE_GOOGLE_CALENDAR_API_KEY;
-
     /* 백엔드 데이터 리스트 출력 */
     const fetchData = async (year) => {
         try {
@@ -36,7 +33,7 @@ const Calendar = () => {
             const backendEvents = calendarData.map((event) => ({
                 id: event.id,
                 title: event.title,
-                content: event.content,
+                content: event.content || "",
                 start: event.startDay,
                 end: event.endDay,
                 backgroundColor: '#ffc107',
@@ -50,11 +47,9 @@ const Calendar = () => {
     };
 
     useEffect(() => {
-        if (initialLoad) {
-            fetchData();
-            setInitialLoad(false);
-        }
-    }, [initialLoad]);
+        fetchData()
+    }, []);
+
 
     /* fullcalendar 관련된 설정 */
     const theme = useTheme();
@@ -111,15 +106,15 @@ const Calendar = () => {
             };
 
             calendarApi.addEvent(event);
-            // fetchData();
+            await fetchData();
         }
     };
 
     const handleEventClick = async (selected) => {
         if (selected.event.url) {
-            // 구글 캘린더 이벤트인 경우 기본 동작을 막습니다.
-            selected.jsEvent.preventDefault(); // 기본 동작 막기
-            selected.jsEvent.stopPropagation(); // 이벤트 전파 막기
+            // // 구글 캘린더 이벤트인 경우 기본 동작을 막습니다.
+            // selected.jsEvent.preventDefault(); // 기본 동작 막기
+            // selected.jsEvent.stopPropagation(); // 이벤트 전파 막기
         } else {
             try {
                 const eventFromDb = await fetch(`/api/calendar/${selected.event.id}`).then(response => response.json());
@@ -132,26 +127,18 @@ const Calendar = () => {
                     bookType: eventFromDb.bookType,
                     corporateCarId: eventFromDb.corporateCarId,
                 };
-    
+
                 let result;
                 if (eventData.bookType === 0) {
                     result = await showModal(eventData.id, eventData.title, 'confirm', eventData);
                 } else {
                     result = await deleteModal(eventData.id, eventData.title, 'delete', eventData);
                 }
-    
+
                 if (result) fetchData();
             } catch (error) {
                 console.error('이벤트 처리 중 오류 발생:', error);
             }
-        }
-    };
-    
-
-    // 무한루프를 방지하기 위해 이벤트가 변경되었을 때만 상태를 업데이트
-    const handleEventsSet = (newEvents) => {
-        if (JSON.stringify(newEvents) !== JSON.stringify(filteredEvents)) {
-            setFilteredEvents(filterEventsForDate(newEvents, new Date()));
         }
     };
 
@@ -226,7 +213,6 @@ const Calendar = () => {
                         selectable={true}
                         selectMirror={true}
                         dayMaxEvents={true}
-                        googleCalendarApiKey={API_KEY}
                         // eventSources={[
                         //     {
                         //         googleCalendarId: CALENDAR_ID,
@@ -238,7 +224,7 @@ const Calendar = () => {
                         //         events, // 기존 이벤트
                         //     },
                         // ]}
-                        eventSources={events}
+                        events={events}
                         ref={fullcalendarRef}
                         select={handleDateClick} // 날짜 클릭 핸들러 추가
                         eventClick={handleEventClick} // 이벤트 클릭 핸들러 추가
