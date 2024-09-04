@@ -14,12 +14,14 @@ import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
 import {Table} from "react-bootstrap";
 import DeleteIcon from "@mui/icons-material/Delete.js";
 import Swal from "sweetalert2";
+import {useNavigate} from "react-router-dom";
 
 const AdminBoard = () => {
     const [sortOrder, setSortOrder] = useState('default');
     const isMdDevices = useMediaQuery("(max-width:768px)");
     const isXsDevices = useMediaQuery("(max-width:466px)");
     const [boardList, setBoardList] = useState([]);
+    const navigate = useNavigate();
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value);
@@ -30,6 +32,7 @@ const AdminBoard = () => {
         try {
             const Response = await fetch('/api/board/list');
             const data = await Response.json();
+            console.log(data)
             setBoardList(data);
 
         } catch (error) {
@@ -68,6 +71,7 @@ const AdminBoard = () => {
                     // 삭제 성공 시 알림을 표시하고 상태를 업데이트합니다.
                     Swal.fire('삭제 완료!', '항목이 성공적으로 삭제되었습니다.', 'success');
                     // 삭제 후 상태 업데이트
+                    fetchData();
                     setBoardList(boardList.filter(item => item.id !== id));
                 } else {
                     // 실패 시 오류 메시지 표시
@@ -84,6 +88,10 @@ const AdminBoard = () => {
         // 날짜 문자열에서 필요한 부분만 추출
         // 예: '2024-08-31T16:43:41.290512' -> '2024-08-31 16:43:41'
         return dateString.substring(0, 19).replace('T', ' ');
+    };
+
+    const moveDetail = (id) => {
+        navigate(`/board/list/${id}/1`);
     };
 
 
@@ -151,8 +159,11 @@ const AdminBoard = () => {
                                         maxWidth: '100px',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap'
-                                    }}>
+                                        whiteSpace: 'nowrap',
+                                        cursor: 'pointer'
+                                    }}
+                                    onClick={()=> moveDetail(list.board.id)}
+                                    >
                                         {list.board.title}
                                     </TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.writer}</TableCell>
@@ -161,7 +172,7 @@ const AdminBoard = () => {
                                     </TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.readCount}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
-                                        <IconButton onClick={() => handleDelete(list.id)}>
+                                        <IconButton onClick={() => handleDelete(list.board.id)}>
                                             <DeleteIcon />
                                         </IconButton>
                                     </TableCell>

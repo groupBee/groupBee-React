@@ -140,16 +140,19 @@ const AdminBook = () => {
     };
 
     const combinedBookings = [
-        ...carBookings.map(booking => ({
-            ...booking,
-            type: getCarTypeByCarId(booking.corporateCarId),
-            category: '차량'
-        })),
+        ...carBookings.map(booking => {
+            const car = carData.find(car => car.id === booking.corporateCarId);
+            return {
+                ...booking,
+                type: getCarTypeByCarId(booking.corporateCarId),  // 이미 정의된 함수를 사용
+                carId: car ? car.carId : 'Unknown',
+                category: '차량'
+            };
+        }),
         ...roomBookings.map(booking => ({
             ...booking,
             type: getRoomNameByRoomId(booking.roomId),
             category: '회의실'
-
         }))
     ];
 
@@ -243,7 +246,7 @@ const AdminBook = () => {
                                 <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.memberId}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.category}</TableCell>
-                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.type}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.type} ({booking.carId})</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{formatDateTime(booking.rentDay || booking.enter)}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{formatDateTime(booking.returnDay || booking.leave)}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.reason || booking.purpose}</TableCell>
