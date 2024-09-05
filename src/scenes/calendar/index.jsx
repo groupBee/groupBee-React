@@ -21,7 +21,7 @@ const Calendar = () => {
     /* 백엔드 데이터 리스트 출력 */
     const fetchData = async (year) => {
         try {
-            const calendarResponse = await fetch(`/api/calendar/google/${year}`);
+            const calendarResponse = await fetch(`/api/calendar/list/${year}`);
             if (!calendarResponse.ok) {
                 console.error(`${calendarResponse.status}: 오류가 발생했습니다.`);
                 return;
