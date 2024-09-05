@@ -240,7 +240,7 @@ const Board = () => {
                                     >
                                         {row.board.mustRead && <span><b>[공지]&nbsp;</b></span>}
                                         {row.board.title}
-                                        {row.board.file && <AttachFileIcon style={{ width: '15px', height: '15px' }} />}
+                                        {row.board.files && <AttachFileIcon style={{ width: '15px', height: '15px' }} />}
                                         {row.commentCount > 0 && <span style={{ marginLeft: '10px' }}>({row.commentCount})</span>}
                                     </td>
                                     <td style={{ textAlign: "center" }}>{row.board.writer}</td>

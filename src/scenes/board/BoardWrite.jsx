@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Header } from "../../components";
 import axios from 'axios';
 import { Box, Button, Chip } from "@mui/material";
 import { useDropzone } from 'react-dropzone';
@@ -10,14 +9,13 @@ import 'react-quill/dist/quill.snow.css';
 import './Board.css';
 import CreateIcon from '@mui/icons-material/Create';
 
-// 툴바의 모듈을 설정합니다.
 const toolbarOptions = [
     ['bold', 'italic', 'underline', 'strike'],
     ['blockquote', 'code-block'],
     [{ 'header': 1 }, { 'header': 2 }],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'script': 'sub'}, { 'script': 'super' }],
-    [{ 'indent': '-1'}, { 'indent': '+1' }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'script': 'sub' }, { 'script': 'super' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
     [{ 'direction': 'rtl' }],
     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
     ['link', 'image', 'video'],
@@ -34,17 +32,15 @@ const BoardWrite = () => {
     const [readCount, setReadCount] = useState(0);
     const [mustRead, setMustRead] = useState(false);
     const [mustMustRead, setMustMustRead] = useState(false);
-    const [file, setFile] = useState(null);
-    const [originalFileName, setOriginalFileName] = useState('');
+    const [files, setFiles] = useState([]);
     const [mustMustReadCount, setMustMustReadCount] = useState(0);
 
     useEffect(() => {
-        // 게시물 리스트를 가져와서 mustMustRead 게시글 수를 계산합니다.
         const fetchMustMustReadCount = async () => {
             try {
                 const response = await axios.get('/api/board/list');
-                const posts = response.data; // Array of posts
-                const count = posts.filter(p => p.board.mustMustRead).length;
+                const posts = response.data;
+                const count = posts.filter(p => p.mustMustRead).length; // 수정된 부분: board -> mustMustRead
                 setMustMustReadCount(count);
             } catch (error) {
                 console.error('Error fetching mustMustRead count:', error);
@@ -59,7 +55,6 @@ const BoardWrite = () => {
     };
 
     const handleContentChange = (value) => {
-        console.log('Content updated:', value); // 디버깅을 위한 로그
         setContent(value);
     };
 
@@ -76,10 +71,7 @@ const BoardWrite = () => {
     };
 
     const onDrop = (acceptedFiles) => {
-        if (acceptedFiles.length > 0) {
-            setFile(acceptedFiles[0]);
-            setOriginalFileName(acceptedFiles[0].name);
-        }
+        setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
     };
 
     const handleBackClick = () => {
@@ -92,12 +84,11 @@ const BoardWrite = () => {
         noKeyboard: true,
     });
 
-    const DeleteAttachment = () => {
-        setFile(null);
-        setOriginalFileName('');
+    const deleteAttachment = (index) => {
+        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
     };
 
-    const FileAttachClick = (event) => {
+    const fileAttachClick = (event) => {
         event.preventDefault();
         open();
     };
@@ -105,6 +96,7 @@ const BoardWrite = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // 게시글 데이터
         const boardData = {
             title,
             content,
@@ -113,24 +105,29 @@ const BoardWrite = () => {
             readCount,
         };
 
+        // FormData 객체 생성
         const formData = new FormData();
+
+        // boardData를 JSON 문자열로 추가
         formData.append('boardData', JSON.stringify(boardData));
 
-        if (file) {
-            formData.append('file', file);
-            formData.append('originalFileName', originalFileName);
-        }
+        // 파일들을 FormData에 추가
+        files.forEach((file, index) => {
+            formData.append('files', file); // 수정된 부분: 파일을 'files'라는 키로 추가
+        });
 
         try {
-            await axios.post('/api/board/insert', formData, {
+            // 서버에 POST 요청 전송
+            const response = await axios.post('/api/board/insert', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
 
-            navigate('/board');
+            console.log('Response:', response.data); // 응답 확인
+            navigate('/board'); // 성공 시 페이지 이동
         } catch (error) {
-            console.error('Error creating post or uploading file:', error);
+            console.error('Error creating post or uploading files:', error);
         }
     };
 
@@ -139,22 +136,18 @@ const BoardWrite = () => {
             <Box
                 height="auto"
                 sx={{
-                    position: "absolute", // 절대 위치 지정
-                    top: "50%", // 세로 중앙
-                    left: "50%", // 가로 중앙
-                    transform: "translate(-50%, -50%)", // 중앙으로부터 이동
                     borderRadius: "8px",
                     backgroundColor: "white",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    height: "auto",
-                    width: "80%", // 필요에 따라 너비 조정 가능
-                    maxWidth: "850px", // 필요에 따라 최대 너비 설정
-                    padding: "20px", // 필요에 따라 패딩 추가
+                    marginLeft: '15%',
+                    minHeight: '850px',
+                    width: "80%",
+                    maxWidth: "850px",
+                    padding: "80px",
                 }}
             >
                 <CreateIcon/><h1>게시글 작성</h1>
-            <Box height="75vh">
-                <div>
+                <Box height="75vh">
                     <form onSubmit={handleSubmit}>
                         <Box>
                             <label htmlFor="title"><b style={{ fontSize: '15px' }}>제목</b></label>
@@ -166,39 +159,39 @@ const BoardWrite = () => {
                                 onChange={handleTitleChange}
                                 required
                                 style={{
-                                    width: '100%', // 너비를 100%로 설정
-                                    maxWidth: '800px', // 최대 너비를 800px로 설정
+                                    width: '100%',
+                                    maxWidth: '800px',
                                     height: '30px',
                                     border: '0.5px solid grey'
                                 }}
                             />
                         </Box>
-                        <div style={{display: 'flex'}}>
+                        <div style={{ display: 'flex' }}>
                             <input
                                 type="checkbox"
                                 checked={mustRead}
                                 onChange={handleMustReadChange}
-                            /><b style={{marginTop: '15px', marginLeft: '10px'}}>공지사항</b>
+                            /><b style={{ marginTop: '15px', marginLeft: '10px' }}>공지사항</b>
 
-                            <div style={{display: 'flex', alignItems: 'center', marginLeft: '20px'}}>
+                            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '20px' }}>
                                 <input
                                     type="checkbox"
                                     checked={mustMustRead}
                                     onChange={handleMustMustReadChange}
                                     disabled={mustMustReadCount >= 8 && !mustMustRead}
                                 />
-                                <b style={{marginTop:'2px', marginLeft: '10px',fontSize:'15px'}}>중요</b>
+                                <b style={{ marginTop: '2px', marginLeft: '10px', fontSize: '15px' }}>중요</b>
                                 {mustMustReadCount >= 8 && !mustMustRead && (
-                                    <span style={{color: 'red', marginLeft: '10px',fontSize:'12px'}}>
+                                    <span style={{ color: 'red', marginLeft: '10px', fontSize: '12px' }}>
                                         중요게시글이 8개를 넘을 수 없습니다.
                                     </span>
                                 )}
                             </div>
                         </div>
-                        <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                            <b style={{width: '65px', textAlign: 'center',marginLeft:'-7px'}}>첨부파일</b>
+                        <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                            <b style={{ width: '65px', textAlign: 'center', marginLeft: '-7px' }}>첨부파일</b>
                             <button
-                                onClick={FileAttachClick}
+                                onClick={fileAttachClick}
                                 style={{
                                     marginLeft: '20px',
                                     border: '1px solid #dddd',
@@ -209,20 +202,6 @@ const BoardWrite = () => {
                             >
                                 파일첨부하기
                             </button>
-                            {file && (
-                                <button
-                                    onClick={DeleteAttachment}
-                                    style={{
-                                        marginLeft: '10px',
-                                        border: '1px solid #dddd',
-                                        backgroundColor: 'transparent',
-                                        borderRadius: '4px',
-                                        padding: '3px 6px'
-                                    }}
-                                >
-                                    삭제
-                                </button>
-                            )}
                         </Box>
                         <Box
                             {...getRootProps()}
@@ -233,24 +212,29 @@ const BoardWrite = () => {
                                 textAlign: 'center',
                                 backgroundColor: isDragActive ? '#f0f0f0' : 'white',
                                 marginBottom: '20px',
-                                width: '100%', // 너비를 100%로 설정
-                                maxWidth: '800px', // 최대 너비를 800px로 설정
-                                height: 'auto', // 높이를 자동으로 설정
-                                minHeight: '100px', // 최소 높이를 100px로 설정
+                                width: '100%',
+                                maxWidth: '800px',
+                                height: 'auto',
+                                maxHeight: '90px',
                             }}
                         >
                             <input {...getInputProps()} />
-                            {file ? (
-                                <Chip
-                                    label={originalFileName}
-                                    onDelete={DeleteAttachment}
-                                    sx={{
-                                        maxWidth: '200px',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                        overflow: 'hidden'
-                                    }}
-                                />
+                            {files.length > 0 ? (
+                                files.map((file, index) => (
+                                    <Chip
+                                        key={index}
+                                        label={file.name}
+                                        onDelete={() => deleteAttachment(index)}
+                                        sx={{
+                                            maxWidth: '200px',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            marginRight: '5px',
+                                            marginBottom: '5px'
+                                        }}
+                                    />
+                                ))
                             ) : (
                                 <>
                                     <UploadFileIcon style={{ color: 'gray', marginBottom: '5px' }}/>
@@ -267,7 +251,7 @@ const BoardWrite = () => {
                                 value={content}
                                 onChange={handleContentChange}
                                 modules={{ toolbar: toolbarOptions }}
-                                style={{  width: '100%', maxWidth: '800px', height: '350px', backgroundColor: 'white' }}
+                                style={{ width: '100%', maxWidth: '800px', height: '250px', backgroundColor: 'white', marginBottom: '10px' }}
                                 placeholder='내용을 입력하세요!'
                             />
                         </div>
@@ -282,17 +266,7 @@ const BoardWrite = () => {
                                 border: 'none',
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                 transition: 'all 0.3s ease',
-                                marginTop: '80px'
-                            }}
-                            onMouseOver={(e) => {
-                                e.target.style.backgroundColor = '#74d2ff';
-                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                e.target.style.transform = 'scale(1.05)';
-                            }}
-                            onMouseOut={(e) => {
-                                e.target.style.backgroundColor = '#36c3ff';
-                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                e.target.style.transform = 'scale(1)';
+                                marginTop: '100px'
                             }}
                         >
                             등록
@@ -304,29 +278,18 @@ const BoardWrite = () => {
                                 backgroundColor: '#8c8b89',
                                 backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
                                 border: 'none',
-                                marginTop: '80px',
+                                marginTop: '100px',
                                 marginLeft: '15px',
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                 transition: 'background-color 0.3s ease'
                             }}
                             onClick={handleBackClick}
-                            onMouseOver={(e) => {
-                                e.target.style.backgroundColor = '#2bb48c';
-                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                e.target.style.transform = 'scale(1.05)';
-                            }}
-                            onMouseOut={(e) => {
-                                e.target.style.backgroundColor = '#3af0b6';
-                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                e.target.style.transform = 'scale(1)';
-                            }}
                         >
                             목록
                         </Button>
                     </form>
-                </div>
+                </Box>
             </Box>
-        </Box>
         </Box>
     );
 };
