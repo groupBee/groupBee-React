@@ -197,7 +197,8 @@ const DetailPage = () => {
                             <b style={{fontSize: '20px'}}>{post.title}</b>
                         </Typography>
                         <Typography variant="subtitle1" style={{width: '400px', paddingLeft: '5px', marginTop: '-3px'}}>
-                            작성자: {post.writer}&nbsp;&nbsp;&nbsp;
+                            작성자: {post.writer}&nbsp;&nbsp;&nbsp;<br/>
+                            조회수: {post.readCount}
                         </Typography>
                     </Box>
                     <Box mb={2} style={{width: '300px', marginTop: '-50px'}}>
@@ -213,7 +214,7 @@ const DetailPage = () => {
                             </Typography>
                         )}
                         <Typography style={{ marginLeft: '1035px', width: '400px', paddingTop: '10px' }}>
-                            조회수: {Math.floor(post.readCount / 2)}
+                            조회수: {post.readCount}
                         </Typography>
 
                         <Box mb={2} style={{ width: '300px', display: 'flex', alignItems: 'center' }}>
