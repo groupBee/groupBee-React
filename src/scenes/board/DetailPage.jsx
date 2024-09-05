@@ -152,169 +152,131 @@ const DetailPage = () => {
     };
 
     return (
-        <Box m="20px">
+        <Box sx={{ m: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Box
-                height="auto"
                 sx={{
                     borderRadius: "8px",
-                    backgroundColor: "white",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    top: "50%",
-                    left: "50%",
-                    marginLeft: '10%',
-                    height: "auto",
-                    minHeight: '1000px',
+                    backgroundColor: "#f9f9f9",
+                    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
                     width: "100%",
-                    maxWidth: "1000px",
+                    maxWidth: "900px",
+                    padding: "20px",
+                    marginBottom: "40px",
+                    marginTop: "20px",
                 }}
             >
                 <Box p={3}>
                     {post ? (
-                        <Box display="flex" flexDirection="column" alignItems="flex-start" style={{ backgroundColor: 'white', maxWidth: '1155px', marginLeft: '-24px', paddingLeft: '5%' }}>
-                            <Box mb={2} style={{ width: '300px', }}>
-                                <Typography
-                                    variant="h4"
-                                    gutterBottom
-                                    style={{
-                                        width: '100%',
-                                        minWidth: '900px',
-                                        whiteSpace: 'normal',
-                                        wordWrap: 'break-word',
-                                        padding: '3px',
-                                        marginTop: '20px',
-                                        borderBottom: '1px solid grey',
-                                        backgroundColor: 'white',
-                                    }}
-                                >
-                                    {post.mustRead && <span><b style={{ fontSize: '20px' }}>[공지]&nbsp;</b></span>}
-                                    <b style={{ fontSize: '20px' }}>{post.title}</b>
+                        <Box display="flex" flexDirection="column" alignItems="flex-start">
+                            <Typography
+                                variant="h5"
+                                gutterBottom
+                                sx={{
+                                    fontWeight: "bold",
+                                    borderBottom: "2px solid #eeeeee",
+                                    paddingBottom: "10px",
+                                    marginBottom: "10px",
+                                    color: "#333",
+                                    minWidth:'810px'
+                                }}
+                            >
+                                {post.mustRead && <span><b style={{ fontSize: '20px' }}>[공지]&nbsp;</b></span>}
+                                {post.title}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "#777", marginBottom: "5px" }}>
+                                작성자: {post.writer} | 조회수: {post.readCount}
+                            </Typography>
+                            <Typography variant="body2" sx={{ color: "#777" }}>
+                                작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
+                            </Typography>
+                            {post.updateDate && new Date(post.updateDate) > new Date(post.createDate) && (
+                                <Typography variant="body2" sx={{ color: "#777" }}>
+                                    수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
                                 </Typography>
-                                <Typography variant="subtitle1" style={{ width: '400px', paddingLeft: '5px', marginTop: '-3px' }}>
-                                    작성자: {post.writer}&nbsp;&nbsp;&nbsp;<br />
-                                    조회수: {post.readCount}
-                                </Typography>
-                            </Box>
-                            <Box mb={2} style={{ width: '300px', marginTop: '-50px' }}>
-                                <Typography variant="subtitle1" style={{ marginLeft: '705px', width: '400px', marginTop: '-12px' }}>
-                                    작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
-                                </Typography>
+                            )}
 
-                                {post.updateDate && new Date(post.updateDate) > new Date(post.createDate) && (
-                                    <Typography variant="subtitle1" style={{ marginLeft: '705px', width: '400px', marginBottom: '-23px' }}>
-                                        수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
+                            <Box
+                                sx={{
+                                    marginTop: "20px",
+                                    borderTop: "1px solid #eeeeee",
+                                    paddingTop: "10px",
+                                    width: "100%",
+                                    minHeight:'250px',
+                                    color: "#555",
+                                    maxWidth: '810px',
+                                    overflowWrap: 'break-word'
+                                }}
+                                dangerouslySetInnerHTML={{ __html: post.content }}
+                            />
+
+                            {post.files && post.files.length > 0 && (
+                                <Box sx={{ marginTop: "20px", borderTop: "1px solid #eeeeee", paddingTop: "10px",minWidth:'810px' }}>
+                                    <Typography variant="body2" sx={{ fontWeight: "bold", color: "#333" }}>
+                                        첨부파일:
                                     </Typography>
-                                )}
-
-                                <Box mb={2} style={{ width: '300px' }}>
-                                    {post.files && post.originalFileNames && post.files.length > 0 && post.originalFileNames.length === post.files.length && (
-                                        <Box style={{ borderTop: '1px solid grey', borderBottom: '1px solid grey', width: 'auto', minWidth: '900px', maxWidth: '1100px', paddingBottom: '-10px', marginTop: '30px' }}>
-                                            <Typography variant="body1" style={{ marginBottom: '10px', fontSize: '15px', paddingTop: '5px' }}>
-                                                첨부파일:&nbsp;&nbsp;&nbsp;
-                                                {post.files.map((file, index) => (
-                                                    <div key={index}>
-                                                        <Button
-                                                            onClick={() => downloadFile(`https://minio.bmops.kro.kr/groupbee/board/${file}`, post.originalFileNames[index])}
-                                                            style={{
-                                                                color: '#1e90ff',
-                                                                textDecoration: 'none',
-                                                                fontWeight: 'bold',
-                                                                backgroundColor: 'transparent',
-                                                                border: 'none',
-                                                                padding: '0',
-                                                                cursor: 'pointer',
-                                                                fontSize: '15px',
-                                                                display: 'block',
-                                                                marginBottom: '5px'
-                                                            }}
-                                                        >
-                                                            {post.originalFileNames[index]}
-                                                        </Button>
-                                                    </div>
-                                                ))}
-                                            </Typography>
-                                        </Box>
-                                    )}
+                                    {post.files.map((file, index) => (
+                                        <Button
+                                            key={index}
+                                            onClick={() => downloadFile(`https://minio.bmops.kro.kr/groupbee/board/${file}`, post.originalFileNames[index])}
+                                            sx={{
+                                                display: "block",
+                                                color: "#1e90ff",
+                                                fontSize: "12px",
+                                                textDecoration: "underline",
+                                                marginBottom: "5px"
+                                            }}
+                                        >
+                                            {post.originalFileNames[index]}
+                                        </Button>
+                                    ))}
                                 </Box>
-                            </Box>
+                            )}
 
-                            <Box mb={2} style={{ width: '69%' }}>
-                                <Typography
-                                    variant="body1"
-                                    paragraph
-                                    style={{
-                                        fontSize: '16px',
-                                        lineHeight: '1.6',
-                                        color: '#444'
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            width: '100%',
-                                            minWidth: '900px',
-                                            minHeight: '300px',
-                                            marginTop: '-30px',
-                                            borderRadius: '8px',
-                                            backgroundColor: '#fafafa',
-                                            padding: '16px',
-                                            fontSize: '15px',
-                                            overflow: 'auto'
+                            <Box mt={2} display="flex" justifyContent="space-between" width="100%">
+                                <Button variant="contained" style={{
+                                    color: 'white',
+                                    backgroundColor: '#8c8b89',
+                                    backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
+                                    border: 'none',
+                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                    transition: 'background-color 0.3s ease',
+                                }}
+                                        onClick={handleBackClick}
+                                        onMouseOver={(e) => {
+                                            e.target.style.backgroundColor = '#2bb48c';
+                                            e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
+                                            e.target.style.transform = 'scale(1.05)';
                                         }}
-                                        dangerouslySetInnerHTML={{ __html: post.content }}
-                                    />
-                                </Typography>
-                            </Box>
-
-                            <Box mt={2} style={{ width: '300px', marginTop: '-30px', marginLeft: '750px' }}>
-                                {
-                                    myinfoList.potalId === post.memberId ?
-                                        <>
-                                            &nbsp;&nbsp;&nbsp;
-                                            <Button
-                                                onClick={handleEditClick}
-                                                style={{ width: '40px', height: '20px', marginRight: '20px', marginTop: '20px', marginLeft: '40px' }}
-                                            >
-                                                편집
-                                            </Button>
-                                            <Button onClick={handleDeleteClick} style={{ marginLeft: '-30px', width: '30px', height: '20px', marginTop: '20px' }}>
-                                                삭제
-                                            </Button><br />
-                                        </> : ''
-                                }
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <Button
-                                    variant="contained"
-                                    style={{
-                                        color: 'white',
-                                        backgroundColor: '#8c8b89',
-                                        backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
-                                        border: 'none',
-                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                        transition: 'background-color 0.3s ease',
-                                        marginLeft: '60px',
-                                        marginTop: '10px'
-                                    }}
-                                    onClick={handleBackClick}
-                                    onMouseOver={(e) => {
-                                        e.target.style.backgroundColor = '#2bb48c';
-                                        e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                        e.target.style.transform = 'scale(1.05)';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.target.style.backgroundColor = '#3af0b6';
-                                        e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                        e.target.style.transform = 'scale(1)';
-                                    }}
-                                >
+                                        onMouseOut={(e) => {
+                                            e.target.style.backgroundColor = '#3af0b6';
+                                            e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
+                                            e.target.style.transform = 'scale(1)';
+                                        }} onClick={handleBackClick}>
                                     목록
                                 </Button>
+                                {myinfoList.potalId === post.memberId && (
+                                    <Box>
+                                        <Button
+                                            variant="outlined"
+                                            color="secondary"
+                                            sx={{ marginRight: "10px" }}
+                                            onClick={handleEditClick}
+                                        >
+                                            수정
+                                        </Button>
+                                        <Button variant="outlined" color="error" onClick={handleDeleteClick}>
+                                            삭제
+                                        </Button>
+                                    </Box>
+                                )}
                             </Box>
-                            <hr />
-                            <div style={{ marginTop: '30px' }}>
-                                <b>댓글</b><br />
-                            </div>
-                            <div>
+
+                            <Box mt={3}>
+                                <Typography variant="h6" sx={{ marginBottom: "10px" }}>
+                                    댓글
+                                </Typography>
                                 <textarea
-                                    style={{ width: '100%', minWidth: '850px', height: '100px', borderRadius: '10px' }}
+                                    style={{ width: '100%', minWidth: '810px', height: '100px', borderRadius: '10px' }}
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
@@ -341,90 +303,75 @@ const DetailPage = () => {
                                 >
                                     등록
                                 </Button>
-                            </div><br />
+                            </Box>
 
-                            <table>
-                                <tbody>
-                                <tr>
-                                    <th><p style={{ width: '100px' }}>작성자</p></th>
-                                    <th><p style={{ minWidth: '400px', marginLeft: '20px', marginRight: '200px' }}>내용</p></th>
-                                    <th><p style={{ width: '100px' }}>작성일</p></th>
-                                </tr>
-                                </tbody>
-                            </table>
-                            {
-                                commentList &&
-                                commentList.map((item, idx) =>
-                                    <table key={item.id}>
-                                        <tbody>
-                                        <tr style={{ borderBottom: '0.5px solid grey', maxHeight: '100px' }}>
-                                            <td style={{ fontSize: '15px', minWidth: '55px', maxHeight: '50px' }}>{item.writer}</td>
-                                            <td style={{ marginRight: '200px', minWidth: '350px', fontSize: '15px', maxHeight: '50px' }}>
-                                                {editCommentId === item.id ? (
-                                                    <div>
-                                                        <textarea
-                                                            value={editedComment}
-                                                            onChange={(e) => setEditedComment(e.target.value)}
-                                                            style={{ width: '700px', padding: '8px', borderRadius: '8px', paddingTop: '-10px', paddingBottom: '-10px' }}
-                                                        />
-                                                        <Button onClick={handleEditCommentSave} variant='contained' style={{ marginLeft: '10px' }}>
-                                                            저장
-                                                        </Button>
-                                                        <Button onClick={() => setEditCommentId(null)} variant='contained' style={{ marginLeft: '10px' }}>
-                                                            취소
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    <p style={{
-                                                        width: '550px',
-                                                        whiteSpace: 'normal',
-                                                        wordWrap: 'break-word',
-                                                        padding: '8px',
-                                                        marginTop: '5px',
-                                                        marginLeft: '55px',
-                                                        marginRight: '50px',
-                                                        paddingTop: '-10px',
-                                                        paddingBottom: '-10px'
-                                                    }}>{item.content}</p>
-                                                )}
-                                            </td>
-                                            <td style={{ width: '200px', maxHeight: '50px', marginLeft: '-50px' }}>
-                                                {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
-                                                {new Date(item.createDate).toLocaleTimeString('ko-KR', {
-                                                    timeZone: 'Asia/Seoul',
-                                                    hour12: false,
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    second: '2-digit'
-                                                })}
-                                            </td>
-                                            {
-                                                myinfoList.potalId === item.memberId ?
-                                                    <><div style={{ display: 'flex', paddingTop: '15px' }}>
-                                                        <Button
-                                                            style={{ width: '30px' }}
-                                                            onClick={() => handleEditCommentClick(item.id, item.content)}
-                                                        >
-                                                            <EditIcon />
-                                                        </Button>
-                                                        <Button
-                                                            style={{ width: '30px' }}
-                                                            onClick={() => commentDeleteClick(item.id)}
-                                                        >
-                                                            <CloseIcon />
-                                                        </Button>
-                                                    </div>
-                                                    </> : ''
-                                            }
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                )
-                            }
+                            <Box mt={3}>
+                                {commentList.map((comment) => (
+                                    <Box
+                                        key={comment.id}
+                                        sx={{
+                                            border: "1px solid #ddd",
+                                            padding: "10px",
+                                            borderRadius: "8px",
+                                            marginBottom: "10px",
+                                            minWidth:'810px',
+                                            maxWidth: '810px',
+                                            overflowWrap: 'break-word', // 긴 텍스트를 줄 바꿈하도록 설정
+                                        }}
+                                    >
+                                        {editCommentId === comment.id ? (
+                                            <>
+                                                <textarea
+                                                    value={editedComment}
+                                                    onChange={(e) => setEditedComment(e.target.value)}
+                                                    style={{ width: '100%', borderRadius: '10px', minWidth: '700px' }}
+                                                />
+                                                <Button
+                                                    onClick={handleEditCommentSave}
+                                                    variant='contained'
+                                                    sx={{ marginTop: '10px' }}
+                                                >
+                                                    저장
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Typography variant="body2" sx={{ marginBottom: "5px", color: "#555" }}>
+                                                    {comment.writer}: &nbsp;{comment.content}
+                                                </Typography>
+                                                <Typography variant="caption" sx={{ color: "#999" }}>
+                                                    작성일: {new Date(comment.createDate).toLocaleString('ko-KR')}
+                                                </Typography>
+                                            </>
+                                        )}
+                                        {myinfoList.potalId === comment.memberId && (
+                                            <Box mt={1} display="flex" justifyContent="flex-end">
+                                                <Button
+                                                    variant="text"
+                                                    size="small"
+                                                    startIcon={<EditIcon />}
+                                                    onClick={() => handleEditCommentClick(comment.id, comment.content)}
+                                                    sx={{ marginRight: "5px" }}
+                                                >
+                                                    수정
+                                                </Button>
+                                                <Button
+                                                    variant="text"
+                                                    size="small"
+                                                    startIcon={<CloseIcon />}
+                                                    onClick={() => commentDeleteClick(comment.id)}
+                                                    color="error"
+                                                >
+                                                    삭제
+                                                </Button>
+                                            </Box>
+                                        )}
+                                    </Box>
+                                ))}
+                            </Box>
                         </Box>
-
                     ) : (
-                        <Typography variant="body1">게시글을 불러오는 중입니다...</Typography>
+                        <Typography variant="h6">게시물을 불러오는 중입니다...</Typography>
                     )}
                 </Box>
             </Box>

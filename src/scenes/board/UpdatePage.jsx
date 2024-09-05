@@ -133,7 +133,7 @@ const UpdatePage = () => {
                     marginLeft: '15%',
                     height: "auto",
                     minHeight: '850px',
-                    width: "80%",
+                    width: "100%",
                     maxWidth: "850px",
                     padding: "80px",
                 }}
