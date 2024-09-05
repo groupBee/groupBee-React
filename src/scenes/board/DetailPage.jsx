@@ -206,7 +206,7 @@ const DetailPage = () => {
                                 )}
 
                                 <Box mb={2} style={{ width: '300px' }}>
-                                    {post.files && post.originalFileNames && (
+                                    {post.files && post.originalFileNames && post.files.length > 0 && post.originalFileNames.length === post.files.length && (
                                         <Box style={{ borderTop: '1px solid grey', borderBottom: '1px solid grey', width: 'auto', minWidth: '900px', maxWidth: '1100px', paddingBottom: '-10px', marginTop: '30px' }}>
                                             <Typography variant="body1" style={{ marginBottom: '10px', fontSize: '15px', paddingTop: '5px' }}>
                                                 첨부파일:&nbsp;&nbsp;&nbsp;

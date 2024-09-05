@@ -24,19 +24,6 @@ const Board = () => {
     }, [Page]);
 
     useEffect(() => {
-        const fetchMyInfo = async () => {
-            try {
-                const response = await axios.get('/api/employee/info');
-                setMyinfoList(response.data);
-            } catch (error) {
-                console.error('Error fetching employee info:', error);
-            }
-        };
-
-        fetchMyInfo();
-    }, []);
-
-    useEffect(() => {
         const fetchBoardList = async () => {
             try {
                 const response = await axios.get('/api/board/list');
@@ -58,32 +45,45 @@ const Board = () => {
                     return true;
                 });
 
+                // 중요 게시물과 일반 게시물 구분
                 const importantPosts = filteredPosts.filter(post => post.board.mustMustRead);
                 const regularPosts = filteredPosts.filter(post => !post.board.mustMustRead);
 
+                // 중요 게시물 정렬
                 const sortedImportantPosts = importantPosts.sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
-                const sortedRegularPosts = regularPosts.sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
 
-                const totalRegularPosts = sortedRegularPosts.length;
+                // 중요 게시물 중 상단 고정된 게시물과 상단 고정되지 않은 게시물 구분
+                const maxImportantCount = 8;
+                const displayedImportantPosts = sortedImportantPosts.slice(0, maxImportantCount);
+                const excludedImportantPosts = sortedImportantPosts.slice(maxImportantCount);
 
+                // 중요 게시물 중 상단 고정에서 탈락된 게시물은 일반 게시물에 추가
+                const updatedRegularPosts = [
+                    ...regularPosts,
+                    ...excludedImportantPosts
+                ].sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
+
+                // 페이지에 표시할 일반 게시물 범위 설정
                 const startIndex = (currentPage - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
-                const displayedRegularPosts = sortedRegularPosts.slice(startIndex, endIndex);
+                const displayedRegularPosts = updatedRegularPosts.slice(startIndex, endIndex);
 
-                // Must-read posts are numbered first, followed by the regular posts
+                // 최종 게시물 리스트 구성
                 const finalPosts = [
-                    ...sortedImportantPosts.map((post, index) => ({
+                    ...displayedImportantPosts.map(post => ({
                         ...post,
-                        displayNumber: <b style={{ color: 'red', marginLeft: '-5px' }}>[중요]</b>
+                        displayNumber: <b style={{ color: 'red', marginLeft: '-5px' }}>[중요]</b>,
+                        titleDisplay: <b>{post.board.title}</b>
                     })),
                     ...displayedRegularPosts.map((post, index) => ({
                         ...post,
-                        displayNumber: totalRegularPosts - (startIndex + index)
+                        displayNumber: updatedRegularPosts.length - (startIndex + index),
+                        titleDisplay: post.board.title
                     }))
                 ];
 
                 setBoardList(finalPosts);
-                setTotalPages(Math.ceil(totalRegularPosts / itemsPerPage));
+                setTotalPages(Math.ceil(updatedRegularPosts.length / itemsPerPage));
             } catch (error) {
                 console.error('Error fetching board list:', error);
             }
@@ -172,7 +172,6 @@ const Board = () => {
                             style={{
                                 marginRight: '10px',
                                 width: '200px',
-                                // 스타일 추가로 위아래 크기 조정
                                 padding: '8px 12px',
                                 fontSize: '14px'
                             }}
@@ -217,17 +216,13 @@ const Board = () => {
                             </thead>
                             <tbody style={{ borderBottom: '1px solid #dbd9d9' }}>
                             {boardList.map((row) => (
-                                <tr key={row.board.id} style={row.board.mustMustRead
-                                    ? { backgroundColor: '#b3b3b3', fontWeight: 'bold'}
-                                    : { backgroundColor: 'transparent' }
-                                }>
+                                <tr key={row.board.id}>
                                     <td>&nbsp;&nbsp;{row.displayNumber}</td>
                                     <td
                                         className="title-cell"
                                         style={{
                                             cursor: 'pointer',
                                             color: 'black',
-                                            fontWeight: row.board.mustMustRead ? "bold" : "normal",
                                             maxWidth: "300px",
                                             overflow: "hidden",
                                             textOverflow: "ellipsis",
@@ -238,9 +233,8 @@ const Board = () => {
                                         onMouseOver={(e) => (e.target.style.color = "#ffb121")}
                                         onMouseOut={(e) => (e.target.style.color = "inherit")}
                                     >
-                                        {row.board.mustRead && <span><b>[공지]&nbsp;</b></span>}
-                                        {row.board.title}
-                                        {row.board.files && <AttachFileIcon style={{ width: '15px', height: '15px' }} />}
+                                        {row.titleDisplay}
+                                        {row.board.files && row.board.files.length > 0 && <AttachFileIcon style={{ width: '15px', height: '15px' }} />}
                                         {row.commentCount > 0 && <span style={{ marginLeft: '10px' }}>({row.commentCount})</span>}
                                     </td>
                                     <td style={{ textAlign: "center" }}>{row.board.writer}</td>
@@ -264,15 +258,19 @@ const Board = () => {
                             게시글이 없습니다.
                         </Typography>
                     )}
-                    <Box display="flex" justifyContent="center" mt={2}>
-                        <Pagination
-                            count={totalPages}
-                            page={currentPage}
-                            onChange={handlePageChange}
-                            color="primary"
-                        />
-                    </Box>
                 </Box>
+            </Box>
+            <Box mt={2} display="flex" justifyContent="center">
+                <Pagination
+                    count={totalPages} // 전체 페이지 수
+                    page={currentPage} // 현재 페이지
+                    onChange={handlePageChange} // 페이지 변경 이벤트 핸들러
+                    color="primary" // 페이지 색상
+                    siblingCount={1} // 중간 페이지를 기준으로 좌우에 표시할 페이지 수 (여기서 기본적으로 좌우 각각 1개씩 표시)
+                    boundaryCount={1} // 시작과 끝에 표시할 페이지 수 (1로 설정하여 양쪽 끝에 1개의 페이지만 표시)
+                    showFirstButton // 처음 페이지로 이동하는 버튼을 표시
+                    showLastButton // 마지막 페이지로 이동하는 버튼을 표시
+                />
             </Box>
         </Box>
     );

@@ -181,11 +181,6 @@ const BoardWrite = () => {
                                     disabled={mustMustReadCount >= 8 && !mustMustRead}
                                 />
                                 <b style={{ marginTop: '2px', marginLeft: '10px', fontSize: '15px' }}>중요</b>
-                                {mustMustReadCount >= 8 && !mustMustRead && (
-                                    <span style={{ color: 'red', marginLeft: '10px', fontSize: '12px' }}>
-                                        중요게시글이 8개를 넘을 수 없습니다.
-                                    </span>
-                                )}
                             </div>
                         </div>
                         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
