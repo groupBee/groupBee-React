@@ -2,12 +2,13 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 
-const sendRocketChatInfo=(id,token)=>{
-    const data={
-        "userId":id,"authToken":token
-    };
-    console.log(data);
+const sendRocketChatInfo=(userId,authToken)=>{
+    const data = new FormData();
+    const json = JSON.stringify({ userId,authToken });
+    const blob = new Blob([json], { type: 'application/json' });
+    data.append('data', blob);
     axios.post("/api/employee/rocket.chat/session",data)
+    
 }
 
 
