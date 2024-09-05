@@ -19,6 +19,9 @@ const Calendar = () => {
 
     /* 백엔드 데이터 리스트 출력 */
     const fetchData = async (year) => {
+        if(!year || year === "") {
+            year = currentYear || new Date().getFullYear();
+        }
         try {
             const calendarResponse = await fetch(`/api/calendar/list/${year}`);
             if (!calendarResponse.ok) {
