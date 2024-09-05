@@ -166,10 +166,19 @@ const DetailPage = () => {
     };
 
     return (
+        <Box m="20px">
+            <Box
+                height="auto"
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+            >
         <Box p={3}>
             {post ? (
-                <Box display="flex" flexDirection="column" alignItems="flex-start" style={{ backgroundColor: 'white', maxWidth: '1155px', marginLeft: '-24px', paddingLeft: '30px' }}>
-                    <Box mb={2} style={{ width: '300px' }}>
+                <Box display="flex" flexDirection="column" alignItems="flex-start" style={{ backgroundColor: 'white', maxWidth: '1155px', marginLeft: '-24px', paddingLeft: '6%' }}>
+                    <Box mb={2} style={{width: '300px'}}>
                         <Typography
                             variant="h4"
                             gutterBottom
@@ -181,23 +190,25 @@ const DetailPage = () => {
                                 marginTop: '20px',
                                 borderBottom: '1px solid grey',
                                 borderTop: '1px solid grey',
-                                backgroundColor: '#f0f3fa'
+                                backgroundColor: 'white'
                             }}
                         >
-                            {post.mustRead && <span><b style={{ fontSize: '15px' }}>[공지]&nbsp;</b></span>}
-                            <b style={{ fontSize: '15px' }}>{post.title}</b>
+                            {post.mustRead && <span><b style={{fontSize: '20px'}}>[공지]&nbsp;</b></span>}
+                            <b style={{fontSize: '20px'}}>{post.title}</b>
                         </Typography>
-                        <Typography variant="subtitle1" style={{ width: '400px', paddingLeft: '5px', marginTop: '-3px' }}>
+                        <Typography variant="subtitle1" style={{width: '400px', paddingLeft: '5px', marginTop: '-3px'}}>
                             작성자: {post.writer}&nbsp;&nbsp;&nbsp;
                         </Typography>
                     </Box>
-                    <Box mb={2} style={{ width: '300px', marginTop: '-50px' }}>
-                        <Typography variant="subtitle1" style={{ marginLeft: '910px', width: '400px', marginTop: '-20px' }}>
+                    <Box mb={2} style={{width: '300px', marginTop: '-50px'}}>
+                        <Typography variant="subtitle1"
+                                    style={{marginLeft: '910px', width: '400px', marginTop: '-20px'}}>
                             작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                         </Typography>
 
                         {post.updateDate && new Date(post.updateDate) > new Date(post.createDate) && (
-                            <Typography variant="subtitle1" style={{ marginLeft: '910px', width: '400px', marginTop: '5px' }}>
+                            <Typography variant="subtitle1"
+                                        style={{marginLeft: '910px', width: '400px', marginTop: '5px'}}>
                                 수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
                             </Typography>
                         )}
@@ -206,40 +217,65 @@ const DetailPage = () => {
                         </Typography>
 
                         <Box mb={2} style={{ width: '300px', display: 'flex', alignItems: 'center' }}>
-                            <Box
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginRight: '20px',
-                                    visibility: 'hidden'
-                                }}
-                            >
-                                <div style={{
-                                    width: '16px',
-                                    height: '16px',
-                                    border: '1px solid black',
-                                    marginLeft: '10px',
-                                    backgroundColor: post.mustRead ? '#171fb3' : 'white'
-                                }} />
-                                <b style={{ marginLeft: '10px' }}>공지사항</b>
-                            </Box>
-                            <Box
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    visibility: 'hidden'
-                                }}
-                            >
-                                <div style={{
-                                    width: '16px',
-                                    height: '16px',
-                                    border: '1px solid black',
-                                    backgroundColor: post.mustMustRead ? 'red' : 'white'
-                                }} />
-                                <b style={{ marginLeft: '10px' }}>중요</b>
+                            {/*<Box*/}
+                            {/*    style={{*/}
+                            {/*        display: 'flex',*/}
+                            {/*        alignItems: 'center',*/}
+                            {/*        marginRight: '20px',*/}
+                            {/*        visibility: 'hidden'*/}
+                            {/*    }}*/}
+                            {/*>*/}
+                            {/*    <div style={{*/}
+                            {/*        width: '16px',*/}
+                            {/*        height: '16px',*/}
+                            {/*        border: '1px solid black',*/}
+                            {/*        marginLeft: '10px',*/}
+                            {/*        backgroundColor: post.mustRead ? '#171fb3' : 'white'*/}
+                            {/*    }} />*/}
+                            {/*    <b style={{ marginLeft: '10px' }}>공지사항</b>*/}
+                            {/*</Box>*/}
+                            {/*<Box*/}
+                            {/*    style={{*/}
+                            {/*        display: 'flex',*/}
+                            {/*        alignItems: 'center',*/}
+                            {/*        visibility: 'hidden'*/}
+                            {/*    }}*/}
+                            {/*>*/}
+                            {/*    <div style={{*/}
+                            {/*        width: '16px',*/}
+                            {/*        height: '16px',*/}
+                            {/*        border: '1px solid black',*/}
+                            {/*        backgroundColor: post.mustMustRead ? 'red' : 'white'*/}
+                            {/*    }} />*/}
+                            {/*    <b style={{ marginLeft: '10px' }}>중요</b>*/}
+                            {/*</Box>*/}
+                            <Box mb={2} style={{ width: '300px' }}>
+                                {post.file && post.originalFileName && (
+                                    <Box style={{borderTop:'1px solid grey',borderBottom:'1px solid grey',width:'1100px',paddingBottomBottom:'-10px'}}>
+                                        <Typography variant="body1" style={{ marginBottom: '10px', fontSize: '15px' }}>
+                                            첨부파일:&nbsp;&nbsp;&nbsp;
+                                            <Button
+                                                onClick={() => downloadFile(`https://minio.bmops.kro.kr/groupbee/board/${post.file}`, post.originalFileName)}
+                                                style={{
+                                                    color: '#1e90ff',
+                                                    textDecoration: 'none',
+                                                    fontWeight: 'bold',
+                                                    backgroundColor: 'transparent',
+                                                    border: 'none',
+                                                    padding: '0',
+                                                    cursor: 'pointer',
+                                                    fontSize: '15px'
+                                                }}
+                                            >
+                                                {post.originalFileName}
+                                            </Button>
+                                        </Typography>
+                                    </Box>
+                                )}
                             </Box>
                         </Box>
                     </Box>
+
                     <Box mb={2} style={{ width: '69%' }}>
                         <Typography
                             variant="body1"
@@ -266,85 +302,26 @@ const DetailPage = () => {
                             />
                         </Typography>
                     </Box>
-                    <Box mb={2} style={{ width: '300px' }}>
-                        {post.file && post.originalFileName && (
-                            <Box>
-                                <Typography variant="body1" style={{ marginBottom: '10px', fontSize: '15px' }}>
-                                    첨부파일:
-                                    <Button
-                                        onClick={() => downloadFile(`https://minio.bmops.kro.kr/groupbee/board/${post.file}`, post.originalFileName)}
-                                        style={{
-                                            color: '#1e90ff',
-                                            textDecoration: 'none',
-                                            fontWeight: 'bold',
-                                            backgroundColor: 'transparent',
-                                            border: 'none',
-                                            padding: '0',
-                                            cursor: 'pointer',
-                                            fontSize: '15px'
-                                        }}
-                                    >
-                                        {post.originalFileName}
-                                    </Button>
-                                </Typography>
-                            </Box>
-                        )}
-                    </Box>
 
-                    <Box mt={2} style={{ width: '300px' }}>
+
+                    <Box mt={2} style={{ width: '300px',marginTop:'-30px',marginLeft:'1000px' }}>
                         {
                             myinfoList.potalId === post.memberId ?
                                 <>
-                                    <Button
-                                        variant="contained"
+                                    &nbsp;&nbsp;&nbsp;                <Button
                                         onClick={handleEditClick}
-                                        style={{
-                                            marginRight: '10px',
-                                            color: 'white',
-                                            backgroundColor: '#f7d774',
-                                            backgroundImage: 'linear-gradient(135deg, #f7d774 0%, #f1c40f 100%)',
-                                            border: 'none',
-                                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                            transition: 'background-color 0.3s ease',
-                                        }}
-                                        onMouseOver={(e) => {
-                                            e.target.style.backgroundColor = '#2bb48c';
-                                            e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                            e.target.style.transform = 'scale(1.05)';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.backgroundColor = '#3af0b6';
-                                            e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                            e.target.style.transform = 'scale(1)';
-                                        }}
+                                        style={{marginRight:'-30px'}}
                                     >
                                         수정
                                     </Button>
-                                    <Button variant="contained" onClick={handleDeleteClick}
-                                            style={{
-                                                marginRight: '10px',
-                                                color: 'white',
-                                                backgroundColor: '#fc9a38',
-                                                backgroundImage: 'linear-gradient(135deg, #fc9a38 0%, #f77f00 100%)',
-                                                border: 'none',
-                                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                                transition: 'background-color 0.3s ease',
-                                            }}
-                                            onMouseOver={(e) => {
-                                                e.target.style.backgroundColor = '#2bb48c';
-                                                e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                                e.target.style.transform = 'scale(1.05)';
-                                            }}
-                                            onMouseOut={(e) => {
-                                                e.target.style.backgroundColor = '#3af0b6';
-                                                e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                                e.target.style.transform = 'scale(1)';
-                                            }}>
+                                    <Button onClick={handleDeleteClick}
+                                            style={{marginRight:'-30px'}}
+                                    >
                                         삭제
-                                    </Button>
+                                    </Button><br/>
                                 </> : ''
                         }
-                        <Button variant="contained" style={{
+                       &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <Button variant="contained" style={{
                             color: 'white',
                             backgroundColor: '#8c8b89',
                             backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
@@ -366,7 +343,7 @@ const DetailPage = () => {
                         </Button>
                     </Box>
                     <hr />
-                    <div>
+                    <div style={{marginTop:'30px'}}>
                         <b>댓글</b><br />
                     </div>
                     <div>
@@ -376,7 +353,6 @@ const DetailPage = () => {
                             onClick={writeComment}
                             variant='contained'
                             style={{
-                                marginRight: '20px',
                                 float: 'right',
                                 marginBottom: '20px',
                                 color: 'black',
@@ -481,6 +457,8 @@ const DetailPage = () => {
             ) : (
                 <Typography variant="body1">게시글을 불러오는 중입니다...</Typography>
             )}
+        </Box>
+        </Box>
         </Box>
     );
 };
