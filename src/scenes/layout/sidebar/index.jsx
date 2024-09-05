@@ -233,9 +233,12 @@ const SideBar = () => {
                         sx={{ display: "flex", alignItems: "center", cursor: "pointer", marginTop:'13px', marginBottom:'13px',
                             ":hover": {color: "#ffb121"}}}
                     >
-                    <Chat style={{marginLeft:'27px', cursor:'pointer'}}/>
-                    <a href="https://chat.groupbee.co.kr" target="_blank"
-                       style={{color: 'inherit', textDecoration: 'none',fontWeight: '500', marginLeft:'17px'}}>채팅</a>
+                        <Item
+                            title="채팅"
+                            colors={colors}
+                            icon={<Chat/>}
+                            onClick={() => window.open('https://chat.groupbee.co.kr', '_blank')}
+                        />
                     </Box>
                     <SubMenu
                         label={
@@ -279,6 +282,7 @@ const SideBar = () => {
                             borderRadius: '4px',
                             transition: 'all 0.3s ease 0s',
                             cursor: 'pointer',
+                            minWidth:'30px',
                             marginTop: '20px',
                             '&:hover': {
                                 backgroundColor: '#ffb121',
@@ -289,7 +293,7 @@ const SideBar = () => {
                         }}
                         onClick={organizationModalOpen}
                     >
-                        조직도
+                        <b style={{fontSize:'16px',minWidth:'100px'}}>조직도</b>
                     </Button>
                 </Box>
             </Box>
@@ -301,7 +305,7 @@ const SideBar = () => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <OrganizationModal/>
+                <OrganizationModal open={orModalOpen} onClose={organizationModalClose}/>
             </Modal>
         </Sidebar>
     );

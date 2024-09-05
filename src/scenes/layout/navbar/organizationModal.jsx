@@ -365,6 +365,7 @@ const OrganizationChart = () => {
 
 const OrganizationModal = ({ open, onClose }) => {
     if (!open) return null;
+
     return (
         <Box
             sx={{
@@ -405,19 +406,4 @@ const OrganizationModal = ({ open, onClose }) => {
     );
 };
 
-const App = () => {
-    const [isModalOpen, setIsModalOpen] = useState(true);
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
-
-    return (
-        <div>
-            <CloseIcon />
-            <OrganizationModal open={isModalOpen} onClose={handleCloseModal} />
-        </div>
-    );
-};
-
-export default App;
+export default OrganizationModal;

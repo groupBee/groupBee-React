@@ -7,22 +7,19 @@ import 'react-quill/dist/quill.snow.css';
 
 // 툴바의 모듈을 설정합니다.
 const toolbarOptions = [
-    ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+    ['bold', 'italic', 'underline', 'strike'],
     ['blockquote', 'code-block'],
-
-    [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-    [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-    [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-    [{ 'direction': 'rtl' }],                         // text direction
-
+    [{ 'header': 1 }, { 'header': 2 }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'script': 'sub' }, { 'script': 'super' }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],
+    [{ 'direction': 'rtl' }],
     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
     ['link', 'image', 'video'],
-    [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+    [{ 'color': [] }, { 'background': [] }],
     [{ 'font': [] }],
     [{ 'align': [] }],
-
-    ['clean']
+    ['clean'],
 ];
 
 const UpdatePage = () => {
@@ -33,8 +30,9 @@ const UpdatePage = () => {
     const [content, setContent] = useState('');
     const [mustRead, setMustRead] = useState(false);
     const [mustMustRead, setMustMustRead] = useState(false);
-    const [file, setFile] = useState(null);
-    const [originalFileName, setOriginalFileName] = useState('');
+    const [files, setFiles] = useState([]);
+    const [existingFiles, setExistingFiles] = useState([]);
+    const [deletedFiles, setDeletedFiles] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
@@ -56,8 +54,8 @@ const UpdatePage = () => {
             setContent(data.content);
             setMustRead(data.mustRead);
             setMustMustRead(data.mustMustRead);
-            if (data.file) {
-                setOriginalFileName(data.originalFileName);
+            if (data.files) {
+                setExistingFiles(data.files);  // 기존 파일 목록 가져오기
             }
         } catch (error) {
             console.error('Error fetching post:', error);
@@ -69,7 +67,7 @@ const UpdatePage = () => {
     };
 
     const handleContentChange = (value) => {
-        setContent(value); // ReactQuill에서 값을 받을 때
+        setContent(value);
     };
 
     const handleMustReadChange = (e) => {
@@ -81,7 +79,12 @@ const UpdatePage = () => {
     };
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        setFiles([...e.target.files]);
+    };
+
+    const handleDeleteFile = (fileName) => {
+        setDeletedFiles([...deletedFiles, fileName]);
+        setExistingFiles(existingFiles.filter((file) => file !== fileName));
     };
 
     const handleSubmit = async (e) => {
@@ -97,9 +100,13 @@ const UpdatePage = () => {
         const formData = new FormData();
         formData.append('boardData', JSON.stringify(boardData));
 
-        if (file) {
-            formData.append('file', file);
-        }
+        // 새로 추가된 파일들
+        files.forEach((file) => {
+            formData.append('files', file);
+        });
+
+        // 삭제된 파일 목록
+        formData.append('deletedFiles', JSON.stringify(deletedFiles));
 
         try {
             await axios.patch(`/api/board/update/${id}`, formData, {
@@ -110,7 +117,7 @@ const UpdatePage = () => {
 
             navigate(`/board/list/${id}/${currentPage}`); // 수정 후 상세 페이지로 이동
         } catch (error) {
-            console.error('Error updating post or uploading file:', error);
+            console.error('Error updating post or uploading files:', error);
         }
     };
 
@@ -120,7 +127,22 @@ const UpdatePage = () => {
 
     return (
         <Box m="20px">
-            <Box height="75vh">
+            <Box
+                height="auto"
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    top: "50%",
+                    left: "50%",
+                    marginLeft: '15%',
+                    height: "auto",
+                    minHeight: '850px',
+                    width: "80%",
+                    maxWidth: "850px",
+                    padding: "80px",
+                }}
+            >
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="title"><b style={{ fontSize: '15px' }}>제목</b></label>
@@ -132,10 +154,10 @@ const UpdatePage = () => {
                             required
                             fullWidth
                             variant="outlined"
-                            style={{ backgroundColor: 'white', width: '1100px' }}
+                            style={{ width: '100%', maxWidth: '800px', height: '30px' }}
                         />
                     </div>
-                    <Box mb={2} mt={2} style={{ display: 'flex', alignItems: 'center' }}>
+                    <Box mb={2} mt={2} style={{ display: 'flex', alignItems: 'center', marginTop: '30px' }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -159,16 +181,30 @@ const UpdatePage = () => {
                     <div>
                         <input
                             type="file"
+                            multiple
                             onChange={handleFileChange}
                             style={{ marginTop: '10px' }}
                         />
                     </div>
-                    {originalFileName && (
+                    {existingFiles.length > 0 && (
                         <Box mt={2}>
-                            <Typography variant="body1">기존 첨부 파일: </Typography>
-                            <Link href={`/api/download/${id}`} target="_blank" rel="noopener noreferrer">
-                                {originalFileName}
-                            </Link>
+                            <Typography variant="body1">기존 첨부 파일:</Typography>
+                            {existingFiles.map((fileName) => (
+                                <Box key={fileName} display="flex" alignItems="center" mb={1}>
+                                    <Link href={`/api/download/${id}/${fileName}`} target="_blank" rel="noopener noreferrer">
+                                        {fileName}
+                                    </Link>
+                                    <Button
+                                        onClick={() => handleDeleteFile(fileName)}
+                                        variant="contained"
+                                        color="secondary"
+                                        size="small"
+                                        style={{ marginLeft: '10px' }}
+                                    >
+                                        삭제
+                                    </Button>
+                                </Box>
+                            ))}
                         </Box>
                     )}
                     <div>
@@ -176,33 +212,23 @@ const UpdatePage = () => {
                         <ReactQuill
                             id="content"
                             value={content}
-                            onChange={handleContentChange} // 값 변경 핸들러
+                            onChange={handleContentChange}
                             modules={{ toolbar: toolbarOptions }}
-                            style={{ width: '1100px', height: '500px',backgroundColor:'white' }}
+                            style={{ width: '100%', maxWidth: '800px', height: '300px', backgroundColor: 'white' }}
                             placeholder='내용을 입력하세요!'
                         />
                     </div>
                     <Box mt={2}>
-                        <Button type="submit" variant="contained"    style={{
+                        <Button type="submit" variant="contained" style={{
                             marginRight: '20px',
-                            marginTop:'50px',
+                            marginTop: '80px',
                             color: 'white',
-                            backgroundColor: '#f7d774', // 기본 노란색
-                            backgroundImage: 'linear-gradient(135deg, #f7d774 0%, #f1c40f 100%)', // 노란색 그라데이션
+                            backgroundColor: '#f7d774',
+                            backgroundImage: 'linear-gradient(135deg, #f7d774 0%, #f1c40f 100%)',
                             border: 'none',
                             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                             transition: 'background-color 0.3s ease',
-                        }}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#2bb48c'; // 마우스 오버 시 더 진한 색상으로 변경
-                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)'; // 더 강한 그림자 효과로 살짝 떠오르는 느낌
-                                    e.target.style.transform = 'scale(1.05)'; // 약간 커지는 효과
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#3af0b6'; // 마우스 벗어나면 원래 색상으로 복구
-                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)'; // 원래 그림자 효과로 복구
-                                    e.target.style.transform = 'scale(1)'; // 원래 크기로 복구
-                                }}>
+                        }}>
                             저장
                         </Button>
                         <Button variant="contained" onClick={handleCancelClick}
@@ -213,17 +239,7 @@ const UpdatePage = () => {
                                     border: 'none',
                                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                     transition: 'background-color 0.3s ease',
-                                    marginTop:'50px'
-                                }}
-                                onMouseOver={(e) => {
-                                    e.target.style.backgroundColor = '#2bb48c';
-                                    e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                    e.target.style.transform = 'scale(1.05)';
-                                }}
-                                onMouseOut={(e) => {
-                                    e.target.style.backgroundColor = '#3af0b6';
-                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                    e.target.style.transform = 'scale(1)';
+                                    marginTop: '80px'
                                 }}>
                             취소
                         </Button>
