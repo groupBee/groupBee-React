@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Box, Button, FormControlLabel, IconButton, InputBase, MenuItem, Modal, Radio, RadioGroup, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, useMediaQuery } from "@mui/material";
-import { MenuOutlined, SearchOutlined } from "@mui/icons-material";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -237,77 +236,112 @@ const AdminInfo = () => {
     };
 
     //초기화 버튼
-    const reset = async () => {
-        const resetData = {
-            data: "reset-password"  // 서버와의 약속된 문자열 또는 초기화 요청 값
-        };
-
+    const reset = async (potalId) => {
         try {
-            const response = await axios.put('/api/employee/auth/reset', resetData);
-            console.log('Password reset successful:', response.data);
-            return response.data;
+            // potalId 값을 콘솔로 출력
+            // 포털 ID 데이터를 JSON으로 변환하고 Blob으로 감싸기
+            const json = JSON.stringify({ potalId });
+            const blob = new Blob([json], { type: 'application/json' });
+            // FormData 객체에 Blob을 추가
+            const data = new FormData();
+            data.append('data', blob);
+
+            // axios 요청 보내기
+            const response = await axios({
+                method: 'put',
+                url: '/api/employee/auth/reset',
+                data: data, // FormData로 데이터 전송
+            });
+
+            alert('초기화되었습니다.');
         } catch (error) {
             console.error('Error resetting password:', error);
             throw error;
         }
     };
 
+
     //동기화 버튼
-    const synchronization = async (data) => {
+    const synchronization = async () => {
         try {
-            const response = await axios.put('/api/employee/sync', data);
-            console.log('Data successfully sent:', response.data);
-            return response.data; // 필요시 반환
+            const response = await axios.put('/api/employee/sync');
+            alert('동기화 완료')
         } catch (error) {
             console.error('Error sending data:', error);
+            alert('동기화 실패')
             throw error; // 필요시 에러 재던짐
         }
     };
 
 
     return (
-        <Box style={{ padding: '20px' }}>
-            <Box p={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
-                    <Box display="flex" alignItems="" gap={2} >
-                        <Button variant='contained' color='secondary' onClick={synchronization}>동기화</Button>
-                    </Box>
-                </Box>
-                <Box borderBottom="1px solid #e0e0e0" />
+        <Box
+            gridRow="span 3"
+            sx={{
+                borderRadius: "8px",
+                backgroundColor: "white",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden", // 박스 넘침 방지
+                maxWidth: '1400px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '20px auto'
+            }}
+        >
+            <Box borderBottom={`2px solid #ffb121`} p="16px">
+                <Typography
+                    variant="h4"
+                    fontWeight="700"
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    인사관리
+                    <Button  sx={{
+                        border: '1px solid #ffb121',
+                        color: '#ffb121',
+                        fontSize: '14px',
+                        borderRadius: "8px",
+                        fontWeight: 'bold'
+                    }} variant="h4" onClick={synchronization}>동기화</Button>
+                </Typography>
+            </Box>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
-                            <TableRow
-                                sx={{
-                                    backgroundColor:'white'
-                                }}>
-                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem' }}>이름</TableCell>
-                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem' }}>직책</TableCell>
-                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem' }}>부서</TableCell>
-                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem' }}>재직여부</TableCell>
-                                <TableCell align="center" style={{ width: '20%',fontSize: '0.9rem' }}>전화번호</TableCell>
-                                <TableCell align="center" style={{ width: '20%',fontSize: '0.9rem' }}>이메일</TableCell>
-                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem' }}>상세보기</TableCell>
+                            <TableRow>
+                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>이름</TableCell>
+                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>직책</TableCell>
+                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>부서</TableCell>
+                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>재직여부</TableCell>
+                                <TableCell align="center" style={{ width: '20%',fontSize: '0.9rem', fontWeight:'bold' }}>전화번호</TableCell>
+                                <TableCell align="center" style={{ width: '20%',fontSize: '0.9rem', fontWeight:'bold'}}>이메일</TableCell>
+                                <TableCell align="center" style={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>상세보기</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {apiData.map((info, index) => (
-                                <TableRow key={index}   sx={{
-                                    '&:hover': {
-                                        backgroundColor: '#f5f5f5', // 호버 시 배경 색상
-                                    }
+                                <TableRow key={index}
+                                          sx={{
+                                              '&:hover': {
+                                                  backgroundColor: '#f5f5f5', // 호버 시 배경 색상
+                                                  '& *': {
+                                                      color: '#ffb121', // 호버 시 모든 자식 요소의 텍스트 색상
+                                                  },
+                                              },
                                 }}>
                                     <TableCell align="center" style={{paddingTop: "15px", fontSize: '0.9rem'}}>
                                         <img
                                             src={info.profileFile}
                                             alt="Profile"
                                             style={{
-                                                width: '30px',
-                                                height: '30px',
+                                                width: '35px',
+                                                height: '35px',
                                                 borderRadius: '50%',
                                                 marginRight: '10px',
-                                                border: '1px solid #f5f5f5',
-                                                objectFit:'cover'
+                                                border: '1px solid #ffb121',
+                                                objectFit:'cover',
+
                                             }}
                                         />
                                         {info.name}</TableCell>
@@ -350,7 +384,7 @@ const AdminInfo = () => {
                 >
                     <Box sx={style}>
                         <Box display="flex" justifyContent="space-between">
-                            <Typography id="modal-modal-title" variant="h3" component="h2" textAlign="center">
+                            <Typography id="modal-modal-title" variant="h2" component="h2" fontWeight='normal' textAlign="center">
                                 상세정보
                             </Typography>
                             <Typography id="modal-modal-title" variant="h5" component="h2">
@@ -362,9 +396,11 @@ const AdminInfo = () => {
                                 <Table>
                                     <TableBody>
                                         <TableRow>
-                                            <TableCell rowSpan={4} style={{ border: "1px solid grey", width: "150px" }}>
+                                            <TableCell rowSpan={4} style={{ border: "1px solid grey", width: "150px",}}>
                                                 {profileFile ? (
-                                                    <img src={profileFile} alt="미리보기" style={{ width: '100%' }} />
+                                                    <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px'}}>
+                                                    <img src={profileFile} alt="미리보기" style={{width: '100px', height: '100px', border: '1px solid #ffb121', borderRadius: '50%', objectFit: 'cover' }} />
+                                                    </div>
                                                 ) : (
                                                     <div style={{ width: '100%', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid grey' }}>
                                                         사진 없음
@@ -377,7 +413,12 @@ const AdminInfo = () => {
                                                     onChange={handleFileChange}
                                                 />
                                                 <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '10px'}}>
-                                                <Button variant='contained' color="secondary" onClick={handleButtonClick}>
+                                                <Button sx={{
+                                                    backgroundColor: '#ffb121',
+                                                    color: 'white',
+                                                    fontSize: '15px'
+
+                                                }} onClick={handleButtonClick}>
                                                     사진 변경
                                                 </Button>
                                                 </div>
@@ -425,8 +466,7 @@ const AdminInfo = () => {
                                                 <Select
                                                     value={position}
                                                     onChange={(e) => setPosition(e.target.value)}
-                                                    sx={{ width: '100%' }}
-                                                >
+                                                    sx={{ width: '100%' }}>
                                                     {positionList.map((item, idx) => (
                                                         <MenuItem key={idx} value={item.id}>{item.rank}</MenuItem>
                                                     ))}
@@ -471,8 +511,19 @@ const AdminInfo = () => {
                                         </TableRow>
                                         <TableRow>
                                             <TableCell colSpan={6} style={{ textAlign: 'center'}}>
-                                                <Button variant='contained' color='secondary' onClick={changeInfo} >변경</Button>
-                                                <Button variant='contained' color='secondary' onClick={reset}>비밀번호 초기화</Button>
+                                                <Button sx={{
+                                                    backgroundColor: '#ffb121',
+                                                    color: 'white',
+                                                    fontSize: '15px',
+                                                    marginRight: '10px'
+                                                }} onClick={changeInfo} >변경</Button>
+
+                                                <Button sx={{
+                                                    backgroundColor: '#ffb121',
+                                                    color: 'white',
+                                                    fontSize: '15px'
+
+                                                }} onClick={() => reset(potalId)}>비밀번호 초기화</Button>
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>
@@ -482,7 +533,6 @@ const AdminInfo = () => {
                     </Box>
                 </Modal>
             </Box>
-        </Box>
     );
 };
 

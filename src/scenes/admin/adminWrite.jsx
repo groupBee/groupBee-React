@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {
-    Box,
+    Box, Button,
     FormControlLabel,
     IconButton,
     InputBase,
     MenuItem,
-    Modal, Radio,
+    Modal, Paper, Radio,
     RadioGroup,
-    Select,
+    Select, TableBody, TableCell, TableContainer, TableHead, TableRow,
     Typography, useMediaQuery
 } from "@mui/material";
 import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
@@ -109,29 +109,28 @@ const AdminWrite = () => {
     };
 
     return (
-        <Box style={{ padding: '20px' }}>
-            <Box p={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
-                    <Box display="flex" alignItems="center" gap={2}>
-                        <IconButton
-                            sx={{ display: `${isMdDevices ? "flex" : "none"}` }}
-                            onClick={() => setToggled(!toggled)}
-                        >
-                            <MenuOutlined />
-                        </IconButton>
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            bgcolor="white"
-                            borderRadius="3px"
-                            sx={{ display: `${isXsDevices ? "none" : "flex"}` }}
-                        >
-                            <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
-                            <IconButton type="button" sx={{ p: 1 }}>
-                                <SearchOutlined />
-                            </IconButton>
-                        </Box>
-                    </Box>
+        <Box
+            gridRow="span 3"
+            sx={{
+                borderRadius: "8px",
+                backgroundColor: "white",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden", // 박스 넘침 방지
+                maxWidth: '1400px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '20px auto'
+            }}
+        >
+            <Box borderBottom={`2px solid #ffb121`} p="16px">
+                <Typography
+                    variant="h4"
+                    fontWeight="700"
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    전자결재
                     <Select
                         value={sortOrder}
                         onChange={handleSortChange}
@@ -145,33 +144,41 @@ const AdminWrite = () => {
                         <MenuItem value="descending">내림차순</MenuItem>
                         <MenuItem value="date">날짜순</MenuItem>
                     </Select>
-                </Box>
-                <Box borderBottom="1px solid #e0e0e0" />
-                <Table>
-                    <thead>
-                    <tr>
-                        <th style={{textAlign: "center", width:'10%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>번호</th>
-                        <th style={{textAlign: "center", width:'10%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>종류</th>
-                        <th style={{textAlign: "center", width:'15%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>제목</th>
-                        <th style={{textAlign: "center", width:'15%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>작성자</th>
-                        <th style={{textAlign: "center", width:'15%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>부서</th>
-                        <th style={{textAlign: "center", width:'15%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>작성일</th>
-                        <th style={{textAlign: "center", width:'10%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>상태</th>
-                        <th style={{textAlign: "center", width:'10%', fontSize:'16px', backgroundColor: '#ff7546', color: 'white'}}>삭제</th>
-                    </tr>
-                    </thead>
-                    <tbody>
+                </Typography>
+            </Box>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>번호</TableCell>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>종류</TableCell>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>제목</TableCell>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성자</TableCell>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>부서</TableCell>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성일</TableCell>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>상태</TableCell>
+                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>삭제</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
                     {currentItems.map((elec, index) => (
-                        <tr key={index}>
-                            <td style={{textAlign: "center",  paddingTop: "15px"}}>{index+1}</td>
-                            <td style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer'}}
-                                onClick={() => moveDetail(elec.id)}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
-                            <td style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer'}}
-                                onClick={() => moveDetail(elec.id)}>{elec.additionalFields.title === '' ? '제목없음' : elec.additionalFields.title}</td>
-                            <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.writer}</td>
-                            <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.department}</td>
-                            <td style={{textAlign: "center",  paddingTop: "15px"}}>{formatDate(elec.writeday)}</td>
-                            <td style={{
+                        <TableRow key={index}     sx={{
+                            '&:hover': {
+                                backgroundColor: '#f5f5f5', // 호버 시 배경 색상
+                                '& *': {
+                                    color: '#ffb121', // 호버 시 모든 자식 요소의 텍스트 색상
+                                },
+                            },
+                        }}>
+                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{index+1}</TableCell>
+                            <TableCell style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer', fontSize: '0.9rem'}}
+                                onClick={() => moveDetail(elec.id)}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</TableCell>
+                            <TableCell style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer', fontSize: '0.9rem'}}
+                                onClick={() => moveDetail(elec.id)}>{elec.additionalFields.title === '' ? '제목없음' : elec.additionalFields.title}</TableCell>
+                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{elec.writer}</TableCell>
+                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{elec.department}</TableCell>
+                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{formatDate(elec.writeday)}</TableCell>
+                            <TableCell style={{
                                 textAlign: "center",
                                 paddingTop: "15px",
                             }}>
@@ -183,15 +190,15 @@ const AdminWrite = () => {
                                    }}>
                                 {elec.approveType === 0 ? '반려' : elec.approveType === 1 ? '결재중' : elec.approveType === 2 ? '결재중' : '결재완료'}
                                    </span>
-                            </td>
-                            <td style={{textAlign: "center"}}>
+                            </TableCell>
+                            <TableCell style={{textAlign: "center"}}>
                                 <IconButton onClick={() => handleDelete(elec.id)}>
                                     <DeleteIcon/>
                                 </IconButton>
-                            </td>
-                        </tr>
+                            </TableCell>
+                        </TableRow>
                         ))}
-                    </tbody>
+                        </TableBody>
                 </Table>
                 <ReactPaginate
                     previousLabel={"이전"}
@@ -204,8 +211,9 @@ const AdminWrite = () => {
                     containerClassName={"pagination"}
                     activeClassName={"active"}
                 />
+                </TableContainer>
             </Box>
-        </Box>
+
     );
 };
 
