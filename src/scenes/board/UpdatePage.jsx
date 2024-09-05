@@ -30,9 +30,9 @@ const UpdatePage = () => {
     const [content, setContent] = useState('');
     const [mustRead, setMustRead] = useState(false);
     const [mustMustRead, setMustMustRead] = useState(false);
-    const [files, setFiles] = useState([]);
-    const [existingFiles, setExistingFiles] = useState([]);
-    const [deletedFiles, setDeletedFiles] = useState([]);
+    const [files, setFiles] = useState([]);  // 새로 추가된 파일
+    const [existingFiles, setExistingFiles] = useState([]);  // 기존 파일 목록
+    const [deletedFiles, setDeletedFiles] = useState([]);  // 삭제된 파일 목록
     const [currentPage, setCurrentPage] = useState(1);
 
     useEffect(() => {
@@ -79,12 +79,7 @@ const UpdatePage = () => {
     };
 
     const handleFileChange = (e) => {
-        setFiles([...e.target.files]);
-    };
-
-    const handleDeleteFile = (fileName) => {
-        setDeletedFiles([...deletedFiles, fileName]);
-        setExistingFiles(existingFiles.filter((file) => file !== fileName));
+        setFiles([...e.target.files]);  // 새로 추가된 파일들 저장
     };
 
     const handleSubmit = async (e) => {
@@ -100,12 +95,12 @@ const UpdatePage = () => {
         const formData = new FormData();
         formData.append('boardData', JSON.stringify(boardData));
 
-        // 새로 추가된 파일들
+        // 새로 추가된 파일들 추가
         files.forEach((file) => {
             formData.append('files', file);
         });
 
-        // 삭제된 파일 목록
+        // 삭제된 파일 목록 전송
         formData.append('deletedFiles', JSON.stringify(deletedFiles));
 
         try {
@@ -115,7 +110,7 @@ const UpdatePage = () => {
                 },
             });
 
-            navigate(`/board/list/${id}/${currentPage}`); // 수정 후 상세 페이지로 이동
+            navigate(`/board/list/${id}/${currentPage}`);  // 수정 후 상세 페이지로 이동
         } catch (error) {
             console.error('Error updating post or uploading files:', error);
         }
@@ -186,27 +181,7 @@ const UpdatePage = () => {
                             style={{ marginTop: '10px' }}
                         />
                     </div>
-                    {existingFiles.length > 0 && (
-                        <Box mt={2}>
-                            <Typography variant="body1">기존 첨부 파일:</Typography>
-                            {existingFiles.map((fileName) => (
-                                <Box key={fileName} display="flex" alignItems="center" mb={1}>
-                                    <Link href={`/api/download/${id}/${fileName}`} target="_blank" rel="noopener noreferrer">
-                                        {fileName}
-                                    </Link>
-                                    <Button
-                                        onClick={() => handleDeleteFile(fileName)}
-                                        variant="contained"
-                                        color="secondary"
-                                        size="small"
-                                        style={{ marginLeft: '10px' }}
-                                    >
-                                        삭제
-                                    </Button>
-                                </Box>
-                            ))}
-                        </Box>
-                    )}
+
                     <div>
                         <label htmlFor="content"></label>
                         <ReactQuill

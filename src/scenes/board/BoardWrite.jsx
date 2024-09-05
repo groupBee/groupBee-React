@@ -139,7 +139,7 @@ const BoardWrite = () => {
                     borderRadius: "8px",
                     backgroundColor: "white",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    marginLeft: '15%',
+                    marginLeft: '14%',
                     minHeight: '850px',
                     width: "80%",
                     maxWidth: "850px",
