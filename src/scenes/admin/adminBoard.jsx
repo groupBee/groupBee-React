@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {
-    Box,
+    Box, Button,
     IconButton,
     InputBase,
-    MenuItem,
+    MenuItem, Paper,
     Select, TableBody,
-    TableCell,
+    TableCell, TableContainer,
     TableHead,
-    TableRow,
+    TableRow, Typography,
     useMediaQuery
 } from "@mui/material";
 import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
@@ -96,64 +96,63 @@ const AdminBoard = () => {
 
 
     return (
-        <Box style={{padding:'20px'}}>
-            <Box p={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
-                    <Box display="flex" alignItems="center" gap={2}>
-                        <IconButton
-                            sx={{ display: `${isMdDevices ? "flex" : "none"}` }}
-                            onClick={() => setToggled(!toggled)}
-                        >
-                            <MenuOutlined />
-                        </IconButton>
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            bgcolor="white"
-                            borderRadius="3px"
-                            sx={{ display: `${isXsDevices ? "none" : "flex"}` }}
-                        >
-                            <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
-                            <IconButton type="button" sx={{ p: 1 }}>
-                                <SearchOutlined />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                    <Select
-                        value={sortOrder}
-                        onChange={handleSortChange}
-
-                        size="small" // Select 컴포넌트의 크기 조절
-                        sx={{
-                            minWidth: 120, // 셀렉트의 최소 너비 설정
-                        }}
+        <Box
+            gridRow="span 3"
+            sx={{
+                borderRadius: "8px",
+                backgroundColor: "white",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden", // 박스 넘침 방지
+                maxWidth: '1400px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '20px auto'
+            }}
+        >
+            <Box borderBottom={`2px solid #ffb121`} p="16px">
+                <Typography
+                    variant="h4"
+                    fontWeight="700"
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    게시판
+                    <Box
+                        display="flex"
+                        alignItems="center"
+                        bgcolor="white"
+                        borderRadius="3px"
+                        sx={{ display: `${isXsDevices ? "none" : "flex"}`, border: '1px solid #ffb121' }}
                     >
-                        <MenuItem value="default">기본 순서</MenuItem>
-                        <MenuItem value="ascending">오름차순</MenuItem>
-                        <MenuItem value="descending">내림차순</MenuItem>
-                        <MenuItem value="date">날짜순</MenuItem>
-                    </Select>
-                </Box>
-                <Box borderBottom="1px solid #e0e0e0" />
+                        <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
+                        <IconButton type="button" sx={{ p: 1 }}>
+                            <SearchOutlined />
+                        </IconButton>
+                    </Box>
+                </Typography>
+            </Box>
+            <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem'}}>번호</TableCell>
-                            <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>제목</TableCell>
-                            <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>작성자</TableCell>
-                            <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>작성일</TableCell>
-                            <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>조회</TableCell>
-                            <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>삭제</TableCell>
+                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>제목</TableCell>
+                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성자</TableCell>
+                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성일</TableCell>
+                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>조회</TableCell>
+                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>삭제</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {boardList
                             .sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate)) // 최신순 정렬
                             .map((list, index) => (
-                                <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
-                                        {boardList.length - index} {/* 최신 게시물부터 번호 부여 */}
-                                    </TableCell>
+                                <TableRow key={index} sx={{   '&:hover': {
+                                        backgroundColor: '#f5f5f5', // 호버 시 배경 색상
+                                        '& *': {
+                                            color: '#ffb121', // 호버 시 모든 자식 요소의 텍스트 색상
+                                        },
+                                    },}}>
                                     <TableCell align="center" sx={{
                                         fontSize: '0.9rem',
                                         maxWidth: '100px',
@@ -173,17 +172,17 @@ const AdminBoard = () => {
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.readCount}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
                                         <IconButton onClick={() => handleDelete(list.board.id)}>
-                                            <DeleteIcon />
+                                            <DeleteIcon sx={{ fontSize: '1.5rem'}}/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
                             ))}
                     </TableBody>
-
-
                 </Table>
-            </Box>
-            </Box>
+    </TableContainer>
+        </Box>
+
+
     );
 };
 

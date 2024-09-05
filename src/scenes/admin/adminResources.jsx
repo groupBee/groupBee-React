@@ -9,7 +9,7 @@ import {
     Select,
     Table, TableBody, TableCell,
     TableContainer,
-    TableHead, TableRow, TextField
+    TableHead, TableRow, TextField, Typography
 } from "@mui/material";
 import {SearchOutlined} from "@mui/icons-material";
 import DeleteIcon from "@mui/icons-material/Delete.js";
@@ -309,57 +309,93 @@ const AdminResources = () => {
 
 
     return (
-        <Box sx={{ padding: '20px'}}>
-            <Box  p={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
-                    <Button variant="contained" onClick={handleToggleTable} sx={{backgroundColor:'#ffa1a1',color:'white', fontSize:'13px', width:'200px'}}>
-                        {showCarTable ? '회의실' : '차량'}
-                    </Button>
-                    <Box display="flex" alignItems="center" gap={1}>
-                        <Button  variant="contained" onClick={handleOpenModal}
-                                 sx={{ textAlign: 'center' , backgroundColor:'#ff7926', fontSize:'13px'
-                                     ,color: 'white', padding:'7px'}}>
-                            추가
-                        </Button>
-                        <Select
-                            value={sortOrder}
-                            onChange={handleSortChange}
-                            size="small"
-                            sx={{ minWidth: 120 }}
-                        >
-                            <MenuItem value="default">기본 순서</MenuItem>
-                            <MenuItem value="ascending">오름차순</MenuItem>
-                            <MenuItem value="descending">내림차순</MenuItem>
-                            <MenuItem value="date">날짜순</MenuItem>
-                        </Select>
+        <Box
+            gridRow="span 3"
+            sx={{
+                borderRadius: "8px",
+                backgroundColor: "white",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden", // 박스 넘침 방지
+                maxWidth: '1400px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '20px auto'
+            }}
+        >
+            <Box borderBottom={`2px solid #ffb121`} p="16px">
+                <Typography
+                    variant="h4"
+                    fontWeight="700"
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    자원관리
+                    <Box>
+                    <Button variant="h4" onClick={handleToggleTable}
+                            sx={{
+                        border: '1px solid #ffb121',
+                        color: 'white',
+                        backgroundColor: '#ffb121',
+                        fontSize: '14px',
+                        borderRadius: "8px",
+                        fontWeight: 'bold',
+                        marginRight: '10px',
+                        '&:hover': {
+                            backgroundColor: 'white', // 호버 시 배경색 변경
+                            borderColor: '1px solid #ffb121', // 호버 시 테두리 색상 변경
+                            color: '#ffb121', // 호버 시 텍스트 색상 변경
+                        }
+                    }}
+                    >
+                        {showCarTable ? '회의실보기' : '차량보기'}</Button>
+                    <Button  variant="h4" onClick={handleOpenModal}
+                             sx={{
+                                 border: '1px solid #ffb121',
+                                 color: 'white',
+                                 backgroundColor: '#ffb121',
+                                 fontSize: '14px',
+                                 borderRadius: "8px",
+                                 fontWeight: 'bold',
+                                 '&:hover': {
+                                     backgroundColor: 'white', // 호버 시 배경색 변경
+                                     borderColor: '1px solid #ffb121', // 호버 시 테두리 색상 변경
+                                     color: '#ffb121', // 호버 시 텍스트 색상 변경
+                                 }}}>추가</Button>
                     </Box>
-                </Box>
-                <Box borderBottom="1px solid #e0e0e0" />
-                <TableContainer component={Paper} sx={{ marginTop: 2 }}>
+                </Typography>
+            </Box>
+                <TableContainer component={Paper}>
                     {showCarTable ? (
                         // 첫 번째 테이블 (Car Table)
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'10%'}}>번호</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'20%' }}>사진</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'10%'}}>종류</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem', width:'10%' }}>차량번호</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'10%'}}>삭제</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'10%'}}>수정</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>사진</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>종류</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>차량번호</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>삭제</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>수정</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {adminCar.map((car, index) => (
-                                    <TableRow sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                                        <TableCell align="center" sx={{ fontSize: '0.9rem' }}>{index+1}</TableCell>
+                                    <TableRow
+                                        sx={{
+                                        '&:hover': {
+                                            backgroundColor: '#f5f5f5', // 호버 시 배경 색상
+                                            '& *': {
+                                                color: '#ffb121', // 호버 시 모든 자식 요소의 텍스트 색상
+                                            },
+                                        },
+                                    }}>
                                         <TableCell align="center">
                                             <img
                                                 src={`https://minio.bmops.kro.kr/groupbee/book/${car.photo}`}
                                                 alt=''
                                                 style={{
-                                                    width: '45%',
-                                                    height: '30%',
+                                                    width: '200px',
+                                                    height: '120px',
                                                     objectFit: 'cover',
                                                     borderRadius: '5px'
                                                 }}
@@ -386,24 +422,22 @@ const AdminResources = () => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem', width:'10%'}}>번호</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem', width:'20%'}}>사진</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'20%'}}>이름</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'10%'}}>삭제</TableCell>
-                                    <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white', fontSize: '0.9rem' , width:'10%'}}>수정</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>사진</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>이름</TableCell>
+                                    <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>삭제</TableCell>
+                                    <TableCell align="center" sx={{  width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>수정</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {adminRoom.map((room, index) => (
                                     <TableRow sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
-                                        <TableCell align="center" sx={{ fontSize: '0.9rem' }}>{index+1}</TableCell>
                                         <TableCell align="center">
                                             <img
                                             src={`https://minio.bmops.kro.kr/groupbee/book/${room.photo}`}
                                             alt=''
                                             style={{
-                                                width: '45%',
-                                                height: '30%',
+                                                width: '200px',
+                                                height: '120px',
                                                 objectFit: 'cover',
                                                 borderRadius: '5px'
                                             }}
@@ -427,7 +461,6 @@ const AdminResources = () => {
                     )}
                 </TableContainer>
 
-            </Box>
             {/*추가모달*/}
             <Dialog open={isModalOpen} onClose={handleCloseModal}>
                 <DialogTitle >차량/회의실 추가</DialogTitle>

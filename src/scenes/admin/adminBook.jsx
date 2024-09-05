@@ -18,7 +18,7 @@ import {
     TableHead,
     TableRow,
     Paper,
-    useMediaQuery
+    useMediaQuery, Typography
 } from "@mui/material";
 import ReactPaginate from 'react-paginate';
 import { MenuOutlined, SearchOutlined } from "@mui/icons-material";
@@ -34,7 +34,7 @@ const AdminBook = () => {
     const [roomBookings, setRoomBookings] = useState([]);
     const [roomData, setRoomData] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const [itemsPerPage] = useState(4);
+    const [itemsPerPage] = useState(8);
 
 
     const [alertMessage, setAlertMessage] = useState("");
@@ -195,55 +195,54 @@ const AdminBook = () => {
     };
 
     return (
-        <Box sx={{ padding: '20px'}}>
-            <Box  p={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" py={1}>
-                    <Box display="flex" alignItems="center" gap={2}>
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            bgcolor="white"
-                            borderRadius="3px"
-                            sx={{ display: `${isXsDevices ? "none" : "flex"}` }}
-                        >
-                            <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
-                            <IconButton type="button" sx={{ p: 1 }}>
-                                <SearchOutlined />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                    <Box display="flex" alignItems="center" gap={1}>
-
-                        <Select
-                            value={sortOrder}
-                            onChange={handleSortChange}
-                            size="small"
-                            sx={{ minWidth: 120 }}
-                        >
-                            <MenuItem value="default">기본 순서</MenuItem>
-                            <MenuItem value="ascending">오름차순</MenuItem>
-                            <MenuItem value="descending">내림차순</MenuItem>
-                            <MenuItem value="date">날짜순</MenuItem>
-                        </Select>
-                    </Box>
-                </Box>
-                <Box borderBottom="1px solid #e0e0e0" />
+        <Box
+            gridRow="span 3"
+            sx={{
+                borderRadius: "8px",
+                backgroundColor: "white",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden", // 박스 넘침 방지
+                maxWidth: '1400px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '20px auto'
+            }}
+        >
+            <Box borderBottom={`2px solid #ffb121`} p="16px">
+                <Typography
+                    variant="h4"
+                    fontWeight="700"
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    예약관리
+                </Typography>
+            </Box>
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem'}}>이름</TableCell>
-                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>차량/회의실</TableCell>
-                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>아이템</TableCell>
-                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>예약시간</TableCell>
-                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>반납시간</TableCell>
-                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem' }}>사유</TableCell>
-                                <TableCell align="center" sx={{ backgroundColor: '#ffb121', color: 'white',fontSize: '0.9rem'}}>삭제</TableCell>
+                                <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>이름</TableCell>
+                                <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>차량/회의실</TableCell>
+                                <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>아이템</TableCell>
+                                <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>예약시간</TableCell>
+                                <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>반납시간</TableCell>
+                                <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>사유</TableCell>
+                                <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold' }}>삭제</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {currentItems.map((booking, index) => (
-                                <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f5f5f5' } }}>
+                                <TableRow key={index}
+                                          sx={{
+                                            '&:hover': {
+                                                 backgroundColor: '#f5f5f5',
+                                                '& *': {
+                                            color: '#ffb121',
+                                        },
+                                    },
+                                }}>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.memberId}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.category}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.type} ({booking.carId})</TableCell>
@@ -252,7 +251,7 @@ const AdminBook = () => {
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{booking.reason || booking.purpose}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
                                         <IconButton onClick={() => handleDelete(booking.id, booking.category)}>
-                                            <DeleteIcon />
+                                            <DeleteIcon sx={{ fontSize: '1.5rem'}}/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
@@ -280,7 +279,6 @@ const AdminBook = () => {
             </Box>
 
 
-        </Box>
     );
 };
 

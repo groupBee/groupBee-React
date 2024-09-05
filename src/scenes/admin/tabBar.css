@@ -1,17 +1,59 @@
-.tab-bar {
+/* Container for the navigation bar */
+.nav {
+    display: flex;
+    justify-content: center; /* 수평 중앙 정렬 */
+    align-items: center; /* 수직 중앙 정렬 */
+    padding: 10px;
+    background-color: white; /* 배경색 */
+    border-bottom: 1px solid #ddd; /* 하단 테두리 */
+    border-radius: 8px; /* 모서리 둥글게 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 추가 */
+    margin: 20px auto; /* 위와 아래에 여백을 주고, 수평 중앙 정렬 */
+    max-width: 1400px; /* 최대 너비 설정 (필요에 따라 조정) */
+    margin-top: 60px;
+}
+
+/* Style for navigation items */
+.nav__item {
+    margin: 0 15px; /* 아이템 간의 여백 */
     position: relative;
 }
 
-.tab {
-    position: relative;
-}
-
-.active-indicator {
+/* Style for active indicator */
+.nav__active-indicator {
     position: absolute;
-    bottom: -5px; /* Adjust based on your needs */
-    left: 0;
-    height: 4px;
-    width: 100%; /* Adjust width as needed */
-    background-color: #ffb121; /* Yellow bar color */
-    transition: background-color 0.3s ease; /* Smooth transition for color change */
+    bottom: -4px; /* 인디케이터를 네비게이션 아이템 아래에 위치 */
+    left: 50%; /* 인디케이터를 수평 중앙에 위치 */
+    transform: translateX(-50%); /* 인디케이터를 수평 중앙에 위치 */
+    width: 100%; /* 네비게이션 아이템의 전체 너비 */
+    height: 2px;
+    background-color: #ffb121; /* 활성화된 인디케이터 색상 */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* 색상과 위치 변화에 대한 부드러운 전환 */
+}
+
+/* Optional: Add some styling for NavLink */
+.nav a {
+    text-decoration: none;
+    font-size: 20px; /* 폰트 크기 조정 */
+    color: #3e3e3e; /* 기본 색상 */
+    padding: 10px;
+    display: block;
+    transition: color 0.3s ease, transform 0.3s ease; /* 색상과 크기에 대한 부드러운 전환 */
+}
+
+/* Hover effect for NavLink */
+.nav a:hover {
+    color: #ffb121; /* 호버 시 색상 변경 */
+    transform: scale(1.05); /* 호버 시 약간 확대 */
+}
+
+/* Style for active NavLink */
+.nav a.active {
+    color: #ffb121; /* 활성화된 링크 색상 */
+    font-weight: bold; /* 활성화된 링크에 굵은 글씨 */
+}
+
+/* Add a transition effect to the active indicator */
+.nav__item:hover .nav__active-indicator {
+    transform: translateX(-50%) scaleX(1.2); /* 호버 시 인디케이터 크기 증가 */
 }
