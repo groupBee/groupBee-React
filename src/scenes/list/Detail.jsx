@@ -271,8 +271,7 @@ const Detail = () => {
                             <td style={{ fontSize: '23px', width: '175px', outline: 'none' }}>{list.department}</td>
                             <td style={{ minWidth: '90px', fontSize: '23px' }}>직급</td>
                             <td style={{ fontSize: '23px', width: '175px', outline: 'none' }}>{list.position}</td>
-                            <td style={{ minWidth: '70px', fontSize: '23px' }}>보안등급</td>
-                            <td style={{ fontSize: '23px', width: '175px', outline: 'none' }}>{list.level}</td>
+                    
                         </tr>
                         {/* 문서 유형에 따른 상세 내용 */}
                         {
