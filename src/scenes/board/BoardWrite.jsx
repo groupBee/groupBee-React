@@ -261,6 +261,7 @@ const BoardWrite = () => {
                         <div style={{ marginTop: '-20px' }}>
                             <label htmlFor="content"></label>
                             <ReactQuill
+                                required
                                 id="content"
                                 theme="snow"
                                 value={content}
