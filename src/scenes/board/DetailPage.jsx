@@ -16,25 +16,17 @@ const DetailPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        getinfo();
-    }, []);
-
-    useEffect(() => {
         fetchPost();
+        getinfo();
     }, [id]);
 
-    const getinfo = () => {
-        axios.get("/api/employee/info")
-            .then(res => {
-                setMyinfoList(res.data);
-            });
-    };
-
-    const getcomment = () => {
-        axios.get(`/api/comment/list?boardId=${id}`)
-            .then(res => {
-                setCommentList(res.data);
-            });
+    const getinfo = async () => {
+        try {
+            const response = await axios.get("/api/employee/info");
+            setMyinfoList(response.data);
+        } catch (error) {
+            console.error('Error fetching employee info:', error);
+        }
     };
 
     const fetchPost = async () => {
@@ -42,13 +34,21 @@ const DetailPage = () => {
             const response = await axios.get(`/api/board/list/${id}`);
             setPost(response.data);
             getcomment();
-            console.log(response.data)
         } catch (error) {
             console.error('Error fetching post:', error);
         }
     };
 
-    const writeComment = () => {
+    const getcomment = async () => {
+        try {
+            const response = await axios.get(`/api/comment/list?boardId=${id}`);
+            setCommentList(response.data);
+        } catch (error) {
+            console.error('Error fetching comments:', error);
+        }
+    };
+
+    const writeComment = async () => {
         if (!comment) {
             alert("댓글을 입력하세요");
             return;
@@ -56,35 +56,33 @@ const DetailPage = () => {
 
         const data = {
             "content": comment,
-            "boardId": post.id
+            "boardId": id
         };
 
-        axios.post('/api/comment/insert', data)
-            .then(() => {
-                alert("댓글이 작성되었습니다");
-                getcomment();
-                setComment('');
-            })
-            .catch(error => {
-                console.error('Error posting comment:', error);
-                alert('댓글 작성 중 오류가 발생했습니다.');
-            });
+        try {
+            await axios.post('/api/comment/insert', data);
+            alert("댓글이 작성되었습니다");
+            setComment('');
+            getcomment();
+        } catch (error) {
+            console.error('Error posting comment:', error);
+            alert('댓글 작성 중 오류가 발생했습니다.');
+        }
     };
 
     const handleEditClick = () => {
         navigate(`/board/update/${id}`);
     };
 
-    const handleDeleteClick = () => {
+    const handleDeleteClick = async () => {
         if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-            axios.delete(`/api/board/delete/${id}`)
-                .then(() => {
-                    alert('게시글이 삭제되었습니다.');
-                    navigate('/board');
-                })
-                .catch(error => {
-                    console.error('Error deleting post:', error);
-                });
+            try {
+                await axios.delete(`/api/board/delete/${id}`);
+                alert('게시글이 삭제되었습니다.');
+                navigate('/board');
+            } catch (error) {
+                console.error('Error deleting post:', error);
+            }
         }
     };
 
@@ -92,17 +90,16 @@ const DetailPage = () => {
         navigate(`/board/${currentPage}`);
     };
 
-    const commentDeleteClick = (commentId) => {
+    const commentDeleteClick = async (commentId) => {
         if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
-            axios.delete(`/api/comment/delete/${commentId}`)
-                .then(() => {
-                    alert("댓글이 삭제되었습니다");
-                    getcomment();
-                })
-                .catch(error => {
-                    console.error('Error deleting comment:', error);
-                    alert('댓글 삭제 중 오류가 발생했습니다.');
-                });
+            try {
+                await axios.delete(`/api/comment/delete/${commentId}`);
+                alert("댓글이 삭제되었습니다");
+                getcomment();
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+                alert('댓글 삭제 중 오류가 발생했습니다.');
+            }
         }
     };
 
@@ -111,30 +108,27 @@ const DetailPage = () => {
         setEditedComment(content);
     };
 
-    const handleEditCommentSave = () => {
+    const handleEditCommentSave = async () => {
         if (!editedComment) {
             alert("수정된 댓글을 입력하세요");
             return;
         }
 
-        axios.delete(`/api/comment/delete/${editCommentId}`)
-            .then(() => {
-                const data = {
-                    "content": editedComment,
-                    "boardId": post.id
-                };
-                return axios.post('/api/comment/insert', data);
-            })
-            .then(() => {
-                alert("댓글이 수정되었습니다");
-                getcomment();
-                setEditCommentId(null);
-                setEditedComment('');
-            })
-            .catch(error => {
-                console.error('Error updating comment:', error);
-                alert('댓글 수정 중 오류가 발생했습니다.');
-            });
+        try {
+            await axios.delete(`/api/comment/delete/${editCommentId}`);
+            const data = {
+                "content": editedComment,
+                "boardId": id
+            };
+            await axios.post('/api/comment/insert', data);
+            alert("댓글이 수정되었습니다");
+            setEditCommentId(null);
+            setEditedComment('');
+            getcomment();
+        } catch (error) {
+            console.error('Error updating comment:', error);
+            alert('댓글 수정 중 오류가 발생했습니다.');
+        }
     };
 
     const downloadFile = async (fileUrl, fileName) => {
@@ -167,9 +161,9 @@ const DetailPage = () => {
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                     top: "50%",
                     left: "50%",
-                    marginLeft:'10%',
+                    marginLeft: '10%',
                     height: "auto",
-                    minHeight:'1000px',
+                    minHeight: '1000px',
                     width: "100%",
                     maxWidth: "1000px",
                 }}
@@ -177,13 +171,13 @@ const DetailPage = () => {
                 <Box p={3}>
                     {post ? (
                         <Box display="flex" flexDirection="column" alignItems="flex-start" style={{ backgroundColor: 'white', maxWidth: '1155px', marginLeft: '-24px', paddingLeft: '5%' }}>
-                            <Box mb={2} style={{width: '300px',}}>
+                            <Box mb={2} style={{ width: '300px', }}>
                                 <Typography
                                     variant="h4"
                                     gutterBottom
                                     style={{
                                         width: '100%',
-                                        minWidth:'900px',
+                                        minWidth: '900px',
                                         whiteSpace: 'normal',
                                         wordWrap: 'break-word',
                                         padding: '3px',
@@ -192,29 +186,29 @@ const DetailPage = () => {
                                         backgroundColor: 'white',
                                     }}
                                 >
-                                    {post.mustRead && <span><b style={{fontSize: '20px'}}>[공지]&nbsp;</b></span>}
-                                    <b style={{fontSize: '20px'}}>{post.title}</b>
+                                    {post.mustRead && <span><b style={{ fontSize: '20px' }}>[공지]&nbsp;</b></span>}
+                                    <b style={{ fontSize: '20px' }}>{post.title}</b>
                                 </Typography>
-                                <Typography variant="subtitle1" style={{width: '400px', paddingLeft: '5px', marginTop: '-3px'}}>
-                                    작성자: {post.writer}&nbsp;&nbsp;&nbsp;<br/>
+                                <Typography variant="subtitle1" style={{ width: '400px', paddingLeft: '5px', marginTop: '-3px' }}>
+                                    작성자: {post.writer}&nbsp;&nbsp;&nbsp;<br />
                                     조회수: {post.readCount}
                                 </Typography>
                             </Box>
-                            <Box mb={2} style={{width: '300px', marginTop: '-50px'}}>
-                                <Typography variant="subtitle1" style={{marginLeft: '705px', width: '400px', marginTop: '-12px'}}>
+                            <Box mb={2} style={{ width: '300px', marginTop: '-50px' }}>
+                                <Typography variant="subtitle1" style={{ marginLeft: '705px', width: '400px', marginTop: '-12px' }}>
                                     작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                                 </Typography>
 
                                 {post.updateDate && new Date(post.updateDate) > new Date(post.createDate) && (
-                                    <Typography variant="subtitle1" style={{marginLeft: '705px', width: '400px',marginBottom:'-23px'}}>
+                                    <Typography variant="subtitle1" style={{ marginLeft: '705px', width: '400px', marginBottom: '-23px' }}>
                                         수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
                                     </Typography>
                                 )}
 
                                 <Box mb={2} style={{ width: '300px' }}>
                                     {post.files && post.originalFileNames && (
-                                        <Box style={{borderTop:'1px solid grey',borderBottom:'1px solid grey',width:'auto',minWidth:'900px',maxWidth:'1100px',paddingBottom:'-10px',marginTop:'30px'}}>
-                                            <Typography variant="body1" style={{ marginBottom: '10px', fontSize: '15px',paddingTop:'5px' }}>
+                                        <Box style={{ borderTop: '1px solid grey', borderBottom: '1px solid grey', width: 'auto', minWidth: '900px', maxWidth: '1100px', paddingBottom: '-10px', marginTop: '30px' }}>
+                                            <Typography variant="body1" style={{ marginBottom: '10px', fontSize: '15px', paddingTop: '5px' }}>
                                                 첨부파일:&nbsp;&nbsp;&nbsp;
                                                 {post.files.map((file, index) => (
                                                     <div key={index}>
@@ -256,7 +250,7 @@ const DetailPage = () => {
                                     <div
                                         style={{
                                             width: '100%',
-                                            minWidth:'900px',
+                                            minWidth: '900px',
                                             minHeight: '300px',
                                             marginTop: '-30px',
                                             borderRadius: '8px',
@@ -270,20 +264,20 @@ const DetailPage = () => {
                                 </Typography>
                             </Box>
 
-                            <Box mt={2} style={{ width: '300px',marginTop:'-30px',marginLeft:'750px' }}>
+                            <Box mt={2} style={{ width: '300px', marginTop: '-30px', marginLeft: '750px' }}>
                                 {
                                     myinfoList.potalId === post.memberId ?
                                         <>
                                             &nbsp;&nbsp;&nbsp;
                                             <Button
                                                 onClick={handleEditClick}
-                                                style={{width:'40px',height:'20px',marginRight:'20px',marginTop:'20px',marginLeft:'40px'}}
+                                                style={{ width: '40px', height: '20px', marginRight: '20px', marginTop: '20px', marginLeft: '40px' }}
                                             >
-                                                수정
+                                                편집
                                             </Button>
-                                            <Button onClick={handleDeleteClick} style={{marginLeft:'-30px',width:'30px',height:'20px',marginTop:'20px'}}>
+                                            <Button onClick={handleDeleteClick} style={{ marginLeft: '-30px', width: '30px', height: '20px', marginTop: '20px' }}>
                                                 삭제
-                                            </Button><br/>
+                                            </Button><br />
                                         </> : ''
                                 }
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -296,8 +290,8 @@ const DetailPage = () => {
                                         border: 'none',
                                         boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                         transition: 'background-color 0.3s ease',
-                                        marginLeft:'60px',
-                                        marginTop:'10px'
+                                        marginLeft: '60px',
+                                        marginTop: '10px'
                                     }}
                                     onClick={handleBackClick}
                                     onMouseOver={(e) => {
@@ -315,12 +309,12 @@ const DetailPage = () => {
                                 </Button>
                             </Box>
                             <hr />
-                            <div style={{marginTop:'30px'}}>
+                            <div style={{ marginTop: '30px' }}>
                                 <b>댓글</b><br />
                             </div>
                             <div>
                                 <textarea
-                                    style={{ width:'100%',minWidth: '850px', height: '100px', borderRadius: '10px' }}
+                                    style={{ width: '100%', minWidth: '850px', height: '100px', borderRadius: '10px' }}
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
@@ -354,7 +348,7 @@ const DetailPage = () => {
                                 <tr>
                                     <th><p style={{ width: '100px' }}>작성자</p></th>
                                     <th><p style={{ minWidth: '400px', marginLeft: '20px', marginRight: '200px' }}>내용</p></th>
-                                    <th><p style={{ marginLeft: '60px', width: '100px' }}>작성일</p></th>
+                                    <th><p style={{ width: '100px' }}>작성일</p></th>
                                 </tr>
                                 </tbody>
                             </table>
@@ -363,16 +357,16 @@ const DetailPage = () => {
                                 commentList.map((item, idx) =>
                                     <table key={item.id}>
                                         <tbody>
-                                        <tr style={{ borderBottom: '0.5px solid grey', maxHeight: '100px'}}>
+                                        <tr style={{ borderBottom: '0.5px solid grey', maxHeight: '100px' }}>
                                             <td style={{ fontSize: '15px', minWidth: '55px', maxHeight: '50px' }}>{item.writer}</td>
-                                            <td style={{ marginRight: '200px', minWidth: '350px', fontSize: '15px', maxHeight: '50px'}}>
+                                            <td style={{ marginRight: '200px', minWidth: '350px', fontSize: '15px', maxHeight: '50px' }}>
                                                 {editCommentId === item.id ? (
                                                     <div>
-                                                            <textarea
-                                                                value={editedComment}
-                                                                onChange={(e) => setEditedComment(e.target.value)}
-                                                                style={{ width: '700px', padding: '8px', borderRadius: '8px', paddingTop:'-10px', paddingBottom:'-10px' }}
-                                                            />
+                                                        <textarea
+                                                            value={editedComment}
+                                                            onChange={(e) => setEditedComment(e.target.value)}
+                                                            style={{ width: '700px', padding: '8px', borderRadius: '8px', paddingTop: '-10px', paddingBottom: '-10px' }}
+                                                        />
                                                         <Button onClick={handleEditCommentSave} variant='contained' style={{ marginLeft: '10px' }}>
                                                             저장
                                                         </Button>
@@ -389,12 +383,12 @@ const DetailPage = () => {
                                                         marginTop: '5px',
                                                         marginLeft: '55px',
                                                         marginRight: '50px',
-                                                        paddingTop:'-10px',
-                                                        paddingBottom:'-10px'
+                                                        paddingTop: '-10px',
+                                                        paddingBottom: '-10px'
                                                     }}>{item.content}</p>
                                                 )}
                                             </td>
-                                            <td style={{ width: '200px', maxHeight: '50px',marginLeft:'-50px' }}>
+                                            <td style={{ width: '200px', maxHeight: '50px', marginLeft: '-50px' }}>
                                                 {new Date(item.createDate).getFullYear()}-{String(new Date(item.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(item.createDate).getDate()).padStart(2, '0')} &nbsp;
                                                 {new Date(item.createDate).toLocaleTimeString('ko-KR', {
                                                     timeZone: 'Asia/Seoul',
@@ -406,15 +400,15 @@ const DetailPage = () => {
                                             </td>
                                             {
                                                 myinfoList.potalId === item.memberId ?
-                                                    <><div style={{display:'flex',paddingTop:'15px'}}>
+                                                    <><div style={{ display: 'flex', paddingTop: '15px' }}>
                                                         <Button
-                                                            style={{width:'30px'}}
+                                                            style={{ width: '30px' }}
                                                             onClick={() => handleEditCommentClick(item.id, item.content)}
                                                         >
                                                             <EditIcon />
                                                         </Button>
                                                         <Button
-                                                            style={{width:'30px' }}
+                                                            style={{ width: '30px' }}
                                                             onClick={() => commentDeleteClick(item.id)}
                                                         >
                                                             <CloseIcon />
