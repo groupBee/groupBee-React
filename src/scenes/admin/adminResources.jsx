@@ -25,7 +25,7 @@ const AdminResources = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [newBooking, setNewBooking] = useState({
-        category: '',
+        category: '0',
         type: '',
         carId: '',
         file: null,
@@ -51,8 +51,23 @@ const AdminResources = () => {
     const handleOpenModal = () => {
         setIsModalOpen(true);
         setAlertMessage("");
+        setNewBooking(prev => ({
+            ...prev,
+            category: '0' // 다이얼로그 열 때 기본 카테고리를 차량으로 설정
+        }));
     };
-    const handleCloseModal = () => setIsModalOpen(false);
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setNewBooking({
+            category: '0', // 기본값 설정
+            type: '',
+            carId: '',
+            file: null,
+            name: '',
+            imagePreview: '',
+            id: '',
+        });
+    };
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value);
@@ -112,6 +127,7 @@ const AdminResources = () => {
             fetchData();
 
         } catch (error) {
+            setIsModalOpen(false);
             Swal.fire({
                 title: '<strong>추가 실패</strong>',
                 icon: 'error',
@@ -416,11 +432,6 @@ const AdminResources = () => {
             <Dialog open={isModalOpen} onClose={handleCloseModal}>
                 <DialogTitle >차량/회의실 추가</DialogTitle>
                 <DialogContent>
-                    {alertMessage && (
-                        <Box sx={{ mb: 2, color: 'red', textAlign: 'center' }}>
-                            {alertMessage}
-                        </Box>
-                    )}
                     <Select
                         value={newBooking.category}
                         onChange={(e) => setNewBooking({ ...newBooking, category: e.target.value })}
@@ -477,6 +488,11 @@ const AdminResources = () => {
                             value={newBooking.name}
                             onChange={(e) => setNewBooking({ ...newBooking, name: e.target.value })}
                         />
+                    )}
+                    {alertMessage && (
+                        <Box sx={{ mb: 2, color: 'red', textAlign: 'center' }}>
+                            {alertMessage}
+                        </Box>
                     )}
                 </DialogContent>
                 <DialogActions>

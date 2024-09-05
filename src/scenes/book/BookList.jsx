@@ -409,9 +409,25 @@ const BookList = () => {
             category: '회의실'
         }))
     ];
-    // 멤버 아이디 같은거만 뽑아내는 코드
-    const filteredBookings = combinedBookings.filter(booking=> booking.memberId === potalId);
+
+    const now = new Date(); // 현재 시간을 가져옵니다.
+
+    const filteredBookings = combinedBookings.filter(booking => {
+        if (booking.corporateCarId) {
+            // 차량 예약인 경우
+            const returnDay = new Date(booking.returnDay); // 예약 종료 시간을 Date 객체로 변환합니다.
+            return booking.memberId === potalId && returnDay >= now;
+        } else if (booking.roomId) {
+            // 회의실 예약인 경우
+            const leave = new Date(booking.leave); // 회의실 예약 종료 시간을 Date 객체로 변환합니다.
+            return booking.memberId === potalId && leave >= now;
+        }
+        return false; // 차량 예약과 회의실 예약 모두 아닌 경우
+    });
+
     console.log(filteredBookings);
+
+
 
 
     const formatDateTime = (dateTime) => {
@@ -464,57 +480,66 @@ const BookList = () => {
                             </tr>
                             </thead>
                             <tbody>
-                            {filteredBookings.map((booking, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{booking.category}</td>
-                                    <td>{booking.type}</td>
-                                    <td>{formatDateTime(booking.rentDay || booking.enter)}</td>
-                                    <td>{formatDateTime(booking.returnDay || booking.leave)}</td>
-                                    <td>{booking.reason || booking.purpose}</td>
-                                    <td>
-                                    <Button
-                                            variant=""
-                                            size="small"
-                                            onClick={() => handleEdit(booking)}
-                                            sx={{
-                                                backgroundColor: '#ffb121',
-                                                color: '#fff',
-                                                fontWeight: 'bold',
-                                                textTransform: 'uppercase',
-                                                borderRadius: '5px',
-                                                padding: '6px 12px',
-                                                '&:hover': {
-                                                    backgroundColor: '#e68a00',
-                                                    transform: 'scale(1.05)',
-                                                },
-                                                marginRight: '8px', // Margin right for spacing
-                                            }}
-                                        >
-                                            변경
-                                        </Button>
-                                        <Button
-                                            variant=""
-                                            size="small"
-                                            onClick={() => handleDelete(booking.id, booking.category)}
-                                            sx={{
-                                                backgroundColor: '#dc3545',
-                                                color: '#fff',
-                                                fontWeight: 'bold',
-                                                textTransform: 'uppercase',
-                                                borderRadius: '5px',
-                                                padding: '6px 12px',
-                                                '&:hover': {
-                                                    backgroundColor: '#c82333',
-                                                    transform: 'scale(1.05)',
-                                                },
-                                            }}
-                                        >
-                                            삭제
-                                        </Button>
+                            {filteredBookings.length === 0 ? (
+                                <tr>
+                                    <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                                        예약이 없습니다.
                                     </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                filteredBookings.map((booking, index) => (
+                                    <tr key={index}>
+                                        <td>{index + 1}</td>
+                                        <td>{booking.category}</td>
+                                        <td>{booking.type}</td>
+                                        <td>{formatDateTime(booking.rentDay || booking.enter)}</td>
+                                        <td>{formatDateTime(booking.returnDay || booking.leave)}</td>
+                                        <td>{booking.reason || booking.purpose}</td>
+                                        <td>
+                                            <Button
+                                                variant=""
+                                                size="small"
+                                                onClick={() => handleEdit(booking)}
+                                                sx={{
+                                                    backgroundColor: '#ffb121',
+                                                    color: '#fff',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    borderRadius: '5px',
+                                                    padding: '6px 12px',
+                                                    '&:hover': {
+                                                        backgroundColor: '#e68a00',
+                                                        transform: 'scale(1.05)',
+                                                    },
+                                                    marginRight: '8px', // Margin right for spacing
+                                                }}
+                                            >
+                                                변경
+                                            </Button>
+                                            <Button
+                                                variant=""
+                                                size="small"
+                                                onClick={() => handleDelete(booking.id, booking.category)}
+                                                sx={{
+                                                    backgroundColor: '#dc3545',
+                                                    color: '#fff',
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'uppercase',
+                                                    borderRadius: '5px',
+                                                    padding: '6px 12px',
+                                                    '&:hover': {
+                                                        backgroundColor: '#c82333',
+                                                        transform: 'scale(1.05)',
+                                                    },
+                                                }}
+                                            >
+                                                삭제
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
+
                             </tbody>
                         </Table>
                     </Card.Body>

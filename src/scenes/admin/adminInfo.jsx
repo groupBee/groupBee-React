@@ -3,6 +3,7 @@ import { Box, Button, FormControlLabel, IconButton, InputBase, MenuItem, Modal, 
 import { MenuOutlined, SearchOutlined } from "@mui/icons-material";
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const style = {
     position: 'absolute',
@@ -141,6 +142,26 @@ const AdminInfo = () => {
         }
     };
 
+
+    const hasDataChanged = () => {
+        return (
+            name !== '' ||
+            phoneNumber !== '' ||
+            profileFile !== originalFile ||
+            potalId !== '' ||
+            extensionCall !== '' ||
+            email !== '' ||
+            position !== '' ||
+            membershipStatus !== '' ||
+            departmentId !== '' ||
+            address !== '' ||
+            companyName !== '' ||
+            isAdmin !== '' ||
+            idNumber !== '' ||
+            firstDay !== ''
+        );
+    };
+
     const handleClose = () => {
         setOpen(false);
         setApiDetailData(null);
@@ -148,6 +169,16 @@ const AdminInfo = () => {
 
     // 사원정보 전송
     const changeInfo = async () => {
+        if (!hasDataChanged()) {
+            handleClose();
+            Swal.fire({
+                icon: 'warning',
+                title: '변경된 내용이 없습니다.',
+                text: '내용을 수정한 후 변경 버튼을 눌러주세요.',
+            });
+            return;
+        }
+
         try {
             const formData = new FormData();
 
@@ -182,9 +213,26 @@ const AdminInfo = () => {
                 },
             });
 
+            handleClose();
+            await fetchData();
+
+            Swal.fire({
+                icon: 'success',
+                title: '변경 완료',
+                text: '사원 정보가 성공적으로 변경되었습니다.',
+            });
+
+
             console.log('Response:', response.data);
         } catch (error) {
             console.error('Error sending data:', error);
+
+            handleClose();
+            Swal.fire({
+                icon: 'error',
+                title: '오류 발생',
+                text: '사원 정보 변경 중 오류가 발생했습니다.',
+            });
         }
     };
 

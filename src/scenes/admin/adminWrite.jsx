@@ -162,11 +162,12 @@ const AdminWrite = () => {
                     </thead>
                     <tbody>
                     {currentItems.map((elec, index) => (
-                        <tr key={index}
-                            onClick={() => moveDetail(elec.id)}>
+                        <tr key={index}>
                             <td style={{textAlign: "center",  paddingTop: "15px"}}>{index+1}</td>
-                            <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
-                            <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.additionalFields.title === '' ? '제목없음' : elec.additionalFields.title}</td>
+                            <td style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer'}}
+                                onClick={() => moveDetail(elec.id)}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
+                            <td style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer'}}
+                                onClick={() => moveDetail(elec.id)}>{elec.additionalFields.title === '' ? '제목없음' : elec.additionalFields.title}</td>
                             <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.writer}</td>
                             <td style={{textAlign: "center",  paddingTop: "15px"}}>{elec.department}</td>
                             <td style={{textAlign: "center",  paddingTop: "15px"}}>{formatDate(elec.writeday)}</td>
