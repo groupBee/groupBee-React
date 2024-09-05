@@ -8,6 +8,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './Board.css';
+import CreateIcon from '@mui/icons-material/Create';
 
 // 툴바의 모듈을 설정합니다.
 const toolbarOptions = [
@@ -135,11 +136,27 @@ const BoardWrite = () => {
 
     return (
         <Box m="20px">
-            <Header title="게시글 작성" />
+            <Box
+                height="auto"
+                sx={{
+                    position: "absolute", // 절대 위치 지정
+                    top: "50%", // 세로 중앙
+                    left: "50%", // 가로 중앙
+                    transform: "translate(-50%, -50%)", // 중앙으로부터 이동
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    height: "auto",
+                    width: "80%", // 필요에 따라 너비 조정 가능
+                    maxWidth: "850px", // 필요에 따라 최대 너비 설정
+                    padding: "20px", // 필요에 따라 패딩 추가
+                }}
+            >
+                <CreateIcon/><h1>게시글 작성</h1>
             <Box height="75vh">
                 <div>
                     <form onSubmit={handleSubmit}>
-                        <div>
+                        <Box>
                             <label htmlFor="title"><b style={{ fontSize: '15px' }}>제목</b></label>
                             <br/>
                             <input
@@ -148,9 +165,14 @@ const BoardWrite = () => {
                                 value={title}
                                 onChange={handleTitleChange}
                                 required
-                                style={{ width: '800px', height: '30px' }}
+                                style={{
+                                    width: '100%', // 너비를 100%로 설정
+                                    maxWidth: '800px', // 최대 너비를 800px로 설정
+                                    height: '30px',
+                                    border: '0.5px solid grey'
+                                }}
                             />
-                        </div>
+                        </Box>
                         <div style={{display: 'flex'}}>
                             <input
                                 type="checkbox"
@@ -174,7 +196,7 @@ const BoardWrite = () => {
                             </div>
                         </div>
                         <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                            <b style={{width: '65px', textAlign: 'center'}}>첨부파일</b>
+                            <b style={{width: '65px', textAlign: 'center',marginLeft:'-7px'}}>첨부파일</b>
                             <button
                                 onClick={FileAttachClick}
                                 style={{
@@ -211,8 +233,10 @@ const BoardWrite = () => {
                                 textAlign: 'center',
                                 backgroundColor: isDragActive ? '#f0f0f0' : 'white',
                                 marginBottom: '20px',
-                                width: '800px',
-                                height: '100px'
+                                width: '100%', // 너비를 100%로 설정
+                                maxWidth: '800px', // 최대 너비를 800px로 설정
+                                height: 'auto', // 높이를 자동으로 설정
+                                minHeight: '100px', // 최소 높이를 100px로 설정
                             }}
                         >
                             <input {...getInputProps()} />
@@ -242,7 +266,7 @@ const BoardWrite = () => {
                                 value={content}
                                 onChange={handleContentChange}
                                 modules={{ toolbar: toolbarOptions }}
-                                style={{ width: '800px', height: '400px', backgroundColor: 'white' }}
+                                style={{  width: '100%', maxWidth: '800px', height: '350px', backgroundColor: 'white' }}
                                 placeholder='내용을 입력하세요!'
                             />
                         </div>
@@ -280,7 +304,7 @@ const BoardWrite = () => {
                                 backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
                                 border: 'none',
                                 marginTop: '80px',
-                                marginLeft: '20px',
+                                marginLeft: '15px',
                                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                 transition: 'background-color 0.3s ease'
                             }}
@@ -301,6 +325,7 @@ const BoardWrite = () => {
                     </form>
                 </div>
             </Box>
+        </Box>
         </Box>
     );
 };

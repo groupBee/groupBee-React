@@ -27,11 +27,13 @@ const OrganizationChart = () => {
                 setDepartmentList(res.data);
             });
     };
-    //사원정보 불러오기
+// 사원정보 불러오기
     const getEmployeeList = () => {
         axios.get("/api/employee/list")
             .then(res => {
-                setEmployeeList(res.data);
+                const activeEmployees = res.data.filter(employee => employee.membershipStatus === true);
+                setEmployeeList(activeEmployees);
+                console.log(activeEmployees);
             });
     };
     //부서 분류하기 함수 -->바뀔때마다 호출
@@ -361,10 +363,11 @@ const OrganizationChart = () => {
     );
 };
 
-const OrganizationModal = ({open, onClose}) => {
-    if(!open) return null;
+const OrganizationModal = ({ open, onClose }) => {
+    if (!open) return null;
     return (
-            <Box sx={{
+        <Box
+            sx={{
                 position: 'absolute',
                 top: '50%',
                 left: '50%',
@@ -376,21 +379,29 @@ const OrganizationModal = ({open, onClose}) => {
                 p: 4,
                 display: 'flex',
                 flexDirection: 'column',
-            }}>
-                <IconButton
-                    sx={{position: 'absolute', top: 16, right: 16}}
-                    onClick={onClose}
+            }}
+        >
+            <IconButton
+                sx={{ position: 'absolute', top: 16, right: 16 }}
+                onClick={onClose}
+            >
+                <CloseIcon />
+            </IconButton>
+            <div>
+                <b
+                    style={{
+                        marginBottom: '20px',
+                        fontSize: '30px',
+                        marginLeft: '50px',
+                        color: '#fac337',
+                    }}
                 >
-                    <CloseIcon/>
-                </IconButton>
-                <div><b style={{
-                    marginBottom: '20px',
-                    fontSize: '30px',
-                    marginLeft: '50px',
-                    color: '#fac337'
-                }}>GroupBee&nbsp;</b><b style={{fontSize: '25px'}}>조직도</b></div>
-                <OrganizationChart/>
-            </Box>
+                    GroupBee&nbsp;
+                </b>
+                <b style={{ fontSize: '25px' }}>조직도</b>
+            </div>
+            <OrganizationChart />
+        </Box>
     );
 };
 
@@ -403,7 +414,8 @@ const App = () => {
 
     return (
         <div>
-            <OrganizationModal open={isModalOpen} onClose={handleCloseModal}/>
+            <CloseIcon />
+            <OrganizationModal open={isModalOpen} onClose={handleCloseModal} />
         </div>
     );
 };
