@@ -1,258 +1,294 @@
-// GroupModal.jsx
 import React, { useState, useEffect } from 'react';
-import {Modal, Button, Box, Typography, Collapse, List, ListItem, Checkbox, IconButton} from '@mui/material';
-import axios from 'axios';
-import CloseIcon from "@mui/icons-material/Close";
+import axios from "axios";
+import { Button, Box, Checkbox, IconButton, Modal, Typography, List, ListItem, ListItemText, ListItemIcon, Divider } from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import PersonIcon from '@mui/icons-material/Person';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { useNavigate } from "react-router-dom";
 
-const GroupModal = ({ open, onClose, onSelect }) => {
-    const [memberList, setMemberList] = useState([]);
-    const [departments, setDepartments] = useState([]);
-    const [selectedPerson, setSelectedPerson] = useState('');
-
-    // 정보 가져오기
-    const getinfo = () => {
-        axios.get("/api/employee/list")
-            .then(res => {
-                setMemberList(res.data);
-                console.log(res.data);
-            });
-    }
-
-    // 부서별로 멤버를 정리하는 함수
-    const organizeDepartments = (memberList) => {
-        const departmentMap = {};
-
-        // 각 멤버를 부서별로 정리
-        memberList.forEach(member => {
-            const departmentName = member.department.departmentName;
-
-            // 부서가 아직 존재하지 않으면 생성
-            if (!departmentMap[departmentName]) {
-                departmentMap[departmentName] = {
-                    name: departmentName,
-                    people: [],
-                    open: false
-                };
-            }
-
-            // 해당 부서에 멤버 추가
-            departmentMap[departmentName].people.push({
-                id: member.id,
-                name: member.name,
-                position: member.position.rank,
-                email: member.email,
-                extensionCall: member.extensionCall,
-                phoneNumber: member.phoneNumber
-            });
-        });
-
-        // 부서 리스트로 변환
-        return Object.values(departmentMap);
-    };
-
+const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
+    const [departmentList, setDepartmentList] = useState([]);
+    const [expandedDepartments, setExpandedDepartments] = useState([]);
+    const [employeeList, setEmployeeList] = useState([]);
+    const [filteredEmployees, setFilteredEmployees] = useState([]);
     useEffect(() => {
-        if (open) {
-            setDepartments(departments.map(department => ({ ...department, open: false })));
-        }
-    }, [open]);
-
-
-    useEffect(() => {
-        getinfo();
+        getDepartmentList();
+        getEmployeeList();
     }, []);
 
-    useEffect(() => {
-        if (memberList.length > 0) {
-            const organizedDepartments = organizeDepartments(memberList);
-            setDepartments(organizedDepartments);
+    const getDepartmentList = () => {
+        axios.get("/api/department/all")
+            .then(res => {
+                setDepartmentList(res.data);
+            });
+    };
+
+    const getEmployeeList = () => {
+        axios.get("/api/employee/list")
+            .then(res => {
+                setEmployeeList(res.data);
+            });
+    };
+
+    const structuredDepartments = departmentList.reduce((acc, curr) => {
+        const baseId = Math.floor(curr.id / 100) * 100;
+        const subId = Math.floor(curr.id / 10) * 10;
+
+        if (!acc[baseId]) {
+            acc[baseId] = { id: baseId, departmentName: '', subDepartments: {} };
         }
-    }, [memberList]);
 
-    const handleDepartmentClick = (departmentName) => {
-        setDepartments(prevDepartments =>
-            prevDepartments.map(department =>
-                department.name === departmentName
-                    ? { ...department, open: !department.open }
-                    : department
-            )
-        );
+        if (baseId === curr.id) {
+            acc[baseId].departmentName = curr.departmentName;
+        } else if (subId === curr.id) {
+            if (!acc[baseId].subDepartments[subId]) {
+                acc[baseId].subDepartments[subId] = { id: subId, departmentName: '', subDepartments: {} };
+            }
+            acc[baseId].subDepartments[subId].departmentName = curr.departmentName;
+        } else {
+            const parentSubId = Math.floor(curr.id / 10) * 10;
+            if (!acc[baseId].subDepartments[parentSubId]) {
+                acc[baseId].subDepartments[parentSubId] = { id: parentSubId, departmentName: '', subDepartments: {} };
+            }
+            acc[baseId].subDepartments[parentSubId].subDepartments[curr.id] = { id: curr.id, departmentName: curr.departmentName };
+        }
+
+        return acc;
+    }, {});
+
+    const filterEmployees = (departmentId) => {
+        const employeesInDepartment = employeeList.filter(employee => employee.department.id === departmentId);
+        setFilteredEmployees(employeesInDepartment);
     };
 
-    // 모든 부서를 열기
-    const handleOpenAll = () => {
-        setDepartments(prevDepartments =>
-            prevDepartments.map(department => ({ ...department, open: true }))
-        );
+    const handleDepartmentSelect = (id, hasSubDepartments) => {
+        filterEmployees(id); // 부서 선택 시 그 부서의 직원 필터링
+        if (hasSubDepartments) {
+            setExpandedDepartments(prevState =>
+                prevState.includes(id) ? prevState.filter(expandedId => expandedId !== id) : [...prevState, id]
+            );
+        }
     };
 
-    // 모든 부서를 닫기
-    const handleCloseAll = () => {
-        setDepartments(prevDepartments =>
-            prevDepartments.map(department => ({ ...department, open: false }))
-        );
-    };
-
-
-    const handleSelectPerson = (person) => {
-        setSelectedPerson(person); // 단일 선택만 가능
-    };
-
-
-    const isSelected = (person) => selectedPerson.id === person.id;
-
-    const handleSelect = () => {
-        onSelect(selectedPerson);
-        onClose();
+    const handleEmployeeSelect = (employee) => {
+        setSelectedEmployees(prevSelected => {
+            const alreadySelected = prevSelected.some(selected => selected.id === employee.id);
+            if (alreadySelected) {
+                return prevSelected.filter(selected => selected.id !== employee.id);
+            } else {
+                return [...prevSelected, employee];
+            }
+        });
     };
 
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box
-                style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 450,
-                    backgroundColor: 'white',
-                    borderRadius: 8,
-                    boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)', // 부드러운 그림자 효과
-                    maxHeight: '55vh', // 모달의 최대 높이 설정
-                    display: 'flex',
-                    flexDirection: 'column',
-                    overflow: 'auto', // 스크롤 추가
-                    '&::-webkit-scrollbar': {
-                    display: 'none',},
-                    '-ms-overflow-style': 'none',  /* IE and Edge */
-                    'scrollbar-width': 'none',  /* Firefox */
-                }}
-            >
-                {/* 헤더 영역 스타일 및 닫기 버튼 */}
-                <div
-                    style={{
-                        backgroundColor: '#ffb121',
-                        padding: '10px 15px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        position: 'sticky', // 고정된 헤더
-                        top: 0,
-                        zIndex: 1000,
-                    }}
-                >
-                    <Typography style={{ color: 'white', fontSize: '1.5rem' }}>부서 및 승인자 선택</Typography>
-                    <IconButton onClick={onClose} style={{ color: 'white' }}>
-                        <CloseIcon />
-                    </IconButton>
-                </div>
-
-                {/* 본문 내용 영역 */}
-                <div style={{padding: '20px'}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '15px'}}>
-                        <Button variant="outlined" onClick={handleOpenAll} style={{marginRight: '10px'}}>
-                            모두 열기
-                        </Button>
-                        <Button variant="outlined" onClick={handleCloseAll}>
-                            모두 닫기
-                        </Button>
-                    </div>
-
-                    {departments.map((department) => (
-                        <div key={department.name} style={{marginBottom: '15px'}}>
-                            <Typography
-                                variant="h6"
-                                onClick={() => handleDepartmentClick(department.name)}
-                                style={{
-                                    cursor: 'pointer',
-                                    marginBottom: '8px',
-                                    color: '#333', // 텍스트 색상
-                                    fontWeight: 'bold',
-                                    display: 'flex',
-                                    justifyContent: 'space-between', // 제목과 화살표를 양 끝에 배치
-                                    alignItems: 'center',
-                                    padding: '5px 10px',
-                                    backgroundColor: '#f5f5f5',
-                                    borderRadius: '5px',
-                                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        <Box sx={{ display: 'flex', p: 2, gap: 2, height:'90%'}}>
+            {/* Department List */}
+            <Box sx={{ flex: 1, bgcolor: '#f1f3f5', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto'}}>
+                <Typography variant="h6" gutterBottom>부서 목록</Typography>
+                <List>
+                    {Object.entries(structuredDepartments).map(([key, department]) => (
+                        <React.Fragment key={department.id}>
+                            <ListItem
+                                button
+                                onClick={() => handleDepartmentSelect(department.id, Object.keys(department.subDepartments).length > 0)}
+                                sx={{
+                                    py: 1,
+                                    bgcolor: expandedDepartments.includes(department.id) ? '#e0e0e0' : 'transparent',
+                                    borderRadius: 1,
+                                    '&:hover': {
+                                        bgcolor: '#e0e0e0'
+                                    }
                                 }}
                             >
-                                {department.name} {department.open ? '▲' : '▼'}
-                            </Typography>
-                            <Collapse in={department.open}>
-                                <List>
-                                    {department.people.map((person) => (
-                                        <ListItem
-                                            button
-                                            key={person.id}
-                                            onClick={() => handleSelectPerson(person)}
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                backgroundColor: isSelected(person)
-                                                    ? '#e0f7fa'
-                                                    : 'transparent', // 선택된 항목에 배경색 추가
-                                                borderRadius: '5px',
-                                                padding: '10px',
-                                                marginBottom: '8px',
-                                                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                                            }}
-                                        >
-                                            <Checkbox
-                                                checked={isSelected(person)}
-                                                onChange={() => handleSelectPerson(person)}
-                                                style={{color: '#ffb121'}} // 체크박스 색상
-                                            />
-                                            <div>
-                                                <Typography variant="body1" style={{fontWeight: 500}}>
-                                                    {person.name} &lt;{person.position}&gt;
-                                                </Typography>
-                                                <Typography variant="body2" style={{color: '#666'}}>
-                                                    {person.email}
-                                                </Typography>
-                                            </div>
-                                        </ListItem>
+                                <ListItemText primary={department.departmentName} />
+                                {Object.keys(department.subDepartments).length > 0 && (expandedDepartments.includes(department.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+                            </ListItem>
+                            {expandedDepartments.includes(department.id) && (
+                                <List component="div" disablePadding>
+                                    {Object.entries(department.subDepartments).map(([subKey, subDepartment]) => (
+                                        <React.Fragment key={subDepartment.id}>
+                                            <ListItem
+                                                button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDepartmentSelect(subDepartment.id, Object.keys(subDepartment.subDepartments).length > 0);
+                                                    filterEmployees(subDepartment.id);
+                                                }}
+                                                sx={{
+                                                    pl: 4,
+                                                    py: 1,
+                                                    bgcolor: expandedDepartments.includes(subDepartment.id) ? '#dee2e6' : 'transparent',
+                                                    borderRadius: 1,
+                                                    '&:hover': {
+                                                        bgcolor: '#dee2e6'
+                                                    }
+                                                }}
+                                            >
+                                                <ListItemText primary={subDepartment.departmentName} />
+                                                {Object.keys(subDepartment.subDepartments).length > 0 && (expandedDepartments.includes(subDepartment.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+                                            </ListItem>
+                                            {expandedDepartments.includes(subDepartment.id) && (
+                                                <List component="div" disablePadding>
+                                                    {Object.entries(subDepartment.subDepartments).map(([subSubKey, subSubDepartment]) => (
+                                                        <ListItem
+                                                            key={subSubDepartment.id}
+                                                            button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDepartmentSelect(subSubDepartment.id, false);
+                                                                filterEmployees(subSubDepartment.id);
+                                                            }}
+                                                            sx={{
+                                                                pl: 6,
+                                                                py: 1,
+                                                                bgcolor: 'transparent',
+                                                                '&:hover': {
+                                                                    bgcolor: '#e9ecef'
+                                                                }
+                                                            }}
+                                                        >
+                                                            <ListItemText primary={subSubDepartment.departmentName} />
+                                                        </ListItem>
+                                                    ))}
+                                                </List>
+                                            )}
+                                        </React.Fragment>
                                     ))}
                                 </List>
-                            </Collapse>
-                        </div>
+                            )}
+                        </React.Fragment>
                     ))}
+                </List>
+            </Box>
 
-                    {/* 선택 버튼 */}
-                    <div
-                        style={{
-                            position: 'sticky',
-                            bottom: 20,
-                            left: 0,
-                            width: '100%',
-                            height:'70px',
-                            backgroundColor: 'white', // 배경색이 필요할 경우 지정
-                            zIndex: 1000, // 다른 요소 위에 배치되도록 설정
-                        }}
-                    >
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSelect}
-                            style={{
-                                width: '100%',
-                                marginTop: '20px',
-                                padding: '10px',
-                                backgroundColor: '#ffb121',
-                                color: 'white',
-                                fontWeight: 'bold',
-                                fontSize: '1.1rem',
-                                borderRadius: '5px',
-                                boxShadow: '0px 4px 10px rgba(255, 177, 33, 0.3)', // 부드러운 그림자 효과
+            {/* Employee List */}
+            <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto'}}>
+                <Typography variant="h6" gutterBottom>직원 리스트</Typography>
+                <List>
+                    {filteredEmployees.length > 0 ? (
+                        filteredEmployees.map(employee => (
+                            <ListItem
+                                key={employee.id}
+                                button
+                                onClick={() => handleEmployeeSelect(employee)}
+                                sx={{
+                                    py: 1,
+                                    bgcolor: selectedEmployees.some(selected => selected.id === employee.id) ? '#e0e0e0' : 'transparent',
+                                    borderRadius: 1,
+                                    '&:hover': {
+                                        bgcolor: '#e9ecef'
+                                    }
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <Checkbox
+                                        checked={selectedEmployees.some(selected => selected.id === employee.id)}
+                                        onChange={() => handleEmployeeSelect(employee)}
+                                    />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={employee.name}
+                                    secondary={`${employee.position.rank} - ${employee.department.departmentName} - ${employee.email}`}
+                                />
+                            </ListItem>
+                        ))
+                    ) : (
+                        <Typography variant="body2" color="textSecondary">직원이 없습니다</Typography>
+                    )}
+                </List>
+            </Box>
+
+            {/* Selected Employees */}
+            <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto'}}>
+                <Typography variant="h6" gutterBottom>선택된 직원 정보</Typography>
+                {selectedEmployees.length > 0 ? (
+                    selectedEmployees.map(employee => (
+                        <Box
+                            key={employee.id}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                py: 1,
+                                px: 2,
+                                mb: 1,
+                                borderLeft: '5px solid #ffd454',
+                                bgcolor: '#fafafa',
+                                borderRadius: 1,
+                                '&:hover': {
+                                    bgcolor: '#f0f0f0'
+                                }
                             }}
                         >
-                            선택
-                        </Button>
-                    </div>
-                    </div>
+                            <IconButton onClick={() => handleEmployeeSelect(employee)}>
+                                <CloseIcon />
+                            </IconButton>
+                            <Box sx={{ ml: 2 }}>
+                                <Typography variant="body2" color="textPrimary">이름: {employee.name}</Typography>
+                                <Typography variant="body2" color="textSecondary">직급: {employee.position.rank}</Typography>
+                                <Typography variant="body2" color="textSecondary">이메일: {employee.email}</Typography>
+                            </Box>
+                        </Box>
+                    ))
+                ) : (
+                    <Typography variant="body2" color="textSecondary">직원을 선택하세요</Typography>
+                )}
+            </Box>
+        </Box>
+    );
+};
+
+const GroupModal = ({open, onClose, onSelect}) => {
+    const [selectedEmployees, setSelectedEmployees] = useState([]);
+
+    const handleSave = () => {
+        onSelect(selectedEmployees);
+        console.log(selectedEmployees)
+        handleClose();
+    };
+
+    const handleClose = () => {
+        setSelectedEmployees([]);
+        onClose();
+    };
+
+    if (!open) return null;
+
+    return (
+        <Modal open={open} onClose={handleClose}>
+            <Box sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '80%',
+                height: '80%',
+                bgcolor: 'background.paper',
+                boxShadow: 24,
+                p: 4,
+                display: 'flex',
+                flexDirection: 'column',
+            }}>
+                <IconButton
+                    sx={{ position: 'absolute', top: 16, right: 16 }}
+                    onClick={handleClose}
+                >
+                    <CloseIcon />
+                </IconButton>
+
+                <OrganizationChart
+                    selectedEmployees={selectedEmployees}
+                    setSelectedEmployees={setSelectedEmployees}
+                />
+
+                <Box sx={{ mt: 'auto', display: 'flex', justifyContent: 'space-between' }}>
+                    <Button variant="contained" onClick={handleSave}>저장</Button>
+                    <Button variant="outlined" onClick={handleClose}>취소</Button>
+                </Box>
             </Box>
         </Modal>
-
-);
+    );
 };
 
 export default GroupModal;
