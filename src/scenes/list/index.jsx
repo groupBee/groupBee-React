@@ -152,7 +152,7 @@ const List = () => {
                                             item.appDocType === 2 ? '지출보고서' : ''}
                                 </td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>
-                                    {item.additionalFields.title ? item.additionalFields.title : '휴가신청서'}
+                                    {item.appDocType===1?'휴가신청서':item.additionalFields.title?item.additionalFields.title:!item.additionalFields.title?'':''}zzz
                                 </td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.writer}</td>
                                 <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.department}</td>
