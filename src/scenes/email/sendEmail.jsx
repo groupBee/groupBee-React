@@ -98,25 +98,35 @@ const SendEmail = () => {
     };
 
     const handleModalSelect = (value) => {
-        if (value.email === userEmail) {
-            alert('본인은 수신자로 추가할 수 없습니다.');
-            return;
-        }
+        // value가 배열이라고 가정하고 처리
+        value.forEach(item => {
+            let email = item.email;
     
-        if (targetField === 'to') {
-            if (!to.includes(value.email) && !cc.includes(value.email)) {  // 중복 체크: to와 cc 간
-                setTo(prev => [...prev, value.email]);
-            } else {
-                alert('이미 추가된 이메일입니다.');
+            // 본인을 수신자로 추가하려는지 확인
+            if (email === userEmail) {
+                alert('본인은 수신자로 추가할 수 없습니다.');
+                return;
             }
-        } else if (targetField === 'cc') {
-            if (!cc.includes(value.email) && !to.includes(value.email)) {  // 중복 체크: cc와 to 간
-                setCc(prev => [...prev, value.email]);
-            } else {
-                alert('이미 추가된 이메일입니다.');
+    
+            // 'to' 필드 처리
+            if (targetField === 'to') {
+                if (!to.includes(email) && !cc.includes(email)) {  // 중복 체크: to와 cc 간
+                    setTo(prev => [...prev, email]);
+                } else {
+                    alert('이미 추가된 이메일입니다.');
+                }
+            } 
+            // 'cc' 필드 처리
+            else if (targetField === 'cc') {
+                if (!cc.includes(email) && !to.includes(email)) {  // 중복 체크: cc와 to 간
+                    setCc(prev => [...prev, email]);
+                } else {
+                    alert('이미 추가된 이메일입니다.');
+                }
             }
-        }
+        });
     };
+    
 
     const handleDelete = (email, field) => {
         if (field === 'to') {

@@ -70,7 +70,6 @@ const WriteForm = ({ }) => {
                     setAttachedFiles(res.data.attachedFiles || []);
                     setOriginalFiles(res.data.originalFiles || []);
                     setApproveDate(new Date(res.data.writeday));
-
                     setAdditionalFields(res.data.additionalFields || {});
                     setApproveStatus(res.data.approveStatus);
                     setIsDocumentLoaded(true); // 문서가 로드되었음을 명시
@@ -239,28 +238,37 @@ const WriteForm = ({ }) => {
     };
 
     const handleModalSelect = (value) => {
+        // 결재자가 1명 이상 선택된 경우 경고 메시지 출력
+        if (value.length > 1) {
+            alert('결재자는 한 명만 선택할 수 있습니다.');
+            return;
+        }
+    
+        // value가 배열로 온다고 가정하고, 첫 번째 항목만 사용
+        const selectedPerson = value[0];
+    
         // 본인 체크: 선택된 사람이 작성자(writer)와 같으면 경고 메시지를 띄움
-        if (value.name === writer) {
+        if (selectedPerson.name === writer) {
             alert('본인은 승인자로 지정할 수 없습니다.');
             return;
         }
     
         // 승인자 중복 체크: secondApprover와 thirdApprover가 같으면 경고
-        if (currentApproverType === 'second' && value.name === thirdApprover) {
+        if (currentApproverType === 'second' && selectedPerson.name === thirdApprover) {
             alert('중간 승인자와 최종 승인자는 같을 수 없습니다.');
             return;
         }
     
-        if (currentApproverType === 'third' && value.name === secondApprover) {
+        if (currentApproverType === 'third' && selectedPerson.name === secondApprover) {
             alert('최종 승인자와 중간 승인자는 같을 수 없습니다.');
             return;
         }
     
         // 현재 승인자 타입에 따라 승인자 설정
         if (currentApproverType === 'second') {
-            setSecondApprover(value.name);
+            setSecondApprover(selectedPerson.name);
         } else if (currentApproverType === 'third') {
-            setThirdApprover(value.name);
+            setThirdApprover(selectedPerson.name);
         }
     };
     

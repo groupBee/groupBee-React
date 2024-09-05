@@ -70,26 +70,31 @@ function EmailList() {
         }
     };
 
-    // 날짜를 한국어 형식으로 변환하는 함수
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const today = new Date();
+  // 날짜를 한국어 형식으로 변환하는 함수
+const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const today = new Date();
 
-        // 날짜가 오늘인 경우 시간만 표시
-        if (date.toDateString() === today.toDateString()) {
-            return new Intl.DateTimeFormat('ko-KR', {
-                hour: '2-digit',
-                minute: '2-digit'
-            }).format(date);
-        }
-
-        // 오늘이 아닌 경우 날짜를 한글 형식으로 표시
+    // 날짜가 오늘인 경우 시간만 표시
+    if (date.toDateString() === today.toDateString()) {
         return new Intl.DateTimeFormat('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false  // 24시간 형식으로 표시
         }).format(date);
-    };
+    }
+
+    // 오늘이 아닌 경우 날짜를 한글 형식으로 표시
+    return new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false  // 24시간 형식으로 표시
+    }).format(date);
+};
+
 
     // 현재 페이지에 보여줄 이메일 목록 슬라이싱
     const indexOfLastEmail = currentPage * emailsPerPage;
