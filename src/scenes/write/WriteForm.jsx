@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import {Box, Button, Typography} from "@mui/material";
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import AppDocVacation from "./AppDocVacation";
@@ -274,80 +274,103 @@ const WriteForm = ({ }) => {
     
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            transformOrigin: 'top ',
-            transform: 'scale(0.8)',
-        }}>
-            <div style={{
-                display: 'flex',
-                justifyContent: 'flex-start',
-                gap: '10px',
-                marginBottom: '20px',
-                width: '100%',
-                paddingLeft: '125px',
-                fontSize: '23px'
-            }}>
-                <Button
-                    onClick={() => changeAppDoc(0)}
-                    style={{
-                        backgroundColor: appDocType === 0 ? '#ffb121' : '#fafaf0',
-                        fontSize: '20px',
-                        color: appDocType === 0 ? 'white' : '#ffb121',
-                        border: '1px solid #ffb121'
+        <Box m="20px">
+            <Box
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    height: "100%"
+                }}
+            >
+                <Box borderBottom={`2px solid #ffb121`} p="20px">
+                    <Typography
+                        color="black"
+                        variant="h5"
+                        fontWeight="600"
+                        fontSize="30px"
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                    > 발신목록
+                        <div style={{
+                            display: 'flex',
+                            gap: '8px'
+                        }}>
+                            <Button
+                                onClick={() => changeAppDoc(0)}
+                                style={{
+                                    backgroundColor: appDocType === 0 ? '#ffb121' : '#fafaf0',
+                                    fontSize: '15px',
+                                    color: appDocType === 0 ? 'white' : '#ffb121',
+                                    border: '1px solid #ffb121'
+                                }}>
+                                품의서
+                            </Button>
+                            <Button
+                                onClick={() => changeAppDoc(1)}
+                                style={{
+                                    backgroundColor: appDocType === 1 ? '#ffb121' : '#fafaf0',
+                                    fontSize: '15px',
+                                    color: appDocType === 1 ? 'white' : '#ffb121',
+                                    border: '1px solid #ffb121'
+                                }}>
+                                휴가신청서
+                            </Button>
+                            <Button
+                                onClick={() => changeAppDoc(2)}
+                                style={{
+                                    backgroundColor: appDocType === 2 ? '#ffb121' : '#fafaf0',
+                                    fontSize: '15px',
+                                    color: appDocType === 2 ? 'white' : '#ffb121',
+                                    border: '1px solid #ffb121'
+                                }}>
+                                지출보고서
+                            </Button>
+                        </div>
+                    </Typography>
+                </Box>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    transform: 'scale(0.8)',
+                }}>
+                    <div style={{
+                        backgroundColor: '#ffb121',
+                        border: 'none',
+                        borderRadius: '5px 5px 0 0',
+                        height: '60px',
+                        width: '96%',
+                        alignItems: 'center',
+                    }}></div>
+                    <div style={{
+                        border: 'none',
+                        padding: '70px',
+                        alignItems:'center',
+                        display:'flex',
+                        justifyContent:'center',
+                        backgroundColor: '#fafaf0',
+                        width: '96%',
                     }}>
-                    품의서
-                </Button>
-                <Button
-                    onClick={() => changeAppDoc(1)}
-                    style={{
-                        backgroundColor: appDocType === 1 ? '#ffb121' : '#fafaf0',
-                        fontSize: '20px',
-                        color: appDocType === 1 ? 'white' : '#ffb121',
-                        border: '1px solid #ffb121'
-                    }}>
-                    휴가신청서
-                </Button>
-                <Button
-                    onClick={() => changeAppDoc(2)}
-                    style={{
-                        backgroundColor: appDocType === 2 ? '#ffb121' : '#fafaf0',
-                        fontSize: '20px',
-                        color: appDocType === 2 ? 'white' : '#ffb121',
-                        border: '1px solid #ffb121'
-                    }}>
-                    지출보고서
-                </Button>
-            </div>
-            <div style={{
-                backgroundColor: '#ffb121',
-                border: 'none',
-                borderRadius: '5px 5px 0 0',
-                height: '60px',
-                width: '1400px',
-                alignItems: 'center',
-            }}></div>
-            <div style={{
-                border: 'none',
-                padding: '100px 100px 100px 100px',
-                backgroundColor: '#fafaf0',
-                width: '1400px',
-            }}>
-                <table
-                    style={{ border: '3px solid black', backgroundColor: "white", color: 'black', textAlign: 'center' }}>
-                    <tbody className='tableborder'>
-                        <tr>
-                            <td colSpan={4} rowSpan={3}
-                                style={{ fontSize: '60px' }}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
-                            <td rowSpan={3} style={{ fontSize: '23px' }}>결제</td>
-                            <td className="fixed-size" style={{ height: '50px' }}>최초승인자</td>
-                            <td className="fixed-size">중간승인자</td>
-                            <td className="fixed-size">최종승인자</td>
-                        </tr>
-                        <tr>
-                            <td className="fixed-size" style={{ height: '150px' }}></td>
+                        <table
+                            style={{
+                                border: '3px solid black',
+                                backgroundColor: "white",
+                                color: 'black',
+                                textAlign: 'center'
+                            }}>
+                            <tbody className='tableborder'>
+                            <tr>
+                                <td colSpan={4} rowSpan={3}
+                                    style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
+                                <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
+                                <td className="fixed-size" style={{height: '50px'}}>최초승인자</td>
+                                <td className="fixed-size">중간승인자</td>
+                                <td className="fixed-size">최종승인자</td>
+                            </tr>
+                            <tr>
+                                <td className="fixed-size" style={{height: '150px'}}></td>
                             <td className="fixed-size"></td>
                             <td className="fixed-size"></td>
                         </tr>
@@ -501,7 +524,7 @@ const WriteForm = ({ }) => {
                 border: 'none',
                 borderRadius: '0 0 5px 5px',
                 height: '60px',
-                width: '1400px',
+                width: '96%',
             }}></div>
             <GroupModal
                 open={modalOpen}
@@ -509,6 +532,8 @@ const WriteForm = ({ }) => {
                 onSelect={handleModalSelect}
             />
         </div>
+                </Box>
+                </Box>
     );
 }
 
