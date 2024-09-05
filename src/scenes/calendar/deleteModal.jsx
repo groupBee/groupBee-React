@@ -4,18 +4,46 @@ import {Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typograp
 const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
     const [carName, setCarName] = useState('');
     const [carImage, setCarImage] = useState('');
+    const [roomName, setRoomName] = useState('');
+    const [roomImage, setRoomImage] = useState('');
+
+    // useEffect(() => {
+    //     if (initialData?.corporateCarId && isOpen) {
+    //         fetch(`/api/cars/detail/${initialData.corporateCarId}`)
+    //             .then(response => response.json())
+    //             .then(data => {
+    //                 setCarName(data.carId || '')
+    //                 setCarImage(data.photo || '')
+    //             })
+    //             .catch(err => console.error("deleteModal Error:", err));
+    //     }
+    // }, [initialData?.corporateCarId, isOpen]);
 
     useEffect(() => {
-        if (initialData?.corporateCarId && isOpen) {
-            fetch(`/api/cars/detail/${initialData.corporateCarId}`)
-                .then(response => response.json())
-                .then(data => {
-                    setCarName(data.carId || '')
-                    setCarImage(data.photo || '')
-                })
-                .catch(err => console.error("deleteModal Error:", err));
+        if (isOpen) {
+            console.log(initialData?.roomId);
+            console.log(initialData.corporateCarId);
+            if (initialData?.bookType === 1 && initialData?.corporateCarId) {
+                // 자동차 정보 가져오기
+                fetch(`/api/cars/detail/${initialData.corporateCarId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        setCarName(data.carId || '')
+                        setCarImage(data.photo || '')
+                    })
+                    .catch(err => console.error("Car fetch error:", err));
+            } else if (initialData?.bookType === 2 && initialData?.corporateCarId) {
+                // 회의실 정보 가져오기
+                fetch(`/api/rooms/detail/${initialData.corporateCarId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        setRoomName(data.name || '')
+                        setRoomImage(data.photo || '')
+                    })
+                    .catch(err => console.error("Room fetch error:", err));
+            }
         }
-    }, [initialData?.corporateCarId, isOpen]);
+    }, [initialData?.bookType, initialData?.corporateCarId, initialData?.roomId, isOpen])
 
     const formatDate = (dateString) => {
         if (!dateString) return '';
@@ -35,7 +63,7 @@ const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
                              backgroundImage: 'linear-gradient(to right, #FFA800, #FFD600)',
                              color: 'white'
                          }}>
-                차량 예약 정보
+                {initialData?.bookType === 1 ? '자동차 예약 정보' : '회의실 예약 정보'}
             </DialogTitle>
             <DialogContent
                 sx={{
@@ -44,8 +72,11 @@ const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
                 }}>
                 <Box style={{ width:'500px', height:'300px',}}>
                     <img
-                        src={`https://minio.bmops.kro.kr/groupbee/book/${carImage}`}
-                        alt={carImage}
+                        src={initialData?.bookType === 1
+                            ? `https://minio.bmops.kro.kr/groupbee/book/${carImage}`
+                            : `https://minio.bmops.kro.kr/groupbee/book/${roomImage}`
+                        }
+                        alt={initialData?.bookType === 1 ? carImage : roomImage}
                         style={{
                             width: '100%',
                             height: '100%',
@@ -65,7 +96,7 @@ const DeleteModal = ({isOpen, onCancel, onDelete, initialData}) => {
 
 
                         }}>
-                    <Typography variant="h5">차량번호 : {carName || ''}</Typography>
+                    <Typography variant="h5">{initialData?.bookType === 1 ? `차량번호 : ${carName || ''}` : `회의실 : ${roomName || ''}`}</Typography>
                     <Typography variant="h5">대여시간 : {formatDate(initialData?.startDay) || ''} ~ {formatDate(initialData?.endDay) || ''}</Typography>
                     <Typography variant="h5">사유 : {initialData?.content || ''}</Typography>
                 </Box>
