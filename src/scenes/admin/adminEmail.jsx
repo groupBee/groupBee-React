@@ -27,7 +27,7 @@ const AdminEmail = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch('http://100.64.0.9/api/v1/get/mailbox/all/groupbee.co.kr', {
+            const response = await fetch('https://api.bmservice.kro.kr/mail/api/v1/get/mailbox/all/groupbee.co.kr', {
                 method: 'GET',
                 headers: {
                     'X-API-Key': 'E63DEF-77C26B-9A104F-C6AEBF-B2ED8D',
