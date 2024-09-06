@@ -1,4 +1,4 @@
-import {Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, useTheme} from "@mui/material";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { Header } from "../../components";
 import { tokens } from "../../theme";
 import { useEffect, useState } from "react";
@@ -153,129 +153,144 @@ const Invoices = () => {
                             </Select>
                         </FormControl>
                     </Typography>
-                 </Box>
-                     <div style={{
-                         display: 'flex',
-                         justifyContent: 'center',
-                         alignItems: 'center',
-                         padding: '20px',
-                         marginTop: '10px'
-                     }}>
-                         <table className="table table-bordered" style={{
-                             width: '100%', margin: '0 auto', textAlign: 'center',
-                         }}>
-                             <thead>
-                             <tr style={{border: 'none', lineHeight: '30px'}}>
-                                 <td style={{
-                                     backgroundColor: '#ffb121',
-                                     border: 'none',
-                                     borderRadius: '5px 0 0 0',
-                                     fontWeight: 'bold',
-                                     fontSize: '15px',
-                                     width: '10%',
-                                     paddingLeft: '1.5%'
-                                 }}>번호
-                                 </td>
-                                 <td style={{backgroundColor: '#ffb121', border: 'none', width: '15%',fontWeight: 'bold', fontSize: '15px'}}>종류</td>
-                                 <td style={{backgroundColor: '#ffb121', border: 'none', width: '30%',fontWeight: 'bold', fontSize: '15px'}}>제목</td>
-                                 <td style={{backgroundColor: '#ffb121', border: 'none', width: '10%',fontWeight: 'bold', fontSize: '15px'}}>작성자</td>
-                                 <td style={{backgroundColor: '#ffb121', border: 'none', width: '10%',fontWeight: 'bold', fontSize: '15px'}}>부서</td>
-                                 <td style={{backgroundColor: '#ffb121', border: 'none', width: '15%',fontWeight: 'bold', fontSize: '15px'}}>작성일</td>
-                                 <td style={{
-                                     backgroundColor: '#ffb121',
-                                     border: 'none',
-                                     borderRadius: '0 5px 0 0',
-                                     width: '10%',
-                                     fontWeight: 'bold',
-                                     fontSize: '15px'
-                                 }}>상태
-                                 </td>
-                             </tr>
-                             </thead>
-                             <tbody>
-                             {currentData &&
-                                 currentData.map((item, idx) => (
-                                     <tr key={idx} style={{lineHeight: '30px', cursor: 'pointer'}}
-                                         onMouseOver={(e) => {
-                                             const tds = e.currentTarget.querySelectorAll('td');
-                                             tds.forEach(td => td.style.color = "#ffb121"); // 모든 td 색상 변경
-                                         }}
-                                         onMouseOut={(e) => {
-                                             const tds = e.currentTarget.querySelectorAll('td');
-                                             tds.forEach(td => td.style.color = "inherit"); // 색상 원래대로 복원
-                                         }}
-                                         onClick={() => moveDetail(item)} // 행을 클릭했을 때 상세 페이지로 이동
-                                     >
-                                         <td style={{
-                                             borderRight: 'none',
-                                             borderLeft: 'none',
-                                             paddingLeft: '1.5%'
-                                         }}>{(currentPage - 1) * PageCount + idx + 1}</td>
-                                         <td style={{borderRight: 'none', borderLeft: 'none'}}>
-                                             {item.appDocType === 0 ? '품의서' :
-                                                 item.appDocType === 1 ? '휴가신청서' :
-                                                     item.appDocType === 2 ? '지출보고서' : ''}
-                                         </td>
-                                         <td style={{borderRight: 'none', borderLeft: 'none'}}>
-                                             {item.appDocType === 1 ? '휴가신청서' : item.additionalFields.title ? item.additionalFields.title : !item.additionalFields.title ? '' : ''}
+                </Box>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '20px',
+                    marginTop: '10px'
+                }}>
+                    <table className="table table-bordered" style={{
+                        width: '100%', margin: '0 auto', textAlign: 'center',
+                    }}>
+                        <thead>
+                            <tr style={{ border: 'none', lineHeight: '30px' }}>
+                                <td style={{
+                                    backgroundColor: '#ffb121',
+                                    border: 'none',
+                                    borderRadius: '5px 0 0 0',
+                                    fontWeight: 'bold',
+                                    fontSize: '15px',
+                                    width: '10%',
+                                    paddingLeft: '1.5%'
+                                }}>번호
+                                </td>
+                                <td style={{ backgroundColor: '#ffb121', border: 'none', width: '15%', fontWeight: 'bold', fontSize: '15px' }}>종류</td>
+                                <td style={{ backgroundColor: '#ffb121', border: 'none', width: '30%', fontWeight: 'bold', fontSize: '15px' }}>제목</td>
+                                <td style={{ backgroundColor: '#ffb121', border: 'none', width: '10%', fontWeight: 'bold', fontSize: '15px' }}>작성자</td>
+                                <td style={{ backgroundColor: '#ffb121', border: 'none', width: '10%', fontWeight: 'bold', fontSize: '15px' }}>부서</td>
+                                <td style={{ backgroundColor: '#ffb121', border: 'none', width: '15%', fontWeight: 'bold', fontSize: '15px' }}>작성일</td>
+                                <td style={{
+                                    backgroundColor: '#ffb121',
+                                    border: 'none',
+                                    borderRadius: '0 5px 0 0',
+                                    width: '10%',
+                                    fontWeight: 'bold',
+                                    fontSize: '15px'
+                                }}>상태
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {currentData &&
+                                currentData.map((item, idx) => (
+                                    <tr key={idx} style={{ lineHeight: '30px', cursor: 'pointer' }}
+                                        onMouseOver={(e) => {
+                                            const tds = e.currentTarget.querySelectorAll('td');
+                                            tds.forEach(td => td.style.color = "#ffb121"); // 모든 td 색상 변경
+                                        }}
+                                        onMouseOut={(e) => {
+                                            const tds = e.currentTarget.querySelectorAll('td');
+                                            tds.forEach(td => td.style.color = "inherit"); // 색상 원래대로 복원
+                                        }}
+                                        onClick={() => moveDetail(item)} // 행을 클릭했을 때 상세 페이지로 이동
+                                    >
+                                        <td style={{
+                                            borderRight: 'none',
+                                            borderLeft: 'none',
+                                            paddingLeft: '1.5%'
+                                        }}>{(currentPage - 1) * PageCount + idx + 1}</td>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                            {item.appDocType === 0 ? '품의서' :
+                                                item.appDocType === 1 ? '휴가신청서' :
+                                                    item.appDocType === 2 ? '지출보고서' : ''}
+                                        </td>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                            {item.appDocType === 1
+                                                ? '휴가신청서'
+                                                : item.additionalFields.title
+                                                    ? item.additionalFields.title
+                                                    : !item.additionalFields.title && item.appDocType === 0
+                                                        ? (
+                                                            <span style={{ color: 'gray' }}>
+                                                                {item.writeday.substring(0, 10) + "_품의서"}
+                                                            </span>
+                                                        ):!item.additionalFields.title && item.appDocType === 2
+                                                        ?(
+                                                            <span style={{ color: 'gray' }}>
+                                                                {item.writeday.substring(0, 10) + "_지출보고서"}
+                                                            </span>
+                                                        ): ''
+                                            }
 
-                                         </td>
-                                         <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.writer}</td>
-                                         <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.department}</td>
-                                         <td style={{borderRight: 'none', borderLeft: 'none'}}>
-                                             {
-                                                 formatDate(item.writeday)
-                                             }
-                                         </td>
-                                         <td style={{
-                                             borderRight: 'none',
-                                             borderLeft: 'none',
-                                             color: item.additionalFields.status ===
-                                             '결재 완료' ? '#22ba8a' : item.additionalFields.status === '반려' ? '#ff7133' : '#555'
-                                         }}>{item.approveStatus === 1 ? '임시저장' : item.approveType === 0 ? '반려' : item.approveType === 1 ? '제출완료' : item.approveType === 2 ? '진행중' : '결재완료'}</td>
-                                     </tr>
-                                 ))
-                             }
-                             {binpage.map((_, idx) => (
-                                 <tr key={`empty-${idx}`} style={{lineHeight: '30px', border: 'none'}}>
-                                     <td style={{border: 'none'}}>&nbsp;</td>
-                                     <td style={{border: 'none'}}>&nbsp;</td>
-                                     <td style={{border: 'none'}}>&nbsp;</td>
-                                     <td style={{border: 'none'}}>&nbsp;</td>
-                                     <td style={{border: 'none'}}>&nbsp;</td>
-                                     <td style={{border: 'none'}}>&nbsp;</td>
-                                     <td style={{border: 'none'}}>&nbsp;</td>
-                                 </tr>
-                             ))}
-                             </tbody>
-                             <tfoot>
-                             <tr>
-                                 <td colSpan={7} style={{
-                                     border: 'none',
-                                     lineHeight: '30px',
-                                     backgroundColor: '#ffb121',
-                                     textAlign: 'right'
-                                 }}>
-                            <span style={{margin: '0 10px'}}>
-                                {currentPage} / {totalPage}
-                            </span>
-                                     <Button
-                                         onClick={handlePrevPage}
-                                         disabled={currentPage === 1} // 첫 페이지에서는 비활성화
-                                     >
-                                         이전
-                                     </Button>
-                                     <Button
-                                         onClick={handleNextPage}
-                                         disabled={currentPage === totalPage} // 마지막 페이지에서 비활성화
-                                     >
-                                         다음
-                                     </Button>
-                                 </td>
-                             </tr>
-                             </tfoot>
-                         </table>
-                     </div>
+                                        </td>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.writer}</td>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.department}</td>
+                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                            {
+                                                formatDate(item.writeday)
+                                            }
+                                        </td>
+                                        <td style={{
+                                            borderRight: 'none',
+                                            borderLeft: 'none',
+                                            color: item.additionalFields.status ===
+                                                '결재 완료' ? '#22ba8a' : item.additionalFields.status === '반려' ? '#ff7133' : '#555'
+                                        }}>{item.approveStatus === 1 ? '임시저장' : item.approveType === 0 ? '반려' : item.approveType === 1 ? '제출완료' : item.approveType === 2 ? '진행중' : '결재완료'}</td>
+                                    </tr>
+                                ))
+                            }
+                            {binpage.map((_, idx) => (
+                                <tr key={`empty-${idx}`} style={{ lineHeight: '30px', border: 'none' }}>
+                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colSpan={7} style={{
+                                    border: 'none',
+                                    lineHeight: '30px',
+                                    backgroundColor: '#ffb121',
+                                    textAlign: 'right'
+                                }}>
+                                    <span style={{ margin: '0 10px' }}>
+                                        {currentPage} / {totalPage}
+                                    </span>
+                                    <Button
+                                        onClick={handlePrevPage}
+                                        disabled={currentPage === 1} // 첫 페이지에서는 비활성화
+                                    >
+                                        이전
+                                    </Button>
+                                    <Button
+                                        onClick={handleNextPage}
+                                        disabled={currentPage === totalPage} // 마지막 페이지에서 비활성화
+                                    >
+                                        다음
+                                    </Button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </Box>
         </Box>
     );
