@@ -57,10 +57,10 @@ const SideBar = () => {
 
     return (
         <Sidebar
-            backgroundColor={colors.primary[400]}
+            backgroundColor="#FFFFFF"
             rootStyles={{
                 border: 0,
-                height: "100%",
+                height: "100%"
             }}
             collapsed={collapsed}
             onBackdropClick={() => setToggled(false)}
@@ -116,23 +116,23 @@ const SideBar = () => {
                         mb: "25px",
                     }}
                 >
-                    {/* 메인페이지 프로필 사진 및 개인정보 띄우기 창 */}
-                    <Avatar
-                        alt="avatar"
-                        src={infoData.profileFile}
-                        sx={{width: "100px", height: "100px"}}
-                    />
-                    <Box sx={{textAlign: "center"}}>
-                        <Typography variant="h3" fontWeight="bold" color={colors.gray[100]}>
-                            {infoData.name}
-                        </Typography>
-                        <Typography
-                            variant="h6"
-                            fontWeight="500"
-                            color={colors.yellowAccent[1000]}
-                        >
-                            {infoData?.position?.rank}
-                        </Typography>
+                    {/*/!* 메인페이지 프로필 사진 및 개인정보 띄우기 창 *!/*/}
+                    {/*<Avatar*/}
+                    {/*    alt="avatar"*/}
+                    {/*    src={infoData.profileFile}*/}
+                    {/*    sx={{width: "100px", height: "100px"}}*/}
+                    {/*/>*/}
+                    <Box sx={{textAlign: "center", height: "60px"}}>
+                        {/*<Typography variant="h3" fontWeight="bold" color={colors.gray[100]}>*/}
+                        {/*    {infoData.name}*/}
+                        {/*</Typography>*/}
+                        {/*<Typography*/}
+                        {/*    variant="h6"*/}
+                        {/*    fontWeight="500"*/}
+                        {/*    color={colors.yellowAccent[1000]}*/}
+                        {/*>*/}
+                        {/*    {infoData?.position?.rank}*/}
+                        {/*</Typography>*/}
                     </Box>
                 </Box>
             )}
@@ -161,7 +161,7 @@ const SideBar = () => {
 
                     <SubMenu
                         label={
-                            <Typography variant="h6" color={colors.gray[300]}>
+                            <Typography variant="h6">
                                 {!collapsed ? "전자결재" : " "}
                             </Typography>
                         }
@@ -228,39 +228,20 @@ const SideBar = () => {
                         colors={colors}
                         icon={<WorkOutlineOutlined/>}
                     />
-                    <Box
-                        onClick={() => window.open('https://chat.groupbee.co.kr', '_blank')}
-                        sx={{ display: "flex", alignItems: "center", cursor: "pointer", marginTop:'13px', marginBottom:'13px',
-                            ":hover": {color: "#ffb121"}}}
-                    >
+                    <Box onClick={() => window.open('https://chat.groupbee.co.kr', '_blank')}>
                         <Item
                             title="채팅"
                             colors={colors}
                             icon={<Chat/>}
-                            onClick={() => window.open('https://chat.groupbee.co.kr', '_blank')}
                         />
                     </Box>
-                    <SubMenu
-                        label={
-                            <Typography variant="h6" color={colors}>
-                                {!collapsed ? "설정" : " "}
-                            </Typography>
-                        }
-                        icon={<Settings/>}
-                    >
-                        <Item
-                            title="HR"
-                            path="/hr"
-                            colors={colors}
-                            icon={<PersonAddAlt1Outlined/>}
-                        />
-                        <Item
-                            title="마이페이지"
-                            path="/mypage"
-                            colors={colors}
-                            icon={<BarChartOutlined/>}
-                        />
-                    </SubMenu>
+                    <Box onClick={() => window.open('https://hr.groupbee.co.kr')}>
+                    <Item
+                        title="HR"
+                        colors={colors}
+                        icon={<PersonAddAlt1Outlined/>}
+                    />
+                    </Box>
                 </Menu>
                 <Box
                     sx={{

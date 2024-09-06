@@ -11,6 +11,7 @@ const Item = ({ title, path, icon }) => {
       icon={icon}
       rootStyles={{
         color: path === location.pathname && "#FFCC1A",
+         backgroundColor: 'white'
       }}
     >
       {title}

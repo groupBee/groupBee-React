@@ -10,7 +10,6 @@ const BookRoute = () => {
     return (
         <div>
             <Box m="20px">
-                <Header title="예약"/>
                 <nav style={{marginTop:'-20px'}}>
                     <ul style={{
                         listStyle: 'none',
