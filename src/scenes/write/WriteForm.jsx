@@ -376,20 +376,20 @@ const WriteForm = ({ }) => {
                         </tr>
                         <tr>
                             <td>
-                                <input type="text" value={firstApprover}
+                                <input type="text" value={firstApprover} disabled
                                     style={{ width: '100%' }}
                                     onChange={(e) => setFirstApprover(e.target.value)} readOnly />
 
                             </td>
                             <td>
-                                <input type="text" value={secondApprover}
+                                <input type="text" value={secondApprover} disabled
                                     onChange={(e) => setSecondApprover(e.target.value)}
                                     style={{ width: '100%' }} />
                                 <Button variant="outlined" onClick={() => openModal('second')}>찾기</Button>
                                 {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
                             </td>
                             <td>
-                                <input type="text" value={thirdApprover} onChange={(e) => setThirdApprover(e.target.value)}
+                                <input type="text" value={thirdApprover} disabled onChange={(e) => setThirdApprover(e.target.value)}
                                     style={{ width: '100%' }} />
                                 <Button variant="outlined" onClick={() => openModal('third')}>찾기</Button>
                                 {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}

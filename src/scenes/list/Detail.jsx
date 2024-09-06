@@ -35,6 +35,7 @@ const Detail = () => {
         axios.get(`/api/elecapp/findById?elecAppId=${appId}`)
             .then(res => {
                 setList(res.data);
+                console.log(res.data)
                 setOriginalFiles(res.data.additionalFields.originalFiles);
                 setAttachedFiles(res.data.additionalFields.attachedFiles);
                 setAppDocType(res.data.appDocType);
@@ -271,7 +272,7 @@ const Detail = () => {
                             <td style={{ fontSize: '23px', width: '175px', outline: 'none' }}>{list.department}</td>
                             <td style={{ minWidth: '90px', fontSize: '23px' }}>직급</td>
                             <td style={{ fontSize: '23px', width: '175px', outline: 'none' }}>{list.position}</td>
-                    
+
                         </tr>
                         {/* 문서 유형에 따른 상세 내용 */}
                         {
@@ -360,17 +361,33 @@ const Detail = () => {
                                         </td>
                                         <td>지출유형</td>
                                         <td colSpan={3}>
-                                            <select defaultValue={list.additionalFields?.expendType || ''} disabled>
-                                                <option value={0}>자재비</option>
-                                                <option value={1}>배송비</option>
-                                                <option value={2}>교육비</option>
-                                                <option value={4}>식대</option>
-                                                <option value={5}>출장</option>
-                                                <option value={6}>마일리지</option>
-                                                <option value={7}>선물</option>
-                                                <option value={3}>기타</option>
-                                            </select>
-                                        </td>
+    {list.additionalFields && typeof list.additionalFields.expendType !== 'undefined' ? (
+        (() => {
+            switch (list.additionalFields.expendType) {
+                case 0:
+                    return "자재비";
+                case 1:
+                    return "배송비";
+                case 2:
+                    return "교육비";
+                case 4:
+                    return "식대";
+                case 5:
+                    return "출장비";
+                case 6:
+                    return "마일리지";
+                case 7:
+                    return "선물";
+                default:
+                    return "기타";
+            }
+        })()
+    ) : (
+        ""
+    )}
+</td>
+
+
                                     </tr>
                                     <tr style={{ fontSize: '23px' }}>
                                         <td>제목</td>
