@@ -28,6 +28,7 @@ const SendEmail = () => {
     const [textareaHeight, setTextareaHeight] = useState(350);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userEmail,setUserEmail]=useState("");
+    const [replyText, setReplyText] = useState('');
 
     //내정보 구하기
     const getInfo =()=>{
@@ -42,11 +43,21 @@ const SendEmail = () => {
     },[])
 
     useEffect(() => {
-        // 쿼리 파라미터에서 이메일 주소 가져오기
+        // 쿼리 파라미터에서 이메일 주소, 내용 및 답장 텍스트 가져오기
         const queryParams = new URLSearchParams(location.search);
         const email = queryParams.get('email');
+        const content = queryParams.get('content');
+        const replyText = queryParams.get('replyText');
+
         if (email) {
             setToInput(email);
+        }
+        if (content) {
+            // 기존 본문 내용과 답장 텍스트 결합
+            const combinedBody = replyText
+                ? `${decodeURIComponent(replyText)}\n\n${decodeURIComponent(content)}`
+                : decodeURIComponent(content);
+            setBody(combinedBody);
         }
     }, [location.search]);
 
@@ -338,7 +349,9 @@ const SendEmail = () => {
                     <Box sx={{display: 'flex'}}>
                         <b style={{width: '62px', textAlign: 'center'}}>내용</b>
                     </Box>
+
                     <Box>
+
                     <textarea
                         style={{width: '100%', height: `${textareaHeight}px`,marginTop:'10px', borderColor:'#dddd',resize: 'none',outline: 'none', padding:'10px'}}
                         value={body}
@@ -346,6 +359,7 @@ const SendEmail = () => {
                         placeholder="Your message"
                     />
                     </Box>
+
                 </div>
                  <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
                         <button type="submit"

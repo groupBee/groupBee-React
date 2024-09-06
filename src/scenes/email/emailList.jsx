@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import MailOpenIcon from '@mui/icons-material/Drafts';
+import EmailModal from "./EmailModal.jsx";
 
 function EmailList() {
     const [emails, setEmails] = useState([]);
@@ -14,7 +15,7 @@ function EmailList() {
     const [pageGroup, setPageGroup] = useState(0); // 페이지 그룹 관리
     const pagesPerGroup = 5; // 그룹당 페이지 수를 5로 설정
 
-  
+
 
     // 이메일 목록을 가져오는 함수
     const checkEmail = async () => {
@@ -42,7 +43,6 @@ function EmailList() {
 
     // 특정 이메일 내용을 보여주는 함수
     const showMail = (content) => {
-        alert(content)
         setSelectedEmail(content);
         setShowModal(true);
     };
@@ -144,9 +144,9 @@ const formatDate = (dateString) => {
                                         fontWeight: readEmails[index] ? 'normal' : 'bold' // 읽음 상태에 따라 글씨 굵기 변경
                                     }}
                                 >
-                                    <p style={{ marginLeft: '30px' }}
+                                    <p style={{ marginLeft: '30px',cursor:'pointer'}}
                                        onClick={() => {
-                                           showMail(email.content);
+                                           showMail(email);
                                        }}>&nbsp;&nbsp;{email.subject}</p>
                                 </td>
                                 <td style={{ textAlign: 'center', borderBottom: '1px solid #ddd',
@@ -155,11 +155,11 @@ const formatDate = (dateString) => {
                                     fontWeight: readEmails[index] ? 'normal' : 'bold'}}>{formatDate(email.receivedDate)}</td>
                             </tr>
                         ))}
-                        
+
                         </tbody>
                     </table>
                 </ul>
-               
+
             </div>
 
             {/* 페이지네이션 버튼 */}
@@ -216,9 +216,10 @@ const formatDate = (dateString) => {
                     </button>
                 )}
             </div>
-
-        
+            {/* 이메일 모달 */}
+            <EmailModal open={showModal} onClose={closeModal} email={selectedEmail} />
         </div>
+
     );
 }
 
