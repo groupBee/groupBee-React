@@ -13,11 +13,14 @@ const DetailPage = () => {
     const [comment, setComment] = useState('');
     const [editCommentId, setEditCommentId] = useState(null);
     const [editedComment, setEditedComment] = useState('');
+    const [editedCreateDate, setEditedCreateDate] = useState('');
     const navigate = useNavigate();
+
 
     useEffect(() => {
         fetchPost();
         getinfo();
+        getComment();
     }, [id]);
 
     const getinfo = async () => {
@@ -39,10 +42,12 @@ const DetailPage = () => {
         }
     };
 
-    const getcomment = async () => {
+    const getComment = async () => {
         try {
             const response = await axios.get(`/api/comment/list?boardId=${id}`);
-            setCommentList(response.data);
+            const sortedComments = response.data.sort((a, b) => new Date(a.createDate) - new Date(b.createDate));
+            setCommentList(sortedComments);
+            console.log(sortedComments);
         } catch (error) {
             console.error('Error fetching comments:', error);
         }
@@ -63,7 +68,7 @@ const DetailPage = () => {
             await axios.post('/api/comment/insert', data);
             alert("댓글이 작성되었습니다");
             setComment('');
-            getcomment();
+            getComment();
         } catch (error) {
             console.error('Error posting comment:', error);
             alert('댓글 작성 중 오류가 발생했습니다.');
@@ -95,7 +100,7 @@ const DetailPage = () => {
             try {
                 await axios.delete(`/api/comment/delete/${commentId}`);
                 alert("댓글이 삭제되었습니다");
-                getcomment();
+                getComment();
             } catch (error) {
                 console.error('Error deleting comment:', error);
                 alert('댓글 삭제 중 오류가 발생했습니다.');
@@ -103,9 +108,10 @@ const DetailPage = () => {
         }
     };
 
-    const handleEditCommentClick = (commentId, content) => {
+    const handleEditCommentClick = (commentId, content, createDate) => {
         setEditCommentId(commentId);
         setEditedComment(content);
+        setEditedCreateDate(createDate);
     };
 
     const handleEditCommentSave = async () => {
@@ -114,20 +120,21 @@ const DetailPage = () => {
             return;
         }
 
+        const data = {
+            id: editCommentId, // ID를 포함
+            content: editedComment,
+            boardId: id,
+            createDate : editedCreateDate,
+        };
+
         try {
-            await axios.delete(`/api/comment/delete/${editCommentId}`);
-            const data = {
-                "content": editedComment,
-                "boardId": id
-            };
             await axios.post('/api/comment/insert', data);
             alert("댓글이 수정되었습니다");
             setEditCommentId(null);
             setEditedComment('');
-            getcomment();
+            getComment();
         } catch (error) {
             console.error('Error updating comment:', error);
-            alert('댓글 수정 중 오류가 발생했습니다.');
         }
     };
 
@@ -241,7 +248,7 @@ const DetailPage = () => {
                                     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                                     transition: 'background-color 0.3s ease',
                                 }}
-                                        onClick={handleBackClick}
+
                                         onMouseOver={(e) => {
                                             e.target.style.backgroundColor = '#2bb48c';
                                             e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
@@ -341,6 +348,9 @@ const DetailPage = () => {
                                                 </Typography>
                                                 <Typography variant="caption" sx={{ color: "#999" }}>
                                                     작성일: {new Date(comment.createDate).toLocaleString('ko-KR')}
+                                                    {comment.updateDate && new Date(comment.updateDate) > new Date(comment.createDate) && (
+                                                        <> &nbsp;&nbsp;(수정일: {new Date(comment.updateDate).toLocaleString('ko-KR')})</>
+                                                    )}
                                                 </Typography>
                                             </>
                                         )}
@@ -350,7 +360,7 @@ const DetailPage = () => {
                                                     variant="text"
                                                     size="small"
                                                     startIcon={<EditIcon />}
-                                                    onClick={() => handleEditCommentClick(comment.id, comment.content)}
+                                                    onClick={() => handleEditCommentClick(comment.id, comment.content, comment.createDate)}
                                                     sx={{ marginRight: "5px" }}
                                                 >
                                                     수정

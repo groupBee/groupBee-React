@@ -68,6 +68,26 @@ const UpdatePage = () => {
 
     const handleContentChange = (value) => {
         setContent(value);
+
+        // 이미지 크기를 강제로 설정
+        const div = document.createElement('div');
+        div.innerHTML = value;
+        const images = div.querySelectorAll('img');
+
+        // 모든 이미지에 고정된 스타일 적용
+        images.forEach(img => {
+            img.style.maxWidth = '700px'; // 원하는 고정 크기
+            img.style.height = 'auto'; // 비율 유지를 위해 height는 auto
+        });
+
+        // 비디오 크기 강제 설정
+        const videos = div.querySelectorAll('iframe, video');
+        videos.forEach(video => {
+            video.style.width = '500px';  // 비디오의 너비를 컨테이너에 맞추기
+            video.style.height = '300px'; // 고정된 비디오 높이
+        });
+
+        setContent(div.innerHTML); // 수정된 HTML을 다시 저장
     };
 
     const handleMustReadChange = (e) => {

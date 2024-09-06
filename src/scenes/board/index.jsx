@@ -12,8 +12,8 @@ const Board = () => {
     const [totalPages, setTotalPages] = useState(0);
     const itemsPerPage = 10;
     const navigate = useNavigate();
-    const [myinfoList, setMyinfoList] = useState(null); // myinfoList 상태 추가
-    const [showMyPosts, setShowMyPosts] = useState(false); // 현재 모드 상태
+    const [myinfoList, setMyinfoList] = useState(null); // 사용자 정보 상태 추가
+    const [showMyPosts, setShowMyPosts] = useState(false); // 내 글 보기 모드 상태
     const [searchQuery, setSearchQuery] = useState('');
     const [searchType, setSearchType] = useState('title'); // 'title' or 'writer'
 
@@ -22,6 +22,20 @@ const Board = () => {
             setCurrentPage(Number(Page));
         }
     }, [Page]);
+
+    // 사용자 정보 가져오는 API 호출
+    useEffect(() => {
+        const getinfo = async () => {
+            try {
+                const response = await axios.get("/api/employee/info");
+                setMyinfoList(response.data); // 사용자 정보 설정
+            } catch (error) {
+                console.error('Error fetching employee info:', error);
+            }
+        };
+
+        getinfo();
+    }, []);
 
     useEffect(() => {
         const fetchBoardList = async () => {
@@ -73,12 +87,12 @@ const Board = () => {
                     ...displayedImportantPosts.map(post => ({
                         ...post,
                         displayNumber: <b style={{ color: 'red', marginLeft: '-5px' }}>[중요]</b>,
-                        titleDisplay: <b>{post.board.title}</b>
+                        titleDisplay: <b>{post.board.mustRead ? '[공지] ' : ''}{post.board.title}</b>
                     })),
                     ...displayedRegularPosts.map((post, index) => ({
                         ...post,
                         displayNumber: updatedRegularPosts.length - (startIndex + index),
-                        titleDisplay: post.board.title
+                        titleDisplay: post.board.mustRead ? '[공지] ' + post.board.title : post.board.title
                     }))
                 ];
 
