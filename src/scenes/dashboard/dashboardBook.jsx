@@ -196,7 +196,7 @@ const DashboardBook = () => {
                                 fontSize: '14px',
                                 color: '#777', // Text color
                             }}>
-                                사유 : {room.reason}
+                                사유 : {room.purpose}
                             </p>
                         </div>
                     </div>
