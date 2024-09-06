@@ -6,6 +6,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useNavigate } from "react-router-dom";
+import ChatIcon from "@mui/icons-material/Chat.js";
+import MailOutlineIcon from "@mui/icons-material/MailOutline.js";
 
 const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
     const [departmentList, setDepartmentList] = useState([]);

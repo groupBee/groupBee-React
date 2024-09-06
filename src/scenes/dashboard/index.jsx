@@ -40,6 +40,9 @@ function Dashboard() {
     const [midday, setMidday] = useState("");
     const navigate = useNavigate();
     const calendarRef = useRef(null);
+    const [currentYear, setCurrentYear] = useState(null);  // 현재 연도 상태 관리
+    const fullcalendarRef = useRef(null);
+
 
     const handleBoard = () => {
         navigate("/board");
@@ -92,54 +95,101 @@ function Dashboard() {
     };
 
     // 캘린더 데이터 가져오기
-    const fetchData = async () => {
+    const fetchData = async (year) => {
+        if(!year || year === "") {
+            year = currentYear || new Date().getFullYear();
+        }
         try {
-            const calendarResponse = await fetch("/api/calendar/list");
+            const calendarResponse = await fetch(`/api/calendar/list/${year}`);
             if (!calendarResponse.ok) {
-                console.error(`${calendarResponse.status}: ${calendarResponse.statusText}`);
-                const calendarApi = calendarRef.current.getApi();
-                calendarApi.removeAllEvents();
+                console.error(`${calendarResponse.status}: 오류가 발생했습니다.`);
                 return;
             }
             const calendarData = await calendarResponse.json();
 
-            const eventsData = calendarData.map(event => ({
-                id: event.id,
-                title: event.title,
-                content: event.content,
-                start: event.startDay,
-                end: event.endDay,
-                backgroundColor: '#ffc107',
-                borderColor: '#ffc107',
-                textColor: '#111111',
-            }));
-            setEvents(eventsData);
+            const backendEvents = calendarData.map((event) => {
+                // ID가 null이거나 빈 문자열일 경우 색상을 다르게 설정
+                const isHoliday = !event.id || event.id === "";  // ID가 null이거나 빈 문자열이면 true
+                return {
+                    id: event.id || "",
+                    title: event.title,
+                    content: event.content || "",
+                    start: event.startDay,
+                    end: event.endDay,
+                    backgroundColor: isHoliday ? '#ff0000' : '#ffc107',  // 공휴일이면 빨간색, 아니면 노란색
+                    borderColor: isHoliday ? '#ff0000' : '#ffc107',      // 공휴일이면 빨간색, 아니면 노란색
+                    textColor: isHoliday ? '#ffffff' : '#000000',
+                    allDay: isHoliday,
+                };
+            });
+            setEvents(backendEvents);
         } catch (e) {
-            console.log("받아올 데이터가 없습니다.");
-            const calendarApi = calendarRef.current.getApi();
-            calendarApi.removeAllEvents();
+            console.error("데이터 로드 중 오류 발생:", e);
         }
     };
+    const handleDatesSet = (dateInfo) => {
+        if (dateInfo && dateInfo.start) {  // dateInfo와 start가 정의되어 있는지 확인
+            const newYear = dateInfo.start.getFullYear();  // 현재 보이는 캘린더의 연도 가져오기
+            console.log("Current Year:", newYear);  // 연도 확인용 로그
+            // 이미 불러온 연도와 같다면 API 호출하지 않음
+            if (newYear !== currentYear) {
+                setCurrentYear(newYear);  // 새로운 연도로 상태 업데이트
+                fetchData(newYear);  // fetchData에 새로운 연도 전달
+            } else {
+                console.log("중복된 연도 요청: ", newYear);  // 중복 요청 방지 로그
+            }
+        } else {
+            console.error("dateInfo 또는 dateInfo.start가 정의되지 않았습니다.");
+        }
+    };
+
+    useEffect(() => {
+        if (fullcalendarRef.current) {
+            const calendarApi = fullcalendarRef.current.getApi();
+            const initialDate = calendarApi.getDate();  // FullCalendar의 초기 날짜 가져오기
+            const initialYear = initialDate.getFullYear();  // 초기 연도 추출
+            setCurrentYear(initialYear);  // 초기 연도 설정
+            fetchData(initialYear);  // 초기 연도로 fetchData 호출
+        }
+    }, []);
 
     // 공지사항 데이터 가져오기
     const fetchBoardList = async () => {
         try {
             const res = await axios.get('/api/board/list');
+
+            // 중요 게시물과 일반 게시물 구분
             const importantPosts = res.data.filter(post => post.board.mustMustRead);
             const regularPosts = res.data.filter(post => !post.board.mustMustRead);
 
-            // 중요 게시글을 상단에, 일반 게시글을 그 아래에 표시
+            // 중요 게시물 정렬 (최신순)
+            const sortedImportantPosts = importantPosts.sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
+
+            // 중요 게시물 중 최대 8개만 표시
+            const maxImportantCount = 8;
+            const displayedImportantPosts = sortedImportantPosts.slice(0, maxImportantCount);
+
+            // 중요 게시물 중 초과된 게시물은 일반 게시물에 추가
+            const updatedRegularPosts = [
+                ...regularPosts,
+                ...sortedImportantPosts.slice(maxImportantCount)
+            ].sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate));
+
+            // 중요 게시물과 일반 게시물을 합쳐서 최대 9개만 표시
             const combinedPosts = [
-                ...importantPosts,
-                ...regularPosts
+                ...displayedImportantPosts,
+                ...updatedRegularPosts.slice(0, 9 - displayedImportantPosts.length)
             ];
 
-            // 상위 8개 항목을 선택
-            const displayedPosts = combinedPosts.slice(0, 8);
+            // 최종 게시물 리스트 구성
+            const finalPosts = combinedPosts.map(post => ({
+                ...post,
+                displayNumber: post.board.mustMustRead ? <b style={{ color: 'red', marginLeft: '-5px' }}>[중요]</b> : undefined,
+                titleDisplay: post.board.title
+            }));
 
-            // 상태 업데이트
-            setBoardList(displayedPosts);
-            setTotalPages(Math.ceil(combinedPosts.length / 8)); // 페이지 수 계산
+            setBoardList(finalPosts);
+            setTotalPages(Math.ceil(updatedRegularPosts.length / 8)); // 총 페이지 수 업데이트
         } catch (error) {
             console.error('Error fetching board list:', error);
         }
@@ -224,7 +274,33 @@ function Dashboard() {
         }
     };
 
+    const moveDetail = (itemId) => {
+        navigate("/detail", {
+            state: {
+                memberId: memberId,
+                itemId: itemId
+            }
+        });
+    };
 
+    // 버튼 공통 스타일
+    const buttonStyle = {
+        color: 'white',
+        border:'1px solid #ff8c00',
+        backgroundColor:'#ffb121',
+        minWidth: '80px',
+        padding: '7px 5px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        margin: '0 1px'
+    };
+
+    // 선택된 버튼에 따라 색상 변경
+    const getButtonStyle = (currentStatus) => ({
+        ...buttonStyle,
+        backgroundColor: status === currentStatus ? '#ff8c00' : 'white',
+        color: status === currentStatus ? 'white' : '#ff8c00',// 선택된 버튼은 색상 진하게
+    });
 
 
     return (
@@ -298,12 +374,22 @@ function Dashboard() {
                                     </thead>
                                     <tbody>
                                     {boardList
-                                        .sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate)) // 최신순 정렬
+                                        .sort((a, b) => {
+                                            // 중요 게시글은 항상 상단에 배치
+                                            if (a.board.mustMustRead && !b.board.mustMustRead) {
+                                                return -1;
+                                            } else if (!a.board.mustMustRead && b.board.mustMustRead) {
+                                                return 1;
+                                            } else {
+                                                // 동일한 중요도 내에서는 날짜 기준으로 정렬 (최신 순)
+                                                return new Date(b.board.createDate) - new Date(a.board.createDate);
+                                            }
+                                        })
                                         .map((post) => (
                                             <tr key={post.id}>
                                                 <td>
                                                     {post.board.mustMustRead && (
-                                                        <span style={{ color: "#ff4d4f" }}>
+                                                        <span style={{color: "#ff4d4f"}}>
                                         <b>[중요]</b>
                                     </span>
                                                     )}
@@ -324,9 +410,13 @@ function Dashboard() {
                                                 >
                                                     {post.board.title}
                                                 </td>
-                                                <td style={{ textAlign: "center" }}>{post.board.writer}</td>
-                                                <td style={{ textAlign: "center" }}>
-                                                    {new Date(post.board.createDate).toLocaleDateString()}
+                                                <td style={{textAlign: "center"}}>{post.board.writer}</td>
+                                                <td style={{textAlign: "center"}}>
+                                                    {new Date(post.board.createDate).toLocaleDateString('ko-KR', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}
                                                 </td>
                                             </tr>
                                         ))}
@@ -410,12 +500,36 @@ function Dashboard() {
                         </Typography>
                     </Box>
                     <Box  sx={{padding: '5px', alignItems:'center', display:'flex', gap:'5px', justifyContent:'center',marginTop:'10px'}} >
-                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("all")}>모두 보기</Button>
-                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("rejected")}>반려</Button>
-                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("ready")}>결재 대기</Button>
-                        <Button style={{color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("ing")}>결재 중</Button>
-                        <Button style={{ color: 'white', backgroundColor:'#ffb121' , minWidth: '80px',padding: '7px 5px', fontSize:'14px', fontWeight:'bold'}} onClick={() => setStatus("done")}>결제 완료</Button>
-
+                        <Button
+                            style={getButtonStyle("all")}
+                            onClick={() => setStatus("all")}
+                        >
+                            모두 보기
+                        </Button>
+                        <Button
+                            style={getButtonStyle("rejected")}
+                            onClick={() => setStatus("rejected")}
+                        >
+                            반려
+                        </Button>
+                        <Button
+                            style={getButtonStyle("ready")}
+                            onClick={() => setStatus("ready")}
+                        >
+                            결재 대기
+                        </Button>
+                        <Button
+                            style={getButtonStyle("ing")}
+                            onClick={() => setStatus("ing")}
+                        >
+                            결재 중
+                        </Button>
+                        <Button
+                            style={getButtonStyle("done")}
+                            onClick={() => setStatus("done")}
+                        >
+                            결제 완료
+                        </Button>
                     </Box>
                     <Box p="10px" flexGrow={1} overflow="auto">
                         {filteredData.length > 0 ? (
@@ -430,7 +544,7 @@ function Dashboard() {
                                 </thead>
                                 <tbody>
                                 {filteredData.map((item, idx) => (
-                                    <tr key={idx} style={{ borderBottom: '1px solid #e0e0e0' }}>
+                                    <tr key={idx} style={{ borderBottom: '1px solid #e0e0e0', cursor:'pointer'}} onClick={() => moveDetail(item.id)}>
                                         <td style={{ padding: '12px', textAlign: 'center', color: '#555' }}>
                                             {item.appDocType === 0 ? '품의서' :
                                                 item.appDocType === 1 ? '휴가신청서' :
@@ -515,7 +629,7 @@ function Dashboard() {
                     }}>
                         <FullCalendar
                             ref={calendarRef}
-                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin, googleCalendarPlugin]}
+                            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
                             customButtons={{
                                 customPrev: {
                                     text: '◀',
@@ -532,12 +646,13 @@ function Dashboard() {
                                 alert(`이벤트: ${info.event.title}`);
                             }}
                             locale='ko'
-                            height="100%" // FullCalendar 높이를 부모 박스에 맞게 설정
+                            height="100%"
                             headerToolbar={{
                                 left: 'customPrev',
                                 center: 'title',
                                 right: 'customNext'
                             }}
+                            datesSet={handleDatesSet} // 날짜 변경 시 호출
                             showNonCurrentDates={false}
                             contentHeight="auto"
                             dayMaxEventRows={2}  // 한 날짜에 표시할 최대 이벤트 개수
