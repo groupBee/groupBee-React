@@ -152,21 +152,21 @@ const BoardWrite = () => {
     };
 
     return (
-        <Box m="20px">
+        <Box sx={{ m: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Box
                 height="auto"
                 sx={{
                     borderRadius: "8px",
                     backgroundColor: "white",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    marginLeft: '14%',
                     minHeight: '850px',
                     width: "80%",
                     maxWidth: "850px",
                     padding: "80px",
                 }}
             >
-                <CreateIcon/><h1>게시글 작성</h1>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-10px', marginBottom: '30px',
+                    fontSize: '25px'}}><h1>게시글 작성</h1></Box>
                 <Box height="75vh">
                     <form onSubmit={handleSubmit}>
                         <Box>
@@ -182,7 +182,8 @@ const BoardWrite = () => {
                                     width: '100%',
                                     maxWidth: '800px',
                                     height: '30px',
-                                    border: '0.5px solid grey'
+                                    border: '0.5px solid grey',
+                                    marginTop: '10px',
                                 }}
                             />
                         </Box>
@@ -208,14 +209,14 @@ const BoardWrite = () => {
                             <button
                                 onClick={fileAttachClick}
                                 style={{
-                                    marginLeft: '20px',
-                                    border: '1px solid #dddd',
+                                    border: '1px solid #14C87B',
                                     backgroundColor: 'transparent',
-                                    borderRadius: '4px',
-                                    padding: '3px 6px'
+                                    borderRadius: '4px'
+
+                                    ,color: '#14C87B'
                                 }}
                             >
-                                파일첨부하기
+                                선택
                             </button>
                         </Box>
                         <Box
@@ -270,38 +271,28 @@ const BoardWrite = () => {
                                 placeholder='내용을 입력하세요!'
                             />
                         </div>
-
+                        <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: '6px', marginTop: '80px' }}>
                         <Button
-                            type="submit"
-                            variant='contained'
                             style={{
-                                color: 'white',
-                                backgroundColor: '#36c3ff',
-                                backgroundImage: 'linear-gradient(135deg, #36c3ff 0%, #74d2ff 100%)',
-                                border: 'none',
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                transition: 'all 0.3s ease',
-                                marginTop: '100px'
-                            }}
-                        >
-                            등록
-                        </Button>
-                        <Button
-                            variant="contained"
-                            style={{
-                                color: 'white',
-                                backgroundColor: '#8c8b89',
-                                backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
-                                border: 'none',
-                                marginTop: '100px',
-                                marginLeft: '15px',
-                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                transition: 'background-color 0.3s ease'
+                                color: '#ffb121',
+                                border: '1px solid #ffb121',
                             }}
                             onClick={handleBackClick}
                         >
                             목록
                         </Button>
+                            <Button
+                                type="submit"
+
+                                style={{
+                                    color: 'white',
+                                    border: 'none',
+                                    backgroundColor: '#ffb121'
+                                }}
+                            >
+                                등록
+                            </Button>
+                        </Box>
                     </form>
                 </Box>
             </Box>

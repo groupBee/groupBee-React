@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './Board.css';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Board = () => {
     const { Page } = useParams();
@@ -126,14 +127,15 @@ const Board = () => {
     return (
         <Box m="20px">
             <Box
-                height="auto"
+                height="100%"
                 sx={{
                     borderRadius: "8px",
                     backgroundColor: "white",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+
                 }}
             >
-                <Box borderBottom={`2px solid #ffb121`} p="15px">
+                <Box borderBottom={`2px solid #ffb121`} p="20px">
                     <Typography
                         color="black"
                         variant="h5"
@@ -144,97 +146,85 @@ const Board = () => {
                         alignItems="center"
                     >
                         사내게시판
-                        <div style={{ float: 'right', marginBottom: '20px' }}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <SearchIcon style={{ marginRight: '5px' }} />
+                            <TextField
+                                variant="outlined"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                style={{
+
+                                    width: '200px',
+
+                                    fontSize: '12px'
+                                }}
+                                InputLabelProps={{
+                                    style: { fontSize: '12px' }
+                                }}
+                                InputProps={{
+                                    style: { height: '33px' } // 높이 조정
+                                }}
+                            />
+                            <FormControl>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={searchType}
+                                    onChange={(e) => setSearchType(e.target.value)}
+                                    style={{ fontSize: '12px', height: '33px', width: '78px' }} // 높이 조정
+                                >
+                                    <MenuItem value="title">제목</MenuItem>
+                                    <MenuItem value="writer">작성자</MenuItem>
+                                </Select>
+                            </FormControl>
                             <Button variant='outlined'
                                     style={{
-                                        backgroundColor: showMyPosts ? '#a1c4fd' : '#8ec6ff',
-                                        backgroundImage: showMyPosts ? 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)' : 'linear-gradient(135deg, #8ec6ff 0%, #e0f7ff 100%)',
-                                        color: 'white',
-                                        fontSize: '15px',
-                                        marginLeft: '10px',
-                                        marginTop: '40px',
-                                        marginBottom:'-50px',
-                                        border: 'none',
-                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                        color: 'black',
+                                        fontSize: '12px',
                                         transition: 'background-color 0.3s ease',
+                                        width: '80px'
                                     }}
                                     onClick={handleTogglePosts}>
                                 {showMyPosts ? '전체 글' : '내 작성글'}
                             </Button>
                             <Button variant='outlined'
                                     style={{
-                                        backgroundColor: '#f6d365',
-                                        backgroundImage: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
                                         color: 'white',
-                                        fontSize: '15px',
-                                        marginTop: '40px',
-                                        marginBottom:'-50px',
-                                        border: 'none',
-                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                                        fontSize: '12px',
                                         transition: 'background-color 0.3s ease',
-                                        marginLeft: '20px'
+                                        backgroundColor: '#ff8237',
+                                        border: '1px solid #ff8237'
                                     }}
                                     onClick={handleWriteClick}>글작성</Button>
                         </div>
                     </Typography>
-                    <Box mt={2} mb={2} sx={{ display: 'flex', alignItems: 'center',marginTop:'-10px',marginBottom:'-2px',marginLeft:'-15px'}}>
-                        <TextField
-                            label=" &nbsp;&nbsp;검색어"
-                            variant="outlined"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            style={{
-                                marginRight: '10px',
-                                width: '200px',
-                                padding: '8px 12px',
-                                fontSize: '14px'
-                            }}
-                            InputLabelProps={{
-                                style: { fontSize: '14px' }
-                            }}
-                            InputProps={{
-                                style: { height: '40px' } // 높이 조정
-                            }}
-                        />
-                        <FormControl variant="outlined" style={{ minWidth: 100 }}>
-                            <InputLabel style={{ fontSize: '14px' }}>검색 기준</InputLabel>
-                            <Select
-                                value={searchType}
-                                onChange={(e) => setSearchType(e.target.value)}
-                                label="검색 기준"
-                                style={{ fontSize: '14px', height: '40px' }} // 높이 조정
-                            >
-                                <MenuItem value="title">제목</MenuItem>
-                                <MenuItem value="writer">작성자</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Box>
                 </Box>
-                <Box p="15px">
+                <Box p="15px" style={{marginTop: '-10px'}}>
                     {boardList.length > 0 ? (
                         <table className="table table-hover">
                             <thead>
                             <tr>
-                                <th style={{ width: '50px'}}>번호</th>
-                                <th style={{ textAlign: 'center', width: '300px', fontWeight: 'bold' }}>
+                                <th style={{ textAlign: 'center', width: '10%'}}>번호</th>
+                                <th style={{ textAlign: 'center', width: '40%', fontWeight: 'bold' }}>
                                     제목
                                 </th>
-                                <th style={{ textAlign: 'center', width: '100px', fontWeight: 'bold' }}>
+                                <th style={{ textAlign: 'center', width: '10%', fontWeight: 'bold' }}>
                                     작성자
                                 </th>
-                                <th style={{ textAlign: 'center', width: '100px', fontWeight: 'bold' }}>
+                                <th style={{ textAlign: 'center', width: '20%', fontWeight: 'bold' }}>
                                     작성일
                                 </th>
-                                <th style={{ width: '50px'}}>조회</th>
+                                <th style={{ textAlign: 'center', width: '10%'}}>조회</th>
                             </tr>
                             </thead>
                             <tbody style={{ borderBottom: '1px solid #dbd9d9' }}>
                             {boardList.map((row) => (
                                 <tr key={row.board.id}>
-                                    <td>&nbsp;&nbsp;{row.displayNumber}</td>
+                                    <td style={{textAlign: 'center',}}>&nbsp;&nbsp;{row.displayNumber}</td>
                                     <td
                                         className="title-cell"
                                         style={{
+                                            textAlign: 'center',
                                             cursor: 'pointer',
                                             color: 'black',
                                             maxWidth: "300px",
@@ -249,7 +239,7 @@ const Board = () => {
                                     >
                                         {row.titleDisplay}
                                         {row.board.files && row.board.files.length > 0 && <AttachFileIcon style={{ width: '15px', height: '15px' }} />}
-                                        {row.commentCount > 0 && <span style={{ marginLeft: '10px' }}>({row.commentCount})</span>}
+                                        {row.commentCount > 0 && <span style={{ marginLeft: '5px', color: '#FB5615' }}>({row.commentCount})</span>}
                                     </td>
                                     <td style={{ textAlign: "center" }}>{row.board.writer}</td>
                                     <td style={{ textAlign: "center" }}>
@@ -262,7 +252,7 @@ const Board = () => {
                                             second: '2-digit'
                                         })}
                                     </td>
-                                    <td>&nbsp;{row.board.readCount}</td>
+                                    <td style={{textAlign: 'center',}}>&nbsp;{row.board.readCount}</td>
                                 </tr>
                             ))}
                             </tbody>
@@ -273,18 +263,37 @@ const Board = () => {
                         </Typography>
                     )}
                 </Box>
-            </Box>
-            <Box mt={2} display="flex" justifyContent="center">
-                <Pagination
-                    count={totalPages} // 전체 페이지 수
-                    page={currentPage} // 현재 페이지
-                    onChange={handlePageChange} // 페이지 변경 이벤트 핸들러
-                    color="primary" // 페이지 색상
-                    siblingCount={1} // 중간 페이지를 기준으로 좌우에 표시할 페이지 수 (여기서 기본적으로 좌우 각각 1개씩 표시)
-                    boundaryCount={1} // 시작과 끝에 표시할 페이지 수 (1로 설정하여 양쪽 끝에 1개의 페이지만 표시)
-                    showFirstButton // 처음 페이지로 이동하는 버튼을 표시
-                    showLastButton // 마지막 페이지로 이동하는 버튼을 표시
-                />
+                <Box display="flex" justifyContent="center" style={{height: '60px'}}>
+                    <Pagination
+                        count={totalPages} // 전체 페이지 수
+                        page={currentPage} // 현재 페이지
+                        onChange={handlePageChange} // 페이지 변경 이벤트 핸들러
+                        siblingCount={1} // 중간 페이지를 기준으로 좌우에 표시할 페이지 수 (여기서 기본적으로 좌우 각각 1개씩 표시)
+                        boundaryCount={1} // 시작과 끝에 표시할 페이지 수 (1로 설정하여 양쪽 끝에 1개의 페이지만 표시)
+                        showFirstButton // 처음 페이지로 이동하는 버튼을 표시
+                        showLastButton // 마지막 페이지로 이동하는 버튼을 표시
+                        sx={{
+                            '& .MuiPaginationItem-root': {
+                                color: '#000', // 페이지 숫자 기본 색상
+                                fontSize: '14px', // 페이지 숫자 크기
+                                '&:hover': {
+                                    backgroundColor: '#ff8237', // 호버 시 배경색
+                                    color: 'white', // 호버 시 글씨 색상
+                                },
+                                '&.Mui-selected': {
+                                    backgroundColor: '#ff8237', // 선택된 페이지 배경색
+                                    color: 'white', // 선택된 페이지 글씨 색상
+                                },
+                            },
+                            '& .MuiPaginationItem-ellipsis': {
+                                color: '#ff8237', // 생략부(...) 색상
+                            },
+                            '& .MuiPaginationItem-icon': {
+                                color: '#000', // 첫/마지막 페이지로 가는 아이콘 색상
+                            },
+                        }}
+                    />
+                </Box>
             </Box>
         </Box>
     );

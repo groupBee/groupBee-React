@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Box, Typography, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
+import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
 
 const DetailPage = () => {
     const { id, currentPage } = useParams();
@@ -163,7 +164,7 @@ const DetailPage = () => {
             <Box
                 sx={{
                     borderRadius: "8px",
-                    backgroundColor: "#f9f9f9",
+                    backgroundColor: "white",
                     boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
                     width: "100%",
                     maxWidth: "900px",
@@ -176,35 +177,36 @@ const DetailPage = () => {
                     {post ? (
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography
-                                variant="h5"
-                                gutterBottom
+
                                 sx={{
                                     fontWeight: "bold",
-                                    borderBottom: "2px solid #eeeeee",
-                                    paddingBottom: "10px",
-                                    marginBottom: "10px",
                                     color: "#333",
-                                    minWidth:'810px'
+                                    minWidth:'810px',
+                                    fontSize: '25px'
                                 }}
                             >
                                 {post.mustRead && <span><b style={{ fontSize: '20px' }}>[공지]&nbsp;</b></span>}
                                 {post.title}
                             </Typography>
-                            <Typography variant="body2" sx={{ color: "#777", marginBottom: "5px" }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                            <Typography variant="body2" sx={{ color: "#777", fontSize: '13px'}}>
                                 작성자: {post.writer} | 조회수: {post.readCount}
                             </Typography>
-                            <Typography variant="body2" sx={{ color: "#777" }}>
+                            <Typography variant="body2" sx={{ color: "#777", fontSize: '13px' }}>
                                 작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                             </Typography>
+                            </Box>
                             {post.updateDate && new Date(post.updateDate) > new Date(post.createDate) && (
-                                <Typography variant="body2" sx={{ color: "#777" }}>
-                                    수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
-                                </Typography>
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                                    <Typography variant="body2" sx={{ color: "#777", fontSize: '13px' }}>
+                                        수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
+                                    </Typography>
+                                </Box>
                             )}
 
                             <Box
                                 sx={{
-                                    marginTop: "20px",
+                                    marginTop: "5px",
                                     borderTop: "1px solid #eeeeee",
                                     paddingTop: "10px",
                                     width: "100%",
@@ -239,35 +241,18 @@ const DetailPage = () => {
                                 </Box>
                             )}
 
-                            <Box mt={2} display="flex" justifyContent="space-between" width="100%">
-                                <Button variant="contained" style={{
-                                    color: 'white',
-                                    backgroundColor: '#8c8b89',
-                                    backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
-                                    border: 'none',
-                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                    transition: 'background-color 0.3s ease',
-                                }}
-
-                                        onMouseOver={(e) => {
-                                            e.target.style.backgroundColor = '#2bb48c';
-                                            e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                            e.target.style.transform = 'scale(1.05)';
-                                        }}
-                                        onMouseOut={(e) => {
-                                            e.target.style.backgroundColor = '#3af0b6';
-                                            e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                            e.target.style.transform = 'scale(1)';
-                                        }} onClick={handleBackClick}>
-                                    목록
-                                </Button>
+                            <Box mb={1} display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                <Typography variant="h6" sx={{fontWeight: 'bold'}}>
+                                    <DriveFileRenameOutlineRoundedIcon sx={{ marginRight: '5px' }} />
+                                    댓글
+                                </Typography>
                                 {myinfoList.potalId === post.memberId && (
                                     <Box>
                                         <Button
                                             variant="outlined"
                                             color="secondary"
-                                            sx={{ marginRight: "10px" }}
                                             onClick={handleEditClick}
+                                            sx={{marginRight: '4px'}}
                                         >
                                             수정
                                         </Button>
@@ -278,41 +263,36 @@ const DetailPage = () => {
                                 )}
                             </Box>
 
-                            <Box mt={3}>
-                                <Typography variant="h6" sx={{ marginBottom: "10px" }}>
-                                    댓글
-                                </Typography>
+                            <Box>
                                 <textarea
-                                    style={{ width: '100%', minWidth: '810px', height: '100px', borderRadius: '10px' }}
+                                    style={{ width: '100%', minWidth: '810px', height: '100px', borderRadius: '8px' }}
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                 />
+                                <Box display="flex" justifyContent="flex-end" width="100%">
+                                <Button
+                                        style={{
+                                    color: '#ffb121',
+                                    border: '1px solid #ffb121',
+                                            backgroundColor: 'white',
+                                            marginRight: '4px'}}
+                                      onClick={handleBackClick}>
+                                    목록
+                                </Button>
                                 <Button
                                     onClick={writeComment}
-                                    variant='contained'
                                     style={{
-                                        float: 'right',
-                                        marginBottom: '20px',
-                                        color: 'black',
-                                        border: '1px solid grey',
-                                        backgroundColor: '#e1e1f5',
-                                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                        transition: 'background-color 0.3s ease',
-                                    }}
-                                    onMouseOver={(e) => {
-                                        e.target.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.3)';
-                                        e.target.style.transform = 'scale(1.05)';
-                                    }}
-                                    onMouseOut={(e) => {
-                                        e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-                                        e.target.style.transform = 'scale(1)';
+                                        color: 'white',
+                                        border: '1px solid #ffb121',
+                                        backgroundColor: '#ffb121'
                                     }}
                                 >
                                     등록
                                 </Button>
+                                </Box>
                             </Box>
 
-                            <Box mt={3}>
+                            <Box mt={2}>
                                 {commentList.map((comment) => (
                                     <Box
                                         key={comment.id}
@@ -335,22 +315,29 @@ const DetailPage = () => {
                                                 />
                                                 <Button
                                                     onClick={handleEditCommentSave}
-                                                    variant='contained'
-                                                    sx={{ marginTop: '10px' }}
+                                                    display="flex"
+                                                    justifyContent="flex-end"
+                                                    sx={{ marginTop: '10px', border: '1px solid #ffb121', color: '#ffb121' }}
                                                 >
                                                     저장
                                                 </Button>
                                             </>
                                         ) : (
                                             <>
-                                                <Typography variant="body2" sx={{ marginBottom: "5px", color: "#555" }}>
-                                                    {comment.writer}: &nbsp;{comment.content}
+                                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                                <Typography variant="body2" sx={{ color: "black", fontWeight: 'bold', fontSize: '15px' }}>
+                                                    {comment.writer}
                                                 </Typography>
-                                                <Typography variant="caption" sx={{ color: "#999" }}>
-                                                    작성일: {new Date(comment.createDate).toLocaleString('ko-KR')}
-                                                    {comment.updateDate && new Date(comment.updateDate) > new Date(comment.createDate) && (
-                                                        <> &nbsp;&nbsp;(수정일: {new Date(comment.updateDate).toLocaleString('ko-KR')})</>
-                                                    )}
+
+                                                    <Typography variant="caption" sx={{ color: "#999" }}>
+                                                        작성일: {new Date(comment.createDate).toLocaleString('ko-KR')}
+                                                        {comment.updateDate && new Date(comment.updateDate) > new Date(comment.createDate) && (
+                                                            <> &nbsp;&nbsp;(수정일: {new Date(comment.updateDate).toLocaleString('ko-KR')})</>
+                                                        )}
+                                                    </Typography>
+                                                </Box>
+                                                <Typography variant="body2" sx={{ marginBottom: "5px", color: "black", fontSize:'13px'}}>
+                                                    &nbsp;{comment.content}
                                                 </Typography>
                                             </>
                                         )}
@@ -361,7 +348,6 @@ const DetailPage = () => {
                                                     size="small"
                                                     startIcon={<EditIcon />}
                                                     onClick={() => handleEditCommentClick(comment.id, comment.content, comment.createDate)}
-                                                    sx={{ marginRight: "5px" }}
                                                 >
                                                     수정
                                                 </Button>
