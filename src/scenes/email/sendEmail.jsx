@@ -48,14 +48,30 @@ const SendEmail = () => {
         const email = queryParams.get('email');
         const content = queryParams.get('content');
         const replyText = queryParams.get('replyText');
+        const subject = queryParams.get('subject');
+        const receivedDate = queryParams.get('receivedDate');
+        const to = queryParams.get('to');
+        const cc = queryParams.get('cc');
+        const from = queryParams.get('from');
 
         if (email) {
             setToInput(email);
         }
+        if (subject) {
+            const newSubject =`[Re] ${decodeURIComponent(subject)}`;
+            setSubject(newSubject);
+        }
         if (content) {
             // 기존 본문 내용과 답장 텍스트 결합
             const combinedBody = replyText
-                ? `${decodeURIComponent(replyText)}\n\n${decodeURIComponent(content)}`
+                ? `\n\n${decodeURIComponent(replyText)}
+                \n수신일 : ${decodeURIComponent(receivedDate)} 
+                \n제목 : ${decodeURIComponent(subject)}
+                \n수신 : ${decodeURIComponent(to)}
+                \n참조 : ${decodeURIComponent(cc)}
+                \n발신 : ${decodeURIComponent(email)}
+                
+                \n${decodeURIComponent(content)}`
                 : decodeURIComponent(content);
             setBody(combinedBody);
         }
