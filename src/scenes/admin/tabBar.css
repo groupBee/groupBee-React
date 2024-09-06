@@ -57,3 +57,4 @@
 .nav__item:hover .nav__active-indicator {
     transform: translateX(-50%) scaleX(1.2); /* 호버 시 인디케이터 크기 증가 */
 }
+

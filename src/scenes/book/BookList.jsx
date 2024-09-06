@@ -412,20 +412,31 @@ const BookList = () => {
 
     const now = new Date(); // 현재 시간을 가져옵니다.
 
-    const filteredBookings = combinedBookings.filter(booking => {
-        if (booking.corporateCarId) {
-            // 차량 예약인 경우
-            const returnDay = new Date(booking.returnDay); // 예약 종료 시간을 Date 객체로 변환합니다.
-            return booking.memberId === potalId && returnDay >= now;
-        } else if (booking.roomId) {
-            // 회의실 예약인 경우
-            const leave = new Date(booking.leave); // 회의실 예약 종료 시간을 Date 객체로 변환합니다.
-            return booking.memberId === potalId && leave >= now;
-        }
-        return false; // 차량 예약과 회의실 예약 모두 아닌 경우
-    });
+    const filteredBookings = combinedBookings
+        .filter(booking => {
+            if (booking.corporateCarId) {
+                // 차량 예약인 경우
+                const returnDay = new Date(booking.returnDay); // 예약 종료 시간을 Date 객체로 변환합니다.
+                return booking.memberId === potalId && (
+                    returnDay.toDateString() >= now.toDateString() // 오늘 날짜 포함, 이전 날짜 제외
+                );
+            } else if (booking.roomId) {
+                // 회의실 예약인 경우
+                const leave = new Date(booking.leave); // 회의실 예약 종료 시간을 Date 객체로 변환합니다.
+                return booking.memberId === potalId && (
+                    leave.toDateString() >= now.toDateString() // 오늘 날짜 포함, 이전 날짜 제외
+                );
+            }
+            return false; // 차량 예약과 회의실 예약 모두 아닌 경우
+        })
+        .sort((a, b) => {
+            // 차량 예약인 경우 `returnDay` 기준, 회의실 예약인 경우 `leave` 기준으로 정렬
+            const timeA = new Date(a.returnDay || a.leave).getTime();
+            const timeB = new Date(b.returnDay || b.leave).getTime();
+            return timeA - timeB; // 빠른 시간 순서대로 정렬
+        });
 
-    console.log(filteredBookings);
+
 
 
 
@@ -487,14 +498,19 @@ const BookList = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                filteredBookings.map((booking, index) => (
+                                filteredBookings.map((booking, index) => {
+                                    const endTime = new Date(booking.returnDay || booking.leave);
+
+                                    const isTimePast = endTime < new Date();
+
+                                    return (
                                     <tr key={index}>
-                                        <td>{index + 1}</td>
-                                        <td>{booking.category}</td>
-                                        <td>{booking.type}</td>
-                                        <td>{formatDateTime(booking.rentDay || booking.enter)}</td>
-                                        <td>{formatDateTime(booking.returnDay || booking.leave)}</td>
-                                        <td>{booking.reason || booking.purpose}</td>
+                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{index + 1}</td>
+                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{booking.category}</td>
+                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{booking.type}</td>
+                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{formatDateTime(booking.rentDay || booking.enter)}</td>
+                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{formatDateTime(booking.returnDay || booking.leave)}</td>
+                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{booking.reason || booking.purpose}</td>
                                         <td>
                                             <Button
                                                 variant=""
@@ -537,7 +553,8 @@ const BookList = () => {
                                             </Button>
                                         </td>
                                     </tr>
-                                ))
+                                    )
+                                })
                             )}
 
                             </tbody>

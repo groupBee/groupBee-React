@@ -9,6 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './pagination.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './DatePicker.css';
+import './card.css';
 
 
 
@@ -19,7 +20,7 @@ const CarBook = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 3;
+    const itemsPerPage = 5;
     const [carDetails, setCarDetails] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -129,99 +130,49 @@ const CarBook = () => {
     };
 
     return (
-        <Box m="20px">
-            <Row>
+        <Box
+            gridRow="span 3"
+            sx={{
+                borderRadius: "8px",
+                backgroundColor: "white",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                overflow: "hidden", // 박스 넘침 방지
+                maxWidth: '1400px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '20px auto'
+            }}
+        >
                 <Card>
-                    <Card.Body className="px-0 py-2">
-                        <div className="row">
-                            {/* 왼쪽 열: 기존 콘텐츠 */}
-                            <div className="col-md-6" style={{padding: '20px'}}>
-                                {currentItems && currentItems.map((item) => (
-                                    <div key={item.id} className="mb-4">
-                                        <div className="row d-flex">
-                                            <div className="d-flex p-15">
-                                                <Card sx={{display: 'flex'}}
-                                                      onClick={() => handleCarClick(item)}>
-                                                    <Box style={{ width:'250px', height:'140px',}}>
-                                                        <img
-                                                            src={`https://minio.bmops.kro.kr/groupbee/book/${item.photo}`}
-                                                            alt={item.type}
-                                                            style={{
-                                                                width: '100%',
-                                                                height: '100%',
-                                                                objectFit: 'cover',
-                                                                borderRadius: '5px'
-                                                            }}
-                                                        />
-                                                    </Box>
-                                                    <Box sx={{display: 'flex', flexDirection: 'column'}}>
-                                                        <CardContent sx={{flex: '1 0 auto'}}>
-                                                            <Typography component="div" variant="h5">
-                                                                {item.type}
-                                                            </Typography>
-                                                            <Typography variant="subtitle1" color="text.secondary"
-                                                                        component="div">
-                                                                차량번호: {item.carId}
-                                                            </Typography>
-                                                        </CardContent>
-                                                    </Box>
-                                                </Card>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* 오른쪽 열: 차량 상세 정보 */}
-                            <div className="col-md-6" style={{padding:'30px',}}>
+                    <Card.Body>
+                            <Box class="wrapper" style={{ height: '600px', border: '1px solid black', marginBottom: '10px'}}>
                                 {!carDetails ? (
-                                    <div className="p-3" style={{ borderRadius:'10px', border:'1px solid #ffb121', textAlign: 'center' }}>
+                                    <div className="p-3" style={{ borderRadius: '8px', textAlign: 'center' }}>
                                         <h5>차량을 선택하세요</h5>
                                         <p>왼쪽 열에서 차량을 클릭하여 차량의 상세 정보를 확인할 수 있습니다.</p>
                                     </div>
                                 ) : (
-                                    <div className="p-3"
-                                         style={{borderRadius: '10px', border: '1px solid #ffb121'}}>
+                                    <div className="p-3" style={{ borderRadius: '10px', border: '1px solid #ffb121' }}>
                                         <h4>{carDetails.carId}</h4>
-                                        <hr/>
-                                        <img
-                                            src={`https://minio.bmops.kro.kr/groupbee/book/${carDetails.photo}`}
-                                            alt=''
-                                            style={{
-                                                width: '100%',
-                                                height: '400px',
-                                                objectFit: 'cover',
-                                                borderRadius: '10px'
-                                            }}
-                                        />
-                                        <hr/>
-                                        <div className="container" style={{width: '100%', marginTop: '10px'}}>
-                                            <div style={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                width: '100%'
-                                            }}>
+                                        <hr />
+                                        <div style={{ width: '100px', height:'100px'}}>
+
+                                        </div>
+                                        <hr />
+                                        <div className="container" style={{ width: '100%', marginTop: '10px' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
                                                 <div>00:00</div>
                                                 <div>12:00</div>
                                                 <div>24:00</div>
                                             </div>
-                                            <div className="progress"
-                                                 style={{display: 'flex', height: '30px', width: '100%'}}>
+                                            <div className="progress" style={{ display: 'flex', height: '30px', width: '100%' }}>
                                                 {generateProgressBar(getReservationsForCarAndDate(carDetails.id, selectedDate), selectedDate)}
                                             </div>
                                         </div>
-                                        <hr/>
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            padding: '10px'
-                                        }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center'
-                                            }}>
-                                                <h6 style={{margin: '0 10px 0 0'}}>예약현황:</h6>
+                                        <hr />
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                <h6 style={{ margin: '0 10px 0 0' }}>예약현황:</h6>
                                                 <DatePicker
                                                     selected={selectedDate}
                                                     onChange={(date) => setSelectedDate(date)}
@@ -230,10 +181,7 @@ const CarBook = () => {
                                                     className="custom-datepicker"
                                                 />
                                             </div>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center'
-                                            }}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
                                                 <button
                                                     className="btn btn-primary"
                                                     style={{
@@ -251,12 +199,20 @@ const CarBook = () => {
                                         </div>
                                     </div>
                                 )}
-
-                            </div>
-                        </div>
+                        </Box>
+                        <Box class="wrapper">
+                            {currentItems && currentItems.map((item) => (
+                                <Box class="card1" onClick={() => handleCarClick(item)}>
+                                    <img src={`https://minio.bmops.kro.kr/groupbee/book/${item.photo}`} alt={item.type}/>
+                                    <Box class="info">
+                                        <h1>{item.type}</h1>
+                                        <p>차량번호: {item.carId}</p>
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Box>
                     </Card.Body>
                 </Card>
-            </Row>
 
             <ReactPaginate
                 previousLabel={'이전'}
