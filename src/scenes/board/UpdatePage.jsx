@@ -141,38 +141,42 @@ const UpdatePage = () => {
     };
 
     return (
-        <Box m="20px">
+        <Box sx={{ m: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Box
                 height="auto"
                 sx={{
                     borderRadius: "8px",
                     backgroundColor: "white",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    top: "50%",
-                    left: "50%",
-                    marginLeft: '15%',
-                    height: "auto",
                     minHeight: '850px',
-                    width: "100%",
+                    width: "80%",
                     maxWidth: "850px",
                     padding: "80px",
                 }}
             >
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-10px', marginBottom: '30px',
+                    fontSize: '25px'}}><h1>게시글 수정</h1></Box>
+                <Box height="75vh">
                 <form onSubmit={handleSubmit}>
-                    <div>
+                    <Box>
                         <label htmlFor="title"><b style={{ fontSize: '15px' }}>제목</b></label>
                         <br />
-                        <TextField
+                        <input
+                            type="text"
                             id="title"
                             value={title}
                             onChange={handleTitleChange}
                             required
-                            fullWidth
-                            variant="outlined"
-                            style={{ width: '100%', maxWidth: '800px', height: '30px' }}
+                            style={{
+                                width: '100%',
+                                maxWidth: '800px',
+                                height: '30px',
+                                border: '0.5px solid grey',
+                                marginTop: '10px',
+                            }}
                         />
-                    </div>
-                    <Box mb={2} mt={2} style={{ display: 'flex', alignItems: 'center', marginTop: '30px' }}>
+                    </Box>
+                    <div style={{ display: 'flex' }}>
                         <FormControlLabel
                             control={
                                 <Checkbox
@@ -187,12 +191,12 @@ const UpdatePage = () => {
                                 <Checkbox
                                     checked={mustMustRead}
                                     disabled
-                                    style={{ marginLeft: '20px' }}
+                                    style={{ marginLeft: '5px' }}
                                 />
                             }
                             label="중요"
                         />
-                    </Box>
+                    </div>
                     <div>
                         <input
                             type="file"
@@ -213,33 +217,24 @@ const UpdatePage = () => {
                             placeholder='내용을 입력하세요!'
                         />
                     </div>
-                    <Box mt={2}>
-                        <Button type="submit" variant="contained" style={{
-                            marginRight: '20px',
-                            marginTop: '80px',
-                            color: 'white',
-                            backgroundColor: '#f7d774',
-                            backgroundImage: 'linear-gradient(135deg, #f7d774 0%, #f1c40f 100%)',
-                            border: 'none',
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                            transition: 'background-color 0.3s ease',
-                        }}>
-                            저장
-                        </Button>
-                        <Button variant="contained" onClick={handleCancelClick}
+                    <Box sx={{display: 'flex', justifyContent: 'flex-end', gap: '6px', marginTop: '80px' }}>
+                        <Button onClick={handleCancelClick}
                                 style={{
-                                    color: 'white',
-                                    backgroundColor: '#8c8b89',
-                                    backgroundImage: 'linear-gradient(135deg, #8c8b89 0%, #6c6b68 100%)',
-                                    border: 'none',
-                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                    transition: 'background-color 0.3s ease',
-                                    marginTop: '80px'
+                                    color: '#ffb121',
+                                    border: '1px solid #ffb121',
                                 }}>
                             취소
                         </Button>
+                        <Button type="submit" style={{
+                            color: 'white',
+                            border: 'none',
+                            backgroundColor: '#ffb121'
+                        }}>
+                            저장
+                        </Button>
                     </Box>
                 </form>
+                </Box>
             </Box>
         </Box>
     );

@@ -528,7 +528,7 @@ function Dashboard() {
                             style={getButtonStyle("done")}
                             onClick={() => setStatus("done")}
                         >
-                            결제 완료
+                            결재 완료
                         </Button>
                     </Box>
                     <Box p="10px" flexGrow={1} overflow="auto">
