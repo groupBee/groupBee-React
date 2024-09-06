@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Modal, Box, Typography, IconButton, Button} from '@mui/material';
+import { Modal, Box, Typography, IconButton, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 class EmailModal extends Component {
@@ -22,12 +22,18 @@ class EmailModal extends Component {
             hour12: false
         }).format(date);
     }
+
     handleReply = () => {
         const { email } = this.props;
         const encodedContent = encodeURIComponent(email.content);
-        const replyText = "=========================답장보내기 =========================";
-        window.open(`/email?email=${encodeURIComponent(email.from)}&content=${encodedContent}&replyText=${encodeURIComponent(replyText)}`, '_blank');
-    }
+        const encodedSubject = encodeURIComponent(email.subject);
+        const encodedReceivedDate = encodeURIComponent(email.receivedDate);
+        const encodedTo = encodeURIComponent(email.to);
+        const encodedCc = encodeURIComponent(email.cc);
+        const encodedFrom = encodeURIComponent(email.from);
+        const replyText = "=========================Original mail =========================";
+
+        window.location.href = `/email?email=${encodedFrom}&content=${encodedContent}&replyText=${encodeURIComponent(replyText)}&subject=${encodedSubject}&receivedDate=${encodedReceivedDate}&to=${encodedTo}&cc=${encodedCc}`;    }
 
     render() {
         const { open, onClose, email } = this.props;
@@ -77,18 +83,16 @@ class EmailModal extends Component {
                         <strong>발 신 :</strong> {email.from}
                         <Button
                             variant="contained"
-                            style={{float:'right'}}
+                            style={{ float: 'right' }}
                             onClick={this.handleReply}
                         >
                             답장하기
                         </Button>
                     </Typography>
 
-
-
-                    <Typography sx={{mt: 2}}>
-                        <hr/>
-                        <strong>내용:</strong> <br/>
+                    <Typography sx={{ mt: 2 }}>
+                        <hr />
+                        <strong>내용:</strong> <br />
                         {email.content}
                     </Typography>
                 </Box>
