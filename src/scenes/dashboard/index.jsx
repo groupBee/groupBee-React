@@ -304,7 +304,7 @@ function Dashboard() {
 
 
     return (
-        <Box m="20px">
+        <Box m="20px" >
             <Box display="flex" justifyContent="space-between" mb="10px" alignItems="center">
                 <Link to='/video'>open</Link>
                 <Box display="flex">

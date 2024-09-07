@@ -39,6 +39,7 @@ const DetailPage = () => {
             const response = await axios.get(`/api/board/list/${id}`);
             setPost(response.data);
             getcomment();
+            console.log(response.data);
         } catch (error) {
             console.error('Error fetching post:', error);
         }
@@ -210,12 +211,14 @@ const DetailPage = () => {
                     {post ? (
                         <Box display="flex" flexDirection="column" alignItems="flex-start">
                             <Typography
-
                                 sx={{
                                     fontWeight: "bold",
                                     color: "#333",
-                                    minWidth:'810px',
-                                    fontSize: '25px'
+                                    minWidth: '810px',
+                                    fontSize: '25px',
+                                    wordWrap: 'break-word',  // 단어를 강제로 줄바꿈
+                                    whiteSpace: 'normal',  // 공백을 통해 줄바꿈 허용
+                                    width: '700px'  // 700px를 기준으로 줄바꿈 적용
                                 }}
                             >
                                 {post.mustRead && <span><b style={{ fontSize: '20px' }}>[공지]&nbsp;</b></span>}

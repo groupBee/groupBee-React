@@ -223,7 +223,7 @@ const WriteForm = ({ }) => {
                 if (status === 1) {
                     alert("전자결재가 임시저장되었습니다.");
                 } else if (status === 0) {
-                    alert("전자결제가 등록되었습니다.");
+                    alert("전자결가 등록되었습니다.");
                 }
                 navigate('/send');
             })
@@ -364,7 +364,7 @@ const WriteForm = ({ }) => {
                             <tr>
                                 <td colSpan={4} rowSpan={3}
                                     style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
-                                <td rowSpan={3} style={{fontSize: '23px'}}>결제</td>
+                                <td rowSpan={3} style={{fontSize: '23px'}}>결재</td>
                                 <td className="fixed-size" style={{height: '50px'}}>최초승인자</td>
                                 <td className="fixed-size">중간승인자</td>
                                 <td className="fixed-size">최종승인자</td>
@@ -453,7 +453,7 @@ const WriteForm = ({ }) => {
                                                             onClick={() => handleRemoveFile(index)}
                                                             style={{ marginLeft: '10px' }}
                                                         >
-                                                            삭제
+                                                            삭재
                                                         </Button>
                                                     </li>
                                                 ))}
