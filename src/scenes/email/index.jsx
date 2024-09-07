@@ -1,6 +1,6 @@
 import { Box, Button } from "@mui/material";
 import SendMail from "./sendEmail";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import EmailList from "./emailList";
 import SentEmail from "./sentEmail";
 const EmailMain = () => {
@@ -29,11 +29,22 @@ const EmailMain = () => {
         setSentMailButtonColor('#f7b552');
     };
 
+    
+    
+    function sendMessage(message) {
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.send(message);
+        } else {
+            console.error('WebSocket is not open. Current state: ', socket.readyState);
+        }
+    }
+    
+
     return (
         <Box m="20px">
             <Box height="75vh">
                 <div>
-                    <div>
+                     <div>
                         <Button
                             onClick={handleSendMailButtonClick}
                             sx={{
@@ -89,11 +100,14 @@ const EmailMain = () => {
                         {view === "send" && <SendMail />}
                         {view === "list" && <EmailList />}
                         {view==="sent"&&<SentEmail/>}
-                    </div>
+                    </div> 
+
+
+                    
                 </div>
             </Box>
         </Box>
-    );
+    ); 
 };
 
 export default EmailMain;
