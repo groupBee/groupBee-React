@@ -10,6 +10,8 @@ import {
 import "@livekit/components-styles";
 import { Track } from "livekit-client";
 import { generateToken } from './livekit'; // 토큰 생성 함수
+import "./ChatComponent.jsx";
+import {ChatComponent} from "./ChatComponent.jsx";
 
 const serverUrl = 'https://openvidu.groupbee.co.kr';
 
@@ -29,6 +31,7 @@ export default function VideoConference() {
     const [participantName, setParticipantName] = useState('');  // 사용자 이름 상태
     const [hasJoined, setHasJoined] = useState(false);  // 사용자가 방에 참여했는지 여부
     const [infoData, setInfoData] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
 
     const fetchData = async () => {
         try {
@@ -71,7 +74,7 @@ export default function VideoConference() {
 
     const handleJoinRoom = () => {
         if (roomName.trim() && participantName.trim()) {
-            const generatedInviteCode = generateRandomCode(8);  // 8자리 랜덤 코드 생성
+            const generatedInviteCode = generateRandomCode(20);  // 8자리 랜덤 코드 생성
             setRoomName(generatedInviteCode);  // 초대 코드 설정
             fetchToken();  // 토큰 가져오기
             setHasJoined(true);  // 방에 참여 상태로 변경
@@ -83,11 +86,17 @@ export default function VideoConference() {
     };
 
     const handleJoinRoom2 = () => {
+        if (roomName.length !== 20) {
+            setErrorMessage("잘못된 초대코드입니다."); // 경고 메시지 업데이트
+            return;
+        }
+
         if (roomName.trim() && participantName.trim()) {
-            fetchToken();  // 토큰 가져오기
-            setHasJoined(true);  // 방에 참여 상태로 변경
+            fetchToken();
+            setHasJoined(true);
+            setErrorMessage(''); // 오류가 없으므로 경고 메시지 초기화
         } else {
-            alert("방 이름과 사용자 이름을 입력하세요.");
+            setErrorMessage("방 이름과 사용자 이름을 입력하세요.");
         }
     };
 
@@ -130,9 +139,14 @@ export default function VideoConference() {
                             borderRadius: '5px',
                         }}
                     >
-                        입장하기
+                        초대코드
                     </button>
                 </div>
+                {errorMessage && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                        {errorMessage}
+                    </div>
+                )}
             </div>
         );
     }
@@ -156,6 +170,7 @@ export default function VideoConference() {
                 <MyVideoConference/>
                 <RoomAudioRenderer/>
                 <ControlBar/>
+                <ChatComponent/>
             </LiveKitRoom>
             <div style={{
                 padding: '10px',
