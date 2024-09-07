@@ -29,30 +29,7 @@ const EmailMain = () => {
         setSentMailButtonColor('#f7b552');
     };
 
-    useEffect(() => {
-        // WebSocket 연결 생성
-        const socket = new WebSocket('ws://example.com/socket'); // 실제 WebSocket 서버 주소
     
-        // WebSocket이 열렸을 때 메시지 전송
-        socket.onopen = () => {
-            console.log('WebSocket 연결 완료');
-            sendMessage('하이');
-        };
-    
-        // WebSocket 상태 변경에 따른 로그
-        socket.onclose = (event) => {
-            console.log('WebSocket 연결 종료:', event);
-        };
-    
-        socket.onerror = (error) => {
-            console.error('WebSocket 에러:', error);
-        };
-    
-        // 컴포넌트가 언마운트될 때 WebSocket 연결 해제
-        return () => {
-            socket.close();
-        };
-    }, []);
     
     function sendMessage(message) {
         if (socket.readyState === WebSocket.OPEN) {
@@ -67,7 +44,7 @@ const EmailMain = () => {
         <Box m="20px">
             <Box height="75vh">
                 <div>
-                    {/* <div>
+                     <div>
                         <Button
                             onClick={handleSendMailButtonClick}
                             sx={{
@@ -123,14 +100,14 @@ const EmailMain = () => {
                         {view === "send" && <SendMail />}
                         {view === "list" && <EmailList />}
                         {view==="sent"&&<SentEmail/>}
-                    </div> */}
+                    </div> 
 
 
                     
                 </div>
             </Box>
         </Box>
-    );
+    ); 
 };
 
 export default EmailMain;
