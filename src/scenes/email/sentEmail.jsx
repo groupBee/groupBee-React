@@ -106,7 +106,7 @@ const SentEmail=()=>{
                             <tr style={{ borderLeft: 'none', borderRight: 'none', borderBottom: '1px solid #ddd' }}>
                                 <th style={{ width: '100px', textAlign: 'center', borderBottom: '1px solid #ddd', height: '50px' }}>읽음</th>
                                 <th style={{ width: '500px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>&nbsp;&nbsp;제목</th>
-                                <th style={{ width: '200px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>발신자</th>
+                                <th style={{ width: '200px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>수신자</th>
                                 <th style={{ width: '200px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>받은 날짜</th>
                             </tr>
                             </thead>
@@ -128,9 +128,9 @@ const SentEmail=()=>{
                                            }}>&nbsp;&nbsp;{email.subject}</p>
                                     </td>
                                     <td style={{ textAlign: 'center', borderBottom: '1px solid #ddd',
-                                        fontWeight: readEmails[index] ? 'normal' : 'bold'}}>{email.from}</td>
+                                        fontWeight: readEmails[index] ? 'normal' : 'bold'}}>{email.to}</td>
                                     <td style={{ textAlign: 'right', borderBottom: '1px solid #ddd',
-                                        fontWeight: readEmails[index] ? 'normal' : 'bold'}}>{email.receivedDate}</td>
+                                        fontWeight: readEmails[index] ? 'normal' : 'bold'}}>{email.sentDate}</td>
                                 </tr>
                             ))}
                             
