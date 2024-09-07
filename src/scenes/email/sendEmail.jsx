@@ -310,58 +310,7 @@ const SendEmail = () => {
                             }}
                         />
                     </Box>
-                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                        <b style={{width: '65px', textAlign: 'center'}}>첨부파일</b>
-                        <button
-                            onClick={FileAttachClick}  // 파일첨부 버튼 클릭 시 파일 선택 창 열기
-                            style={{ marginLeft: '20px', border:'1px solid #dddd', backgroundColor: 'transparent', borderRadius:'4px',padding: '3px 6px'}}
-                        >
-                            파일첨부하기
-                        </button>
-                        {attachment.length > 0 && (
-                            <button
-                                onClick={DeleteAllAttachment}
-                                style={{ marginLeft: '10px', border:'1px solid #dddd', backgroundColor: 'transparent', borderRadius:'4px',padding: '3px 6px'}}
-                            >
-                                전체삭제
-                            </button>
-                        )}
-                    </Box>
-                    <Box
-                        {...getRootProps()}
-                        sx={{
-                            border: '2px dashed #dddddd',
-                            borderRadius: '4px',
-                            padding: '20px',
-                            textAlign: 'center',
-                            backgroundColor: isDragActive ? '#f0f0f0' : 'white',
-                            marginBottom: '20px',
-                        }}
-                    >
-                        <input {...getInputProps()} />
-                        {attachment.length > 0 ? (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '10px', width: '100%' }}>
-                                {attachment.map((file, index) => (
-                                    <Chip
-                                        key={index}
-                                        label={file.name}
-                                        onDelete={() => DeleteAttachment(file)}
-                                        sx={{
-                                            maxWidth: '200px', // 파일명이 너무 길 경우 잘리게 함
-                                            textOverflow: 'ellipsis',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden'
-                                        }}
-                                    />
-                                ))}
-                            </Box>
-                        ) : (
-                            <>
-                            <UploadFileIcon style={{color:'gray', marginBottom:'5px'}}/>
-                            <p style={{color:'gray'}}>파일을 여기에 드래그하여 파일을 선택하세요.</p>
-                            </>
-                        )}
-                    </Box>
+
                     <Box sx={{display: 'flex'}}>
                         <b style={{width: '62px', textAlign: 'center'}}>내용</b>
                     </Box>

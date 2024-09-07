@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import MailOpenIcon from '@mui/icons-material/Drafts';
 import EmailModal from "./EmailModal.jsx";
+import {Box} from "@mui/material";
 
 function EmailList() {
     const [emails, setEmails] = useState([]);
@@ -118,12 +119,25 @@ const formatDate = (dateString) => {
         },[]);
 
     return (
-        <div>
-            <h2 style={{ marginTop: '20px', textAlign: 'center' }}>받은 메일함</h2>
+        <Box sx={{ m: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box
+                height="auto"
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    minHeight: '850px',
+                    width: "80%",
+                    maxWidth: "1050px",
+                    padding: "80px",
+                }}
+            >
+
+            <h2 style={{ marginTop: '-40px', textAlign: 'center' }}>받은 메일함</h2>
             {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', backgroundColor: 'white', height: '700px' }}>
                 <ul>
-                    <table style={{ border: '1px solid #ddd', width: '1000px', marginTop: '30px', marginLeft: '-30px', borderCollapse: 'collapse', borderLeft: 'none', borderRight: 'none' }}>
+                    <table style={{ border: '1px solid #ddd', width: '1000px', marginLeft: '-30px', borderCollapse: 'collapse', borderLeft: 'none', borderRight: 'none' }}>
                         <thead>
                         <tr style={{ borderLeft: 'none', borderRight: 'none', borderBottom: '1px solid #ddd' }}>
                             <th style={{ width: '100px', textAlign: 'center', borderBottom: '1px solid #ddd', height: '50px' }}>읽음</th>
@@ -218,8 +232,9 @@ const formatDate = (dateString) => {
             </div>
             {/* 이메일 모달 */}
             <EmailModal open={showModal} onClose={closeModal} email={selectedEmail} />
-        </div>
 
+            </Box>
+        </Box>
     );
 }
 
