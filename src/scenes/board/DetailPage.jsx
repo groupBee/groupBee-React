@@ -117,8 +117,7 @@ const DetailPage = () => {
 
     const commentDeleteClick = async (commentId) => {
         const result = await Swal.fire({
-            title: '정말 삭제하시겠습니까?',
-            text: "이 작업은 되돌릴 수 없습니다.",
+            title: '댓글을 삭제하시겠습니까?',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ffb121',
@@ -133,7 +132,6 @@ const DetailPage = () => {
                 Swal.fire({
                     title: '<strong>댓글이 삭제되었습니다</strong>',
                     icon: 'success',
-                    html: '댓글이 성공적으로 삭제되었습니다.',
                     confirmButtonText: '확인',
                     confirmButtonColor: '#ffb121',
                 });
