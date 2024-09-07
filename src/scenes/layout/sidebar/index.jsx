@@ -55,6 +55,10 @@ const SideBar = () => {
         navigate('/'); // 홈 경로로 이동
     };
 
+    // employee.department.id가 infoData의 일부라고 가정
+    const employeeDepartmentId = infoData.department?.id || 0;
+
+
     return (
         <Sidebar
             backgroundColor="#FFFFFF"
@@ -223,13 +227,15 @@ const SideBar = () => {
                             icon={<Chat/>}
                         />
                     </Box>
-                    <Box onClick={() => window.open('https://hr.groupbee.co.kr')}>
-                    <Item
-                        title="HR"
-                        colors={colors}
-                        icon={<PersonAddAlt1Outlined/>}
-                    />
-                    </Box>
+                    {employeeDepartmentId >= 100 && employeeDepartmentId <= 199 && (
+                        <Box onClick={() => window.open('https://hr.groupbee.co.kr')}>
+                            <Item
+                                title="HR"
+                                colors={colors}
+                                icon={<PersonAddAlt1Outlined />}
+                            />
+                        </Box>
+                    )}
                 </Menu>
                 <Box
                     sx={{

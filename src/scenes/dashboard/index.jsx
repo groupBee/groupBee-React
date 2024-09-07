@@ -350,7 +350,7 @@ function Dashboard() {
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box p="8px" height="100%" sx={{ overflow: "auto",}}>
+                    <Box p="8px" height="100%" sx={{ overflow: "auto"}}>
                         {boardList.length > 0 ? (
                             <div style={{
                                 overflowX: "auto",
@@ -359,39 +359,34 @@ function Dashboard() {
                                 msOverflowStyle: "none", /* IE and Edge */
                                 "&::-webkit-scrollbar": { display: "none" } /* Webkit */
                             }}>
-                                <table className="table table-hover" style={{ minWidth: "100%" }}>
+                                <table className="table table-hover" style={{minWidth: "100%"}}>
                                     <thead>
                                     <tr>
-                                        <td style={{ width: "50px" }}></td>
-                                        <td style={{ textAlign: "center", width: "450px", fontWeight: "bold" }}>
+                                        <td style={{width: "50px"}}></td>
+                                        <td style={{textAlign: "center", width: "450px", fontWeight: "bold"}}>
                                             제목
                                         </td>
-                                        <td style={{ textAlign: "center", width: "200px", fontWeight: "bold" }}>
+                                        <td style={{textAlign: "center", width: "200px", fontWeight: "bold"}}>
                                             작성자
                                         </td>
-                                        <td style={{ textAlign: "center", fontWeight: "bold" }}>작성일</td>
+                                        <td style={{textAlign: "center", fontWeight: "bold"}}>작성일</td>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     {boardList
+                                        .filter(post => post.board.mustMustRead) // mustMustRead가 true인 게시글만 필터링
                                         .sort((a, b) => {
-                                            // 중요 게시글은 항상 상단에 배치
-                                            if (a.board.mustMustRead && !b.board.mustMustRead) {
-                                                return -1;
-                                            } else if (!a.board.mustMustRead && b.board.mustMustRead) {
-                                                return 1;
-                                            } else {
-                                                // 동일한 중요도 내에서는 날짜 기준으로 정렬 (최신 순)
-                                                return new Date(b.board.createDate) - new Date(a.board.createDate);
-                                            }
+                                            // 날짜 기준으로 정렬 (최신 순)
+                                            return new Date(b.board.createDate) - new Date(a.board.createDate);
                                         })
+                                        .slice(0, 8) // 최신순으로 최대 8개만 선택
                                         .map((post) => (
                                             <tr key={post.id}>
                                                 <td>
                                                     {post.board.mustMustRead && (
                                                         <span style={{color: "#ff4d4f"}}>
-                                        <b>[중요]</b>
-                                    </span>
+                            <b>[중요]</b>
+                        </span>
                                                     )}
                                                 </td>
                                                 <td
@@ -403,11 +398,13 @@ function Dashboard() {
                                                         whiteSpace: "nowrap",
                                                         cursor: "pointer",
                                                         transition: "color 0.3s",
+                                                        textAlign:'center'
                                                     }}
                                                     onClick={() => handleTitleClick(post.board.id)}
                                                     onMouseOver={(e) => (e.target.style.color = "#ffb121")}
                                                     onMouseOut={(e) => (e.target.style.color = "inherit")}
                                                 >
+                                                    {post.board.mustRead ? "[공지] " : ""}
                                                     {post.board.title}
                                                 </td>
                                                 <td style={{textAlign: "center"}}>{post.board.writer}</td>
@@ -430,7 +427,6 @@ function Dashboard() {
                         )}
                     </Box>
                 </Box>
-
 
 
                 {/* 시계 */}
@@ -459,7 +455,7 @@ function Dashboard() {
                         </div>
                     </div>
                     <div class="buttonbox">
-                    <Button class="button" onClick={checkin}>출근</Button>
+                        <Button class="button" onClick={checkin}>출근</Button>
                         <Button class="button" onClick={checkout}>퇴근</Button>
                     </div>
                 </Box>

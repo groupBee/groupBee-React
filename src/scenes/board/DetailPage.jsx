@@ -225,7 +225,7 @@ const DetailPage = () => {
                             <Typography variant="body2" sx={{ color: "#777", fontSize: '13px'}}>
                                 작성자: {post.writer} | 조회수: {post.readCount}
                             </Typography>
-                            <Typography variant="body2" sx={{ color: "#777", fontSize: '13px' }}>
+                            <Typography variant="body2" sx={{ color: "#777", fontSize: '13px',marginRight:'5px' }}>
                                 작성일: {new Date(post.createDate).toLocaleString('ko-KR')}
                             </Typography>
                             </Box>
