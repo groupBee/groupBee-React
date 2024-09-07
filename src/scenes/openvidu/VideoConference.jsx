@@ -15,50 +15,93 @@ const serverUrl = 'https://openvidu.groupbee.co.kr';
 
 export default function VideoConference() {
     const [token, setToken] = useState('');
+    const [roomName, setRoomName] = useState('');  // 방 이름 상태
+    const [participantName, setParticipantName] = useState('');  // 사용자 이름 상태
+    const [hasJoined, setHasJoined] = useState(false);  // 사용자가 방에 참여했는지 여부
 
-    useEffect(() => {
-        const fetchToken = async () => {
-            try {
-                const roomName = 'name-of-room'; // 방 이름
-                const participantName = 'user-name'; // 사용자 이름
-                const token = await generateToken(roomName, participantName);
-                setToken(token);
-            } catch (error) {
-                console.error('Error fetching token:', error);
-            }
-        };
+    const fetchToken = async () => {
+        try {
+            const token = await generateToken(roomName, participantName);  // 입력값으로 토큰 생성
+            setToken(token);
+        } catch (error) {
+            console.error('Error fetching token:', error);
+        }
+    };
 
-        fetchToken();
-    }, []);
+    const handleJoinRoom = () => {
+        if (roomName.trim() && participantName.trim()) {
+            fetchToken();
+            setHasJoined(true);  // 방에 참여 상태로 변경
+        } else {
+            alert("방 이름과 사용자 이름을 입력하세요.");
+        }
+    };
 
-    if (!token) {
-        return <div>Loading...</div>; // 토큰이 로딩 중일 때 표시할 내용
+    // 방에 참여하기 전 입력 필드와 버튼을 표시
+    if (!hasJoined) {
+        return (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+                <h2>화상회의 참여</h2>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="방 이름 입력"
+                        value={roomName}
+                        onChange={(e) => setRoomName(e.target.value)}
+                        style={{ margin: '10px', padding: '10px', fontSize: '16px' }}
+                    />
+                </div>
+                <div>
+                    <input
+                        type="text"
+                        placeholder="사용자 이름 입력"
+                        value={participantName}
+                        onChange={(e) => setParticipantName(e.target.value)}
+                        style={{ margin: '10px', padding: '10px', fontSize: '16px' }}
+                    />
+                </div>
+                <div>
+                    <button
+                        onClick={handleJoinRoom}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: 'blue',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                        }}
+                    >
+                        방생성하기
+                    </button>
+                </div>
+            </div>
+        );
     }
 
+    // 토큰이 로딩 중일 때 표시할 내용
+    if (!token) {
+        return <div>Loading...</div>;
+    }
+
+    // 방에 참여 후 LiveKitRoom 컴포넌트 렌더링
     return (
         <LiveKitRoom
             video={true}
             audio={true}
             token={token}
             serverUrl={serverUrl}
-            // Use the default LiveKit theme for nice styles.
             data-lk-theme="default"
             style={{ height: '100vh' }}
         >
-            {/* Your custom component with basic video conferencing functionality. */}
             <MyVideoConference />
-            {/* The RoomAudioRenderer takes care of room-wide audio for you. */}
             <RoomAudioRenderer />
-            {/* Controls for the user to start/stop audio, video, and screen
-      share tracks and to leave the room. */}
             <ControlBar />
         </LiveKitRoom>
     );
 }
 
 function MyVideoConference() {
-    // `useTracks` returns all camera and screen share tracks. If a user
-    // joins without a published camera track, a placeholder track is returned.
     const tracks = useTracks(
         [
             { source: Track.Source.Camera, withPlaceholder: true },
@@ -68,8 +111,6 @@ function MyVideoConference() {
     );
     return (
         <GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
-            {/* The GridLayout accepts zero or one child. The child is used
-      as a template to render all passed in tracks. */}
             <ParticipantTile />
         </GridLayout>
     );

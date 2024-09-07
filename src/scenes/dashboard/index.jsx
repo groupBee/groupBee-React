@@ -9,7 +9,7 @@ import {
 import { useRef, useEffect, useState } from 'react';
 import { MoreHoriz } from "@mui/icons-material";
 import { tokens } from "../../theme";
-import { useNavigate } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import axios from 'axios';
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -306,7 +306,7 @@ function Dashboard() {
     return (
         <Box m="20px">
             <Box display="flex" justifyContent="space-between" mb="10px" alignItems="center">
-
+                <Link to='/video'>open</Link>
                 <Box display="flex">
 
                 </Box>
