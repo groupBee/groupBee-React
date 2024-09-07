@@ -82,6 +82,15 @@ export default function VideoConference() {
         }
     };
 
+    const handleJoinRoom2 = () => {
+        if (roomName.trim() && participantName.trim()) {
+            fetchToken();  // 토큰 가져오기
+            setHasJoined(true);  // 방에 참여 상태로 변경
+        } else {
+            alert("방 이름과 사용자 이름을 입력하세요.");
+        }
+    };
+
     // 방에 참여하기 전 입력 필드와 버튼을 표시
     if (!hasJoined) {
         return (
@@ -103,6 +112,19 @@ export default function VideoConference() {
                             padding: '10px 20px',
                             fontSize: '16px',
                             backgroundColor: '#ffb121',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                        }}
+                    >
+                        생성하기
+                    </button>
+                    <button
+                        onClick={handleJoinRoom2}
+                        style={{
+                            padding: '10px 20px',
+                            fontSize: '16px',
+                            backgroundColor: 'red',
                             color: 'white',
                             border: 'none',
                             borderRadius: '5px',
