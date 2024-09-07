@@ -225,7 +225,6 @@ const Board = () => {
                                         className="title-cell"
                                         style={{
                                             textAlign: 'center',
-                                            cursor: 'pointer',
                                             color: 'black',
                                             maxWidth: "300px",
                                             overflow: "hidden",
@@ -234,15 +233,21 @@ const Board = () => {
                                             transition: "color 0.3s",
                                         }}
                                         onClick={() => handleTitleClick(row.board.id)}
-                                        onMouseOver={(e) => (e.target.style.color = "#ffb121")}
-                                        onMouseOut={(e) => (e.target.style.color = "inherit")}
                                     >
-                                        {row.titleDisplay}
-                                        {row.board.files && row.board.files.length > 0 && <AttachFileIcon style={{ width: '15px', height: '15px' }} />}
-                                        {row.commentCount > 0 && <span style={{ marginLeft: '5px', color: '#FB5615' }}>({row.commentCount})</span>}
+                                        <span style={{cursor:'pointer'}}    onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                              onMouseOut={(e) => (e.target.style.color = "inherit")}>{row.titleDisplay}</span>
+                                        {row.board.files && row.board.files.length > 0 &&
+                                            <span style={{cursor:'pointer'}}    onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                                  onMouseOut={(e) => (e.target.style.color = "inherit")}><AttachFileIcon style={{width: '15px', height: '15px'}}/></span>}
+                                        {row.commentCount > 0 && <span
+                                            style={{marginLeft: '5px', cursor:'pointer'}}    onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                            onMouseOut={(e) => (e.target.style.color = "inherit")}>({row.commentCount})</span>}
+                                        {new Date(row.board.createDate).toDateString() === new Date().toDateString() && (
+                                            <span className='blinking-text'
+                                                style={{marginLeft: '5px', color: 'red'}}>New!</span>)}
                                     </td>
-                                    <td style={{ textAlign: "center" }}>{row.board.writer}</td>
-                                    <td style={{ textAlign: "center" }}>
+                                    <td style={{textAlign: "center"}}>{row.board.writer}</td>
+                                    <td style={{textAlign: "center"}}>
                                         {new Date(row.board.createDate).getFullYear()}-{String(new Date(row.board.createDate).getMonth() + 1).padStart(2, '0')}-{String(new Date(row.board.createDate).getDate()).padStart(2, '0')} &nbsp;
                                         {new Date(row.board.createDate).toLocaleTimeString('ko-KR', {
                                             timeZone: 'Asia/Seoul',

@@ -5,6 +5,7 @@ import { Box, Typography, Button } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import DriveFileRenameOutlineRoundedIcon from '@mui/icons-material/DriveFileRenameOutlineRounded';
+import Swal from "sweetalert2";
 
 const DetailPage = () => {
     const { id, currentPage } = useParams();
@@ -67,7 +68,7 @@ const DetailPage = () => {
 
         try {
             await axios.post('/api/comment/insert', data);
-            alert("댓글이 작성되었습니다");
+
             setComment('');
             getComment();
         } catch (error) {
@@ -81,13 +82,31 @@ const DetailPage = () => {
     };
 
     const handleDeleteClick = async () => {
-        if (window.confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+        const result = await Swal.fire({
+            title: '정말 삭제하시겠습니까?',
+            text: "이 작업은 되돌릴 수 없습니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ffb121',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '확인',
+            cancelButtonText: '취소'
+        });
+
+        if (result.isConfirmed) {
             try {
                 await axios.delete(`/api/board/delete/${id}`);
-                alert('게시글이 삭제되었습니다.');
+                Swal.fire({
+                    title: '<strong>게시글이 삭제되었습니다</strong>',
+                    icon: 'success',
+                    html: '게시글이이 성공적으로 삭제되었습니다.',
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#ffb121',
+                });
                 navigate('/board');
             } catch (error) {
                 console.error('Error deleting post:', error);
+                Swal.fire('게시글 삭제에 실패했습니다.', '', 'error');
             }
         }
     };
@@ -97,14 +116,31 @@ const DetailPage = () => {
     };
 
     const commentDeleteClick = async (commentId) => {
-        if (window.confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
+        const result = await Swal.fire({
+            title: '정말 삭제하시겠습니까?',
+            text: "이 작업은 되돌릴 수 없습니다.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ffb121',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '확인',
+            cancelButtonText: '취소'
+        });
+
+        if (result.isConfirmed) {
             try {
                 await axios.delete(`/api/comment/delete/${commentId}`);
-                alert("댓글이 삭제되었습니다");
-                getComment();
+                Swal.fire({
+                    title: '<strong>댓글이 삭제되었습니다</strong>',
+                    icon: 'success',
+                    html: '댓글이 성공적으로 삭제되었습니다.',
+                    confirmButtonText: '확인',
+                    confirmButtonColor: '#ffb121',
+                });
+                getComment(); // 댓글 목록을 갱신
             } catch (error) {
                 console.error('Error deleting comment:', error);
-                alert('댓글 삭제 중 오류가 발생했습니다.');
+                Swal.fire('댓글 삭제에 실패했습니다.', '', 'error');
             }
         }
     };
@@ -130,7 +166,6 @@ const DetailPage = () => {
 
         try {
             await axios.post('/api/comment/insert', data);
-            alert("댓글이 수정되었습니다");
             setEditCommentId(null);
             setEditedComment('');
             getComment();

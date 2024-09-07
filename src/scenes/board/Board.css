@@ -18,3 +18,26 @@
     padding-left: 13px;
     width: 200px;
 }
+
+@keyframes blinkingText {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.blinking-text {
+    animation: blinkingText 1s infinite;
+    color: red;
+}
+
+/* 마우스 오버 시에도 깜박이는 텍스트가 유지되도록 추가 */
+.blinking-text:hover {
+    color: red;
+    animation: blinkingText 1s infinite;
+}
