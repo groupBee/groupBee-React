@@ -8,6 +8,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import './Board.css';
 import CreateIcon from '@mui/icons-material/Create';
+import Swal from "sweetalert2";
 
 const toolbarOptions = [
     ['bold', 'italic', 'underline', 'strike'],
@@ -95,6 +96,14 @@ const BoardWrite = () => {
     };
 
     const handleBackClick = () => {
+        Swal.fire({
+            title: '<strong>글 작성 완료</strong>',
+            icon: 'success',
+            html: '게시글글이 작성되었습니다.',
+            focusConfirm: false,
+            confirmButtonText: '확인',
+            confirmButtonColor: '#ffb121',
+        });
         navigate(`/board`);
     };
 

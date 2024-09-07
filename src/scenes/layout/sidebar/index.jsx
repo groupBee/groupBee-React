@@ -122,18 +122,6 @@ const SideBar = () => {
                     {/*    src={infoData.profileFile}*/}
                     {/*    sx={{width: "100px", height: "100px"}}*/}
                     {/*/>*/}
-                    <Box sx={{textAlign: "center", height: "60px"}}>
-                        {/*<Typography variant="h3" fontWeight="bold" color={colors.gray[100]}>*/}
-                        {/*    {infoData.name}*/}
-                        {/*</Typography>*/}
-                        {/*<Typography*/}
-                        {/*    variant="h6"*/}
-                        {/*    fontWeight="500"*/}
-                        {/*    color={colors.yellowAccent[1000]}*/}
-                        {/*>*/}
-                        {/*    {infoData?.position?.rank}*/}
-                        {/*</Typography>*/}
-                    </Box>
                 </Box>
             )}
 
