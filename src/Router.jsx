@@ -22,6 +22,7 @@ import DetailPage from "./scenes/board/DetailPage.jsx";
 import Admin from "./scenes/admin/index.jsx";
 import UpdatePage from "./scenes/board/UpdatePage.jsx";
 import CommuteList from "./scenes/Commute/CommuteList.jsx";
+import Video from "./scenes/openvidu/VideoConference.jsx";
 
 const AppRouter = () => {
     return (
@@ -49,6 +50,7 @@ const AppRouter = () => {
                     <Route path="/email" element={<EmailMain/>}/>
                     <Route path="/admin/*" element={<Admin/>}/>
                     <Route path="/commutelist" element={<CommuteList/>}/>
+                    <Route path="/video" element={<Video/>}/>
                 </Route>
             </Routes>
         </Router>
