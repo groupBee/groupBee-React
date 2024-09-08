@@ -55,6 +55,7 @@
     "sockjs-client": "^1.6.1",
     "stompjs": "^2.3.3",
     "sweetalert2": "^11.12.4",
+    "uuid": "^10.0.0",
     "weather-icons": "^1.3.2",
     "yup": "^1.4.0",
     "zustand": "^4.5.5"

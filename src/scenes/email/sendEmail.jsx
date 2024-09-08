@@ -239,8 +239,8 @@ const SendEmail = () => {
                 <div style={{
                     backgroundColor: 'white',
                     borderRadius: '4px',
-                    border: '1px solid #ddd',
-                    padding: '10px 20px'
+
+
                 }}>
                     <Box sx={{display: 'flex', alignItems: 'center'}}>
                         <b style={{width: '70px', textAlign: 'center'}}>받는사람</b>
@@ -261,6 +261,8 @@ const SendEmail = () => {
                             style={{
                             color: '#ffb121',
                             border: '1px solid #ffb121',
+                                marginRight: '4px',
+                                fontWeight:'bold'
                         }}
                             onClick={() => openModal('to')}>
                             주소록
@@ -269,7 +271,8 @@ const SendEmail = () => {
                             style={{
                             color: 'white',
                             border: '1px solid #ffb121',
-                            backgroundColor: '#ffb121'
+                            backgroundColor: '#ffb121',
+                                fontWeight:'bold'
                         }}
                             onClick={() => handleAddEmail('to')}>
                             추가
@@ -286,7 +289,7 @@ const SendEmail = () => {
                         ))}
                     </Box>
                     <Box sx={{display: 'flex', alignItems: 'center'}}>
-                        <b style={{width: '70px', textAlign: 'center'}}>참조</b>
+                        <b style={{width: '70px', fontSize: '0.9rem'}}>참조</b>
                         <TextField
                             value={ccInput}
                             onChange={(e) => setCcInput(e.target.value)}
@@ -304,6 +307,8 @@ const SendEmail = () => {
                             style={{
                             color: '#ffb121',
                             border: '1px solid #ffb121',
+                                marginRight: '4px',
+                                fontWeight:'bold'
                         }} onClick={() => openModal('cc')}>
                             주소록
                         </Button>
@@ -311,7 +316,8 @@ const SendEmail = () => {
                             style={{
                             color: 'white',
                             border: '1px solid #ffb121',
-                            backgroundColor: '#ffb121'
+                            backgroundColor: '#ffb121',
+                                fontWeight:'bold',
                         }} onClick={() => handleAddEmail('cc')}>
                             추가
                         </Button>
@@ -326,28 +332,33 @@ const SendEmail = () => {
                             />
                         ))}
                     </Box>
-                    <Box sx={{display: 'flex', alignItems: 'center'}}>
-                        <b style={{width: '65px', textAlign: 'center'}}>제목</b>
+                    <Box sx={{ display: 'flex', alignItems: 'center',  width: '100%' }}>
+                        <b style={{ width: '67px', fontSize: '0.9rem'}}>제목</b>
                         <TextField
-                            fullWidth
                             value={subject}
                             onChange={(e) => setSubject(e.target.value)}
                             placeholder="Subject"
                             sx={{
-                                width: '100%', marginLeft: '20px', '& .MuiOutlinedInput-root': {
-                                    '& fieldset': {border: 'none'},
-                                    borderBottom: '2px solid #dddd', borderRadius: '0',
-                                }
+                                flexGrow: 1, // 남은 공간을 차지하게 함
+                                '& .MuiOutlinedInput-root': {
+                                    height: '50px', // 높이 조절
+                                    fontSize: '0.85rem', // 글자 크기 조절
+                                    '& textarea': {
+                                        padding: '8px', // 패딩 조절
+                                    },
+                                    '& fieldset': {
+                                        border: 'none',
+                                    },
+                                    borderBottom: '2px solid #dddd', // 하단 테두리 조정
+                                    borderRadius: '4px', // 둥근 모서리 (선택 사항)
+                                },
                             }}
                         />
                     </Box>
 
-                    <Box sx={{display: 'flex'}}>
-                        <b style={{width: '62px', textAlign: 'center'}}>내용</b>
-                    </Box>
 
-                    <Box>
 
+                    <Box sx={{marginTop: '20px'}}>
                     <textarea
                         style={{width: '100%', height: `${textareaHeight}px`,marginTop:'10px', borderColor:'#dddd',resize: 'none',outline: 'none', padding:'10px'}}
                         value={body}
@@ -357,15 +368,22 @@ const SendEmail = () => {
                     </Box>
 
                 </div>
-                 <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                        <button type="submit"
-                                style={{
-                                    marginTop: '5px', backgroundColor: 'transparent', border: '1px solid black'
-                                    , padding: '6px 20px', borderRadius: '4px'
-                                }}>
-                            보내기
-                        </button>
-                    </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '10px' }}>
+                    <button
+                        type="submit"
+                        style={{
+                            marginTop: '5px',
+                            backgroundColor: '#fd7200',
+                            border: '1px solid #fd7200',
+                            padding: '6px 20px',
+                            borderRadius: '4px',
+                            color: 'white',
+                            fontWeight:'bold'
+                        }}
+                    >
+                        전송
+                    </button>
+                </Box>
             </form>
             <GroupModal
                 open={modalOpen}

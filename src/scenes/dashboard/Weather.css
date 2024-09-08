@@ -1,20 +1,23 @@
 .weather-widget {
     font-family: Arial, sans-serif;
-    padding: 20px;
+    padding: 10px;
 
 }
 
 .weather-header {
-    font-size: 16px;
+    font-size: 17px;
     margin-bottom: 10px;
+    display: flex;
     flex-wrap: wrap; /* 내부 요소가 박스 크기에 맞게 줄 바꿈 */
     justify-content: space-between; /* 요소 간의 공간을 자동으로 분배 */
+    font-weight: bold;
+
 }
 
 .forecast {
     display: flex;
     gap: 10px; /* 각 날씨 항목 사이의 간격 */
-    padding: 10px 10px; /* 상하 패딩 추가 */
+
 
 }
 
@@ -27,7 +30,7 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     background-color: white;
     flex: 0 0 auto; /* flex 항목이 자동으로 크기를 조절하지 않도록 설정 */
-    max-width: 140px; /* 최대 너비를 설정하여 크기를 제한 */
+    width: 32% ;
 
 }
 
@@ -51,6 +54,7 @@
 .temperature {
     font-size: 18px;
     margin: 8px 0;
+    font-weight: bold;
 }
 
 .weekday {
