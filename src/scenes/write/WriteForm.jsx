@@ -108,11 +108,11 @@ const WriteForm = ({ }) => {
     // 파일 드래그 앤 드롭 처리
     const handleDragOver = (e) => {
         e.preventDefault();
-        setIsDragOver(true); 
+        setIsDragOver(true);
     };
 
     const handleDragLeave = () => {
-        setIsDragOver(false); 
+        setIsDragOver(false);
     };
 
     const handleDrop = (e) => {
@@ -243,27 +243,27 @@ const WriteForm = ({ }) => {
             alert('결재자는 한 명만 선택할 수 있습니다.');
             return;
         }
-    
+
         // value가 배열로 온다고 가정하고, 첫 번째 항목만 사용
         const selectedPerson = value[0];
-    
+
         // 본인 체크: 선택된 사람이 작성자(writer)와 같으면 경고 메시지를 띄움
         if (selectedPerson.name === writer) {
             alert('본인은 승인자로 지정할 수 없습니다.');
             return;
         }
-    
+
         // 승인자 중복 체크: secondApprover와 thirdApprover가 같으면 경고
         if (currentApproverType === 'second' && selectedPerson.name === thirdApprover) {
             alert('중간 승인자와 최종 승인자는 같을 수 없습니다.');
             return;
         }
-    
+
         if (currentApproverType === 'third' && selectedPerson.name === secondApprover) {
             alert('최종 승인자와 중간 승인자는 같을 수 없습니다.');
             return;
         }
-    
+
         // 현재 승인자 타입에 따라 승인자 설정
         if (currentApproverType === 'second') {
             setSecondApprover(selectedPerson.name);
@@ -271,19 +271,20 @@ const WriteForm = ({ }) => {
             setThirdApprover(selectedPerson.name);
         }
     };
-    
+
 
     return (
-        <Box m="20px">
+        <Box m="20px" style={{overflow: 'hidden'}}>
             <Box
                 sx={{
                     borderRadius: "8px",
                     backgroundColor: "white",
                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                    height: "100%"
+                    height: "100%",
+                    overflow: 'hidden'
                 }}
             >
-                <Box borderBottom={`2px solid #ffb121`} p="20px">
+                <Box borderBottom={`2px solid #ffb121`} p="20px" style={{overflow: 'hidden'}}>
                     <Typography
                         color="black"
                         variant="h5"
@@ -330,35 +331,39 @@ const WriteForm = ({ }) => {
                         </div>
                     </Typography>
                 </Box>
-                <div style={{
+                <Box style={{
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     transform: 'scale(0.8)',
+                    overflow: 'hidden'
                 }}>
-                    <div style={{
+                    <Box style={{
                         backgroundColor: '#ffb121',
                         border: 'none',
                         borderRadius: '5px 5px 0 0',
                         height: '60px',
-                        width: '96%',
+                        width: '100%',
                         alignItems: 'center',
-                    }}></div>
-                    <div style={{
+                        overflow: 'hidden'
+                    }}></Box>
+                    <Box style={{
                         border: 'none',
                         padding: '70px',
                         alignItems:'center',
                         display:'flex',
                         justifyContent:'center',
                         backgroundColor: '#fafaf0',
-                        width: '96%',
+                        width: '100%',
+                        overflow: 'hidden'
                     }}>
                         <table
                             style={{
                                 border: '3px solid black',
                                 backgroundColor: "white",
                                 color: 'black',
-                                textAlign: 'center'
+                                textAlign: 'center',
+                                width:'100%'
                             }}>
                             <tbody className='tableborder'>
                             <tr>
@@ -412,7 +417,7 @@ const WriteForm = ({ }) => {
                                 style={{ fontSize: '23px', width: '175px' }} readOnly />
                             </td>
 
-                       
+
                         </tr>
                         {appDocType === 0 &&
                             <AppDocIntent handleAdditionalFieldChange={handleAdditionalFieldChange} days={additionalFields.leaveDays} appId={appId} />}
@@ -502,7 +507,7 @@ const WriteForm = ({ }) => {
                                 <Button
                                     variant="outlined"
                                     color="warning"
-                                    onClick={() => createApp(1)} 
+                                    onClick={() => createApp(1)}
                                 >
                                     임시저장
                                 </Button>
@@ -510,7 +515,7 @@ const WriteForm = ({ }) => {
                                 <Button
                                     variant="outlined"
                                     color="warning"
-                                    onClick={() => createApp(0)} 
+                                    onClick={() => createApp(0)}
                                 >
                                     작성완료
                                 </Button>
@@ -518,20 +523,20 @@ const WriteForm = ({ }) => {
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            <div style={{
+            </Box>
+            <Box style={{
                 backgroundColor: '#ffb121',
                 border: 'none',
                 borderRadius: '0 0 5px 5px',
                 height: '60px',
-                width: '96%',
-            }}></div>
+                width: '100%',
+            }}></Box>
             <GroupModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 onSelect={handleModalSelect}
             />
-        </div>
+        </Box>
                 </Box>
                 </Box>
     );
