@@ -23,7 +23,7 @@ import Admin from "./scenes/admin/index.jsx";
 import UpdatePage from "./scenes/board/UpdatePage.jsx";
 import CommuteList from "./scenes/Commute/CommuteList.jsx";
 import Video from "./scenes/openvidu/VideoConference.jsx";
-import Chat from "./scenes/chat/index.jsx";
+import Chat from "./scenes/chat/Chat.jsx"
 const AppRouter = () => {
     return (
         <Router>
