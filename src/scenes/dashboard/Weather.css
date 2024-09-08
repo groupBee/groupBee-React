@@ -17,7 +17,7 @@
 .forecast {
     display: flex;
     gap: 10px; /* 각 날씨 항목 사이의 간격 */
-
+    padding: 10px;
 
 }
 

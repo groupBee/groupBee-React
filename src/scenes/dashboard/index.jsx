@@ -42,6 +42,8 @@ function Dashboard() {
     const calendarRef = useRef(null);
     const [currentYear, setCurrentYear] = useState(null);  // 현재 연도 상태 관리
     const fullcalendarRef = useRef(null);
+    const [today, setToday] = useState("");
+
 
 
     const handleBoard = () => {
@@ -255,6 +257,8 @@ function Dashboard() {
             // 응답 처리
             console.log("Check-in successful:", res.data);
             alert('출근')
+
+            await todaycheckin(); //최신화
         } catch (err) {
             console.error("Error checking in:", err);
         }
@@ -272,6 +276,19 @@ function Dashboard() {
         } catch (err) {
             console.error("Error fetching info:", err);
         }
+    };
+
+    // 오늘 체크인 시간
+    const todaycheckin = () => {
+        axios.get("/api/attendance/todayCheckIn")
+            .then(res => {
+                // 응답 결과를 콘솔에 출력
+                console.log('Check-in 시간:', res.data);
+                setToday(res.data)
+            })
+            .catch(err => {
+                console.error('오류 발생:', err);
+            });
     };
 
     const moveDetail = (itemId) => {
@@ -454,10 +471,24 @@ function Dashboard() {
                         </div>
                     </div>
                     <div class="buttonbox">
-                        <Button class="button" onClick={checkin}>출근</Button>
-                        <Button class="button" onClick={checkout}>퇴근</Button>
+                        <Button
+                            class="button"
+                            onClick={checkin}
+                        >
+                            출근{today}
+                        </Button>
+                        <Button
+                            class="button"
+                            onClick={checkout}
+                        >
+                          퇴근
+                        </Button>
+                    </div>
+                    <div>
+
                     </div>
                 </Box>
+
                 {/*날씨*/}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}

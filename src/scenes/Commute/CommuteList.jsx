@@ -48,11 +48,11 @@ const CommuteList = () => {
                 <table style={{ borderCollapse: 'collapse', width: '100%' }}>
                     <thead>
                         <tr style={{ backgroundColor: '#F6993F', color: '#fff', textAlign: 'left' }}>
-                            <th style={{ padding: '12px', borderBottom: '2px solid gray' }}>날짜</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid gray' }}>출근</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid gray' }}>퇴근</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid gray' }}>시간</th>
-                            <th style={{ padding: '12px', borderBottom: '2px solid gray' }}>기준시간 비</th>
+                            <th style={{ padding: '12px'}}>날짜</th>
+                            <th style={{ padding: '12px'}}>출근</th>
+                            <th style={{ padding: '12px'}}>퇴근</th>
+                            <th style={{ padding: '12px'}}>시간</th>
+                            <th style={{ padding: '12px'}}>기준시간 비</th>
                         </tr>
                     </thead>
                     <tbody>
