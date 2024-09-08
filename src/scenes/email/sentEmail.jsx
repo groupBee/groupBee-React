@@ -35,7 +35,7 @@ const SentEmail=()=>{
                     setError('');
                 } else {
                     const result = await response.json();
-                    setError(result.error || '이메일과 비밀번호를 확인해주세요');
+                    setError(result.error || '관리자에게 문의해 주세요.');
                 }
             } catch (err) {
                 setError('에러: ' + err.message);
@@ -136,7 +136,7 @@ const SentEmail=()=>{
                             fontSize: '25px',
                         }}
                     >
-                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px', marginBottom: '10px',
+                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',
                         fontSize: '25px'}}><h1>보낸 메일함</h1></Box>
                     </Box>
                         {error && (

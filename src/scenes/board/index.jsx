@@ -240,7 +240,7 @@ const Board = () => {
                                             <span style={{cursor:'pointer'}}    onMouseOver={(e) => (e.target.style.color = "#ffb121")}
                                                   onMouseOut={(e) => (e.target.style.color = "inherit")}><AttachFileIcon style={{width: '15px', height: '15px'}}/></span>}
                                         {row.commentCount > 0 && <span
-                                            style={{marginLeft: '5px', cursor:'pointer'}}    onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                            style={{marginLeft: '5px', cursor:'pointer', color:'red'}}    onMouseOver={(e) => (e.target.style.color = "#ffb121")}
                                             onMouseOut={(e) => (e.target.style.color = "inherit")}>({row.commentCount})</span>}
                                         {new Date(row.board.createDate).toDateString() === new Date().toDateString() && (
                                             <span className='blinking-text'

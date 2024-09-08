@@ -164,7 +164,8 @@ const CarBook = () => {
                                     color: 'white'
                                 }}>
                                     <div style={{width: '15%'}}>
-                                        <h5 style={{margin: '0 10px 0 0', marginBottom: '7px', fontWeight: 'bold'}}>예약현황</h5>
+                                        <h5 style={{margin: '0 10px 0 0', marginBottom: '7px', fontWeight: 'bold'
+                                        , fontSize: '16px'}}>예약현황</h5>
                                         <DatePicker
                                             selected={selectedDate}
                                             onChange={(date) => setSelectedDate(date)}
@@ -185,23 +186,23 @@ const CarBook = () => {
                                             <h1>24:00</h1>
                                     </div>
                                         <div className="progress"
-                                             style={{display: 'flex', height: '30px', width: '100%'}}>
+                                             style={{display: 'flex', height: '25px', width: '100%'}}>
                                             {generateProgressBar(getReservationsForCarAndDate(carDetails.id, selectedDate), selectedDate)}
                                         </div>
                                     </div>
 
                                     <div style={{width: '15%',  display: 'flex',         // Flexbox 적용
-                                        justifyContent: 'flex-end',  // 오른쪽으로 정렬
-                                        alignItems: 'flex-end', marginTop: '10px' }}>
+                                        justifyContent: 'center',  // 오른쪽으로 정렬
+                                        alignItems: 'flex-end', marginTop: '20px',}}>
                                         <button
                                             className="btn btn-primary"
                                             style={{
-                                                width: '130px',
-                                                height: '60px',
+                                                width: '110px',
+                                                height: '40px',
                                                 backgroundColor: '#ffb121',
                                                 border: 'none',
                                                 cursor: 'pointer',
-                                                fontSize: '23px',
+                                                fontSize: '16px',
                                                 fontWeight: 'bold',
                                             }}
                                             onClick={() => handleShowModal(carDetails)}

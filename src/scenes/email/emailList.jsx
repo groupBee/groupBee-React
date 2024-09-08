@@ -158,7 +158,7 @@ const formatDate = (dateString) => {
                         fontSize: '25px',
                     }}
                 >
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',marginTop:'10px', marginBottom: '10px',
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',marginTop:'10px',
                         fontSize: '25px'}}><h1>받은 메일함</h1></Box>
                 </Box>
                 {error && (
