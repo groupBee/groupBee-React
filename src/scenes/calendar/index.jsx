@@ -1,4 +1,14 @@
-import {Box, List, ListItem, ListItemText, Tooltip, Typography, useMediaQuery, useTheme} from "@mui/material";
+import {
+    Box, Button, FormControl,
+    List,
+    ListItem,
+    ListItemText, MenuItem, Select,
+    TextField,
+    Tooltip,
+    Typography,
+    useMediaQuery,
+    useTheme
+} from "@mui/material";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -9,6 +19,7 @@ import {useEffect, useRef, useState} from "react";
 import {Header} from "../../components";
 import useModal from "./useModal";
 import './calendar.css';
+import SearchIcon from "@mui/icons-material/Search.js";
 
 const Calendar = () => {
     const fullcalendarRef = useRef(null);
@@ -176,24 +187,47 @@ const Calendar = () => {
 
     return (
         <Box m="20px">
-            <Header title="Calendar" subtitle="Full Calendar Interactive Page"/>
-            <Box display="flex" justifyContent="space-between" gap={2}>
+            <Box
+                height="100%"
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    padding: '30px'
+
+                }}
+            >
+                    <Typography
+                        color="black"
+                        variant="h5"
+                        fontWeight="600"
+                        fontSize="30px"
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                    >
+                        캘린더
+
+                    </Typography>
+
+            <Box display="flex" justifyContent="space-between" gap={2} style={{padding: '40px'}}>
                 <Box
                     display={`${isMdDevices ? "none" : "block"}`}
                     flex="1 1 20%"
-                    bgcolor={colors.primary[400]}
                     p="15px"
                     borderRadius="4px"
+                    sx={{border: '1px solid #ff845e', backgroundColor: 'white'}}
                 >
-                    <Typography variant="h5">오늘의 일정</Typography>
+                    <Typography variant="h5" sx={{fontWeight: 'bold', textAlign:'center', fontSize: '16px', color: '#ff845e'}}>오늘의 일정</Typography>
                     <List>
                         {filteredEvents.map((event) => (
                             <ListItem
                                 key={event.id}
                                 sx={{
-                                    bgcolor: `#ffb121`,
+                                    bgcolor: `#ff845e`,
                                     my: "10px",
                                     borderRadius: "5px",
+                                    color: 'white'
                                 }}
                             >
                                 <ListItemText
@@ -267,6 +301,7 @@ const Calendar = () => {
                 </Box>
             </Box>
             {modal}
+            </Box>
         </Box>
     );
 };
