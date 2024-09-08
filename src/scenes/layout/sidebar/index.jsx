@@ -17,8 +17,10 @@ import {
     CalendarViewMonthOutlined,
     TextsmsOutlined,
     ListAltOutlined,
-    DescriptionOutlined, WorkOutlineOutlined, Chat,
+    DescriptionOutlined, WorkOutlineOutlined, Chat
 } from "@mui/icons-material";
+import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
+
 import logo from "../../../assets/images/logo.png";
 import Item from "./Item";
 import {ToggledContext} from "../../../App";
@@ -129,7 +131,7 @@ const SideBar = () => {
                 </Box>
             )}
 
-            <Box mb={5} pl={collapsed ? undefined : "5%"}>
+            <Box mb={5} pl={collapsed ? undefined : "5%"} mt={10}>
                 <Menu
                     menuItemStyles={{
                         button: {
@@ -228,6 +230,14 @@ const SideBar = () => {
                             icon={<Chat/>}
                         />
                     </Box>
+                    <Box>
+                        <Item
+                            title="화상회의"
+                            path="/video"
+                            colors={colors}
+                            icon={< OndemandVideoOutlinedIcon/>}
+                        />
+                    </Box>
                     {employeeDepartmentId >= 100 && employeeDepartmentId <= 199 && (
                         <Box onClick={() => window.open('https://hr.groupbee.co.kr')}>
                             <Item
@@ -271,6 +281,19 @@ const SideBar = () => {
                     >
                         <b style={{fontSize:'16px',minWidth:'100px'}}>조직도</b>
                     </Button>
+                </Box>
+
+                <Box    sx={{
+                    display: 'flex',
+                    justifyContent: 'center', // 가로 중앙 정렬
+                    alignItems: 'center', // 세로 중앙 정렬
+                    marginTop: '20px'
+                }}>
+                <Box sx={{   border: '1px solid #ffb121',
+                    backgroundColor: '#fff',
+                     height: '200px', width: '80%',  borderRadius: '4px',}}>
+
+                </Box>
                 </Box>
             </Box>
 
