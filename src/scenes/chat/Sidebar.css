@@ -1,0 +1,96 @@
+.sidebar {
+    width: 50%;
+    border-right: 1px solid #ddd;
+    padding: 10px;
+    flex-shrink: 0;
+  }
+  
+  .tab-header {
+    display: flex;
+    justify-content: space-between; /* 두 개의 요소(탭과 아이콘 버튼들) 간격을 최대로 벌림 */
+    align-items: center; /* 세로로 중앙 정렬 */
+    margin-bottom: 10px;
+  }
+  
+  .tab-buttons {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .icon-buttons {
+    display: flex;
+    gap: 5px;
+    justify-content: flex-end; /* 아이콘 버튼들을 오른쪽 정렬 */
+  }
+  
+  .tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 5px 15px;
+    cursor: pointer;
+    font-weight: normal;
+  }
+  
+  .tab-button.active {
+    background-color: #EAF1FF;
+    font-weight: bold;
+    border-bottom: 2px solid blue;
+  }
+  
+  .chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .chat-room {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e5e5e5;
+    background-color: #fff;
+    cursor: pointer;
+    min-height: 60px;
+  }
+  
+  .chat-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .chat-room-name {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  
+  .last-message {
+    color: gray;
+    font-size: 14px;
+  }
+  
+  .chat-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .unread-badge {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .time {
+    color: gray;
+    font-size: 12px;
+  }
+  

@@ -1,0 +1,72 @@
+.chat-room-container {
+    display: flex;
+    flex-direction: column;
+    width: 50%; /* ChatRoomContainer가 화면의 절반까지만 차지 */
+    padding: 10px;
+    background-color: white;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%); /* 기본적으로 화면 밖에 위치 */
+  }
+  
+  .chat-room-container.open {
+    transform: translateX(0); /* 열릴 때 화면 안으로 이동 */
+  }
+  
+  .chat-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+  }
+  
+  .chat-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .message {
+    max-width: 60%;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .message.left {
+    align-self: flex-start;
+    background-color: #e9ecef;
+    border-radius: 10px 10px 10px 0;
+    padding: 10px;
+  }
+  
+  .message.right {
+    align-self: flex-end;
+    background-color: #d4f8c0;
+    border-radius: 10px 10px 0 10px;
+    padding: 10px;
+  }
+  
+  .input-container {
+    display: flex;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+  }
+  
+  .chat-input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-right: 10px;
+  }
+  
+  .send-button {
+    background-color: #5CB85C;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
