@@ -50,7 +50,7 @@ const EmailMain = () => {
                             sx={{
                                 backgroundColor: 'transparent',
                                 color: sendMailButtonColor,
-                                fontSize: '15px',
+                                fontSize: '18px',
                                 padding: '0',
                                 textTransform: 'none',
                                 '&:hover': {
@@ -67,7 +67,7 @@ const EmailMain = () => {
                             sx={{
                                 backgroundColor: 'transparent',
                                 color: listMailButtonColor,
-                                fontSize: '15px',
+                                fontSize: '18px',
                                 padding: '0',
                                 textTransform: 'none',
                                 '&:hover': {
@@ -84,7 +84,7 @@ const EmailMain = () => {
                             sx={{
                                 backgroundColor: 'transparent',
                                 color: sentMailButtonColor,
-                                fontSize: '15px',
+                                fontSize: '18px',
                                 padding: '0',
                                 textTransform: 'none',
                                 '&:hover': {
