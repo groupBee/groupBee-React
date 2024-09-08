@@ -6,13 +6,14 @@ import {
     ParticipantTile,
     RoomAudioRenderer,
     useTracks,
-    Chat,
-    LayoutContextProvider
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { Track } from "livekit-client";
 import { generateToken } from './livekit';
-import {Box} from "@mui/material"; // 토큰 생성 함수
+import { Box } from "@mui/material";
+import { ChatComponent } from "./ChatComponent";
+import ChatIcon from '@mui/icons-material/Chat';  // MUI 채팅 아이콘
+import CloseIcon from '@mui/icons-material/Close';  // MUI 닫기 아이콘
 
 
 const serverUrl = 'https://openvidu.groupbee.co.kr';
@@ -29,20 +30,19 @@ const generateRandomCode = (length) => {
 
 export default function VideoConference() {
     const [token, setToken] = useState('');
-    const [roomName, setRoomName] = useState('');  // 방 이름 상태
-    const [participantName, setParticipantName] = useState('');  // 사용자 이름 상태
-    const [hasJoined, setHasJoined] = useState(false);  // 사용자가 방에 참여했는지 여부
+    const [roomName, setRoomName] = useState('');
+    const [participantName, setParticipantName] = useState('');
+    const [hasJoined, setHasJoined] = useState(false);
     const [infoData, setInfoData] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
+    const [isChatVisible, setIsChatVisible] = useState(false);  // 채팅 토글 상태 추가
 
     const fetchData = async () => {
         try {
             const response = await fetch('/api/employee/info');
             const data = await response.json();
             setInfoData(data);
-            console.log(data)
-
-
+            console.log(data);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
@@ -50,24 +50,23 @@ export default function VideoConference() {
 
     useEffect(() => {
         if (infoData && infoData.name) {
-            setParticipantName(infoData.name);  // infoData에서 이름을 가져와 설정
+            setParticipantName(infoData.name);
         }
-    }, [infoData]);  // infoData가 변경될 때마다 실행
+    }, [infoData]);
 
     useEffect(() => {
-        fetchData();  // 컴포넌트가 로드될 때 fetchData 호출
+        fetchData();
     }, []);
 
-    // roomName이 변경될 때만 fetchToken 호출
     useEffect(() => {
         if (hasJoined && roomName) {
             fetchToken();
         }
-    }, [roomName]); // roomName이 변경될 때만 호출
+    }, [roomName]);
 
     const fetchToken = async () => {
         try {
-            const token = await generateToken(roomName, participantName);  // 초대 코드로 토큰 생성
+            const token = await generateToken(roomName, participantName);
             setToken(token);
         } catch (error) {
             console.error('Error fetching token:', error);
@@ -76,12 +75,11 @@ export default function VideoConference() {
 
     const handleJoinRoom = () => {
         if (roomName.trim() && participantName.trim()) {
-            const generatedInviteCode = generateRandomCode(20);  // 8자리 랜덤 코드 생성
-            setRoomName(generatedInviteCode);  // 초대 코드 설정
-            fetchToken();  // 토큰 가져오기
-            setHasJoined(true);  // 방에 참여 상태로 변경
-            console.log('UUID : '+generatedInviteCode)
-            console.log('UUID : '+roomName)
+            const generatedInviteCode = generateRandomCode(20);
+            setRoomName(generatedInviteCode);
+            fetchToken();
+            setHasJoined(true);
+            console.log('UUID : ' + generatedInviteCode);
         } else {
             alert("방 이름을 입력하세요.");
         }
@@ -89,32 +87,31 @@ export default function VideoConference() {
 
     const handleJoinRoom2 = () => {
         if (roomName.length !== 20) {
-            setErrorMessage("잘못된 초대코드입니다."); // 경고 메시지 업데이트
+            setErrorMessage("잘못된 초대코드입니다.");
             return;
         }
 
         if (roomName.trim() && participantName.trim()) {
             fetchToken();
             setHasJoined(true);
-            setErrorMessage(''); // 오류가 없으므로 경고 메시지 초기화
+            setErrorMessage('');
         } else {
             setErrorMessage("방 이름을 입력하세요.");
         }
     };
 
-    // 방에 참여하기 전 입력 필드와 버튼을 표시
+    const toggleChat = () => {
+        setIsChatVisible(!isChatVisible);
+    };
+
     if (!hasJoined) {
         return (
             <Box
-                gridRow="span 3"
                 sx={{
                     borderRadius: "12px",
                     backgroundColor: "#f9f9f9",
                     boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
-                    overflow: "hidden",
                     maxWidth: '1400px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
                     margin: '20px auto',
                     textAlign: 'center',
                     width: '40%',
@@ -125,30 +122,24 @@ export default function VideoConference() {
             >
                 <h2 style={{ color: '#333', fontSize: '24px', marginBottom: '20px' }}>화상회의 참여</h2>
                 <Box sx={{ padding: '0px', marginTop: '20px' }}>
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="방 이름 / 초대코드 입력"
-                            value={roomName}
-                            onChange={(e) => setRoomName(e.target.value)}
-                            style={{
-                                margin: '10px auto',
-                                padding: '12px 16px',
-                                fontSize: '16px',
-                                borderRadius: '8px',
-                                border: '1px solid #ccc',
-                                width: '80%',
-                                display: 'block',
-                            }}
-                        />
-                    </div>
-                    {errorMessage && (
-                        <div style={{ color: 'red'}}>
-                            {errorMessage}
-                        </div>
-                    )}
+                    <input
+                        type="text"
+                        placeholder="방 이름 / 초대코드 입력"
+                        value={roomName}
+                        onChange={(e) => setRoomName(e.target.value)}
+                        style={{
+                            margin: '10px auto',
+                            padding: '12px 16px',
+                            fontSize: '16px',
+                            borderRadius: '8px',
+                            border: '1px solid #ccc',
+                            width: '80%',
+                            display: 'block',
+                        }}
+                    />
+                    {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
                 </Box>
-                <div style={{ gap: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '50px' }}>
+                <div style={{ gap: '15px', display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
                     <button
                         onClick={handleJoinRoom}
                         style={{
@@ -185,18 +176,15 @@ export default function VideoConference() {
                     </button>
                 </div>
             </Box>
-
         );
     }
 
-    // 토큰이 로딩 중일 때 표시할 내용
     if (!token) {
         return <div>Loading...</div>;
     }
 
-    // 방에 참여 후 LiveKitRoom 컴포넌트 렌더링
     return (
-        <div style={{height: '100vh', display: 'flex', flexDirection: 'column'}}>
+        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
             <div style={{
                 padding: '10px',
                 backgroundColor: '#f1f1f1',
@@ -212,14 +200,47 @@ export default function VideoConference() {
                 token={token}
                 serverUrl={serverUrl}
                 data-lk-theme="default"
-                style={{height: '100vh'}}
+                style={{ height: '100vh' }}
             >
-                <MyVideoConference/>
-                <RoomAudioRenderer/>
-                <ControlBar/>
-                <LayoutContextProvider>
-                    <Chat/>
-                </LayoutContextProvider>
+                <MyVideoConference />
+                <RoomAudioRenderer />
+                <ControlBar />
+                <button
+                    onClick={toggleChat}
+                    style={{
+                        position: 'fixed',
+                        bottom: '20px',
+                        right: '20px',
+                        backgroundColor: '#282929',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '50px',
+                        height: '50px',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                    }}
+                >
+                    {isChatVisible ? <CloseIcon size={24} /> : <ChatIcon size={24} />}
+                </button>
+
+                {isChatVisible && (
+                    <div style={{
+                        position: 'fixed',
+                        bottom: '80px',
+                        right: '20px',
+                        width: '20%',
+                        height: '80%',
+                        backgroundColor: 'white',
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                        zIndex: 1000,
+                    }}>
+                        <ChatComponent />
+                    </div>
+                )}
             </LiveKitRoom>
         </div>
     );
@@ -228,14 +249,14 @@ export default function VideoConference() {
 function MyVideoConference() {
     const tracks = useTracks(
         [
-            {source: Track.Source.Camera, withPlaceholder: true},
-            {source: Track.Source.ScreenShare, withPlaceholder: false},
+            { source: Track.Source.Camera, withPlaceholder: true },
+            { source: Track.Source.ScreenShare, withPlaceholder: false },
         ],
-        {onlySubscribed: false},
+        { onlySubscribed: false },
     );
     return (
-            <GridLayout tracks={tracks} style={{height: 'calc(100vh - var(--lk-control-bar-height))'}}>
-            <ParticipantTile/>
+        <GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
+            <ParticipantTile />
         </GridLayout>
     );
 }
