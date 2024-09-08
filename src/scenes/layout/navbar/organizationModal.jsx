@@ -209,6 +209,7 @@ const OrganizationChart = () => {
 
     const handleEmployeeSelect = (employee) => {
         setSelectedEmployee(employee);
+        console.log(employee)
     };
 
     const handleChatClick = () => {
@@ -295,12 +296,12 @@ const OrganizationChart = () => {
             </Box>
 
             <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto' }}>
+                <Typography variant="h6" gutterBottom>직원 리스트</Typography>
                 <Checkbox
                     checked={includeSubDepartments}
                     onChange={handleIncludeSubDepartmentsChange}
                 />
-                <Typography variant="body2">하위 부서 포함</Typography>
-                <Typography variant="h6" gutterBottom>직원 리스트</Typography>
+                <Typography variant="body2" component="span">하위 부서 포함</Typography>
                 <Box sx={{ mb: 2 }}>
                     {selectedDepartmentNames.length > 0 && (
                         <Typography variant="subtitle1" gutterBottom>
@@ -343,107 +344,92 @@ const OrganizationChart = () => {
             </Box>
 
             <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto' }}>
-                <Typography variant="h6" gutterBottom>선택된 직원 정보</Typography>
+
+            <Typography variant="h5" gutterBottom sx={{ fontWeight: 'bold', fontSize: '32px', color: '#1a237e', marginBottom: 4, textAlign: 'center' }}>
+                    선택된 직원 정보
+                </Typography>
                 {selectedEmployee ? (
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            py: 1,
-                            px: 2,
-                            mb: 1,
-                            borderLeft: '5px solid #ffd454',
-                            bgcolor: '#fafafa',
-                            borderRadius: 1,
-                            '&:hover': {
-                                bgcolor: '#f0f0f0'
-                            }
-                        }}
-                    >
-                        <img
-                            src={selectedEmployee.profileFile}
-                            alt={`${selectedEmployee.name}의 프로필`}
-                            style={{
-                                minWidth: '150px',
-                                maxWidth: '150px',
-                                minHeight: '150px',
-                                maxHeight: '150px',
-                                borderRadius: '50%',
-                                border: '1px solid grey',
-                                objectFit: 'cover',
-                                marginBottom: '20px',
-                                marginTop: '20px'
-                            }}
-                        />
-                        <Box sx={{ ml: 2 }}>
-                            <Button
-                                variant="contained"
-                                startIcon={<ChatIcon />}
-                                sx={{
-                                    backgroundColor: '#007bff',
-                                    backgroundImage: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
-                                    color: 'white',
-                                    fontSize: '12px',
-                                    padding: '10px 20px',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                    transition: 'all 0.3s ease',
-                                    textTransform: 'none',
-                                    '&:hover': {
-                                        backgroundColor: '#0056b3',
-                                        backgroundImage: 'linear-gradient(135deg, #0056b3 0%, #003d80 100%)',
-                                        transform: 'scale(1.05)',
-                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
-                                    },
-                                    '&:focus': {
-                                        outline: 'none',
-                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
-                                    },
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 5, width: '100%' }}>
+                            <img
+                                src={selectedEmployee.profileFile}
+                                alt={`${selectedEmployee.name}의 프로필`}
+                                style={{
+                                    width: '200px',
+                                    height: '200px',
+                                    borderRadius: '50%',
+                                    border: '5px solid #fff',
+                                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
+                                    objectFit: 'cover',
+                                    marginRight: '40px',
                                 }}
-                                onClick={handleChatClick}
-                            >
-                                채팅
-                            </Button>
-                            <Button
-                                variant="contained"
-                                startIcon={<MailOutlineIcon />}
-                                sx={{
-                                    backgroundColor: '#28a745',
-                                    backgroundImage: 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)',
-                                    color: 'white',
-                                    fontSize: '12px',
-                                    padding: '10px 20px',
-                                    border: 'none',
-                                    borderRadius: '5px',
-                                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                                    transition: 'all 0.3s ease',
-                                    textTransform: 'none',
-                                    '&:hover': {
-                                        backgroundColor: '#1e7e34',
-                                        backgroundImage: 'linear-gradient(135deg, #1e7e34 0%, #155d27 100%)',
-                                        transform: 'scale(1.05)',
-                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
-                                    },
-                                    '&:focus': {
-                                        outline: 'none',
-                                        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
-                                    },
-                                }}
-                                onClick={handleEmailClick}
-                            >
-                                메일
-                            </Button>
+                            />
+                            <Box sx={{ flexGrow: 1 }}>
+                                <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 2, fontSize: '36px', color: '#34495e' }}>
+                                    {selectedEmployee.name}
+                                </Typography>
+                                <Typography variant="h6" sx={{ mb: 2, fontSize: '24px', color: '#3498db' }}>
+                                    {selectedEmployee.department.departmentName}
+                                </Typography>
+                                <Typography variant="h6" sx={{ fontSize: '24px', color: '#3498db' }}>
+                                    {selectedEmployee.position.rank}
+                                </Typography>
+                            </Box>
                         </Box>
-                        <p style={{ fontSize: '13px', marginTop: '-15px' }}>이름: {selectedEmployee.name}</p>
-                        <p style={{ fontSize: '13px' }}>직급: {selectedEmployee.position.rank}</p>
-                        <p style={{ fontSize: '13px' }}>이메일: {selectedEmployee.email}</p>
-                        <p style={{ fontSize: '13px' }}>전화번호: {selectedEmployee.phoneNumber}</p>
-                        <p style={{ fontSize: '13px' }}>부서: {selectedEmployee.department.departmentName}</p>
-                        <p style={{ fontSize: '13px' }}>입사일: {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}</p>
+
+                        <Box sx={{ flexGrow: 1, width: '100%', bgcolor: '#fff', borderRadius: 3, p: 4, boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)' }}>
+                            <Typography variant="body1" sx={{ fontSize: '20px', mb: 2, color: '#2c3e50' }}>
+                                입사일 : {selectedEmployee.firstDay ? selectedEmployee.firstDay : '정보 없음'}
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontSize: '20px', mb: 2, color: '#2c3e50' }}>
+                                이메일 : {selectedEmployee.email}
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontSize: '20px', mb: 2, color: '#2c3e50' }}>
+                                사내전화 : {selectedEmployee.extensionCall}
+                            </Typography>
+                            <Typography variant="body1" sx={{ fontSize: '20px', mb: 3, color: '#2c3e50' }}>
+                                전화번호 : {selectedEmployee.phoneNumber}
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 3, mt: 4, justifyContent: 'center' }}>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<ChatIcon />}
+                                    sx={{
+                                        backgroundColor: '#3498db',
+                                        '&:hover': { backgroundColor: '#2980b9' },
+                                        textTransform: 'none',
+                                        boxShadow: '0 4px 12px rgba(52, 152, 219, 0.3)',
+                                        fontSize: '18px',
+                                        padding: '12px 30px',
+                                        borderRadius: '30px',
+                                    }}
+                                    onClick={handleChatClick}
+                                >
+                                    채팅
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<MailOutlineIcon />}
+                                    sx={{
+                                        backgroundColor: '#2ecc71',
+                                        '&:hover': { backgroundColor: '#27ae60' },
+                                        textTransform: 'none',
+                                        boxShadow: '0 4px 12px rgba(46, 204, 113, 0.3)',
+                                        fontSize: '18px',
+                                        padding: '12px 30px',
+                                        borderRadius: '30px',
+                                    }}
+                                    onClick={handleEmailClick}
+                                >
+                                    메일
+                                </Button>
+                            </Box>
+                        </Box>
                     </Box>
                 ) : (
-                    <Typography variant="body2" color="textSecondary">직원을 선택하세요</Typography>
+                    <Typography variant="body1" color="textSecondary" sx={{ textAlign: 'center', mt: 4, fontSize: '20px' }}>
+                        직원을 선택하세요
+                    </Typography>
                 )}
             </Box>
         </Box>
