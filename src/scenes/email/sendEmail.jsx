@@ -1,5 +1,5 @@
 import { Box, Button, Chip, TextField, Alert, Modal, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GroupModal from '../../components/groupModal';
 import axios from 'axios';
 import { useDropzone } from 'react-dropzone';
@@ -220,16 +220,29 @@ const SendEmail = () => {
     };
 
     return (
-        <div>
+        <Box sx={{ m: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Box
+                height="auto"
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    minHeight: '850px',
+                    width: "80%",
+                    maxWidth: "850px",
+                    padding: "80px",
+                }}
+            >
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-10px', marginBottom: '30px',
+                    fontSize: '25px'}}><h1>메일 보내기</h1></Box>
             <form onSubmit={handleSendEmail}>
-                <hr />
                 <div style={{
                     backgroundColor: 'white',
                     borderRadius: '4px',
                     border: '1px solid #ddd',
-                    padding: '10px 30px'
+                    padding: '10px 20px'
                 }}>
-                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                    <Box sx={{display: 'flex', alignItems: 'center'}}>
                         <b style={{width: '70px', textAlign: 'center'}}>받는사람</b>
                         <TextField
                             value={toInput}
@@ -244,14 +257,25 @@ const SendEmail = () => {
                                 }
                             }}
                         />
-                        <Button variant='contained' color='warning' onClick={() => openModal('to')}>
+                        <Button
+                            style={{
+                            color: '#ffb121',
+                            border: '1px solid #ffb121',
+                        }}
+                            onClick={() => openModal('to')}>
                             주소록
                         </Button>
-                        <Button variant='contained' color='primary' onClick={() => handleAddEmail('to')}>
+                        <Button
+                            style={{
+                            color: 'white',
+                            border: '1px solid #ffb121',
+                            backgroundColor: '#ffb121'
+                        }}
+                            onClick={() => handleAddEmail('to')}>
                             추가
                         </Button>
                     </Box>
-                    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: '5px', width: '700px',marginLeft:'85px'}}>
+                    <Box sx={{display: 'flex', flexWrap: 'wrap', gap: '5px', width: '700px',marginLeft:'85px', marginTop: '10px'}}>
                         {to.map((email, index) => (
                             <Chip
                                 key={index}
@@ -261,9 +285,7 @@ const SendEmail = () => {
                             />
                         ))}
                     </Box>
-                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
-                    </Box>
-                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                    <Box sx={{display: 'flex', alignItems: 'center'}}>
                         <b style={{width: '70px', textAlign: 'center'}}>참조</b>
                         <TextField
                             value={ccInput}
@@ -278,10 +300,19 @@ const SendEmail = () => {
                                 }
                             }}
                         />
-                        <Button variant='contained' color='warning' onClick={() => openModal('cc')}>
+                        <Button
+                            style={{
+                            color: '#ffb121',
+                            border: '1px solid #ffb121',
+                        }} onClick={() => openModal('cc')}>
                             주소록
                         </Button>
-                        <Button variant='contained' color='primary' onClick={() => handleAddEmail('cc')}>
+                        <Button
+                            style={{
+                            color: 'white',
+                            border: '1px solid #ffb121',
+                            backgroundColor: '#ffb121'
+                        }} onClick={() => handleAddEmail('cc')}>
                             추가
                         </Button>
                     </Box>
@@ -295,7 +326,7 @@ const SendEmail = () => {
                             />
                         ))}
                     </Box>
-                    <Box sx={{display: 'flex', alignItems: 'center', marginBottom: '10px'}}>
+                    <Box sx={{display: 'flex', alignItems: 'center'}}>
                         <b style={{width: '65px', textAlign: 'center'}}>제목</b>
                         <TextField
                             fullWidth
@@ -370,7 +401,8 @@ const SendEmail = () => {
                     </Button>
                 </Box>
             </Modal>
-        </div>
+            </Box>
+        </Box>
     );
 };
 

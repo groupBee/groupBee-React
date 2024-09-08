@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box } from "@mui/material";
+import {Box, Paper, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import { Row, Card, Table } from 'react-bootstrap';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions, Button, Grid, TextField, FormControl, Typography, Select, MenuItem, InputLabel
@@ -475,28 +475,37 @@ const BookList = () => {
 
     return (
         <Box m="20px">
-            <Row>
+            <Box
+                height="100%"
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+
+                }}
+            >
                 <Card style={{ padding: '20px' }}>
                     <Card.Body className="px-0 py-2">
+
                         <Table striped bordered hover>
-                            <thead>
-                            <tr>
-                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '4%'}}>번호</th>
-                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%'}}>차량/회의실</th>
-                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '7%'}}>아이템</th>
-                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%'}}>예약시간</th>
-                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '13%'}}>반납시간</th>
-                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '30%'}}>사유</th>
-                                <th style={{backgroundColor: '#ffb121', padding: '12px', width: '11%'}}>변경/삭제</th>
-                            </tr>
-                            </thead>
-                            <tbody>
+                            <TableHead>
+                                <TableRow>
+                                <TableCell align="center" style={{backgroundColor: '#ffb121', padding: '12px', width: '7%', fontSize: '0.9rem', fontWeight:'bold'}}>번호</TableCell>
+                                <TableCell align="center" style={{backgroundColor: '#ffb121', padding: '12px', width: '10%' ,fontSize: '0.9rem', fontWeight:'bold' }}>차량/회의실</TableCell>
+                                <TableCell align="center" style={{backgroundColor: '#ffb121', padding: '12px', width: '10%' ,fontSize: '0.9rem', fontWeight:'bold'}}>아이템</TableCell>
+                                <TableCell align="center" style={{backgroundColor: '#ffb121', padding: '12px', width: '15%' ,fontSize: '0.9rem', fontWeight:'bold'}}>예약시간</TableCell>
+                                <TableCell align="center" style={{backgroundColor: '#ffb121', padding: '12px', width: '15%' ,fontSize: '0.9rem', fontWeight:'bold'}}>반납시간</TableCell>
+                                <TableCell align="center" style={{backgroundColor: '#ffb121', padding: '12px', width: '30%' ,fontSize: '0.9rem', fontWeight:'bold'}}>사유</TableCell>
+                                <TableCell align="center" style={{backgroundColor: '#ffb121', padding: '12px', width: '13%' ,fontSize: '0.9rem', fontWeight:'bold'}}>변경/삭제</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
                             {filteredBookings.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
+                                <TableRow>
+                                    <TableCell colSpan="7" style={{ textAlign: 'center', padding: '20px' }}>
                                         예약이 없습니다.
-                                    </td>
-                                </tr>
+                                    </TableCell>
+                                </TableRow>
                             ) : (
                                 filteredBookings.map((booking, index) => {
                                     const endTime = new Date(booking.returnDay || booking.leave);
@@ -504,19 +513,20 @@ const BookList = () => {
                                     const isTimePast = endTime < new Date();
 
                                     return (
-                                    <tr key={index}>
-                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{index + 1}</td>
-                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{booking.category}</td>
-                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{booking.type}</td>
-                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{formatDateTime(booking.rentDay || booking.enter)}</td>
-                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{formatDateTime(booking.returnDay || booking.leave)}</td>
-                                        <td style={{color: isTimePast ? '#979797' : 'inherit'}}>{booking.reason || booking.purpose}</td>
-                                        <td>
+                                    <TableRow key={index}>
+                                        <TableCell align="center" style={{color: isTimePast ? '#979797' : 'inherit', fontSize: '0.9rem'}}>{index + 1}</TableCell>
+                                        <TableCell align="center" style={{color: isTimePast ? '#979797' : 'inherit', fontSize: '0.9rem'}}>{booking.category}</TableCell>
+                                        <TableCell align="center" style={{color: isTimePast ? '#979797' : 'inherit', fontSize: '0.9rem'}}>{booking.type}</TableCell>
+                                        <TableCell align="center" style={{color: isTimePast ? '#979797' : 'inherit', fontSize: '0.9rem'}}>{formatDateTime(booking.rentDay || booking.enter)}</TableCell>
+                                        <TableCell align="center" style={{color: isTimePast ? '#979797' : 'inherit', fontSize: '0.9rem'}}>{formatDateTime(booking.returnDay || booking.leave)}</TableCell>
+                                        <TableCell align="center" style={{color: isTimePast ? '#979797' : 'inherit', fontSize: '0.9rem'}}>{booking.reason || booking.purpose}</TableCell>
+                                        <TableCell align="center" sx={{ display: 'flex', justifyContent: 'center', gap: '2px', flexWrap: 'nowrap' }}>
                                             <Button
                                                 variant=""
                                                 size="small"
                                                 onClick={() => handleEdit(booking)}
                                                 sx={{
+                                                    fontSize: '0.9rem',
                                                     backgroundColor: '#ffb121',
                                                     color: '#fff',
                                                     fontWeight: 'bold',
@@ -537,6 +547,7 @@ const BookList = () => {
                                                 size="small"
                                                 onClick={() => handleDelete(booking.id, booking.category)}
                                                 sx={{
+                                                    fontSize: '0.9rem',
                                                     backgroundColor: '#dc3545',
                                                     color: '#fff',
                                                     fontWeight: 'bold',
@@ -551,17 +562,18 @@ const BookList = () => {
                                             >
                                                 삭제
                                             </Button>
-                                        </td>
-                                    </tr>
+                                        </TableCell>
+                                    </TableRow>
                                     )
                                 })
                             )}
 
-                            </tbody>
+                            </TableBody>
                         </Table>
+
                     </Card.Body>
                 </Card>
-            </Row>
+            </Box>
 
             <Dialog open={showModal} onClose={handleModalClose} fullWidth maxWidth="sm">
                 <DialogTitle

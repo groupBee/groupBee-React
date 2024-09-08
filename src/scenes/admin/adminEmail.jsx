@@ -72,40 +72,6 @@ const AdminEmail = () => {
     return (
         <Box sx={{ padding: '20px'}}>
             <Box p={2}>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-                    <Box display="flex" alignItems="center" gap={2}>
-                        <IconButton
-                            sx={{ display: `${isMdDevices ? "flex" : "none"}` }}
-                        >
-                            <MenuOutlined />
-                        </IconButton>
-                        <Box
-                            display="flex"
-                            alignItems="center"
-                            bgcolor="white"
-                            borderRadius="4px"
-                            sx={{ display: `${isXsDevices ? "none" : "flex"}`, border: '1px solid #ddd' }}
-                        >
-                            <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
-                            <IconButton type="button" sx={{ p: 1 }}>
-                                <SearchOutlined />
-                            </IconButton>
-                        </Box>
-                    </Box>
-                    <Select
-                        value={sortOrder}
-                        onChange={handleSortChange}
-                        size="small"
-                        sx={{
-                            minWidth: 120,
-                        }}
-                    >
-                        <MenuItem value="default">기본 순서</MenuItem>
-                        <MenuItem value="ascending">오름차순</MenuItem>
-                        <MenuItem value="descending">내림차순</MenuItem>
-                        <MenuItem value="date">날짜순</MenuItem>
-                    </Select>
-                </Box>
                 <Box>
                     {email.map((emailItem, index) => {
                         const usedQuotaGB = convertBytesToGB(emailItem.quota);
