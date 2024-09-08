@@ -19,6 +19,8 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate } from "react-router-dom";
 
+
+
 const OrganizationChart = () => {
     const [departmentList, setDepartmentList] = useState([]);
     const [expandedDepartments, setExpandedDepartments] = useState([]);
@@ -29,6 +31,7 @@ const OrganizationChart = () => {
     const [departmentLevel, setDepartmentLevel] = useState({});
     const [expandedTopDepartments, setExpandedTopDepartments] = useState([]);
     const [expandedMidDepartments, setExpandedMidDepartments] = useState([]);
+    const [includeSubDepartments, setIncludeSubDepartments] = useState(false);
 
     useEffect(() => {
         getDepartmentList();
@@ -97,17 +100,27 @@ const OrganizationChart = () => {
         switch (level) {
             case 'top':
                 handleTopDepartmentExpand(id);
-                filterEmployeesForTopDepartment(id);
+                filterEmployees(id, includeSubDepartments);
                 break;
             case 'mid':
                 handleMidDepartmentExpand(id);
-                filterEmployeesForMidDepartment(id);
+                filterEmployees(id, includeSubDepartments);
                 break;
             case 'sub':
-                filterEmployeesForSubDepartment(id);
+                filterEmployees(id, includeSubDepartments);
                 break;
             default:
                 setFilteredEmployees([]);
+        }
+    };
+
+
+    const handleIncludeSubDepartmentsChange = (e) => {
+        const newIncludeSubDepartments = e.target.checked;
+        setIncludeSubDepartments(newIncludeSubDepartments);
+        if (selectedDepartmentNames.length > 0) {
+            const selectedDepartmentId = departmentList.find(dept => dept.departmentName === selectedDepartmentNames[selectedDepartmentNames.length - 1]).id;
+            filterEmployees(selectedDepartmentId, newIncludeSubDepartments);
         }
     };
 
@@ -133,45 +146,31 @@ const OrganizationChart = () => {
         });
     };
 
-    const filterEmployeesForTopDepartment = (id) => {
-        const midDeptIds = departmentList
-            .filter(dept => Math.floor(dept.id / 100) === Math.floor(id / 100) && dept.id % 100 === 0 && dept.id !== id)
-            .map(dept => dept.id);
-
-        const employees = employeeList.filter(employee =>
-            Math.floor(employee.department.id / 100) === Math.floor(id / 100)
-        );
-
-        setFilteredEmployees(employees);
-    };
-
-    const filterEmployeesForMidDepartment = (id) => {
-        const employees = employeeList.filter(employee =>
-            Math.floor(employee.department.id / 10) === Math.floor(id / 10)
-        );
-
-        setFilteredEmployees(employees);
-    };
-
-    const filterEmployeesForSubDepartment = (id) => {
-        const employees = employeeList.filter(employee =>
-            employee.department.id === id
-        );
-
-        setFilteredEmployees(employees);
-    };
-
     const filterEmployees = (id, includeSubDepartments) => {
-        const employeesInDepartment = employeeList.filter(employee => employee.department.id === id);
+        const level = departmentLevel[id];
+        let employeesToShow = [];
+
+        const addEmployeesForDepartment = (deptId) => {
+            employeesToShow = [...employeesToShow, ...employeeList.filter(employee => employee.department.id === deptId)];
+        };
+
         if (includeSubDepartments) {
-            const subDepartments = findAllSubDepartments(id);
-            const employeesInSubDepartments = subDepartments.flatMap(subDept =>
-                employeeList.filter(employee => employee.department.id === subDept.id)
-            );
-            setFilteredEmployees([...employeesInDepartment, ...employeesInSubDepartments]);
+            switch (level) {
+                case 'top':
+                    departmentList.filter(dept => Math.floor(dept.id / 100) === Math.floor(id / 100)).forEach(dept => addEmployeesForDepartment(dept.id));
+                    break;
+                case 'mid':
+                    departmentList.filter(dept => Math.floor(dept.id / 10) === Math.floor(id / 10)).forEach(dept => addEmployeesForDepartment(dept.id));
+                    break;
+                case 'sub':
+                    addEmployeesForDepartment(id);
+                    break;
+            }
         } else {
-            setFilteredEmployees(employeesInDepartment);
+            addEmployeesForDepartment(id);
         }
+
+        setFilteredEmployees(employeesToShow);
     };
 
     const findDepartmentNames = (departmentId) => {
@@ -266,6 +265,7 @@ const OrganizationChart = () => {
                                                 onClick={() => handleDepartmentSelect(subDepartment.id)}
                                                 // ... (스타일링)
                                             >
+                                                <span style={{marginRight:'5px',marginLeft:'10px'}}></span>
                                                 <ListItemText primary={subDepartment.departmentName} />
                                                 {Object.keys(subDepartment.subDepartments).length > 0 &&
                                                     (expandedMidDepartments.includes(subDepartment.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
@@ -279,7 +279,8 @@ const OrganizationChart = () => {
                                                             onClick={() => handleDepartmentSelect(subSubDepartment.id)}
                                                             // ... (스타일링)
                                                         >
-                                                            <ListItemText primary={subSubDepartment.departmentName} />
+                                                            <span style={{marginRight: '5px',marginLeft:'25px'}}></span>
+                                                            <ListItemText primary={subSubDepartment.departmentName}/>
                                                         </ListItem>
                                                     ))}
                                                 </List>
@@ -294,6 +295,11 @@ const OrganizationChart = () => {
             </Box>
 
             <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto' }}>
+                <Checkbox
+                    checked={includeSubDepartments}
+                    onChange={handleIncludeSubDepartmentsChange}
+                />
+                <Typography variant="body2">하위 부서 포함</Typography>
                 <Typography variant="h6" gutterBottom>직원 리스트</Typography>
                 <Box sx={{ mb: 2 }}>
                     {selectedDepartmentNames.length > 0 && (
@@ -318,7 +324,7 @@ const OrganizationChart = () => {
                                     }
                                 }}
                             >
-                                <ListItemIcon>
+                                <ListItemIcon onChange={() => handleEmployeeSelect(employee)}>
                                     <Checkbox
                                         checked={selectedEmployee?.id === employee.id}
                                         onChange={() => handleEmployeeSelect(employee)}
