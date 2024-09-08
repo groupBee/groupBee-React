@@ -20,7 +20,6 @@ import {
     DescriptionOutlined, WorkOutlineOutlined, Chat
 } from "@mui/icons-material";
 import OndemandVideoOutlinedIcon from '@mui/icons-material/OndemandVideoOutlined';
-
 import logo from "../../../assets/images/logo.png";
 import Item from "./Item";
 import {ToggledContext} from "../../../App";
@@ -59,6 +58,11 @@ const SideBar = () => {
 
     // employee.department.id가 infoData의 일부라고 가정
     const employeeDepartmentId = infoData.department?.id || 0;
+
+    const handlePlayNow = () => {
+        // 유튜브 링크로 이동
+        window.open('https://www.youtube.com', '_blank');
+    };
 
 
     return (
@@ -289,11 +293,51 @@ const SideBar = () => {
                     alignItems: 'center', // 세로 중앙 정렬
                     marginTop: '20px'
                 }}>
-                <Box sx={{   border: '1px solid #ffb121',
-                    backgroundColor: '#fff',
-                     height: '200px', width: '80%',  borderRadius: '4px',}}>
+                    <Box
+                        sx={{
+                            border: '1px solid #ffb121',
+                            height: '200px',
+                            width: '80%',
+                            borderRadius: '8px',
+                            position: 'relative',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundImage: 'url(src/assets/images/youtube.jpg)', // 배경 이미지 설정
+                            backgroundSize: 'cover', // 이미지를 컨테이너 크기에 맞게 조정
+                            backgroundPosition: 'center', // 이미지를 중앙에 위치시킴
+                            backgroundRepeat: 'no-repeat' // 이미지 반복 방지
+                        }}
+                    >
 
-                </Box>
+                        {/* 하단 버튼 */}
+                        <Box
+                            sx={{
+                                position: 'absolute',
+                                bottom: '10px',
+                                width: '150px',
+                                textAlign: 'center',
+                                padding: '0 10px',
+                            }}
+                        >
+                            <Button
+                                onClick={handlePlayNow}
+                                sx={{
+                                    borderRadius: '20px',
+                                    padding: '10px',
+                                    color: 'white',
+                                    width: '100%',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                                    fontSize: '15px',
+                                    fontWeight: 'bold'
+
+                                }}
+                            >
+                                Play Now
+                            </Button>
+                        </Box>
+                    </Box>
                 </Box>
             </Box>
 
