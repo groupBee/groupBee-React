@@ -1,0 +1,17 @@
+.chat-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+  }
+  
+  .sidebar {
+    width: 50%; /* 사이드바를 화면의 절반으로 고정 */
+    border-right: 1px solid #ddd;
+    padding: 10px;
+    flex-shrink: 0; /* 사이드바 크기 고정 */
+  }
+  
+  .chat-room-container {
+    width: 50%; /* 채팅방도 화면의 절반까지만 차지 */
+  }
+  
