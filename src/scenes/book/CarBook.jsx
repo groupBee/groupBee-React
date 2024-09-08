@@ -120,18 +120,16 @@ const CarBook = () => {
     };
 
     return (
-        <Box
-            gridRow="span 3"
-            sx={{
-                borderRadius: "8px",
-                backgroundColor: "white",
-                overflow: "hidden",
-                maxWidth: '1400px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                margin: '20px auto'
-            }}
-        >
+        <Box m="20px">
+            <Box
+                height="100%"
+                sx={{
+                    borderRadius: "8px",
+                    backgroundColor: "white",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+
+                }}
+            >
             <Card>
                 <Card.Body>
                     <Box className="wrapper" style={{ height: '600px',borderRadius: '8px', border: '1px solid #9F9F9F', marginBottom: '10px', backgroundColor: 'white' }}>
@@ -153,7 +151,7 @@ const CarBook = () => {
                                      justifyContent: 'space-between', // 위, 아래로 요소를 배치
                                  }}
                             >
-                                <h2 style={{ marginTop:'10px', fontSize: '45px', fontWeight: 'bold'}}>{carDetails.type}</h2>
+                                <h2 style={{ marginTop:'10px', fontSize: '45px', fontWeight: 'bold', color: 'white'}}>{carDetails.type}</h2>
 
                                 <div style={{
                                     display: 'flex',
@@ -253,6 +251,7 @@ const CarBook = () => {
                     reservations={reservations}
                 />
             )}
+        </Box>
         </Box>
     );
 };
