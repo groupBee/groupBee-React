@@ -220,9 +220,10 @@ const SideBar = () => {
                         colors={colors}
                         icon={<WorkOutlineOutlined/>}
                     />
-                    <Box onClick={() => window.open('https://chat.groupbee.co.kr', '_blank')}>
+                    <Box>
                         <Item
                             title="채팅"
+                            path="/chat"
                             colors={colors}
                             icon={<Chat/>}
                         />
