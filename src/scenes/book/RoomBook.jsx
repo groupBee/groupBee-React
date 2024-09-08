@@ -20,6 +20,7 @@ const RoomBook = () => {
     const itemsPerPage = 3;
     const [roomDetails, setRoomDetails] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedImage, setSelectedImage] = useState('');
 
 
 
@@ -123,136 +124,122 @@ const RoomBook = () => {
         ));
     };
 
-    const handleRoomClick = (room) => {
+    const handleRoomClick = (room, photo) => {
         setRoomDetails(room);
+        setSelectedImage(photo);
     };
 
     return (
-        <Box m="20px">
-            <Row>
+        <Box
+            gridRow="span 3"
+            sx={{
+                borderRadius: "8px",
+                backgroundColor: "white",
+                overflow: "hidden",
+                maxWidth: '1400px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                margin: '20px auto'
+                }}
+            >
                 <Card>
-                    <Card.Body className="px-0 py-2">
-                        <div className="row">
-                            {/* 왼쪽 열: 기존 콘텐츠 */}
-                            <div className="col-md-6" style={{padding: '20px'}}>
-                                {currentItems && currentItems.map((item) => (
-                                    <div key={item.id} className="mb-4">
-                                        <div className="row d-flex">
-                                            <div className="d-flex p-15">
-                                                <Card sx={{display: 'flex'}}
-                                                      onClick={() => handleRoomClick(item)}>
-                                                    <Box style={{ width:'250px', height:'140px',}}>
-                                                        <img
-                                                            src={`https://minio.bmops.kro.kr/groupbee/book/${item.photo}`}
-                                                            alt=''
-                                                            style={{
-                                                                width: '100%',
-                                                                height: '100%',
-                                                                objectFit: 'cover',
-                                                                borderRadius: '5px'
-                                                            }}
-                                                        />
-                                                    </Box>
-                                                    <Box sx={{display: 'flex', flexDirection: 'column'}}>
-                                                        <CardContent sx={{flex: '1 0 auto'}}>
-                                                            <Typography variant="subtitle1" color="text.secondary"
-                                                                        component="div">
-                                                                방이름: {item.name}
-                                                            </Typography>
-                                                        </CardContent>
-                                                    </Box>
-                                                </Card>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                    <Card.Body>
+                        <Box className="wrapper" style={{ height: '600px',borderRadius: '8px', border: '1px solid #9F9F9F', marginBottom: '10px', backgroundColor: 'white' }}>
+                            {!roomDetails ? (
+                                <div className="p-3" style={{ borderRadius: '8px', textAlign: 'center' }}>
+                                    <h5>회의룸을 선택하세요</h5>
+                                    <p>아래에서 회의룸을 클릭하여 회의룸의 상세 정보를 확인할 수 있습니다.</p>
+                                </div>
+                            ) : (
+                                <div
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        backgroundImage: `url(${selectedImage})`, // 배경 이미지 설정
+                                        backgroundSize: 'cover', // 이미지 크기
+                                        backgroundPosition: 'center', // 이미지 위치
+                                        display: 'flex', // Flexbox로 변경
+                                        flexDirection: 'column', // 세로로 정렬
+                                        justifyContent: 'space-between', // 위, 아래로 요소를 배치
+                                    }}
+                                >
+                                    <h2 style={{ marginTop:'10px', fontSize: '45px', fontWeight: 'bold'}}>{roomDetails.name}</h2>
 
-                            {/* 오른쪽 열: 차량 상세 정보 */}
-                            <div className="col-md-6" style={{padding:'30px',}}>
-                                {!roomDetails ? (
-                                    <div className="p-3" style={{ borderRadius:'10px', border:'1px solid #ffb121', textAlign: 'center' }}>
-                                        <h5>회의룸을 선택하세요</h5>
-                                        <p>왼쪽 열에서 회의룸을 클릭하여 방의 상세 정보를 확인할 수 있습니다.</p>
-                                    </div>
-                                ) : (
-                                    <div className="p-3"
-                                         style={{borderRadius: '10px', border: '1px solid #ffb121'}}>
-                                        <h4>{roomDetails.name}</h4>
-                                        <hr/>
-                                        <img
-                                            src={`https://minio.bmops.kro.kr/groupbee/book/${roomDetails.photo}`}
-                                            alt=''
-                                            style={{
-                                                width: '100%',
-                                                height: '400px',
-                                                objectFit: 'cover',
-                                                borderRadius: '10px'
-                                            }}
-                                        />
-                                        <hr/>
-                                        <div className="container" style={{width: '100%', marginTop: '10px'}}>
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        padding: '20px',
+                                        backgroundColor: 'rgba(0, 0, 0, 0.3)',  // 배경을 반투명하게 설정
+                                        width: '100%',  // 부모 요소의 너비에 맞추기
+                                        height: '20%',
+                                        color: 'white'
+                                    }}>
+                                        <div style={{width: '15%'}}>
+                                            <h5 style={{margin: '0 10px 0 0', marginBottom: '7px', fontWeight: 'bold'}}>예약현황</h5>
+                                            <DatePicker
+                                                selected={selectedDate}
+                                                onChange={(date) => setSelectedDate(date)}
+                                                showPopperIndicator={true}
+                                                dateFormat="yyyy/MM/dd"
+                                                className="custom-datepicker"
+                                            />
+                                        </div>
+
+                                        <div className="container" style={{width: '70%'}}>
                                             <div style={{
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
                                                 width: '100%'
                                             }}>
-                                                <div>00:00</div>
-                                                <div>12:00</div>
-                                                <div>24:00</div>
+                                                <h1>00:00</h1>
+                                                <h1>12:00</h1>
+                                                <h1>24:00</h1>
                                             </div>
                                             <div className="progress"
                                                  style={{display: 'flex', height: '30px', width: '100%'}}>
                                                 {generateProgressBar(getReservationsForRoomAndDate(roomDetails.id, selectedDate), selectedDate)}
                                             </div>
                                         </div>
-                                        <hr/>
-                                        <div style={{
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center',
-                                            padding: '10px'
-                                        }}>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center'
-                                            }}>
-                                                <h6 style={{margin: '0 10px 0 0'}}>예약현황:</h6>
-                                                <DatePicker
-                                                    selected={selectedDate}
-                                                    onChange={(date) => setSelectedDate(date)}
-                                                    showPopperIndicator={true} // 팝업 인디케이터 표시
-                                                    dateFormat="yyyy/MM/dd" // 날짜 형식
-                                                    className="custom-datepicker"
-                                                />
-                                            </div>
-                                            <div style={{
-                                                display: 'flex',
-                                                alignItems: 'center'
-                                            }}>
-                                                <button
-                                                    className="btn btn-primary"
-                                                    style={{
-                                                        width: '100px',
-                                                        height: '40px',
-                                                        backgroundColor: '#ffb121',
-                                                        border: 'none',
-                                                        cursor: 'pointer',
-                                                    }}
-                                                    onClick={() => handleShowModal(roomDetails)}
-                                                >
-                                                    예약
-                                                </button>
-                                            </div>
+
+                                        <div style={{width: '15%',  display: 'flex',         // Flexbox 적용
+                                            justifyContent: 'flex-end',  // 오른쪽으로 정렬
+                                            alignItems: 'flex-end', marginTop: '10px' }}>
+                                            <button
+                                                className="btn btn-primary"
+                                                style={{
+                                                    width: '130px',
+                                                    height: '60px',
+                                                    backgroundColor: '#ffb121',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    fontSize: '23px',
+                                                    fontWeight: 'bold',
+                                                }}
+                                                onClick={() => handleShowModal(roomDetails)}
+                                            >
+                                                예약하기
+                                            </button>
                                         </div>
                                     </div>
-                                )}
+                                </div>
+                            )}
+                        </Box>
+                        <Box className="wrapper">
+                            {currentItems && currentItems.map((item) => (
+                                <Box className="card1" key={item.id}
+                                     onClick={() => handleRoomClick(item, `https://minio.bmops.kro.kr/groupbee/book/${item.photo}`)}>
+                                    <img src={`https://minio.bmops.kro.kr/groupbee/book/${item.photo}`}
+                                         alt=''/>
+                                    <Box className="info">
+                                        <h1>{item.name}</h1>
 
-                            </div>
-                        </div>
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Box>
                     </Card.Body>
                 </Card>
-            </Row>
 
             <ReactPaginate
                 previousLabel={'이전'}

@@ -306,7 +306,6 @@ function Dashboard() {
     return (
         <Box m="20px" >
             <Box display="flex" justifyContent="space-between" mb="10px" alignItems="center">
-                <Link to='/video'>open</Link>
                 <Box display="flex">
 
                 </Box>
@@ -500,7 +499,7 @@ function Dashboard() {
                             style={getButtonStyle("all")}
                             onClick={() => setStatus("all")}
                         >
-                            모두 보기
+                            모두보기
                         </Button>
                         <Button
                             style={getButtonStyle("rejected")}
@@ -512,7 +511,7 @@ function Dashboard() {
                             style={getButtonStyle("ready")}
                             onClick={() => setStatus("ready")}
                         >
-                            결재 대기
+                            결재대기
                         </Button>
                         <Button
                             style={getButtonStyle("ing")}
@@ -524,7 +523,7 @@ function Dashboard() {
                             style={getButtonStyle("done")}
                             onClick={() => setStatus("done")}
                         >
-                            결재 완료
+                            결재완료
                         </Button>
                     </Box>
                     <Box p="10px" flexGrow={1} overflow="auto">

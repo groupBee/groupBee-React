@@ -69,7 +69,7 @@ function Weather() {
                     const isToday = dateString === today; // Check if the date is today
 
                     return (
-                        <div key={index} className={`forecast-day ${isToday ? 'today' : ''}`}>
+                        <div key={index} className={`forecast-day ${isToday ? 'today' : ''}`} style={{width: '24%'}}>
                             <div className="date">
                                 {`${month}/${day}`}
                             </div>

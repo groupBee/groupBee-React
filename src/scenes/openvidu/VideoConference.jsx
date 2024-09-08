@@ -11,7 +11,8 @@ import {
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { Track } from "livekit-client";
-import { generateToken } from './livekit'; // 토큰 생성 함수
+import { generateToken } from './livekit';
+import {Box} from "@mui/material"; // 토큰 생성 함수
 
 
 const serverUrl = 'https://openvidu.groupbee.co.kr';
@@ -82,7 +83,7 @@ export default function VideoConference() {
             console.log('UUID : '+generatedInviteCode)
             console.log('UUID : '+roomName)
         } else {
-            alert("방 이름과 사용자 이름을 입력하세요.");
+            alert("방 이름을 입력하세요.");
         }
     };
 
@@ -97,58 +98,94 @@ export default function VideoConference() {
             setHasJoined(true);
             setErrorMessage(''); // 오류가 없으므로 경고 메시지 초기화
         } else {
-            setErrorMessage("방 이름과 사용자 이름을 입력하세요.");
+            setErrorMessage("방 이름을 입력하세요.");
         }
     };
 
     // 방에 참여하기 전 입력 필드와 버튼을 표시
     if (!hasJoined) {
         return (
-            <div style={{ textAlign: 'center', padding: '50px' }}>
-                <h2>화상회의 참여</h2>
-                <div>
-                    <input
-                        type="text"
-                        placeholder="방 이름 입력"
-                        value={roomName}
-                        onChange={(e) => setRoomName(e.target.value)}
-                        style={{ margin: '10px', padding: '10px', fontSize: '16px' }}
-                    />
-                </div>
-                <div>
+            <Box
+                gridRow="span 3"
+                sx={{
+                    borderRadius: "12px",
+                    backgroundColor: "#f9f9f9",
+                    boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
+                    overflow: "hidden",
+                    maxWidth: '1400px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    margin: '20px auto',
+                    textAlign: 'center',
+                    width: '40%',
+                    height: '300px',
+                    marginTop: '100px',
+                    padding: '50px 40px'
+                }}
+            >
+                <h2 style={{ color: '#333', fontSize: '24px', marginBottom: '20px' }}>화상회의 참여</h2>
+                <Box sx={{ padding: '0px', marginTop: '20px' }}>
+                    <div>
+                        <input
+                            type="text"
+                            placeholder="방 이름 / 초대코드 입력"
+                            value={roomName}
+                            onChange={(e) => setRoomName(e.target.value)}
+                            style={{
+                                margin: '10px auto',
+                                padding: '12px 16px',
+                                fontSize: '16px',
+                                borderRadius: '8px',
+                                border: '1px solid #ccc',
+                                width: '80%',
+                                display: 'block',
+                            }}
+                        />
+                    </div>
+                    {errorMessage && (
+                        <div style={{ color: 'red'}}>
+                            {errorMessage}
+                        </div>
+                    )}
+                </Box>
+                <div style={{ gap: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '50px' }}>
                     <button
                         onClick={handleJoinRoom}
                         style={{
-                            padding: '10px 20px',
+                            padding: '12px 24px',
                             fontSize: '16px',
                             backgroundColor: '#ffb121',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '5px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.3s',
                         }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#ffa500'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#ffb121'}
                     >
-                        생성하기
+                        방 생성
                     </button>
                     <button
                         onClick={handleJoinRoom2}
                         style={{
-                            padding: '10px 20px',
+                            padding: '12px 24px',
                             fontSize: '16px',
                             backgroundColor: 'red',
                             color: 'white',
                             border: 'none',
-                            borderRadius: '5px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.3s',
                         }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#cc0000'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'red'}
                     >
                         초대코드
                     </button>
                 </div>
-                {errorMessage && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                        {errorMessage}
-                    </div>
-                )}
-            </div>
+            </Box>
+
         );
     }
 
@@ -177,12 +214,12 @@ export default function VideoConference() {
                 data-lk-theme="default"
                 style={{height: '100vh'}}
             >
-                <LayoutContextProvider>
-                    <Chat />
-                </LayoutContextProvider>
                 <MyVideoConference/>
                 <RoomAudioRenderer/>
                 <ControlBar/>
+                <LayoutContextProvider>
+                    <Chat/>
+                </LayoutContextProvider>
             </LiveKitRoom>
         </div>
     );
