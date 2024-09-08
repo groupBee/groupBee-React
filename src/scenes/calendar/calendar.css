@@ -1,6 +1,7 @@
 /* 예시: 더 구체적인 선택자와 !important 사용 */
+
 .fc .fc-list-day-cushion {
-    background-color: #ffb121 !important; /* colors.greenAccent[500]에 대응 */
+    background-color: #ff845e !important; /* colors.greenAccent[500]에 대응 */
 }
 .fc-list-day-cushion > .fc-list-day-text, .fc-list-day-side-text {
     text-decoration: none !important;
@@ -14,30 +15,51 @@
     color: black !important; /* 텍스트 색상 검정 */
 }
 
+.fc .fc-button {
+    background-color: white;
+    color: #ff845e;
+    border: 1px solid #ff845e;
+}
+
+.fc .fc-button:hover {
+    background-color: #ff845e;
+    border: 1px solid #ff845e;
+}
+
+
+.fc .fc-button-primary:disabled {
+    background-color: #fd480c;
+    color: white;
+    border: 1px solid #fd480c;
+}
+
 .fc .fc-button-active {
-    border-color: #ffb121 !important;
-    background-color: #ffb121 !important;
-    color: #000 !important;
+    border-color: #ff845e !important;
+    background-color: #ff845e !important;
+    color: white !important;
     font-weight: bold !important;
 }
 
 .fc .fc-daygrid-event > .fc-event-time {
-    color: #000 !important;
+    color: black !important;
 }
 
 .fc .fc-daygrid-dot-event > .fc-event-title {
-    color: #000 !important;
+    color: black !important;
 }
+
+
 
 
 /* 일요일 텍스트 색상 변경 */
 .fc-day-sun .fc-daygrid-day-number,
 .fc-day-sun a {
-    color: red !important;
+    color: #ff2424 !important;
 }
 
 /* 토요일 텍스트 색상 변경 */
 .fc-day-sat .fc-daygrid-day-number,
 .fc-day-sat a {
-    color: blue !important;
+    color: #0080ff !important;
 }
+
