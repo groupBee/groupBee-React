@@ -6,12 +6,13 @@ import {
     ParticipantTile,
     RoomAudioRenderer,
     useTracks,
+    Chat,
+    LayoutContextProvider
 } from "@livekit/components-react";
 import "@livekit/components-styles";
 import { Track } from "livekit-client";
 import { generateToken } from './livekit'; // 토큰 생성 함수
-import "./ChatComponent.jsx";
-import {ChatComponent} from "./ChatComponent.jsx";
+
 
 const serverUrl = 'https://openvidu.groupbee.co.kr';
 
@@ -159,19 +160,6 @@ export default function VideoConference() {
     // 방에 참여 후 LiveKitRoom 컴포넌트 렌더링
     return (
         <div style={{height: '100vh', display: 'flex', flexDirection: 'column'}}>
-            <LiveKitRoom
-                video={true}
-                audio={true}
-                token={token}
-                serverUrl={serverUrl}
-                data-lk-theme="default"
-                style={{height: '100vh'}}
-            >
-                <MyVideoConference/>
-                <RoomAudioRenderer/>
-                <ControlBar/>
-                <ChatComponent/>
-            </LiveKitRoom>
             <div style={{
                 padding: '10px',
                 backgroundColor: '#f1f1f1',
@@ -181,6 +169,21 @@ export default function VideoConference() {
             }}>
                 초대 코드: <strong>{roomName}</strong>
             </div>
+            <LiveKitRoom
+                video={true}
+                audio={true}
+                token={token}
+                serverUrl={serverUrl}
+                data-lk-theme="default"
+                style={{height: '100vh'}}
+            >
+                <LayoutContextProvider>
+                    <Chat />
+                </LayoutContextProvider>
+                <MyVideoConference/>
+                <RoomAudioRenderer/>
+                <ControlBar/>
+            </LiveKitRoom>
         </div>
     );
 }
@@ -192,8 +195,8 @@ function MyVideoConference() {
             {source: Track.Source.ScreenShare, withPlaceholder: false},
         ],
         {onlySubscribed: false},
-            );
-            return (
+    );
+    return (
             <GridLayout tracks={tracks} style={{height: 'calc(100vh - var(--lk-control-bar-height))'}}>
             <ParticipantTile/>
         </GridLayout>
