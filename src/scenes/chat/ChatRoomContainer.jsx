@@ -31,7 +31,7 @@ const ChatRoomContainer = ({ activeRoom, onClose }) => {
     const connectWebSocket = () => {
         if (!userId) return; // userId가 설정되지 않으면 WebSocket 연결하지 않음
 
-        const socket = new WebSocket('ws://100.64.0.3:8080/ws/init');
+        const socket = new WebSocket('ws://100.64.0.10:9999/ws');
         const stompClient = Stomp.over(socket);
         stompClientRef.current = stompClient; // stompClient를 ref에 저장
 
