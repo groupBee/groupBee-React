@@ -118,8 +118,8 @@ function Dashboard() {
                     content: event.content || "",
                     start: event.startDay,
                     end: event.endDay,
-                    backgroundColor: isHoliday ? '#ff0000' : '#ffc107',  // 공휴일이면 빨간색, 아니면 노란색
-                    borderColor: isHoliday ? '#ff0000' : '#ffc107',      // 공휴일이면 빨간색, 아니면 노란색
+                    backgroundColor: isHoliday ? '#ff3d3d' : '#ff9f59',  // 공휴일이면 빨간색, 아니면 노란색
+                    borderColor: isHoliday ? '#ff3d3d' : '#ff9f59',      // 공휴일이면 빨간색, 아니면 노란색
                     textColor: isHoliday ? '#ffffff' : '#000000',
                     allDay: isHoliday,
                 };
@@ -562,7 +562,10 @@ function Dashboard() {
                             </IconButton>
                         </Typography>
                     </Box>
-                    <Box  sx={{padding: '5px', alignItems:'center', display:'flex', gap:'5px', justifyContent:'center',marginTop:'10px'}} >
+                    <Box  sx={{
+                        padding: '5px', alignItems:'center', display:'flex', gap:'5px', justifyContent:'center',marginTop:'10px',
+                        flexWrap: 'wrap',
+                        overflowX: 'auto'}} >
                         <Button
                             style={getButtonStyle("all")}
                             onClick={() => setStatus("all")}
@@ -596,7 +599,7 @@ function Dashboard() {
                     </Box>
                     <Box p="10px" flexGrow={1} overflow="auto">
                         {filteredData.length > 0 ? (
-                            <table style={{ width: '100%', borderCollapse: 'collapse', marginTop:'10px'}}>
+                            <table className="table table-hover" style={{ width: '100%', borderCollapse: 'collapse', marginTop:'10px'}}>
                                 <thead>
                                 <tr style={{ borderBottom: '2px solid #e0e0e0' }}>
                                     <th style={{ padding: '12px', textAlign: 'center', color: '#333', fontWeight: 'bold' }}>종류</th>
@@ -607,13 +610,18 @@ function Dashboard() {
                                 </thead>
                                 <tbody>
                                 {filteredData.map((item, idx) => (
-                                    <tr key={idx} style={{ borderBottom: '1px solid #e0e0e0', cursor:'pointer'}} onClick={() => moveDetail(item.id)}>
+                                    <tr key={idx} style={{ borderBottom: '1px solid #e0e0e0', cursor:'pointer',
+                                    }}
+                                        onClick={() => moveDetail(item.id)}>
                                         <td style={{ padding: '12px', textAlign: 'center', color: '#555' }}>
                                             {item.appDocType === 0 ? '품의서' :
                                                 item.appDocType === 1 ? '휴가신청서' :
                                                     item.appDocType === 2 ? '지출보고서' : ''}
                                         </td>
-                                        <td style={{ padding: '12px',textAlign: 'center', color: '#333' }}>
+                                        <td style={{ padding: '12px',textAlign: 'center', color: '#333' }}
+                                            onMouseOver={(e) => (e.target.style.color = "#ffb121")}
+                                            onMouseOut={(e) => (e.target.style.color = "inherit")}
+                                        >
                                             {item.additionalFields.title || '제목 없음'}
                                         </td>
                                         <td style={{ padding: '12px', textAlign: 'center', color: '#555' }}>

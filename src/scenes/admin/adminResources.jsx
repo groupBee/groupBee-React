@@ -528,7 +528,7 @@ const AdminResources = () => {
                         </Box>
                     )}
                 </DialogContent>
-                <DialogActions>
+                <DialogActions style={{marginRight:'10px'}}>
                     <Button onClick={handleAddBooking} color="primary">추가</Button>
                     <Button onClick={handleCloseModal} color="secondary">취소</Button>
                 </DialogActions>

@@ -7,7 +7,8 @@ import {
     Select,
     Typography,
     CircularProgress,
-    useMediaQuery
+    useMediaQuery,
+    Pagination
 } from "@mui/material";
 import { MenuOutlined, SearchOutlined } from "@mui/icons-material";
 import PersonIcon from '@mui/icons-material/Person';
@@ -19,6 +20,8 @@ const AdminEmail = () => {
     const isXsDevices = useMediaQuery("(max-width:466px)");
     const [email, setEmail] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지
+    const [itemsPerPage] = useState(4); // 페이지당 항목 수
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value);
@@ -61,6 +64,16 @@ const AdminEmail = () => {
     const convertBytesToGB = (bytes) => (bytes / (1024 ** 3)).toFixed(2);
     const TOTAL_QUOTA_GB = 5;
 
+    // 페이지네이션 관련 데이터 계산
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = email.slice(indexOfFirstItem, indexOfLastItem);
+    const pageCount = Math.ceil(email.length / itemsPerPage);
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
+
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
@@ -70,10 +83,10 @@ const AdminEmail = () => {
     }
 
     return (
-        <Box sx={{ padding: '20px'}}>
-            <Box p={2}>
-                <Box>
-                    {email.map((emailItem, index) => {
+        <Box sx={{ padding: '20px' }}>
+            <Box p={2} style={{marginTop:'-10px'}}>
+
+                    {currentItems.map((emailItem, index) => {
                         const usedQuotaGB = convertBytesToGB(emailItem.quota);
                         const totalQuotaGB = TOTAL_QUOTA_GB;
                         const quotaUsedPercent = (emailItem.quota / (totalQuotaGB * 1024 ** 3)) * 100;
@@ -88,8 +101,9 @@ const AdminEmail = () => {
                                     borderRadius: '8px',
                                     backgroundColor: 'white',
                                     boxShadow: 1,
-                                    overflow: 'hidden'
-                                    , '&:hover': { backgroundColor: '#f5f5f5' }
+                                    overflow: 'hidden',
+                                    '&:hover': { backgroundColor: '#f5f5f5' },
+
                                 }}
                             >
                                 {/* 왼쪽 박스 (70%) */}
@@ -108,7 +122,7 @@ const AdminEmail = () => {
                                             {emailItem.username}
                                         </Typography>
                                         <Typography variant="h6">
-                                            <span style={{color:'white', backgroundColor:'#09e3a9', padding:'4px', borderRadius:'4px'}}>
+                                            <span style={{ color: 'white', backgroundColor: '#09e3a9', padding: '4px', borderRadius: '4px' }}>
                                                 {emailItem.active === 1 ? '사용중' : '사용불가'}
                                             </span>
                                         </Typography>
@@ -165,6 +179,37 @@ const AdminEmail = () => {
                             </Box>
                         );
                     })}
+
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                    <Pagination
+                        count={pageCount}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        siblingCount={2}
+                        boundaryCount={1}
+                        showFirstButton
+                        showLastButton
+                        sx={{
+                            '& .MuiPaginationItem-root': {
+                                color: '#000',
+                                fontSize: '14px',
+                                '&:hover': {
+                                    backgroundColor: '#09e3a9',
+                                    color: 'white',
+                                },
+                                '&.Mui-selected': {
+                                    backgroundColor: '#09e3a9',
+                                    color: 'white',
+                                },
+                            },
+                            '& .MuiPaginationItem-ellipsis': {
+                                color: '#09e3a9',
+                            },
+                            '& .MuiPaginationItem-icon': {
+                                color: '#000',
+                            },
+                        }}
+                    />
                 </Box>
             </Box>
         </Box>

@@ -1,7 +1,7 @@
 /* 예시: 더 구체적인 선택자와 !important 사용 */
 
 .fc .fc-list-day-cushion {
-    background-color: #ff845e !important; /* colors.greenAccent[500]에 대응 */
+    background-color: #e3e3e3 !important; /* colors.greenAccent[500]에 대응 */
 }
 .fc-list-day-cushion > .fc-list-day-text, .fc-list-day-side-text {
     text-decoration: none !important;
@@ -17,27 +17,26 @@
 
 .fc .fc-button {
     background-color: white;
-    color: #ff845e;
-    border: 1px solid #ff845e;
+    color: #ff9f59;
+    border: 1px solid #ff9f59;
 }
 
 .fc .fc-button:hover {
-    background-color: #ff845e;
-    border: 1px solid #ff845e;
+    background-color: #ff9f59;
+    border: 1px solid #ff9f59;
 }
 
 
 .fc .fc-button-primary:disabled {
-    background-color: #fd480c;
+    background-color: #ff9f59;
     color: white;
-    border: 1px solid #fd480c;
+    border: 1px solid #ff9f59;
 }
 
-.fc .fc-button-active {
-    border-color: #ff845e !important;
-    background-color: #ff845e !important;
-    color: white !important;
-    font-weight: bold !important;
+.fc .fc-button:active {
+    background-color: #ff9f59 !important; /* 원하는 배경색으로 변경 */
+    color: white !important; /* 텍스트 색상 변경 */
+    border-color: #ff9f59 !important; /* 테두리 색상 변경 */
 }
 
 .fc .fc-daygrid-event > .fc-event-time {
