@@ -48,7 +48,7 @@ const EmailMain = () => {
                         <Button
                             onClick={handleSendMailButtonClick}
                             sx={{
-                                backgroundColor: 'white',
+                                backgroundColor: 'transparent',
                                 color: sendMailButtonColor,
                                 fontSize: '20px',
                                 padding: '0',
@@ -65,7 +65,7 @@ const EmailMain = () => {
                         <Button
                             onClick={handleListMailButtonClick}
                             sx={{
-                                backgroundColor: 'white',
+                                backgroundColor: 'transparent',
                                 color: listMailButtonColor,
                                 fontSize: '20px',
                                 padding: '0',
@@ -82,12 +82,11 @@ const EmailMain = () => {
                         <Button
                             onClick={handlesentListMailButtonClick}
                             sx={{
-                                backgroundColor: 'white',
+                                backgroundColor: 'transparent',
                                 color: sentMailButtonColor,
                                 fontSize: '20px',
-                                padding: '5px',
+                                padding: '0',
                                 textTransform: 'none',
-                                border: '1px solid #f7b552',
                                 '&:hover': {
                                     backgroundColor: 'transparent',
                                     color: '#f7b552',  // hover 시 색상 변경
