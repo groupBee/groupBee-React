@@ -42,7 +42,7 @@ function Dashboard() {
     const calendarRef = useRef(null);
     const [currentYear, setCurrentYear] = useState(null);  // 현재 연도 상태 관리
     const fullcalendarRef = useRef(null);
-    const [today, setToday] = useState("");
+    const [today, setToday] = useState([]);
 
 
 
@@ -273,23 +273,60 @@ function Dashboard() {
                 checkOut: localDateTime
             });
             alert('퇴근')
+
+            await todaycheckin(); //최신화
         } catch (err) {
             console.error("Error fetching info:", err);
         }
     };
 
-    // 오늘 체크인 시간
+    //오늘의 체크인 시간
+    const addHours = (date, hours) => {
+        const result = new Date(date);
+        result.setHours(result.getHours() + hours);
+        return result;
+    };
+
+    const formatTime = (timeString) => {
+        const date = new Date(timeString);
+
+        // 9시간을 추가
+        const newDate = addHours(date, 9);
+
+        // 로컬 시간으로 변환
+        const formattedTime = newDate.toLocaleTimeString('ko-KR', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        });
+
+        return `(${formattedTime})`;  // 괄호 추가
+    };
+
+    useEffect(() => {
+        todaycheckin();
+    }, []);
+
     const todaycheckin = () => {
         axios.get("/api/attendance/todayCheckIn")
             .then(res => {
-                // 응답 결과를 콘솔에 출력
-                console.log('Check-in 시간:', res.data);
-                setToday(res.data)
+                // checkIn 기준으로 데이터를 내림차순 정렬하여 가장 최근의 데이터를 가져옴
+                const sortedData = res.data.sort((a, b) => new Date(b.checkIn) - new Date(a.checkIn));
+
+                // 가장 최근의 checkIn과 checkOut 값
+                const latestCheckInOut = {
+                    checkIn: sortedData[0]?.checkIn ? formatTime(sortedData[0].checkIn) : null,
+                    checkOut: sortedData[0]?.checkOut ? formatTime(sortedData[0].checkOut) : null,
+                };
+
+                console.log('가장 최근의 Check-in/Check-out 데이터 (12시간제, 9시간 추가):', latestCheckInOut);
+                setToday(latestCheckInOut);  // 최신 데이터만 상태에 저장
             })
             .catch(err => {
                 console.error('오류 발생:', err);
             });
     };
+
 
     const moveDetail = (itemId) => {
         navigate("/detail", {
@@ -445,7 +482,7 @@ function Dashboard() {
                 </Box>
 
 
-                {/* 시계 */}
+                {/* 시계 , 출퇴근 */}
                 <Box
                     gridColumn={isXlDevices ? "span 4" : "span 3"}
                     gridRow="span 1"
@@ -475,13 +512,13 @@ function Dashboard() {
                             class="button"
                             onClick={checkin}
                         >
-                            출근{today}
+                            출근{today.checkIn}
                         </Button>
                         <Button
                             class="button"
                             onClick={checkout}
                         >
-                          퇴근
+                          퇴근{today.checkOut}
                         </Button>
                     </div>
                     <div>
