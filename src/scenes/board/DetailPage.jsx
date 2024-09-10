@@ -234,7 +234,7 @@ const DetailPage = () => {
                             </Box>
                             {post.updateDate && new Date(post.updateDate) > new Date(post.createDate) && (
                                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-                                    <Typography variant="body2" sx={{ color: "#777", fontSize: '13px' }}>
+                                    <Typography variant="body2" sx={{ color: "#777", fontSize: '13px',marginRight:'3px' }}>
                                         수정일: {new Date(post.updateDate).toLocaleString('ko-KR')}
                                     </Typography>
                                 </Box>
