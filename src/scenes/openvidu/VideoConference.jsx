@@ -35,6 +35,8 @@ export default function VideoConference() {
     const [errorMessage, setErrorMessage] = useState('');
     const [isChatVisible, setIsChatVisible] = useState(false);
     const [messages, setMessages] = useState([]);
+    const [messageCount, setMessageCount] = useState(0);
+    const [lastMessageTimestamp, setLastMessageTimestamp] = useState(0);
 
     const fetchData = async () => {
         try {
@@ -101,10 +103,20 @@ export default function VideoConference() {
 
     const toggleChat = () => {
         setIsChatVisible(!isChatVisible);
+        if (!isChatVisible) {
+            setMessageCount(0);
+        }
     };
 
     const handleSendMessage = (message) => {
         setMessages([...messages, { sender: participantName, text: message }]);
+    };
+
+    const handleNewMessage = (timestamp) => {
+        if (!isChatVisible && timestamp > lastMessageTimestamp) {
+            setMessageCount(prevCount => prevCount + 1);
+        }
+        setLastMessageTimestamp(timestamp);
     };
 
     if (!hasJoined) {
@@ -187,7 +199,7 @@ export default function VideoConference() {
     }
 
     return (
-        <div style={{height: '100vh', display: 'flex', flexDirection: 'column'}}>
+        <div style={{height: '88.5vh', display: 'flex', flexDirection: 'column'}}>
             <div style={{
                 padding: '10px',
                 backgroundColor: '#f1f1f1',
@@ -203,11 +215,29 @@ export default function VideoConference() {
                 token={token}
                 serverUrl={serverUrl}
                 data-lk-theme="default"
-                style={{height: '100vh'}}
+                style={{
+                    height: '88.5vh',
+                    width: isChatVisible ? '71%' : '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'width 0.3s, visibility 0.3s, opacity 0.3s',
+                }}
             >
                 <RoomAudioRenderer/>
                 <MyVideoConference/>
-                <div style={{display:'inline-flex',alignItems:'center', justifyContent: 'center', width: '100%'}}>
+
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: isChatVisible ?'75%':'100%',
+                    position: 'fixed',
+                    bottom: 0,
+                    left: 0,
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    padding: '10px',
+                    transition: 'width 0.3s, visibility 0.3s, opacity 0.3s',
+                }}>
                     <div className="lk-button-group" style={{marginRight:'1%'}}>
                         <TrackToggle source={Track.Source.Microphone} />
                         <div className="lk-button-group-menu">
@@ -236,9 +266,9 @@ export default function VideoConference() {
                     onClick={toggleChat}
                     style={{
                         position: 'fixed',
-                        bottom: '20px',
-                        right: '20px',
-                        backgroundColor: '#282929',
+                        bottom:isChatVisible ? '83%': '0%',
+                        right: '10px',
+                        backgroundColor: '#1c1c1c',
                         color: 'white',
                         border: 'none',
                         borderRadius: '50%',
@@ -248,28 +278,50 @@ export default function VideoConference() {
                         justifyContent: 'center',
                         alignItems: 'center',
                         cursor: 'pointer',
+                        zIndex: 1100,
                     }}
                 >
                     {isChatVisible ? <CloseIcon /> : <ChatIcon />}
+                    {!isChatVisible && messageCount > 0 && (
+                        <div style={{
+                            position: 'absolute',
+                            top: '-5px',
+                            right: '-5px',
+                            backgroundColor: 'red',
+                            color: 'white',
+                            borderRadius: '50%',
+                            width: '20px',
+                            height: '20px',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            fontSize: '12px',
+                        }}>
+                            {messageCount}
+                        </div>
+                    )}
                 </button>
 
                 <div
                     style={{
                         position: 'fixed',
-                        bottom: '80px',
-                        right: '20px',
-                        width: '25%',
-                        height: '80%',
+                        bottom: '0px',
+                        right: '0px',
+                        width: isChatVisible ? '25%' : '0%',
+                        height: '88.75%',
                         backgroundColor: 'white',
-                        borderRadius: '10px',
                         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                         zIndex: 1000,
+                        transition: 'width 0.3s, visibility 0.3s, opacity 0.3s',
                         visibility: isChatVisible ? 'visible' : 'hidden',
                         opacity: isChatVisible ? 1 : 0,
-                        transition: 'visibility 0.3s, opacity 0.3s',
                     }}
                 >
-                    <ChatComponent messages={messages} onSendMessage={handleSendMessage} />
+                    <ChatComponent
+                        messages={messages}
+                        onSendMessage={handleSendMessage}
+                        onNewMessage={handleNewMessage}
+                    />
                 </div>
             </LiveKitRoom>
         </div>
@@ -285,8 +337,15 @@ function MyVideoConference() {
         {onlySubscribed: false},
     );
     return (
-        <GridLayout tracks={tracks} style={{height: 'calc(100vh - var(--lk-control-bar-height))'}}>
-            <ParticipantTile/>
+        <GridLayout
+            tracks={tracks}
+            style={{
+                height: 'calc(100vh - 70px)',
+                width: '100%',
+                backgroundColor: 'black',
+            }}
+        >
+            <ParticipantTile />
         </GridLayout>
     );
 }

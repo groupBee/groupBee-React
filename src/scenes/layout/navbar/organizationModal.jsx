@@ -296,11 +296,6 @@ const OrganizationChart = () => {
             </Box>
 
             <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto' }}>
-                <Checkbox
-                    checked={includeSubDepartments}
-                    onChange={handleIncludeSubDepartmentsChange}
-                />
-                <Typography variant="body2">하위 부서 포함</Typography>
                 <Typography variant="h6" gutterBottom>직원 리스트</Typography>
                 <Checkbox
                     checked={includeSubDepartments}
