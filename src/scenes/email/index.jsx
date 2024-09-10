@@ -6,26 +6,26 @@ import SentEmail from "./sentEmail";
 const EmailMain = () => {
     const [view, setView] = useState("send");
     const [sendMailButtonColor, setSendMailButtonColor] = useState('#f7b552');
-    const [listMailButtonColor, setListMailButtonColor] = useState('#c9c5bf');
-    const [sentMailButtonColor,setSentMailButtonColor]= useState('#c9c5bf');
+    const [listMailButtonColor, setListMailButtonColor] = useState('#b6b6b6');
+    const [sentMailButtonColor,setSentMailButtonColor]= useState('#b6b6b6');
 
     const handleSendMailButtonClick = () => {
         setView("send");
         setSendMailButtonColor('#f7b552');
-        setListMailButtonColor('#c9c5bf');
-        setSentMailButtonColor('#c9c5bf');
+        setListMailButtonColor('#b6b6b6');
+        setSentMailButtonColor('#b6b6b6');
     };
 
     const handleListMailButtonClick = () => {
         setView("list");
-        setSendMailButtonColor('#c9c5bf');
-        setSentMailButtonColor('#c9c5bf');
+        setSendMailButtonColor('#b6b6b6');
+        setSentMailButtonColor('#b6b6b6');
         setListMailButtonColor('#f7b552');
     };
     const handlesentListMailButtonClick = () => {
         setView("sent");
-        setSendMailButtonColor('#c9c5bf'); 
-        setListMailButtonColor('#c9c5bf');
+        setSendMailButtonColor('#b6b6b6');
+        setListMailButtonColor('#b6b6b6');
         setSentMailButtonColor('#f7b552');
     };
 
@@ -48,9 +48,9 @@ const EmailMain = () => {
                         <Button
                             onClick={handleSendMailButtonClick}
                             sx={{
-                                backgroundColor: 'transparent',
+                                backgroundColor: 'white',
                                 color: sendMailButtonColor,
-                                fontSize: '18px',
+                                fontSize: '20px',
                                 padding: '0',
                                 textTransform: 'none',
                                 '&:hover': {
@@ -65,9 +65,9 @@ const EmailMain = () => {
                         <Button
                             onClick={handleListMailButtonClick}
                             sx={{
-                                backgroundColor: 'transparent',
+                                backgroundColor: 'white',
                                 color: listMailButtonColor,
-                                fontSize: '18px',
+                                fontSize: '20px',
                                 padding: '0',
                                 textTransform: 'none',
                                 '&:hover': {
@@ -82,11 +82,12 @@ const EmailMain = () => {
                         <Button
                             onClick={handlesentListMailButtonClick}
                             sx={{
-                                backgroundColor: 'transparent',
+                                backgroundColor: 'white',
                                 color: sentMailButtonColor,
-                                fontSize: '18px',
-                                padding: '0',
+                                fontSize: '20px',
+                                padding: '5px',
                                 textTransform: 'none',
+                                border: '1px solid #f7b552',
                                 '&:hover': {
                                     backgroundColor: 'transparent',
                                     color: '#f7b552',  // hover 시 색상 변경

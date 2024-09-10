@@ -118,18 +118,6 @@ const AdminBoard = () => {
                     alignItems="center"
                 >
                     게시판
-                    <Box
-                        display="flex"
-                        alignItems="center"
-                        bgcolor="white"
-                        borderRadius="3px"
-                        sx={{ display: `${isXsDevices ? "none" : "flex"}`, border: '1px solid #ffb121' }}
-                    >
-                        <InputBase placeholder="Search" sx={{ ml: 2, flex: 1 }} />
-                        <IconButton type="button" sx={{ p: 1 }}>
-                            <SearchOutlined />
-                        </IconButton>
-                    </Box>
                 </Typography>
             </Box>
             <TableContainer component={Paper}>
