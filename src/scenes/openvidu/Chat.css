@@ -1,0 +1,32 @@
+.lk-chat-messages {
+    display: flex;
+    flex-direction: column;
+}
+
+.lk-chat-entry {
+    max-width: 70%;
+    margin-bottom: 10px;
+    align-self: flex-start;
+}
+
+.lk-chat-entry-self {
+    align-self: flex-end;
+}
+
+.lk-chat-entry-metadata {
+    font-size: 0.8em;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.lk-chat-entry-bubble {
+    background-color: #f1f0f0;
+    border-radius: 18px;
+    padding: 8px 12px;
+    display: inline-block;
+}
+
+.lk-chat-entry-self .lk-chat-entry-bubble {
+    background-color: #0084ff;
+    color: white;
+}

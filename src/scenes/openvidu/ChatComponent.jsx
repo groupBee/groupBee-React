@@ -1,15 +1,17 @@
-import React, {useRef, useEffect, useMemo, useState} from 'react';
-import {ChatEntry, useChat, useMaybeLayoutContext} from "@livekit/components-react";
+import React, { useRef, useEffect, useMemo, useState } from 'react';
+import { ChatEntry, useChat, useMaybeLayoutContext } from "@livekit/components-react";
+import './Chat.css';
 
 export function ChatComponent({
-                         messageFormatter,
-                         messageDecoder,
-                         messageEncoder,
-                         channelTopic,
-                         ...props
-                     }) {
+                                  messageFormatter,
+                                  messageDecoder,
+                                  messageEncoder,
+                                  channelTopic,
+                                  ...props
+                              }) {
     const [infoData, setInfoData] = useState(null);
     const [currentUser, setCurrentUser] = useState('');
+    const [displayName, setDisplayName] = useState('');
 
     const inputRef = useRef(null);
     const ulRef = useRef(null);
@@ -27,12 +29,13 @@ export function ChatComponent({
         event.preventDefault();
         if (inputRef.current && inputRef.current.value.trim() !== '') {
             if (send) {
-                await send(inputRef.current.value);
+                await send(JSON.stringify({ text: inputRef.current.value, author: currentUser }));
                 inputRef.current.value = '';
                 inputRef.current.focus();
             }
         }
     }
+
     const fetchData = async () => {
         try {
             const response = await fetch('/api/employee/info');
@@ -50,8 +53,8 @@ export function ChatComponent({
     }, []);
 
     useEffect(() => {
-        if (ulRef) {
-            ulRef.current?.scrollTo({ top: ulRef.current.scrollHeight });
+        if (ulRef.current) {
+            ulRef.current.scrollTo({ top: ulRef.current.scrollHeight });
         }
     }, [ulRef, chatMessages]);
 
@@ -80,30 +83,40 @@ export function ChatComponent({
     }, [chatMessages, layoutContext?.widget]);
 
     return (
-        <div {...props} className="lk-chat" style={{width:'100%',height:'100%'}}>
+        <div {...props} className="lk-chat" style={{width:'100%', height:'100%'}}>
             <div className="lk-chat-header">
                 Messages
             </div>
 
             <ul className="lk-list lk-chat-messages" ref={ulRef}>
-                {props.children
-                    ? chatMessages.map((msg, idx) =>
-                        (msg)
-                    )
-                    : chatMessages.map((msg, idx, allMsg) => {
-                        const hideName = idx >= 1 && allMsg[idx - 1].from === msg.from;
-                        const hideTimestamp = idx >= 1 && msg.timestamp - allMsg[idx - 1].timestamp < 60_000;
+                {chatMessages.map((msg, idx, allMsg) => {
+                    let parsedMessage;
+                    try {
+                        parsedMessage = JSON.parse(msg.message);
+                    } catch (error) {
+                        console.error('Error parsing message:', error);
+                        parsedMessage = { text: msg.message, author: 'Unknown' };
+                    }
 
-                        return (
-                            <ChatEntry
-                                key={msg.id ?? idx}
-                                hideName={hideName}
-                                hideTimestamp={hideName === false ? false : hideTimestamp}
-                                entry={msg}
-                                messageFormatter={messageFormatter}
-                            />
-                        );
-                    })}
+                    const isCurrentUser = parsedMessage.author === currentUser;
+                    const hideTimestamp = idx >= 1 && msg.timestamp - allMsg[idx - 1].timestamp < 60_000;
+
+                    return (
+                        <li key={msg.id ?? idx} className={`lk-chat-entry ${isCurrentUser ? 'lk-chat-entry-self' : ''}`}>
+                            <div className="lk-chat-entry-metadata">
+                                <span className="lk-chat-entry-author">{parsedMessage.author}</span>
+                                {!hideTimestamp && (
+                                    <span className="lk-chat-entry-timestamp">
+                    {new Date(msg.timestamp).toLocaleTimeString()}
+                  </span>
+                                )}
+                            </div>
+                            <div className="lk-chat-entry-bubble">
+                                {parsedMessage.text}
+                            </div>
+                        </li>
+                    );
+                })}
             </ul>
             <form className="lk-chat-form" onSubmit={handleSubmit}>
                 <input

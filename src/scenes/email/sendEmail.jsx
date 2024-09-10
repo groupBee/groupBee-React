@@ -77,12 +77,6 @@ const SendEmail = () => {
         }
     }, [location.search]);
 
-    // 참조인 및 받는 사람 추가 및 삭제에 따른 텍스트 영역 크기 조절 로직
-    useEffect(() => {
-        const totalRecipients = to.length + cc.length;
-        // 기본 크기 설정 및 추가된 이메일 수에 따라 높이 조정
-        setTextareaHeight(350 - totalRecipients * 40);
-    }, [to, cc]);
 
     const openModal = (field) => {
         setTargetField(field);
@@ -220,21 +214,42 @@ const SendEmail = () => {
     };
 
     return (
-        <Box sx={{ m: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box
+            sx={{
+                m: '20px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden',
+                width: '100%', // 반응형을 위한 너비 조정
+                padding: '0 10px', // 양쪽에 패딩 추가
+            }}
+        >
             <Box
-                height="auto"
                 sx={{
-                    borderRadius: "8px",
-                    backgroundColor: "white",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    borderRadius: '8px',
+                    backgroundColor: 'white',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                     minHeight: '850px',
-                    width: "80%",
-                    maxWidth: "850px",
-                    padding: "80px",
+                    width: '100%',
+                    maxWidth: '1050px',
+                    padding: '40px', // 패딩을 줄여서 내용이 잘 보이도록 조정
+                    overflow: 'hidden', // 요소가 넘어가면 숨김
                 }}
             >
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '-10px', marginBottom: '30px',
-                    fontSize: '25px'}}><h1>메일 보내기</h1></Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: '-10px',
+                        marginBottom: '30px',
+                        fontSize: '25px',
+                    }}
+                >
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',
+                        fontSize: '25px', marginBottom:'30px'}}><h1>메일 보내기</h1></Box>
+                </Box>
             <form onSubmit={handleSendEmail}>
                 <div style={{
                     backgroundColor: 'white',

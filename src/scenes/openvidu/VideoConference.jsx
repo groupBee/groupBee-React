@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-    ControlBar,
+    ControlBar, DisconnectButton,
     GridLayout,
-    LiveKitRoom,
+    LiveKitRoom, MediaDeviceMenu,
     ParticipantTile,
     RoomAudioRenderer,
     useTracks,
@@ -204,7 +204,13 @@ export default function VideoConference() {
             >
                 <MyVideoConference />
                 <RoomAudioRenderer />
-                <ControlBar />
+                <ControlBar/>
+                <MediaDeviceMenu />
+                < DisconnectButton  onClick={() => {
+                    setHasJoined(false); // 방을 떠난 상태로 업데이트
+                    setRoomName('');     // 방 이름 초기화
+                    setToken('');        // 토큰 초기화
+                }}> 방 나가기 </ DisconnectButton >
                 <button
                     onClick={toggleChat}
                     style={{
