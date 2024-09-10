@@ -3,6 +3,7 @@ import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
 
+
 const ChatRoomContainer = ({ activeRoom, onClose }) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
@@ -44,7 +45,7 @@ const ChatRoomContainer = ({ activeRoom, onClose }) => {
                 const receivedMessage = JSON.parse(message.body);
 
                 // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
-                if (receivedMessage.sender !== userId) {
+                if (receivedMessage.sender !== userId) { 
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         { text: receivedMessage.message, name: receivedMessage.name, isMine: false }
@@ -67,12 +68,21 @@ const ChatRoomContainer = ({ activeRoom, onClose }) => {
 
         // 메시지 전송 (사용자 ID를 포함하여 전송)
         const messageObj = {
-            message: inputMessage,
-            sender: userId,  // 내가 보낸 메시지임을 식별
-            name: name
+            // message: inputMessage,
+            // sender: userId,  // 내가 보낸 메시지임을 식별
+            name: name,//
+            chatRoomId:'d',
+            senderId:userId,
+            senderNickName:name,
+            recipientId:[],
+            content:inputMessage,
+            announcement:'',
+            fileUrl:'',
+
+
         };
 
-        stompClient.send('/app/example', {}, JSON.stringify(messageObj));
+        stompClient.send('/app/chat', {}, JSON.stringify(messageObj));
 
         // 내가 보낸 메시지를 오른쪽 말풍선에 추가
         setMessages((prevMessages) => [
