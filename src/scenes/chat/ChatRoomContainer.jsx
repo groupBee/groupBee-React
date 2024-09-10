@@ -9,6 +9,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
     let subscriptionUrl = '';
+    let messageTopic = '';
 
     // WebSocket 연결 함수
     const connectWebSocket = () => {
@@ -25,8 +26,10 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
         if (topic === "create-room-one") {
             subscriptionUrl = `/topic/messages/${chatRoomId}`;
+            messageTopic = 'one';
         } else{
             subscriptionUrl = `/topic/group/${chatRoomId}`;
+            messageTopic = 'many';
         }
 
         stompClient.connect({}, (frame) => {
