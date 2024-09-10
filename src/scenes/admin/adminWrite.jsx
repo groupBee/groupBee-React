@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Box, Button,
     FormControlLabel,
@@ -8,13 +8,12 @@ import {
     Modal, Paper, Radio,
     RadioGroup,
     Select, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Typography, useMediaQuery
+    Typography, useMediaQuery, Pagination
 } from "@mui/material";
-import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
-import {Table} from "react-bootstrap";
+import { MenuOutlined, SearchOutlined } from "@mui/icons-material";
+import { Table } from "react-bootstrap";
 import DeleteIcon from '@mui/icons-material/Delete';
-import ReactPaginate from 'react-paginate';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const AdminWrite = () => {
@@ -22,11 +21,10 @@ const AdminWrite = () => {
     const isMdDevices = useMediaQuery("(max-width:768px)");
     const isXsDevices = useMediaQuery("(max-width:466px)");
     const [apiData, setApiData] = useState([]);
-    const [currentPage, setCurrentPage] = useState(0); // react-paginate는 0부터 시작
+    const [currentPage, setCurrentPage] = useState(1); // 페이지네이션은 1부터 시작
     const [itemsPerPage] = useState(12); // 페이지당 항목 수
     const [memberId, setMemberId] = useState("");
     const navigate = useNavigate();
-
 
     const fetchData = async () => {
         try {
@@ -41,6 +39,7 @@ const AdminWrite = () => {
             console.error('Error fetching user data:', error);
         }
     };
+
     const moveDetail = (itemId) => {
         navigate("/detail", {
             state: {
@@ -99,13 +98,13 @@ const AdminWrite = () => {
     };
 
     // 페이지네이션 관련 데이터 계산
-    const indexOfLastItem = (currentPage + 1) * itemsPerPage;
+    const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
     const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
-    const handlePageClick = (event) => {
-        setCurrentPage(event.selected);
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
     };
 
     return (
@@ -131,89 +130,96 @@ const AdminWrite = () => {
                     alignItems="center"
                 >
                     전자결재
-                    <Select
-                        value={sortOrder}
-                        onChange={handleSortChange}
-                        size="small"
-                        sx={{
-                            minWidth: 120,
-                        }}
-                    >
-                        <MenuItem value="default">기본 순서</MenuItem>
-                        <MenuItem value="ascending">오름차순</MenuItem>
-                        <MenuItem value="descending">내림차순</MenuItem>
-                        <MenuItem value="date">날짜순</MenuItem>
-                    </Select>
+
                 </Typography>
             </Box>
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>번호</TableCell>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>종류</TableCell>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>제목</TableCell>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성자</TableCell>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>부서</TableCell>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성일</TableCell>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>상태</TableCell>
-                        <TableCell style={{textAlign: "center", width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>삭제</TableCell>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>번호</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>종류</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>제목</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>작성자</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>부서</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>작성일</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>상태</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>삭제</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {currentItems.map((elec, index) => (
+                            <TableRow key={index} sx={{
+                                '&:hover': {
+                                    backgroundColor: '#f5f5f5', // 호버 시 배경 색상
+                                    '& *': {
+                                        color: '#ffb121', // 호버 시 모든 자식 요소의 텍스트 색상
+                                    },
+                                },
+                            }}>
+                                <TableCell style={{ textAlign: "center", paddingTop: "15px", fontSize: '0.9rem' }}>{index + 1}</TableCell>
+                                <TableCell style={{ textAlign: "center", paddingTop: "15px", cursor: 'pointer', fontSize: '0.9rem' }}
+                                           onClick={() => moveDetail(elec.id)}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</TableCell>
+                                <TableCell style={{ textAlign: "center", paddingTop: "15px", cursor: 'pointer', fontSize: '0.9rem' }}
+                                           onClick={() => moveDetail(elec.id)}>{elec.additionalFields.title === '' ? '제목없음' : elec.additionalFields.title}</TableCell>
+                                <TableCell style={{ textAlign: "center", paddingTop: "15px", fontSize: '0.9rem' }}>{elec.writer}</TableCell>
+                                <TableCell style={{ textAlign: "center", paddingTop: "15px", fontSize: '0.9rem' }}>{elec.department}</TableCell>
+                                <TableCell style={{ textAlign: "center", paddingTop: "15px", fontSize: '0.9rem' }}>{formatDate(elec.writeday)}</TableCell>
+                                <TableCell style={{
+                                    textAlign: "center",
+                                    paddingTop: "15px",
+                                }}>
+                                    <span style={{
+                                        color: elec.approveType === 0 ? '#ff501c' : elec.approveType === 1 ? '#ff8800' : elec.approveType === 2 ? '#ff8800' : '#75d5b3',
+                                        backgroundColor: elec.approveType === 0 ? '#ffece6' : elec.approveType === 1 ? '#ffefdf' : elec.approveType === 2 ? '#ffefdf' : '#e7f9f1',
+                                        padding: '3px 4px',
+                                        borderRadius: '4px'
+                                    }}>
+                                        {elec.approveType === 0 ? '반려' : elec.approveType === 1 ? '결재중' : elec.approveType === 2 ? '결재중' : '결재완료'}
+                                    </span>
+                                </TableCell>
+                                <TableCell style={{ textAlign: "center" }}>
+                                    <IconButton onClick={() => handleDelete(elec.id)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </TableCell>
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
-                    {currentItems.map((elec, index) => (
-                        <TableRow key={index}     sx={{
-                            '&:hover': {
-                                backgroundColor: '#f5f5f5', // 호버 시 배경 색상
-                                '& *': {
-                                    color: '#ffb121', // 호버 시 모든 자식 요소의 텍스트 색상
+                        ))}
+                    </TableBody>
+                </Table>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                    <Pagination
+                        count={pageCount}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        siblingCount={2}
+                        boundaryCount={1}
+                        showFirstButton // 처음 페이지로 이동하는 버튼을 표시
+                        showLastButton // 마지막 페이지로 이동하는 버튼을 표시
+                        sx={{
+                            '& .MuiPaginationItem-root': {
+                                color: '#000', // 페이지 숫자 기본 색상
+                                fontSize: '14px', // 페이지 숫자 크기
+                                '&:hover': {
+                                    backgroundColor: '#ffb121', // 호버 시 배경색
+                                    color: 'white', // 호버 시 글씨 색상
+                                },
+                                '&.Mui-selected': {
+                                    backgroundColor: '#ffb121', // 선택된 페이지 배경색
+                                    color: 'white', // 선택된 페이지 글씨 색상
                                 },
                             },
-                        }}>
-                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{index+1}</TableCell>
-                            <TableCell style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer', fontSize: '0.9rem'}}
-                                onClick={() => moveDetail(elec.id)}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</TableCell>
-                            <TableCell style={{textAlign: "center",  paddingTop: "15px", cursor:'pointer', fontSize: '0.9rem'}}
-                                onClick={() => moveDetail(elec.id)}>{elec.additionalFields.title === '' ? '제목없음' : elec.additionalFields.title}</TableCell>
-                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{elec.writer}</TableCell>
-                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{elec.department}</TableCell>
-                            <TableCell style={{textAlign: "center",  paddingTop: "15px", fontSize: '0.9rem'}}>{formatDate(elec.writeday)}</TableCell>
-                            <TableCell style={{
-                                textAlign: "center",
-                                paddingTop: "15px",
-                            }}>
-                                   <span style={{
-                                       color: elec.approveType === 0 ? '#ff501c' : elec.approveType === 1 ? '#ff8800' : elec.approveType === 2 ? '#ff8800' : '#75d5b3',
-                                       backgroundColor: elec.approveType === 0 ? '#ffece6' : elec.approveType === 1 ? '#ffefdf' : elec.approveType === 2 ? '#ffefdf' : '#e7f9f1',
-                                       padding: '3px 4px',
-                                       borderRadius: '4px'
-                                   }}>
-                                {elec.approveType === 0 ? '반려' : elec.approveType === 1 ? '결재중' : elec.approveType === 2 ? '결재중' : '결재완료'}
-                                   </span>
-                            </TableCell>
-                            <TableCell style={{textAlign: "center"}}>
-                                <IconButton onClick={() => handleDelete(elec.id)}>
-                                    <DeleteIcon/>
-                                </IconButton>
-                            </TableCell>
-                        </TableRow>
-                        ))}
-                        </TableBody>
-                </Table>
-                <ReactPaginate
-                    previousLabel={"이전"}
-                    nextLabel={"다음"}
-                    breakLabel={"..."}
-                    pageCount={pageCount}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={handlePageClick}
-                    containerClassName={"pagination"}
-                    activeClassName={"active"}
-                />
-                </TableContainer>
-            </Box>
-
+                            '& .MuiPaginationItem-ellipsis': {
+                                color: '#ffb121', // 생략부(...) 색상
+                            },
+                            '& .MuiPaginationItem-icon': {
+                                color: '#000', // 첫/마지막 페이지로 가는 아이콘 색상
+                            },
+                        }}
+                    />
+                </Box>
+            </TableContainer>
+        </Box>
     );
 };
 

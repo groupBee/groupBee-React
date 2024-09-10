@@ -6,6 +6,7 @@ const DashboardBook = () => {
     const [memberRoom, setMemberRoom] = useState([]);
     const [allCars, setAllCars] = useState([]);
     const [allRooms, setAllRooms] = useState([]);
+    const currentTime = new Date(); // 현재 로컬 시간
 
     useEffect(() => {
         const fetchData = async () => {
@@ -64,144 +65,151 @@ const DashboardBook = () => {
             padding: '10px', height: '100%', overflowY: 'auto', overflowX: 'hidden',
 
             '&::-webkit-scrollbar': {
-            display: 'none',
-        },
+                display: 'none',
+            },
             '-ms-overflow-style': 'none',  /* IE and Edge */
             'scrollbar-width': 'none',  /* Firefox */
         }}>
-            {memberCar.map((car, index) => (
-                <div
-                    key={index}
-                    style={{
-                        marginBottom: '15px', // Spacing between items
-                        border: '1px solid #ccc',
-                        borderRadius: '10px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Shadow effect
-                        backgroundColor: '#fff', // Card background color
-                    }}
-                >
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '10px', // Padding inside card
-                    }}>
-                        {/* Car Image */}
-                        <img
-                            src={`https://minio.bmops.kro.kr/groupbee/book/${car.photo}`}
-                            alt={car.type}
-                            style={{
-                                width: '80px',
-                                height: '80px',
-                                objectFit: 'cover',
-                                borderRadius: '8px',
-                                marginRight: '20px',
-                            }}
-                        />
+            {/* 차량 목록: returnDay가 현재 시간을 지나지 않은 항목만 렌더링 */}
+            {memberCar
+                .filter(car => new Date(car.returnDay) > currentTime)
+                .map((car, index) => (
+                    <div
+                        key={index}
+                        style={{
+                            marginBottom: '15px', // Spacing between items
+                            border: '1px solid #ccc',
+                            borderRadius: '10px',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Shadow effect
+                            backgroundColor: '#fff', // Card background color
+                        }}
+                    >
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '10px', // Padding inside card
+                        }}>
+                            {/* Car Image */}
+                            <img
+                                src={`https://minio.bmops.kro.kr/groupbee/book/${car.photo}`}
+                                alt={car.type}
+                                style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    objectFit: 'cover',
+                                    borderRadius: '8px',
+                                    marginRight: '20px',
+                                }}
+                            />
 
-                        {/* Car Information */}
-                        <div style={{ flex: 1 }}>
-                            <h3 style={{
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                                color: '#333', // Title color
-                            }}>
-                                {car.type}
-                            </h3>
+                            {/* Car Information */}
+                            <div style={{ flex: 1 }}>
+                                <h3 style={{
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    color: '#333', // Title color
+                                }}>
+                                    {car.type}
+                                </h3>
 
-                            <p style={{
-                                margin: '0',
-                                fontSize: '14px',
-                                color: '#555', // Text color
-                            }}>
-                                대여시간 : {new Date(car.rentDay).toLocaleDateString('ko-KR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })} ~ {new Date(car.returnDay).toLocaleDateString('ko-KR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })}
-                            </p>
+                                <p style={{
+                                    margin: '0',
+                                    fontSize: '14px',
+                                    color: '#555', // Text color
+                                }}>
+                                    대여시간 : {new Date(car.rentDay).toLocaleDateString('ko-KR', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })} ~ {new Date(car.returnDay).toLocaleDateString('ko-KR', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}
+                                </p>
 
-                            <p style={{
-                                margin: '0',
-                                fontSize: '14px',
-                                color: '#777', // Text color
-                            }}>
-                                사유 : {car.reason}
-                            </p>
+                                <p style={{
+                                    margin: '0',
+                                    fontSize: '14px',
+                                    color: '#777', // Text color
+                                }}>
+                                    사유 : {car.reason}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
-            {memberRoom.map((room, index) => (
-                <div
-                    key={index}
-                    style={{
-                        marginBottom: '15px', // Spacing between items
-                        border: '1px solid #ccc',
-                        borderRadius: '10px',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Shadow effect
-                        overflow: 'hidden', // Prevents content from overflowing
-                        backgroundColor: '#fff', // Card background color
-                    }}
-                >
-                    <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        padding: '10px', // Padding inside card
-                    }}>
-                        {/* Room Image */}
-                        <img
-                            src={`https://minio.bmops.kro.kr/groupbee/book/${room.photo}`}
-                            alt={room.name}
-                            style={{
-                                width: '80px',
-                                height: '80px',
-                                objectFit: 'cover',
-                                borderRadius: '8px',
-                                marginRight: '20px',
-                            }}
-                        />
+                ))}
 
-                        {/* Room Information */}
-                        <div style={{ flex: 1 }}>
-                            <h3 style={{
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                                color: '#333', // Title color
-                            }}>
-                                {room.name}
-                            </h3>
+            {/* 회의실 목록: leave가 현재 시간을 지나지 않은 항목만 렌더링 */}
+            {memberRoom
+                .filter(room => new Date(room.leave) > currentTime)
+                .map((room, index) => (
+                    <div
+                        key={index}
+                        style={{
+                            marginBottom: '15px', // Spacing between items
+                            border: '1px solid #ccc',
+                            borderRadius: '10px',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Shadow effect
+                            overflow: 'hidden', // Prevents content from overflowing
+                            backgroundColor: '#fff', // Card background color
+                        }}
+                    >
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            padding: '10px', // Padding inside card
+                        }}>
+                            {/* Room Image */}
+                            <img
+                                src={`https://minio.bmops.kro.kr/groupbee/book/${room.photo}`}
+                                alt={room.name}
+                                style={{
+                                    width: '80px',
+                                    height: '80px',
+                                    objectFit: 'cover',
+                                    borderRadius: '8px',
+                                    marginRight: '20px',
+                                }}
+                            />
 
-                            <p style={{
-                                margin: '0',
-                                fontSize: '14px',
-                                color: '#555', // Text color
-                            }}>
-                                대여시간 : {new Date(room.enter).toLocaleDateString('ko-KR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })} ~ {new Date(room.leave).toLocaleDateString('ko-KR', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            })}
-                            </p>
+                            {/* Room Information */}
+                            <div style={{ flex: 1 }}>
+                                <h3 style={{
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    color: '#333', // Title color
+                                }}>
+                                    {room.name}
+                                </h3>
 
-                            <p style={{
-                                margin: '0',
-                                fontSize: '14px',
-                                color: '#777', // Text color
-                            }}>
-                                사유 : {room.purpose}
-                            </p>
+                                <p style={{
+                                    margin: '0',
+                                    fontSize: '14px',
+                                    color: '#555', // Text color
+                                }}>
+                                    대여시간 : {new Date(room.enter).toLocaleDateString('ko-KR', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })} ~ {new Date(room.leave).toLocaleDateString('ko-KR', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}
+                                </p>
+
+                                <p style={{
+                                    margin: '0',
+                                    fontSize: '14px',
+                                    color: '#777', // Text color
+                                }}>
+                                    사유 : {room.purpose}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-            ))}
+                ))}
         </div>
     );
 };

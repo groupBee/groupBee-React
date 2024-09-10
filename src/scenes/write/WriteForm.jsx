@@ -293,7 +293,7 @@ const WriteForm = ({ }) => {
                         display="flex"
                         justifyContent="space-between"
                         alignItems="center"
-                    > 발신목록
+                    > 결재작성
                         <div style={{
                             display: 'flex',
                             gap: '8px'
@@ -334,9 +334,10 @@ const WriteForm = ({ }) => {
                 <Box style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
+
                     transform: 'scale(0.8)',
-                    overflow: 'hidden'
+                    overflow: 'hidden',
+                    marginTop: '-80px'
                 }}>
                     <Box style={{
                         backgroundColor: '#ffb121',

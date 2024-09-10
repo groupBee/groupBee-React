@@ -50,8 +50,8 @@ const Calendar = () => {
                     content: event.content || "",
                     start: event.startDay,
                     end: event.endDay,
-                    backgroundColor: isHoliday ? '#ff0000' : '#ffc107',  // 공휴일이면 빨간색, 아니면 노란색
-                    borderColor: isHoliday ? '#ff0000' : '#ffc107',      // 공휴일이면 빨간색, 아니면 노란색
+                    backgroundColor: isHoliday ? '#ff3d3d' : '#ff9f59',  // 공휴일이면 빨간색, 아니면 노란색
+                    borderColor: isHoliday ? '#ff3d3d' : '#ff9f59',      // 공휴일이면 빨간색, 아니면 노란색
                     textColor: isHoliday ? '#ffffff' : '#000000',
                     allDay: isHoliday,
                 };
@@ -216,15 +216,15 @@ const Calendar = () => {
                     flex="1 1 20%"
                     p="15px"
                     borderRadius="4px"
-                    sx={{border: '1px solid #ff845e', backgroundColor: 'white'}}
+                    sx={{border: '1px solid #ff9f59', backgroundColor: 'white'}}
                 >
-                    <Typography variant="h5" sx={{fontWeight: 'bold', textAlign:'center', fontSize: '16px', color: '#ff845e'}}>오늘의 일정</Typography>
+                    <Typography variant="h5" sx={{fontWeight: 'bold', textAlign:'center', fontSize: '16px', color: '#ff9f59'}}>오늘의 일정</Typography>
                     <List>
                         {filteredEvents.map((event) => (
                             <ListItem
                                 key={event.id}
                                 sx={{
-                                    bgcolor: `#ff845e`,
+                                    bgcolor: `#ff9f59`,
                                     my: "10px",
                                     borderRadius: "5px",
                                     color: 'white'

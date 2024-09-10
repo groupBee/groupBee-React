@@ -1,42 +1,36 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-    Box, Button,
-    IconButton,
-    InputBase,
-    MenuItem, Paper,
-    Select, TableBody,
-    TableCell, TableContainer,
-    TableHead,
-    TableRow, Typography,
+    Box, IconButton, Paper,
+    Table, TableBody, TableCell, TableContainer,
+    TableHead, TableRow, Typography, Pagination,
     useMediaQuery
 } from "@mui/material";
-import {MenuOutlined, SearchOutlined} from "@mui/icons-material";
-import {Table} from "react-bootstrap";
-import DeleteIcon from "@mui/icons-material/Delete.js";
+import { Delete as DeleteIcon } from "@mui/icons-material";
 import Swal from "sweetalert2";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const AdminBoard = () => {
     const [sortOrder, setSortOrder] = useState('default');
     const isMdDevices = useMediaQuery("(max-width:768px)");
     const isXsDevices = useMediaQuery("(max-width:466px)");
     const [boardList, setBoardList] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1); // current page starts from 1
+    const [itemsPerPage] = useState(9); // items per page
     const navigate = useNavigate();
 
     const handleSortChange = (event) => {
         setSortOrder(event.target.value);
-        // 선택된 순서에 따른 데이터 정렬 또는 기타 작업을 여기에 추가
+        // Add sorting logic here
     };
 
     const fetchData = async () => {
         try {
-            const Response = await fetch('/api/board/list');
-            const data = await Response.json();
+            const response = await fetch('/api/board/list');
+            const data = await response.json();
             console.log(data)
             setBoardList(data);
-
         } catch (error) {
-
+            console.error('Error fetching data:', error);
         }
     };
 
@@ -45,7 +39,6 @@ const AdminBoard = () => {
     }, []);
 
     const handleDelete = async (id) => {
-        // 사용자에게 삭제 확인을 요청합니다.
         const result = await Swal.fire({
             title: '정말로 삭제하시겠습니까?',
             text: '이 작업은 취소할 수 없습니다.',
@@ -59,7 +52,6 @@ const AdminBoard = () => {
 
         if (result.isConfirmed) {
             try {
-                // DELETE 요청을 서버로 보냅니다.
                 const response = await fetch(`/api/board/delete/${id}`, {
                     method: 'DELETE',
                     headers: {
@@ -68,13 +60,9 @@ const AdminBoard = () => {
                 });
 
                 if (response.ok) {
-                    // 삭제 성공 시 알림을 표시하고 상태를 업데이트합니다.
                     Swal.fire('삭제 완료!', '항목이 성공적으로 삭제되었습니다.', 'success');
-                    // 삭제 후 상태 업데이트
                     fetchData();
-                    setBoardList(boardList.filter(item => item.id !== id));
                 } else {
-                    // 실패 시 오류 메시지 표시
                     Swal.fire('삭제 실패', '항목 삭제에 실패했습니다. 나중에 다시 시도해 주세요.', 'error');
                 }
             } catch (error) {
@@ -83,10 +71,8 @@ const AdminBoard = () => {
             }
         }
     };
-    // 날짜와 시간을 원하는 형식으로 추출하는 함수
+
     const formatDateTimeString = (dateString) => {
-        // 날짜 문자열에서 필요한 부분만 추출
-        // 예: '2024-08-31T16:43:41.290512' -> '2024-08-31 16:43:41'
         return dateString.substring(0, 19).replace('T', ' ');
     };
 
@@ -94,6 +80,15 @@ const AdminBoard = () => {
         navigate(`/board/list/${id}/1`);
     };
 
+    // Pagination logic
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = boardList.slice(indexOfFirstItem, indexOfLastItem);
+    const pageCount = Math.ceil(boardList.length / itemsPerPage);
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
 
     return (
         <Box
@@ -102,7 +97,7 @@ const AdminBoard = () => {
                 borderRadius: "8px",
                 backgroundColor: "white",
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                overflow: "hidden", // 박스 넘침 방지
+                overflow: "hidden",
                 maxWidth: '1400px',
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -124,23 +119,25 @@ const AdminBoard = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>제목</TableCell>
-                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성자</TableCell>
-                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>작성일</TableCell>
-                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>조회</TableCell>
-                            <TableCell align="center" sx={{ width: '10%',fontSize: '0.9rem', fontWeight:'bold'}}>삭제</TableCell>
+                            <TableCell align="center" sx={{ width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>번호</TableCell>
+                            <TableCell align="center" sx={{ width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>제목</TableCell>
+                            <TableCell align="center" sx={{ width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>작성자</TableCell>
+                            <TableCell align="center" sx={{ width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>작성일</TableCell>
+                            <TableCell align="center" sx={{ width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>조회</TableCell>
+                            <TableCell align="center" sx={{ width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>삭제</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {boardList
-                            .sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate)) // 최신순 정렬
+                        {currentItems
+                            .sort((a, b) => new Date(b.board.createDate) - new Date(a.board.createDate))
                             .map((list, index) => (
-                                <TableRow key={index} sx={{   '&:hover': {
-                                        backgroundColor: '#f5f5f5', // 호버 시 배경 색상
+                                <TableRow key={index} sx={{ '&:hover': {
+                                        backgroundColor: '#f5f5f5',
                                         '& *': {
-                                            color: '#ffb121', // 호버 시 모든 자식 요소의 텍스트 색상
+                                            color: '#ffb121',
                                         },
                                     },}}>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem' }}>{index + 1}</TableCell>
                                     <TableCell align="center" sx={{
                                         fontSize: '0.9rem',
                                         maxWidth: '100px',
@@ -149,28 +146,58 @@ const AdminBoard = () => {
                                         whiteSpace: 'nowrap',
                                         cursor: 'pointer'
                                     }}
-                                    onClick={()=> moveDetail(list.board.id)}
+                                               onClick={() => moveDetail(list.board.id)}
                                     >
                                         {list.board.title}
                                     </TableCell>
-                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.writer}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem' }}>{list.board.writer}</TableCell>
                                     <TableCell align="center" sx={{ fontSize: '0.9rem' }}>
                                         {formatDateTimeString(list.board.createDate)}
                                     </TableCell>
-                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{list.board.readCount}</TableCell>
-                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem' }}>{list.board.readCount}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem' }}>
                                         <IconButton onClick={() => handleDelete(list.board.id)}>
-                                            <DeleteIcon sx={{ fontSize: '1.5rem'}}/>
+                                            <DeleteIcon/>
                                         </IconButton>
                                     </TableCell>
                                 </TableRow>
                             ))}
                     </TableBody>
                 </Table>
-    </TableContainer>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+                    <Pagination
+                        count={pageCount}
+                        page={currentPage}
+                        onChange={handlePageChange}
+                        color="primary"
+                        siblingCount={2}
+                        boundaryCount={1}
+                        showFirstButton // 처음 페이지로 이동하는 버튼을 표시
+                        showLastButton // 마지막 페이지로 이동하는 버튼을 표시
+                        sx={{
+                            '& .MuiPaginationItem-root': {
+                                color: '#000', // 페이지 숫자 기본 색상
+                                fontSize: '14px', // 페이지 숫자 크기
+                                '&:hover': {
+                                    backgroundColor: '#ffb121', // 호버 시 배경색
+                                    color: 'white', // 호버 시 글씨 색상
+                                },
+                                '&.Mui-selected': {
+                                    backgroundColor: '#ffb121', // 선택된 페이지 배경색
+                                    color: 'white', // 선택된 페이지 글씨 색상
+                                },
+                            },
+                            '& .MuiPaginationItem-ellipsis': {
+                                color: '#ffb121', // 생략부(...) 색상
+                            },
+                            '& .MuiPaginationItem-icon': {
+                                color: '#000', // 첫/마지막 페이지로 가는 아이콘 색상
+                            },
+                        }}
+                    />
+                </Box>
+            </TableContainer>
         </Box>
-
-
     );
 };
 

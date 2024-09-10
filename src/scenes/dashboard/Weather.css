@@ -1,7 +1,7 @@
 .weather-widget {
     font-family: Arial, sans-serif;
     padding: 10px;
-
+    box-sizing: border-box; /* padding을 포함하여 전체 박스 크기 조정 */
 }
 
 .weather-header {
@@ -11,27 +11,26 @@
     flex-wrap: wrap; /* 내부 요소가 박스 크기에 맞게 줄 바꿈 */
     justify-content: space-between; /* 요소 간의 공간을 자동으로 분배 */
     font-weight: bold;
-
 }
 
 .forecast {
     display: flex;
+    flex-wrap: wrap; /* 내부 요소가 줄 바꿈 가능하도록 설정 */
     gap: 10px; /* 각 날씨 항목 사이의 간격 */
     padding: 10px;
-
+    box-sizing: border-box; /* 패딩을 포함하여 전체 박스 크기 조정 */
 }
 
 .forecast-day {
     box-sizing: border-box;
-    display: inline-block; /* 인라인 블록으로 설정하여 가로 정렬 */
+    flex: 1 1 20%; /* 요소가 자동으로 크기를 조절하고, 최소 크기 설정 */
     padding: 10px;
     border-radius: 8px;
     text-align: center;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     background-color: white;
-    flex: 0 0 auto; /* flex 항목이 자동으로 크기를 조절하지 않도록 설정 */
-    width: 25% ;
-
+    width: 100px; /* 부모 박스의 가로 크기에 맞추어 크기 조정 */
+    margin: 0 auto; /* 중앙 정렬 */
 }
 
 .forecast-day.today {
@@ -43,7 +42,6 @@
     background-position: center; /* 배경 이미지의 위치를 중앙으로 설정 */
     background-repeat: no-repeat; /* 배경 이미지가 반복되지 않도록 설정 */
 }
-
 
 .date {
     font-size: 20px;
@@ -67,5 +65,3 @@
     font-size: 18px;
     color: #333;
 }
-
-
