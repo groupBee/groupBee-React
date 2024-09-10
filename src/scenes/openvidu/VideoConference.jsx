@@ -12,13 +12,11 @@ import { Track } from "livekit-client";
 import { generateToken } from './livekit';
 import { Box } from "@mui/material";
 import { ChatComponent } from "./ChatComponent";
-import ChatIcon from '@mui/icons-material/Chat';  // MUI 채팅 아이콘
-import CloseIcon from '@mui/icons-material/Close';  // MUI 닫기 아이콘
-
+import ChatIcon from '@mui/icons-material/Chat';
+import CloseIcon from '@mui/icons-material/Close';
 
 const serverUrl = 'https://openvidu.groupbee.co.kr';
 
-// 랜덤 문자열 생성 함수
 const generateRandomCode = (length) => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -35,7 +33,8 @@ export default function VideoConference() {
     const [hasJoined, setHasJoined] = useState(false);
     const [infoData, setInfoData] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
-    const [isChatVisible, setIsChatVisible] = useState(false);  // 채팅 토글 상태 추가
+    const [isChatVisible, setIsChatVisible] = useState(false);
+    const [messages, setMessages] = useState([]);
 
     const fetchData = async () => {
         try {
@@ -102,6 +101,10 @@ export default function VideoConference() {
 
     const toggleChat = () => {
         setIsChatVisible(!isChatVisible);
+    };
+
+    const handleSendMessage = (message) => {
+        setMessages([...messages, { sender: participantName, text: message }]);
     };
 
     if (!hasJoined) {
@@ -205,34 +208,29 @@ export default function VideoConference() {
                 <RoomAudioRenderer/>
                 <MyVideoConference/>
                 <div style={{display:'inline-flex',alignItems:'center', justifyContent: 'center', width: '100%'}}>
-                <div className="lk-button-group" style={{marginRight:'1%'}}>
-                    <TrackToggle
-                        source={Track.Source.Microphone}
-                    >
-                    </TrackToggle>
-                    <div className="lk-button-group-menu">
-                        <MediaDeviceMenu
-                            kind="audioinput"
-                        />
+                    <div className="lk-button-group" style={{marginRight:'1%'}}>
+                        <TrackToggle source={Track.Source.Microphone} />
+                        <div className="lk-button-group-menu">
+                            <MediaDeviceMenu kind="audioinput" />
+                        </div>
                     </div>
-                </div>
-                <div className="lk-button-group" style={{marginRight:'1%'}}>
-                    <TrackToggle
-                        source={Track.Source.Camera}>
-                    </TrackToggle>
-                    <div className="lk-button-group-menu">
-                        <MediaDeviceMenu
-                            kind="videoinput"/>
+                    <div className="lk-button-group" style={{marginRight:'1%'}}>
+                        <TrackToggle source={Track.Source.Camera} />
+                        <div className="lk-button-group-menu">
+                            <MediaDeviceMenu kind="videoinput"/>
+                        </div>
                     </div>
-                </div>
-                <div style={{display:'inline-flex', alignItems:'stretch'}}>
-                < DisconnectButton
-                    onClick={() => {
-                        setHasJoined(false); // 방을 떠난 상태로 업데이트
-                        setRoomName('');     // 방 이름 초기화
-                        setToken('');        // 토큰 초기화
-                    }}> 방 나가기 </ DisconnectButton>
-                </div>
+                    <div style={{display:'inline-flex', alignItems:'stretch'}}>
+                        <DisconnectButton
+                            onClick={() => {
+                                setHasJoined(false);
+                                setRoomName('');
+                                setToken('');
+                            }}
+                        >
+                            방 나가기
+                        </DisconnectButton>
+                    </div>
                 </div>
                 <button
                     onClick={toggleChat}
@@ -252,24 +250,27 @@ export default function VideoConference() {
                         cursor: 'pointer',
                     }}
                 >
-                    {isChatVisible ? <CloseIcon size={24}/> : <ChatIcon size={24}/>}
+                    {isChatVisible ? <CloseIcon /> : <ChatIcon />}
                 </button>
 
-                {isChatVisible && (
-                    <div style={{
+                <div
+                    style={{
                         position: 'fixed',
                         bottom: '80px',
                         right: '20px',
-                        width: '20%',
+                        width: '25%',
                         height: '80%',
                         backgroundColor: 'white',
                         borderRadius: '10px',
                         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                         zIndex: 1000,
-                    }}>
-                        <ChatComponent/>
-                    </div>
-                )}
+                        visibility: isChatVisible ? 'visible' : 'hidden',
+                        opacity: isChatVisible ? 1 : 0,
+                        transition: 'visibility 0.3s, opacity 0.3s',
+                    }}
+                >
+                    <ChatComponent messages={messages} onSendMessage={handleSendMessage} />
+                </div>
             </LiveKitRoom>
         </div>
     );
