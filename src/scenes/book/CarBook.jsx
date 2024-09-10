@@ -151,7 +151,7 @@ const CarBook = () => {
                                      justifyContent: 'space-between', // 위, 아래로 요소를 배치
                                  }}
                             >
-                                <h2 style={{ marginTop:'10px', fontSize: '45px', fontWeight: 'bold', color: 'white'}}>{carDetails.type}</h2>
+                                <h2 style={{ marginTop:'10px', fontSize: '40px', fontWeight: 'bold', color: 'white'}}>{carDetails.type}</h2>
 
                                 <div style={{
                                     display: 'flex',

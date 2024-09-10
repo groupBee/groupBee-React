@@ -30,7 +30,7 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     background-color: white;
     flex: 0 0 auto; /* flex 항목이 자동으로 크기를 조절하지 않도록 설정 */
-    width: 32% ;
+    width: 25% ;
 
 }
 
