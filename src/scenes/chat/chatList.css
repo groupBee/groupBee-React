@@ -1,0 +1,140 @@
+.sidebar {
+  width: 50%;
+  border-right: 1px solid #ddd;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tab-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.icon-buttons {
+  position: relative; /* 드롭다운이 이 버튼 기준으로 위치할 수 있도록 함 */
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end;
+}
+
+.tab-button {
+  background-color: transparent;
+  border: none;
+  padding: 5px 15px;
+  cursor: pointer;
+  font-weight: normal;
+}
+
+.tab-button.active {
+  background-color: #EAF1FF;
+  font-weight: bold;
+  border-bottom: 2px solid blue;
+}
+
+/* 채팅 리스트 높이를 화면에 맞추기 */
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto; /* 세로 스크롤 활성화 */
+  max-height: calc(100vh - 200px); /* 상단 요소(탭과 아이콘 등) 제외한 화면 크기 */
+}
+
+
+.chat-room {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #fff;
+  cursor: pointer;
+  min-height: 80px; /* 이전 60px에서 80px으로 수정 */
+}
+
+
+.chat-info {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer; /* 채팅방 정보를 클릭할 수 있도록 */
+}
+
+.chat-room-name {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.last-message {
+  color: gray;
+  font-size: 14px;
+}
+
+.chat-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative; /* 개별 드롭다운 위치를 기준으로 함 */
+}
+
+.unread-badge {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.time {
+  color: gray;
+  font-size: 12px;
+}
+/* 전체 및 개별 채팅방의 드롭다운 메뉴 스타일을 통일 */
+.dropdown-menu,
+.room-dropdown {
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 200; /* 다른 요소보다 위에 표시되도록 설정 */
+  min-width: 150px; /* 드롭다운의 최소 너비 설정 */
+  padding: 10px; /* 메뉴 내부의 padding을 설정 */
+  display: none; /* 기본적으로 숨김 처리 */
+}
+
+.dropdown-menu.open,
+.room-dropdown.open {
+  display: block; /* 열릴 때 표시 */
+}
+
+/* 드롭다운 아이템 스타일 */
+.dropdown-item {
+  display: block;
+  padding: 10px 15px;
+  cursor: pointer;
+  background-color: white;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  width: 100%;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
