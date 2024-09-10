@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-    ControlBar,
+    ControlBar, DisconnectButton,
     GridLayout,
-    LiveKitRoom,
+    LiveKitRoom, MediaDeviceMenu,
     ParticipantTile,
-    RoomAudioRenderer,
+    RoomAudioRenderer, TrackToggle,
     useTracks,
 } from "@livekit/components-react";
 import "@livekit/components-styles";
@@ -184,7 +184,7 @@ export default function VideoConference() {
     }
 
     return (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div style={{height: '100vh', display: 'flex', flexDirection: 'column'}}>
             <div style={{
                 padding: '10px',
                 backgroundColor: '#f1f1f1',
@@ -200,11 +200,40 @@ export default function VideoConference() {
                 token={token}
                 serverUrl={serverUrl}
                 data-lk-theme="default"
-                style={{ height: '100vh' }}
+                style={{height: '100vh'}}
             >
-                <MyVideoConference />
-                <RoomAudioRenderer />
-                <ControlBar />
+                <RoomAudioRenderer/>
+                <MyVideoConference/>
+                <div style={{display:'inline-flex',alignItems:'center', justifyContent: 'center', width: '100%'}}>
+                <div className="lk-button-group" style={{marginRight:'1%'}}>
+                    <TrackToggle
+                        source={Track.Source.Microphone}
+                    >
+                    </TrackToggle>
+                    <div className="lk-button-group-menu">
+                        <MediaDeviceMenu
+                            kind="audioinput"
+                        />
+                    </div>
+                </div>
+                <div className="lk-button-group" style={{marginRight:'1%'}}>
+                    <TrackToggle
+                        source={Track.Source.Camera}>
+                    </TrackToggle>
+                    <div className="lk-button-group-menu">
+                        <MediaDeviceMenu
+                            kind="videoinput"/>
+                    </div>
+                </div>
+                <div style={{display:'inline-flex', alignItems:'stretch'}}>
+                < DisconnectButton
+                    onClick={() => {
+                        setHasJoined(false); // 방을 떠난 상태로 업데이트
+                        setRoomName('');     // 방 이름 초기화
+                        setToken('');        // 토큰 초기화
+                    }}> 방 나가기 </ DisconnectButton>
+                </div>
+                </div>
                 <button
                     onClick={toggleChat}
                     style={{
@@ -223,7 +252,7 @@ export default function VideoConference() {
                         cursor: 'pointer',
                     }}
                 >
-                    {isChatVisible ? <CloseIcon size={24} /> : <ChatIcon size={24} />}
+                    {isChatVisible ? <CloseIcon size={24}/> : <ChatIcon size={24}/>}
                 </button>
 
                 {isChatVisible && (
@@ -238,7 +267,7 @@ export default function VideoConference() {
                         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
                         zIndex: 1000,
                     }}>
-                        <ChatComponent />
+                        <ChatComponent/>
                     </div>
                 )}
             </LiveKitRoom>
@@ -249,14 +278,14 @@ export default function VideoConference() {
 function MyVideoConference() {
     const tracks = useTracks(
         [
-            { source: Track.Source.Camera, withPlaceholder: true },
-            { source: Track.Source.ScreenShare, withPlaceholder: false },
+            {source: Track.Source.Camera, withPlaceholder: true},
+            {source: Track.Source.ScreenShare, withPlaceholder: false},
         ],
-        { onlySubscribed: false },
+        {onlySubscribed: false},
     );
     return (
-        <GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
-            <ParticipantTile />
+        <GridLayout tracks={tracks} style={{height: 'calc(100vh - var(--lk-control-bar-height))'}}>
+            <ParticipantTile/>
         </GridLayout>
     );
 }

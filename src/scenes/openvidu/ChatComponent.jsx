@@ -81,6 +81,10 @@ export function ChatComponent({
             widget.dispatch?.({ msg: 'unread_msg', count: unreadMessageCount });
         }
     }, [chatMessages, layoutContext?.widget]);
+    const formatTime = (timestamp) => {
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    };
 
     return (
         <div {...props} className="lk-chat" style={{width:'100%', height:'100%'}}>
@@ -99,21 +103,22 @@ export function ChatComponent({
                     }
 
                     const isCurrentUser = parsedMessage.author === currentUser;
-                    const hideTimestamp = idx >= 1 && msg.timestamp - allMsg[idx - 1].timestamp < 60_000;
+                    const showTimestamp = idx === 0 || formatTime(msg.timestamp) !== formatTime(allMsg[idx - 1].timestamp);
 
                     return (
-                        <li key={msg.id ?? idx} className={`lk-chat-entry ${isCurrentUser ? 'lk-chat-entry-self' : ''}`}>
+                        <li key={msg.id ?? idx}
+                            className={`lk-chat-entry ${isCurrentUser ? 'lk-chat-entry-self' : ''}`}>
                             <div className="lk-chat-entry-metadata">
                                 <span className="lk-chat-entry-author">{parsedMessage.author}</span>
-                                {!hideTimestamp && (
-                                    <span className="lk-chat-entry-timestamp">
-                    {new Date(msg.timestamp).toLocaleTimeString()}
-                  </span>
-                                )}
                             </div>
                             <div className="lk-chat-entry-bubble">
                                 {parsedMessage.text}
                             </div>
+                            {showTimestamp && (
+                                <div className="lk-chat-entry-timestamp">
+                                    {formatTime(msg.timestamp)}
+                                </div>
+                            )}
                         </li>
                     );
                 })}

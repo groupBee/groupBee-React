@@ -30,3 +30,14 @@
     background-color: #0084ff;
     color: white;
 }
+
+.lk-chat-entry-timestamp {
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 5px;
+    align-self: flex-start;
+}
+
+.lk-chat-entry-self .lk-chat-entry-timestamp {
+    align-self: flex-end;
+}
