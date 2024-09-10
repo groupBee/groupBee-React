@@ -51,7 +51,7 @@ const AppDocIntent = ({ handleAdditionalFieldChange, additionalFields, appId }) 
                         value={title}
                         name='title'
                         onChange={handleTitleChange}
-                        style={{ width: '100%', fontSize: '23px' }}
+                        style={{ width: '100%', fontSize: '23px',textAlign:'center'}}
                     />
                     {/*{errors.title && <p style={{ color: 'red', margin: '0' }}>{errors.title}</p>}*/}
                 </td>
