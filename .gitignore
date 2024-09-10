@@ -152,3 +152,6 @@ bun.lockb
 # env
 .env
 
+#package-lock.json
+package-lock.json
+
