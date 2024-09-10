@@ -416,15 +416,15 @@ const BookList = () => {
         .filter(booking => {
             if (booking.corporateCarId) {
                 // 차량 예약인 경우
-                const returnDay = new Date(booking.returnDay); // 예약 종료 시간을 Date 객체로 변환합니다.
+                const returnDay = new Date(booking.returnDay); // 예약 종료 시간을 Date 객체로 변환
                 return booking.memberId === potalId && (
-                    returnDay.toDateString() >= now.toDateString() // 오늘 날짜 포함, 이전 날짜 제외
+                    returnDay.getTime() >= now.getTime() // 현재 시간 포함, 이전 시간 제외
                 );
             } else if (booking.roomId) {
                 // 회의실 예약인 경우
-                const leave = new Date(booking.leave); // 회의실 예약 종료 시간을 Date 객체로 변환합니다.
+                const leave = new Date(booking.leave); // 회의실 예약 종료 시간을 Date 객체로 변환
                 return booking.memberId === potalId && (
-                    leave.toDateString() >= now.toDateString() // 오늘 날짜 포함, 이전 날짜 제외
+                    leave.getTime() >= now.getTime() // 현재 시간 포함, 이전 시간 제외
                 );
             }
             return false; // 차량 예약과 회의실 예약 모두 아닌 경우
@@ -435,6 +435,7 @@ const BookList = () => {
             const timeB = new Date(b.returnDay || b.leave).getTime();
             return timeA - timeB; // 빠른 시간 순서대로 정렬
         });
+
 
 
 

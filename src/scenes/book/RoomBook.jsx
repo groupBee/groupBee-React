@@ -17,7 +17,7 @@ const RoomBook = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 3;
+    const itemsPerPage = 5;
     const [roomDetails, setRoomDetails] = useState(null);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedImage, setSelectedImage] = useState('');
