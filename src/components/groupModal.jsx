@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import { Button, Box, Checkbox, IconButton, Modal, Typography, List, ListItem, ListItemText, ListItemIcon, Divider } from "@mui/material";
@@ -5,19 +6,48 @@ import CloseIcon from '@mui/icons-material/Close';
 import PersonIcon from '@mui/icons-material/Person';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import { useNavigate } from "react-router-dom";
-import ChatIcon from "@mui/icons-material/Chat.js";
-import MailOutlineIcon from "@mui/icons-material/MailOutline.js";
 
-const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
+const OrganizationChart = ({ selectedEmployees, setselectedEmployees }) => {
     const [departmentList, setDepartmentList] = useState([]);
     const [expandedDepartments, setExpandedDepartments] = useState([]);
     const [employeeList, setEmployeeList] = useState([]);
     const [filteredEmployees, setFilteredEmployees] = useState([]);
+    const [departmentLevel, setDepartmentLevel] = useState({});
+    const [includeSubDepartments, setIncludeSubDepartments] = useState(false);
+    const [selectedDepartment, setSelectedDepartment] = useState(null);
+    const [expandedTopDepartments, setExpandedTopDepartments] = useState([]);
+    const [expandedMidDepartments, setExpandedMidDepartments] = useState([]);
+    const [selectedDepartmentNames, setSelectedDepartmentNames] = useState([]);
+    const [selectAllChecked, setSelectAllChecked] = useState(false);
+
     useEffect(() => {
         getDepartmentList();
         getEmployeeList();
     }, []);
+
+    useEffect(() => {
+        if (departmentList.length > 0) {
+            const levels = {};
+            departmentList.forEach(dept => {
+                if (dept.id % 100 === 0) levels[dept.id] = 'top'; // 상위 부서
+                else if (dept.id % 10 === 0) levels[dept.id] = 'mid'; // 중간 부서
+                else levels[dept.id] = 'sub'; // 하위 부서
+            });
+            setDepartmentLevel(levels);
+        }
+    }, [departmentList]);
+
+    useEffect(() => {
+        if (filteredEmployees.length > 0 && selectedEmployees) {
+            setSelectAllChecked(
+                filteredEmployees.every(employee =>
+                    selectedEmployees.some(selected => selected.id === employee.id)
+                )
+            );
+        } else {
+            setSelectAllChecked(false);
+        }
+    }, [filteredEmployees, selectedEmployees]);
 
     const getDepartmentList = () => {
         axios.get("/api/department/all")
@@ -31,6 +61,20 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
             .then(res => {
                 setEmployeeList(res.data);
             });
+    };
+
+    const handleSelectAllChange = (event) => {
+        const checked = event.target.checked;
+        setSelectAllChecked(checked);
+        if (checked) {
+            const newSelectedEmployees = [...(selectedEmployees || []), ...filteredEmployees];
+            setselectedEmployees(newSelectedEmployees);
+        } else {
+            const newSelectedEmployees = (selectedEmployees || []).filter(
+                selected => !filteredEmployees.some(filtered => filtered.id === selected.id)
+            );
+            setselectedEmployees(newSelectedEmployees);
+        }
     };
 
     const structuredDepartments = departmentList.reduce((acc, curr) => {
@@ -59,29 +103,111 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
         return acc;
     }, {});
 
-    const filterEmployees = (departmentId) => {
-        const employeesInDepartment = employeeList.filter(employee => employee.department.id === departmentId);
-        setFilteredEmployees(employeesInDepartment);
-    };
+    const filterEmployees = (id, includeSubDepartments) => {
+        const level = departmentLevel[id];
+        let employeesToShow = [];
 
-    const handleDepartmentSelect = (id, hasSubDepartments) => {
-        filterEmployees(id); // 부서 선택 시 그 부서의 직원 필터링
-        if (hasSubDepartments) {
-            setExpandedDepartments(prevState =>
-                prevState.includes(id) ? prevState.filter(expandedId => expandedId !== id) : [...prevState, id]
-            );
+        const addEmployeesForDepartment = (deptId) => {
+            employeesToShow = [...employeesToShow, ...employeeList.filter(employee => employee.department.id === deptId)];
+        };
+
+        if (includeSubDepartments) {
+            switch (level) {
+                case 'top':
+                    departmentList.filter(dept => Math.floor(dept.id / 100) === Math.floor(id / 100)).forEach(dept => addEmployeesForDepartment(dept.id));
+                    break;
+                case 'mid':
+                    departmentList.filter(dept => Math.floor(dept.id / 10) === Math.floor(id / 10)).forEach(dept => addEmployeesForDepartment(dept.id));
+                    break;
+                case 'sub':
+                    addEmployeesForDepartment(id);
+                    break;
+            }
+        } else {
+            addEmployeesForDepartment(id);
         }
+
+        setFilteredEmployees(employeesToShow);
     };
 
-    const handleEmployeeSelect = (employee) => {
-        setSelectedEmployees(prevSelected => {
-            const alreadySelected = prevSelected.some(selected => selected.id === employee.id);
-            if (alreadySelected) {
-                return prevSelected.filter(selected => selected.id !== employee.id);
+    const handleDepartmentSelect = (id) => {
+        const level = departmentLevel[id];
+        const departmentNames = findDepartmentNames(id);
+        setSelectedDepartmentNames(departmentNames);
+        setSelectedDepartment(id);
+
+        switch (level) {
+            case 'top':
+                handleTopDepartmentExpand(id);
+                break;
+            case 'mid':
+                handleMidDepartmentExpand(id);
+                break;
+        }
+
+        filterEmployees(id, includeSubDepartments);
+    };
+
+    const findDepartmentNames = (departmentId) => {
+        let names = [];
+        const traverse = (dept, acc) => {
+            if (dept.id === departmentId) {
+                acc.push(dept.departmentName);
+                return acc;
+            }
+
+            if (dept.subDepartments) {
+                for (const subDept of Object.values(dept.subDepartments)) {
+                    const result = traverse(subDept, [...acc, dept.departmentName]);
+                    if (result.length) return result;
+                }
+            }
+            return [];
+        };
+
+        return traverse(structuredDepartments[Math.floor(departmentId / 100) * 100], []);
+    };
+
+    const handleTopDepartmentExpand = (id) => {
+        setExpandedTopDepartments(prev => {
+            if (prev.includes(id)) {
+                return prev.filter(deptId => deptId !== id);
             } else {
-                return [...prevSelected, employee];
+                return [id];  // 다른 상위 부서를 닫고 현재 부서만 열기
             }
         });
+        // 중간 부서 확장 상태 초기화
+        setExpandedMidDepartments([]);
+    };
+    const handleMidDepartmentExpand = (id) => {
+        setExpandedMidDepartments(prev => {
+            if (prev.includes(id)) {
+                return prev.filter(deptId => deptId !== id);
+            } else {
+                return [...prev, id];
+            }
+        });
+    };
+    const handleEmployeeSelect = (employee) => {
+        setselectedEmployees(prevSelected => {
+            // prevSelected가 null일 때 빈 배열로 초기화
+            const selected = prevSelected || [];
+            const alreadySelected = selected.some(selected => selected.id === employee.id);
+            if (alreadySelected) {
+                return selected.filter(selected => selected.id !== employee.id);
+            } else {
+                return [...selected, employee];
+            }
+        });
+    };
+
+    const handleIncludeSubDepartmentsChange = (e) => {
+        const newIncludeSubDepartments = e.target.checked;
+        setIncludeSubDepartments(newIncludeSubDepartments);
+        if (selectedDepartmentNames && selectedDepartmentNames.length > 0) { // null 체크 추가
+            const selectedDepartmentId = departmentList.find(dept => dept.departmentName === selectedDepartmentNames[selectedDepartmentNames.length - 1]).id;
+            filterEmployees(selectedDepartmentId, newIncludeSubDepartments);
+        }
     };
 
     return (
@@ -94,10 +220,10 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
                         <React.Fragment key={department.id}>
                             <ListItem
                                 button
-                                onClick={() => handleDepartmentSelect(department.id, Object.keys(department.subDepartments).length > 0)}
+                                onClick={() => handleDepartmentSelect(department.id)}
                                 sx={{
                                     py: 1,
-                                    bgcolor: expandedDepartments.includes(department.id) ? '#e0e0e0' : 'transparent',
+                                    bgcolor: expandedTopDepartments.includes(department.id) ? '#e0e0e0' : 'transparent',
                                     borderRadius: 1,
                                     '&:hover': {
                                         bgcolor: '#e0e0e0'
@@ -105,9 +231,9 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
                                 }}
                             >
                                 <ListItemText primary={department.departmentName} />
-                                {Object.keys(department.subDepartments).length > 0 && (expandedDepartments.includes(department.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+                                {Object.keys(department.subDepartments).length > 0 && (expandedTopDepartments.includes(department.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
                             </ListItem>
-                            {expandedDepartments.includes(department.id) && (
+                            {expandedTopDepartments.includes(department.id) && (
                                 <List component="div" disablePadding>
                                     {Object.entries(department.subDepartments).map(([subKey, subDepartment]) => (
                                         <React.Fragment key={subDepartment.id}>
@@ -115,13 +241,12 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
                                                 button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    handleDepartmentSelect(subDepartment.id, Object.keys(subDepartment.subDepartments).length > 0);
-                                                    filterEmployees(subDepartment.id);
+                                                    handleDepartmentSelect(subDepartment.id);
                                                 }}
                                                 sx={{
                                                     pl: 4,
                                                     py: 1,
-                                                    bgcolor: expandedDepartments.includes(subDepartment.id) ? '#dee2e6' : 'transparent',
+                                                    bgcolor: expandedMidDepartments.includes(subDepartment.id) ? '#dee2e6' : 'transparent',
                                                     borderRadius: 1,
                                                     '&:hover': {
                                                         bgcolor: '#dee2e6'
@@ -129,9 +254,9 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
                                                 }}
                                             >
                                                 <ListItemText primary={subDepartment.departmentName} />
-                                                {Object.keys(subDepartment.subDepartments).length > 0 && (expandedDepartments.includes(subDepartment.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+                                                {Object.keys(subDepartment.subDepartments).length > 0 && (expandedMidDepartments.includes(subDepartment.id) ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
                                             </ListItem>
-                                            {expandedDepartments.includes(subDepartment.id) && (
+                                            {expandedMidDepartments.includes(subDepartment.id) && (
                                                 <List component="div" disablePadding>
                                                     {Object.entries(subDepartment.subDepartments).map(([subSubKey, subSubDepartment]) => (
                                                         <ListItem
@@ -139,8 +264,7 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
                                                             button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                handleDepartmentSelect(subSubDepartment.id, false);
-                                                                filterEmployees(subSubDepartment.id);
+                                                                handleDepartmentSelect(subSubDepartment.id);
                                                             }}
                                                             sx={{
                                                                 pl: 6,
@@ -168,6 +292,27 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
             {/* Employee List */}
             <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto'}}>
                 <Typography variant="h6" gutterBottom>직원 리스트</Typography>
+                <Checkbox
+                    checked={includeSubDepartments}
+                    onChange={handleIncludeSubDepartmentsChange}
+                />
+                <Typography variant="body2" component="span">하위 부서 포함</Typography>
+                {filteredEmployees.length > 0 ? (
+                <Box sx={{ ml: 'auto' }}>
+                    <Checkbox
+                        checked={selectAllChecked}
+                        onChange={handleSelectAllChange}
+                        disabled={filteredEmployees.length === 0}
+                    />
+                    <Typography variant="body2" component="span">해당 부서 전체 선택</Typography>
+                </Box>):('')}
+                <Box sx={{ mb: 2 }}>
+                    {selectedDepartmentNames.length > 0 && (
+                        <Typography variant="subtitle1" gutterBottom>
+                            {selectedDepartmentNames.join('<')}
+                        </Typography>
+                    )}
+                </Box>
                 <List>
                     {filteredEmployees.length > 0 ? (
                         filteredEmployees.map(employee => (
@@ -175,18 +320,10 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
                                 key={employee.id}
                                 button
                                 onClick={() => handleEmployeeSelect(employee)}
-                                sx={{
-                                    py: 1,
-                                    bgcolor: selectedEmployees.some(selected => selected.id === employee.id) ? '#e0e0e0' : 'transparent',
-                                    borderRadius: 1,
-                                    '&:hover': {
-                                        bgcolor: '#e9ecef'
-                                    }
-                                }}
                             >
-                                <ListItemIcon>
+                                <ListItemIcon onChange={() => handleEmployeeSelect(employee)}>
                                     <Checkbox
-                                        checked={selectedEmployees.some(selected => selected.id === employee.id)}
+                                        checked={selectedEmployees?.some(selected => selected.id === employee.id) || false}
                                         onChange={() => handleEmployeeSelect(employee)}
                                     />
                                 </ListItemIcon>
@@ -205,19 +342,19 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
             {/* Selected Employees */}
             <Box sx={{ flex: 2, bgcolor: '#fff', borderRadius: 1, p: 2, boxShadow: 1, overflowY: 'auto'}}>
                 <Typography variant="h6" gutterBottom>선택된 직원 정보</Typography>
-                {selectedEmployees.length > 0 ? (
+                {selectedEmployees ? (
                     selectedEmployees.map(employee => (
                         <Box
-                            key={employee.id}
                             sx={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 py: 1,
-                                px: 2,
-                                mb: 1,
+                                px: 1,
+                                mb: 2,
+                                bgcolor: '#f9f9f9',
+                                borderRadius: 2,
                                 borderLeft: '5px solid #ffd454',
-                                bgcolor: '#fafafa',
-                                borderRadius: 1,
+                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
                                 '&:hover': {
                                     bgcolor: '#f0f0f0'
                                 }
@@ -226,10 +363,25 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
                             <IconButton onClick={() => handleEmployeeSelect(employee)}>
                                 <CloseIcon />
                             </IconButton>
-                            <Box sx={{ ml: 2 }}>
-                                <Typography variant="body2" color="textPrimary">이름: {employee.name}</Typography>
+                            <img
+                                src={employee.profileFile}
+                                alt={`${employee.name}의 프로필`}
+                                style={{
+                                    width: '100px',
+                                    height: '100px',
+                                    borderRadius: '50%',
+                                    border: '2px solid #ddd',
+                                    objectFit: 'cover',
+                                    marginRight: '20px'
+                                }}
+                            />
+                            <Box sx={{ flexGrow: 1 }}>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold' }}>{employee.name}</Typography>
                                 <Typography variant="body2" color="textSecondary">직급: {employee.position.rank}</Typography>
                                 <Typography variant="body2" color="textSecondary">이메일: {employee.email}</Typography>
+                                <Typography variant="body2" color="textSecondary">전화번호: {employee.phoneNumber}</Typography>
+                                <Typography variant="body2" color="textSecondary">부서: {employee.department.departmentName}</Typography>
+                                <Typography variant="body2" color="textSecondary">입사일: {employee.firstDay ? employee.firstDay : '정보 없음'}</Typography>
                             </Box>
                         </Box>
                     ))
@@ -242,7 +394,7 @@ const OrganizationChart = ({ selectedEmployees, setSelectedEmployees }) => {
 };
 
 const GroupModal = ({open, onClose, onSelect}) => {
-    const [selectedEmployees, setSelectedEmployees] = useState([]);
+    const [selectedEmployees, setselectedEmployees] = useState([]);
 
     const handleSave = () => {
         onSelect(selectedEmployees);
@@ -251,7 +403,7 @@ const GroupModal = ({open, onClose, onSelect}) => {
     };
 
     const handleClose = () => {
-        setSelectedEmployees([]);
+        setselectedEmployees([]);
         onClose();
     };
 
@@ -281,7 +433,7 @@ const GroupModal = ({open, onClose, onSelect}) => {
 
                 <OrganizationChart
                     selectedEmployees={selectedEmployees}
-                    setSelectedEmployees={setSelectedEmployees}
+                    setselectedEmployees={setselectedEmployees}
                 />
 
                 <Box sx={{ mt: 'auto', display: 'flex', justifyContent: 'space-between' }}>
