@@ -1,14 +1,20 @@
 .lk-chat-messages {
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
+    height: calc(100% - 60px); /* 채팅 입력 폼 높이를 고려 */
 }
 
+/* 이름을 메시지 위에 배치 */
 .lk-chat-entry {
+    display: flex;
+    flex-direction: column;
     max-width: 70%;
     margin-bottom: 10px;
     align-self: flex-start;
 }
 
+/* 자신이 보낸 메시지 */
 .lk-chat-entry-self {
     align-self: flex-end;
 }
@@ -17,6 +23,11 @@
     font-size: 0.8em;
     color: white;
     margin-bottom: 2px;
+    align-self: flex-start;
+}
+
+.lk-chat-entry-self .lk-chat-entry-metadata {
+    align-self: flex-end;
 }
 
 .lk-chat-entry-bubble {
@@ -34,10 +45,32 @@
 .lk-chat-entry-timestamp {
     font-size: 0.8em;
     color: #888;
-    margin-top: 5px;
+    margin-top: 20px;
     align-self: flex-start;
 }
 
 .lk-chat-entry-self .lk-chat-entry-timestamp {
     align-self: flex-end;
+}
+/* 메시지와 타임스탬프를 한 줄에 배치 */
+.lk-chat-entry-container {
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: space-between; /* 메시지와 타임스탬프 간 간격 조정 */
+}
+
+/* 자신이 보낸 메시지 타임스탬프 왼쪽 */
+.lk-chat-entry-self .lk-chat-entry-container {
+    flex-direction: row-reverse; /* 메시지 오른쪽, 타임스탬프 왼쪽 */
+}
+
+.lk-chat-entry-timestamp {
+    font-size: 0.8em;
+    color: #888;
+    margin-left: 8px; /* 메시지와 타임스탬프 간격 */
+}
+
+.lk-chat-entry-self .lk-chat-entry-timestamp {
+    margin-left: 0;
+    margin-right: 8px; /* 타임스탬프가 메시지 왼쪽에 위치 */
 }

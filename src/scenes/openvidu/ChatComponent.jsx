@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
-import { ChatEntry, useChat, useMaybeLayoutContext } from "@livekit/components-react";
+import { useChat, useMaybeLayoutContext } from "@livekit/components-react";
 import './Chat.css';
 
 export function ChatComponent({
@@ -81,19 +81,47 @@ export function ChatComponent({
             widget.dispatch?.({ msg: 'unread_msg', count: unreadMessageCount });
         }
     }, [chatMessages, layoutContext?.widget]);
-    const formatTime = (timestamp) => {
-        const date = new Date(timestamp);
-        return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+
+    // 타임스탬프를 표시할 조건
+    const shouldShowTimestamp = (allMessages, index) => {
+        if (index === allMessages.length - 1) {
+            return true; // 마지막 메시지는 항상 타임스탬프 표시
+        }
+
+        const currentMsg = allMessages[index];
+        const nextMsg = allMessages[index + 1];
+
+        // 다음 메시지가 같은 사람이거나 1분 이내에 보내지 않은 경우 타임스탬프 표시
+        return (
+            JSON.parse(currentMsg.message).author !== JSON.parse(nextMsg.message).author ||
+            new Date(currentMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) !==
+            new Date(nextMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        );
+    };
+
+    // 이름을 표시할 조건
+    const showName = (allMessages, index) => {
+        if (index === 0) {
+            return true; // 첫 번째 메시지는 항상 이름 표시
+        }
+
+        const currentMsg = allMessages[index];
+        const prevMsg = allMessages[index - 1];
+
+        // 이전 메시지와 발신자가 다르거나 1분 이상의 차이가 나면 이름 표시
+        return (
+            JSON.parse(currentMsg.message).author !== JSON.parse(prevMsg.message).author ||
+            new Date(currentMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) !==
+            new Date(prevMsg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        );
     };
 
     return (
-        <div {...props} className="lk-chat" style={{width:'100%', height:'100%'}}>
-            <div className="lk-chat-header">
-                Messages
-            </div>
+        <div {...props} className="lk-chat" style={{ width: '100%', height: '100%' }}>
+            <div className="lk-chat-header">Messages</div>
 
             <ul className="lk-list lk-chat-messages" ref={ulRef}>
-                {chatMessages.map((msg, idx, allMsg) => {
+                {chatMessages.map((msg, idx, allMessages) => {
                     let parsedMessage;
                     try {
                         parsedMessage = JSON.parse(msg.message);
@@ -103,22 +131,22 @@ export function ChatComponent({
                     }
 
                     const isCurrentUser = parsedMessage.author === currentUser;
-                    const showTimestamp = idx === 0 || formatTime(msg.timestamp) !== formatTime(allMsg[idx - 1].timestamp);
 
                     return (
-                        <li key={msg.id ?? idx}
-                            className={`lk-chat-entry ${isCurrentUser ? 'lk-chat-entry-self' : ''}`}>
-                            <div className="lk-chat-entry-metadata">
-                                <span className="lk-chat-entry-author">{parsedMessage.author}</span>
-                            </div>
-                            <div className="lk-chat-entry-bubble">
-                                {parsedMessage.text}
-                            </div>
-                            {showTimestamp && (
-                                <div className="lk-chat-entry-timestamp">
-                                    {formatTime(msg.timestamp)}
+                        <li key={msg.id ?? idx} className={`lk-chat-entry ${isCurrentUser ? 'lk-chat-entry-self' : ''}`}>
+                            {showName(allMessages, idx) && (
+                                <div className="lk-chat-entry-metadata">
+                                    <span className="lk-chat-entry-author">{parsedMessage.author}</span>
                                 </div>
                             )}
+                            <div className="lk-chat-entry-container">
+                                <div className="lk-chat-entry-bubble">{parsedMessage.text}</div>
+                                {shouldShowTimestamp(allMessages, idx) && (
+                                    <div className="lk-chat-entry-timestamp">
+                                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                )}
+                            </div>
                         </li>
                     );
                 })}
