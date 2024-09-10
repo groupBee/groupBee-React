@@ -3,11 +3,12 @@ import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
 
-const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId }) => {
+const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topic }) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
+    let subscriptionUrl = '';
 
     // WebSocket 연결 함수
     const connectWebSocket = () => {
@@ -22,12 +23,19 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId }) =>
         const stompClient = Stomp.over(socket);
         stompClientRef.current = stompClient; // stompClient를 ref에 저장
 
+        if (topic === "create-room-one") {
+            subscriptionUrl = `/topic/messages/${chatRoomId}`;
+        } else{
+            subscriptionUrl = `/topic/group/${chatRoomId}`;
+        }
+
         stompClient.connect({}, (frame) => {
             console.log('WebSocket이 연결되었습니다: ' + frame);
             setIsConnected(true); // WebSocket 연결 상태를 true로 설정
+            console.log(topic);
 
             // WebSocket 메시지 구독
-            stompClient.subscribe(`/topic/messages/${chatRoomId}`, (message) => {
+            stompClient.subscribe(subscriptionUrl, (message) => {
                 const receivedMessage = JSON.parse(message.body);
 
                 // 서버로부터 받은 메시지 중에서 본인의 메시지는 제외
