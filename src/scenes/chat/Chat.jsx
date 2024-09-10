@@ -97,6 +97,7 @@ const Chat = () => {
           userId={userId}  // userId 전달
           participants={activeRoom.participants}
           name={name}
+          topic={activeRoom.topic}
           onClose={() => setActiveRoom(null)}
         />
       )}
