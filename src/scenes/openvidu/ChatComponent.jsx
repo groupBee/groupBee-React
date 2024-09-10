@@ -7,6 +7,7 @@ export function ChatComponent({
                                   messageDecoder,
                                   messageEncoder,
                                   channelTopic,
+                                  onNewMessage,
                                   ...props
                               }) {
     const [infoData, setInfoData] = useState(null);
@@ -47,6 +48,13 @@ export function ChatComponent({
             console.error('Error fetching user data:', error);
         }
     };
+
+    useEffect(() => {
+        if (chatMessages.length > 0 && onNewMessage) {
+            const latestMessage = chatMessages[chatMessages.length - 1];
+            onNewMessage(latestMessage.timestamp);
+        }
+    }, [chatMessages, onNewMessage]);
 
     useEffect(() => {
         fetchData();
