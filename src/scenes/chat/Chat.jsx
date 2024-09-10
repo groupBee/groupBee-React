@@ -79,6 +79,7 @@ const Chat = () => {
     setChatRoomName('');
     setParticipants([]);
     setShowRoomInput(false);
+    getChatRoomList();
   };
 
   // Sidebar에서 클릭된 채팅방을 처리
@@ -94,6 +95,7 @@ const Chat = () => {
           activeRoom={activeRoom}
           chatRoomId={activeRoom.chatRoomId}  // chatRoomId 전달
           userId={userId}  // userId 전달
+          participants={activeRoom.participants}
           name={name}
           onClose={() => setActiveRoom(null)}
         />

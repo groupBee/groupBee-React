@@ -17,7 +17,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId }) =>
         }
 
         console.log(`WebSocket 연결 시도 - ChatRoom ID: ${chatRoomId}`);
-        
+
         const socket = new WebSocket('ws://100.64.0.10:9999/ws');
         const stompClient = Stomp.over(socket);
         stompClientRef.current = stompClient; // stompClient를 ref에 저장
@@ -30,13 +30,16 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId }) =>
             stompClient.subscribe(`/topic/messages/${chatRoomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
 
-                // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가
-                if (receivedMessage.sender !== userId) { 
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { text: receivedMessage.content, name: receivedMessage.senderNickName, isMine: false }
-                    ]);
+                // 서버로부터 받은 메시지 중에서 본인의 메시지는 제외
+                if (receivedMessage.senderId === userId) {
+                    return;  // 본인이 보낸 메시지는 무시
                 }
+
+                // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: receivedMessage.content, name: receivedMessage.senderNickName, isMine: false }
+                ]);
             });
         }, (error) => {
             console.error('WebSocket 오류 발생: ', error);
@@ -52,16 +55,17 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId }) =>
             return; // 연결되지 않았거나 메시지가 비어있으면 전송하지 않음
         }
 
+
         // 메시지 전송
         const messageObj = {
-            name: name,
+            senderName: name,
             chatRoomId: chatRoomId,
             senderId: userId,
-            senderNickName: name,
-            recipientId: [],
+            recipientId: activeRoom.participants,  // 수신자 목록을 recipientId에 추가
             content: inputMessage,
             announcement: '',
-            fileUrl: ''
+            fileUrl: '',
+            topic: 'one'
         };
 
         stompClient.send('/app/chat', {}, JSON.stringify(messageObj));

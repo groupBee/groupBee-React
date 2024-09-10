@@ -111,10 +111,10 @@ const Sidebar = ({ onRoomClick, openModal, userId }) => {
             <div className="chat-meta">
               <span className="time">{room.lastActive}</span>
               {room.unreadCount > 0 && <span className="unread-badge">{room.unreadCount}</span>}
-              <button className="icon-button" onClick={() => toggleRoomDropdown(room.id)}>⋯</button>
-              {selectedRoomDropdown === room.id && (
+              <button className="icon-button" onClick={() => toggleRoomDropdown(room.chatRoomId)}>⋯</button>
+              {selectedRoomDropdown === room.chatRoomId && ( 
                 <div className="room-dropdown open">
-                  <button className="dropdown-item" onClick={() => exitChatRoom(room.id)}>채팅방 나가기</button>
+                  <button className="dropdown-item" onClick={() => exitChatRoom(room.chatRoomId)}>채팅방 나가기</button>
                 </div>
               )}
             </div>
