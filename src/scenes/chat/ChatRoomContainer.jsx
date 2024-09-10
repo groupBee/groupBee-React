@@ -76,7 +76,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
             content: inputMessage,
             announcement: '',
             fileUrl: '',
-            topic: 'one'
+            topic: messageTopic
         };
 
         stompClient.send('/app/chat', {}, JSON.stringify(messageObj));
