@@ -1,6 +1,6 @@
 import {Box, FormControl, InputLabel, Select, useTheme, MenuItem, Button, Typography} from "@mui/material";
 import { Header } from "../../components";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { tokens } from "../../theme";
 import { Link, NavLink, useNavigate } from "react-router-dom";
@@ -222,10 +222,11 @@ const List = () => {
                                             formatDate(item.writeday)
                                         }
                                     </td>
-                                    <td style={{borderRight: 'none', borderLeft: 'none',
-                                        color: item.additionalFields.status ===
-                                        '결재 완료' ? '#22ba8a' : item.additionalFields.status === '반려' ? '#ff7133' : '#555'}}>
-                                        {item.additionalFields.status}
+                                    <td style={{borderRight: 'none', borderLeft: 'none',}}>
+                                        <span style={{color: item.approveType === 0 ? '#ff501c' : item.approveType === 1 ? '#ff8800' : item.approveType === 2 ? '#ff8800' : '#75d5b3',
+                                            backgroundColor: item.approveType === 0 ? '#ffece6' : item.approveType === 1 ? '#ffefdf' : item.approveType === 2 ? '#ffefdf' : '#e7f9f1',
+                                            padding: '3px 4px',
+                                            borderRadius: '4px'}}>{item.approveType === 0 ? '반려' : item.approveType === 1 ? '결재중' : item.approveType === 2 ? '결재중' : '결재완료'}</span>
                                     </td>
                                 </tr>
                             ))

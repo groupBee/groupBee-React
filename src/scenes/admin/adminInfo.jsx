@@ -3,7 +3,7 @@ import { Box, Button, FormControlLabel, IconButton, InputBase, MenuItem, Modal, 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import CloseIcon from "@mui/icons-material/Close.js";
+import CloseIcon from "@mui/icons-material/Close";
 
 const style = {
     position: 'absolute',
@@ -313,13 +313,6 @@ const AdminInfo = () => {
                 </Typography>
             </Box>
                 <TableContainer component={Paper}>
-                    <IconButton
-                        aria-label="close"
-                        onClick={handlePassModalClose}
-                        sx={{ position: 'absolute', right: 8, top: 8 }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -396,6 +389,18 @@ const AdminInfo = () => {
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style}>
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                                color: (theme) => theme.palette.grey[500],
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                         <Box display="flex" justifyContent="space-between">
                             <Typography id="modal-modal-title" variant="h2" component="h2" fontWeight='normal' textAlign="center">
                                 상세정보

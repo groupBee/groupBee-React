@@ -67,7 +67,12 @@ const OrganizationChart = ({ selectedEmployees, setselectedEmployees }) => {
         const checked = event.target.checked;
         setSelectAllChecked(checked);
         if (checked) {
-            const newSelectedEmployees = [...(selectedEmployees || []), ...filteredEmployees];
+            const newSelectedEmployees = [...(selectedEmployees || [])];
+            filteredEmployees.forEach(employee => {
+                if (!newSelectedEmployees.some(selected => selected.id === employee.id)) {
+                    newSelectedEmployees.push(employee);
+                }
+            });
             setselectedEmployees(newSelectedEmployees);
         } else {
             const newSelectedEmployees = (selectedEmployees || []).filter(

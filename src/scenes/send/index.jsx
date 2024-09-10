@@ -1,7 +1,7 @@
 import { Box, Button, FormControl, InputLabel, MenuItem, Select, Typography, useTheme } from "@mui/material";
 import { Header } from "../../components";
 import { tokens } from "../../theme";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -195,7 +195,7 @@ const Invoices = () => {
                         <tbody>
                             {currentData &&
                                 currentData.map((item, idx) => (
-                                    <tr key={idx} style={{ lineHeight: '30px', cursor: 'pointer' }}
+                                    <tr key={idx} style={{lineHeight: '30px', cursor: 'pointer'}}
                                         onMouseOver={(e) => {
                                             const tds = e.currentTarget.querySelectorAll('td');
                                             tds.forEach(td => td.style.color = "#ffb121"); // 모든 td 색상 변경
@@ -211,54 +211,56 @@ const Invoices = () => {
                                             borderLeft: 'none',
                                             paddingLeft: '1.5%'
                                         }}>{(currentPage - 1) * PageCount + idx + 1}</td>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                        <td style={{borderRight: 'none', borderLeft: 'none'}}>
                                             {item.appDocType === 0 ? '품의서' :
                                                 item.appDocType === 1 ? '휴가신청서' :
                                                     item.appDocType === 2 ? '지출보고서' : ''}
                                         </td>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                        <td style={{borderRight: 'none', borderLeft: 'none'}}>
                                             {item.appDocType === 1
                                                 ? '휴가신청서'
                                                 : item.additionalFields.title
                                                     ? item.additionalFields.title
                                                     : !item.additionalFields.title && item.appDocType === 0
                                                         ? (
-                                                            <span style={{ color: 'gray' }}>
+                                                            <span style={{color: 'gray'}}>
                                                                 {item.writeday.substring(0, 10) + "_품의서"}
                                                             </span>
-                                                        ):!item.additionalFields.title && item.appDocType === 2
-                                                        ?(
-                                                            <span style={{ color: 'gray' }}>
+                                                        ) : !item.additionalFields.title && item.appDocType === 2
+                                                            ? (
+                                                                <span style={{color: 'gray'}}>
                                                                 {item.writeday.substring(0, 10) + "_지출보고서"}
                                                             </span>
-                                                        ): ''
+                                                            ) : ''
                                             }
 
                                         </td>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.writer}</td>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>{item.department}</td>
-                                        <td style={{ borderRight: 'none', borderLeft: 'none' }}>
+                                        <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.writer}</td>
+                                        <td style={{borderRight: 'none', borderLeft: 'none'}}>{item.department}</td>
+                                        <td style={{borderRight: 'none', borderLeft: 'none'}}>
                                             {
                                                 formatDate(item.writeday)
                                             }
                                         </td>
-                                        <td style={{
-                                            borderRight: 'none',
-                                            borderLeft: 'none',
-                                            color: item.additionalFields.status ===
-                                                '결재 완료' ? '#22ba8a' : item.additionalFields.status === '반려' ? '#ff7133' : '#555'
-                                        }}>{item.approveStatus === 1 ? '임시저장' : item.approveType === 0 ? '반려' : item.approveType === 1 ? '제출완료' : item.approveType === 2 ? '진행중' : '결재완료'}</td>
+                                        <td style={{borderRight: 'none', borderLeft: 'none',}}>
+                                        <span style={{
+                                            color: item.approveType === 0 ? '#ff501c' : item.approveType === 1 ? '#ff8800' : item.approveType === 2 ? '#ff8800' : '#75d5b3',
+                                            backgroundColor: item.approveType === 0 ? '#ffece6' : item.approveType === 1 ? '#ffefdf' : item.approveType === 2 ? '#ffefdf' : '#e7f9f1',
+                                            padding: '3px 4px',
+                                            borderRadius: '4px'
+                                        }}>{item.approveStatus === 1 ? '임시저장' : item.approveType === 0 ? '반려' : item.approveType === 1 ? '제출완료' : item.approveType === 2 ? '진행중' : '결재완료'}</span>
+                                        </td>
                                     </tr>
                                 ))
                             }
                             {binpage.map((_, idx) => (
-                                <tr key={`empty-${idx}`} style={{ lineHeight: '30px', border: 'none' }}>
-                                    <td style={{ border: 'none' }}>&nbsp;</td>
-                                    <td style={{ border: 'none' }}>&nbsp;</td>
-                                    <td style={{ border: 'none' }}>&nbsp;</td>
-                                    <td style={{ border: 'none' }}>&nbsp;</td>
-                                    <td style={{ border: 'none' }}>&nbsp;</td>
-                                    <td style={{ border: 'none' }}>&nbsp;</td>
+                                <tr key={`empty-${idx}`} style={{lineHeight: '30px', border: 'none'}}>
+                                    <td style={{border: 'none'}}>&nbsp;</td>
+                                    <td style={{border: 'none'}}>&nbsp;</td>
+                                    <td style={{border: 'none'}}>&nbsp;</td>
+                                    <td style={{border: 'none'}}>&nbsp;</td>
+                                    <td style={{border: 'none'}}>&nbsp;</td>
+                                    <td style={{border: 'none'}}>&nbsp;</td>
                                     <td style={{ border: 'none' }}>&nbsp;</td>
                                 </tr>
                             ))}

@@ -52,6 +52,7 @@ const EmailMain = () => {
                                 color: sendMailButtonColor,
                                 fontSize: '20px',
                                 padding: '0',
+                                marginLeft:'15%',
                                 textTransform: 'none',
                                 '&:hover': {
                                     backgroundColor: 'transparent',
