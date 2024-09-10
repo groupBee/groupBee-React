@@ -1,67 +1,67 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
 
-
-const ChatRoomContainer = ({ activeRoom, onClose, userId, name }) => {
+const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId }) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
 
-    // 1. 웹 소켓 연결 함수
+    // WebSocket 연결 함수
     const connectWebSocket = () => {
-        if (!userId) return; // userId가 설정되지 않으면 WebSocket 연결하지 않음
+        if (!userId || !chatRoomId) {
+            console.error("User ID 또는 ChatRoom ID가 정의되지 않음");
+            return; // userId 또는 chatRoomId가 없으면 WebSocket 연결하지 않음
+        }
 
+        console.log(`WebSocket 연결 시도 - ChatRoom ID: ${chatRoomId}`);
+        
         const socket = new WebSocket('ws://100.64.0.10:9999/ws');
         const stompClient = Stomp.over(socket);
         stompClientRef.current = stompClient; // stompClient를 ref에 저장
 
         stompClient.connect({}, (frame) => {
-            console.log('WebSocket is connected with STOMP: ' + frame);
+            console.log('WebSocket이 연결되었습니다: ' + frame);
             setIsConnected(true); // WebSocket 연결 상태를 true로 설정
 
-            // 2. /topic/messages 구독하여 서버로부터 실시간 메시지 수신
-            stompClient.subscribe('/topic/messages', (message) => {
+            // WebSocket 메시지 구독
+            stompClient.subscribe(`/topic/messages/${chatRoomId}`, (message) => {
                 const receivedMessage = JSON.parse(message.body);
 
-                // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
+                // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가
                 if (receivedMessage.sender !== userId) { 
                     setMessages((prevMessages) => [
                         ...prevMessages,
-                        { text: receivedMessage.message, name: receivedMessage.name, isMine: false }
+                        { text: receivedMessage.content, name: receivedMessage.senderNickName, isMine: false }
                     ]);
                 }
             });
         }, (error) => {
-            console.error('WebSocket error: ', error);
+            console.error('WebSocket 오류 발생: ', error);
             setIsConnected(false); // WebSocket 연결 실패 시 false로 설정
         });
     };
 
-    // 3. 메시지 전송 함수
+    // 메시지 전송 함수
     const sendMessage = () => {
         const stompClient = stompClientRef.current;
         if (!isConnected || !stompClient || inputMessage.trim() === '') {
-            console.error('WebSocket not connected or empty message');
+            console.error('WebSocket이 연결되지 않았거나 메시지가 비어있음');
             return; // 연결되지 않았거나 메시지가 비어있으면 전송하지 않음
         }
 
-        // 메시지 전송 (사용자 ID를 포함하여 전송)
+        // 메시지 전송
         const messageObj = {
-            // message: inputMessage,
-            // sender: userId,  // 내가 보낸 메시지임을 식별
-            name: name,//
-            chatRoomId:'d',
-            senderId:userId,
-            senderNickName:name,
-            recipientId:[],
-            content:inputMessage,
-            announcement:'',
-            fileUrl:'',
-
-
+            name: name,
+            chatRoomId: chatRoomId,
+            senderId: userId,
+            senderNickName: name,
+            recipientId: [],
+            content: inputMessage,
+            announcement: '',
+            fileUrl: ''
         };
 
         stompClient.send('/app/chat', {}, JSON.stringify(messageObj));
@@ -76,14 +76,14 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name }) => {
         setInputMessage('');
     };
 
-    // 4. 처음 로드될 때 WebSocket 연결 (userId가 설정된 후에 연결)
+    // WebSocket 연결 설정
     useEffect(() => {
-        if (userId) {
+        if (userId && chatRoomId) {
             connectWebSocket();
         }
-    }, [userId]); // userId가 설정되면 WebSocket 연결
+    }, [userId, chatRoomId]); // userId 또는 chatRoomId가 설정되면 WebSocket 연결
 
-    // 메시지 입력 후 엔터 키로도 전송 가능하게 설정
+    // 메시지 입력 후 엔터 키로 전송
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             sendMessage();
@@ -100,7 +100,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name }) => {
                 {/* 메시지 출력 */}
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.isMine ? 'right' : 'left'}`}>
-                        <div>{msg.name===name?'':msg.name}</div>
+                        <div>{msg.name === name ? '' : msg.name}</div>
                         {msg.text}
                     </div>
                 ))}
