@@ -37,6 +37,7 @@ import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
 import LocalPhoneRoundedIcon from '@mui/icons-material/LocalPhoneRounded';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
+import CloseIcon from "@mui/icons-material/Close";
 const style = {
     position: 'absolute',
     top: '50%',
@@ -354,6 +355,13 @@ const checkOriginalPass = () => {
                                 aria-describedby="modal-modal-description"
                             >
                                 <Box sx={style}>
+                                    <IconButton
+                                        aria-label="close"
+                                        onClick={handlePassModalClose}
+                                        sx={{ position: 'absolute', right: 8, top: 8 }}
+                                    >
+                                        <CloseIcon />
+                                    </IconButton>
                                     <Typography variant="h4" component="h2" sx={{ mb: 3, fontWeight: 'bold', textAlign: 'center' }}>
                                         비밀번호 변경
                                     </Typography>
