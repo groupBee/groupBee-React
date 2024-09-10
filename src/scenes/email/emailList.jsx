@@ -218,7 +218,7 @@ const formatDate = (dateString) => {
                         </thead>
                         <tbody>
                         {currentEmails.map((email, index) => (
-                            <tr key={index}>
+                            <tr key={index} style={{borderBottom:'1px solid #e8e8e8'}}>
                                 <td style={{textAlign: 'center', padding: '10px'}}>
                                     {readEmails[index] ? <MailOpenIcon/> : <MailOutlineIcon/>}
                                 </td>

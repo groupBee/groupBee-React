@@ -54,7 +54,9 @@ const Board = () => {
                 filteredPosts = filteredPosts.filter(post => {
                     if (searchType === 'title') {
                         return post.board.title.toLowerCase().includes(searchQuery.toLowerCase());
-                    } else if (searchType === 'writer') {
+                    }   else if (searchType === 'content') {
+                    return post.board.content.toLowerCase().includes(searchQuery.toLowerCase());
+                } else if (searchType === 'writer') {
                         return post.board.writer.toLowerCase().includes(searchQuery.toLowerCase());
                     }
                     return true;
@@ -174,6 +176,7 @@ const Board = () => {
                                     style={{ fontSize: '12px', height: '33px', width: '78px' }} // 높이 조정
                                 >
                                     <MenuItem value="title">제목</MenuItem>
+                                    <MenuItem value="content">내용</MenuItem>
                                     <MenuItem value="writer">작성자</MenuItem>
                                 </Select>
                             </FormControl>

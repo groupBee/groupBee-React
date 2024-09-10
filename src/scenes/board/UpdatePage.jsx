@@ -94,7 +94,7 @@ const UpdatePage = () => {
         setMustRead(e.target.checked);
     };
 
-    const handleMustMustReadChange = (e) => {
+    const handlemustMustReadChange = (e) => {
         setMustMustRead(e.target.checked);
     };
 
@@ -190,7 +190,7 @@ const UpdatePage = () => {
                             control={
                                 <Checkbox
                                     checked={mustMustRead}
-                                    disabled
+                                    onChange={handlemustMustReadChange}
                                     style={{ marginLeft: '5px' }}
                                 />
                             }

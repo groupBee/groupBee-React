@@ -189,7 +189,7 @@ const SentEmail=()=>{
                                         fontWeight: 'bold'
                                     }}>수신자
                                     </th>
-                                    <th style={{width: '200px', textAlign: 'center', padding: '10px', fontWeight: 'bold'}}>받은
+                                    <th style={{width: '200px', textAlign: 'center', padding: '10px', fontWeight: 'bold'}}>보낸
                                         날짜
                                     </th>
                                 </tr>
