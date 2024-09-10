@@ -6,6 +6,8 @@ COPY . ./
 
 EXPOSE 5173
 
+RUN npm run postinstall --silent
+
 RUN npm install --silent
 
 CMD ["npm","run","dev"]
