@@ -3,6 +3,7 @@ import { Box, Button, FormControlLabel, IconButton, InputBase, MenuItem, Modal, 
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import CloseIcon from "@mui/icons-material/Close";
 
 const style = {
     position: 'absolute',
@@ -44,6 +45,8 @@ const AdminInfo = () => {
     const [idNumber, setIdNumber] = useState('');
     const [file, setFile] = useState('');
     const [originalFile, setOriginalFile] = useState('');
+    const [passModalOpen, setPassMadalOpen] = useState(false);
+
 
     // 부서정보 불러오기
     const getDepList = () => {
@@ -272,6 +275,9 @@ const AdminInfo = () => {
             throw error; // 필요시 에러 재던짐
         }
     };
+    const handlePassModalClose = () => {
+        setPassMadalOpen(false);
+    };
 
 
     return (
@@ -383,6 +389,18 @@ const AdminInfo = () => {
                     aria-describedby="modal-modal-description"
                 >
                     <Box sx={style}>
+                        <IconButton
+                            aria-label="close"
+                            onClick={handleClose}
+                            sx={{
+                                position: 'absolute',
+                                right: 8,
+                                top: 8,
+                                color: (theme) => theme.palette.grey[500],
+                            }}
+                        >
+                            <CloseIcon />
+                        </IconButton>
                         <Box display="flex" justifyContent="space-between">
                             <Typography id="modal-modal-title" variant="h2" component="h2" fontWeight='normal' textAlign="center">
                                 상세정보
@@ -425,7 +443,7 @@ const AdminInfo = () => {
                                             </TableCell>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>이름</TableCell>
                                             <TableCell>
-                                                <input type='text' value={name} onChange={(e) => setName(e.target.value)} />
+                                                <input type='text' style={{width:'100%'}} value={name} onChange={(e) => setName(e.target.value)} />
                                             </TableCell>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>소속</TableCell>
                                             <TableCell>
@@ -443,21 +461,21 @@ const AdminInfo = () => {
                                         <TableRow>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>포털 아이디</TableCell>
                                             <TableCell>
-                                                <input type='text' value={potalId} onChange={(e) => setPotalId(e.target.value)} />
+                                                <input type='text' style={{width:'100%'}} value={potalId} onChange={(e) => setPotalId(e.target.value)} />
                                             </TableCell>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>내선번호</TableCell>
                                             <TableCell>
-                                                <input type='text' value={extensionCall} onChange={(e) => setExtensionCall(e.target.value)} />
+                                                <input type='text' style={{width:'100%'}} value={extensionCall} onChange={(e) => setExtensionCall(e.target.value)} />
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>이메일</TableCell>
                                             <TableCell>
-                                                <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                <input type="text"  style={{width:'100%'}} value={email} onChange={(e) => setEmail(e.target.value)} />
                                             </TableCell>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>휴대전화번호</TableCell>
                                             <TableCell>
-                                                <input type='text' value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                                                <input type='text' style={{width:'100%'}} value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -474,7 +492,7 @@ const AdminInfo = () => {
                                             </TableCell>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>주소</TableCell>
                                             <TableCell>
-                                                <input type='text' value={address} onChange={(e) => setAddress(e.target.value)} />
+                                                <input type='text' style={{width:'100%'}} value={address} onChange={(e) => setAddress(e.target.value)} />
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -506,7 +524,7 @@ const AdminInfo = () => {
                                         <TableRow>
                                             <TableCell style={{ border: "1px solid grey", backgroundColor: "#DCDCDC" }}>주민등록번호</TableCell>
                                             <TableCell>
-                                                <input type='text' value={residentRegistrationNumber} onChange={(e) => setResidentRegistrationNumber(e.target.value)} />
+                                                <input type='text' style={{width:'100%'}} value={residentRegistrationNumber} onChange={(e) => setResidentRegistrationNumber(e.target.value)} />
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>

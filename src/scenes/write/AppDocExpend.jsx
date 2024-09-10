@@ -146,7 +146,7 @@ if(appId){
             <tr style={{ fontSize: '23px' }}>
                 <td>제목</td>
                 <td colSpan={7}>
-                    <input type='text' value={title} name='title' onChange={handleTitleChange} style={{ width: '100%' }} />
+                    <input type='text' value={title} name='title' onChange={handleTitleChange} style={{ width: '100%', textAlign:'center'}} />
                 </td>
             </tr>
             <tr style={{ fontSize: '23px', appearance: 'none' }}>
@@ -172,9 +172,9 @@ if(appId){
                 <td colSpan={3} style={{ height: '50px' }}>지출내용</td>
                 <td colSpan={3}>금액</td>
                 <td colSpan={2}>비고
-                    <button style={{ border: '1px solid #ffb121', backgroundColor: '#fafaf0', color: '#ffb121', borderRadius: '4px', width: '30px', marginRight: '10px' }}
+                    <button style={{ border: '1px solid #ffb121', backgroundColor: 'white', color: '#ffb121', borderRadius: '4px', width: '30px', marginRight: '10px' }}
                             onClick={addDetail}>+</button>
-                    <button style={{ border: '1px solid #ffb121', backgroundColor: '#fafaf0', color: '#ffb121', borderRadius: '4px', width: '30px', marginRight: '10px' }}
+                    <button style={{ border: '1px solid #ffb121', backgroundColor: 'white', color: '#ffb121', borderRadius: '4px', width: '30px', marginRight: '10px' }}
                             onClick={removeLastDetail}>-</button>
                 </td>
             </tr>
@@ -185,7 +185,7 @@ if(appId){
                             type='text'
                             value={detail.content}
                             name={`content-${index}`}
-                            style={{ width: '100%' }}
+                            style={{ width: '100%', textAlign:'center'}}
                             onChange={(e) => handleDetailChange(index, 'content', e.target.value)}
                         />
                     </td>

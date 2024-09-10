@@ -301,7 +301,7 @@ const WriteForm = ({ }) => {
                             <Button
                                 onClick={() => changeAppDoc(0)}
                                 style={{
-                                    backgroundColor: appDocType === 0 ? '#ffb121' : '#fafaf0',
+                                    backgroundColor: appDocType === 0 ? '#ffb121' : 'white',
                                     fontSize: '15px',
                                     color: appDocType === 0 ? 'white' : '#ffb121',
                                     border: '1px solid #ffb121'
@@ -311,7 +311,7 @@ const WriteForm = ({ }) => {
                             <Button
                                 onClick={() => changeAppDoc(1)}
                                 style={{
-                                    backgroundColor: appDocType === 1 ? '#ffb121' : '#fafaf0',
+                                    backgroundColor: appDocType === 1 ? '#ffb121' : 'white',
                                     fontSize: '15px',
                                     color: appDocType === 1 ? 'white' : '#ffb121',
                                     border: '1px solid #ffb121'
@@ -321,7 +321,7 @@ const WriteForm = ({ }) => {
                             <Button
                                 onClick={() => changeAppDoc(2)}
                                 style={{
-                                    backgroundColor: appDocType === 2 ? '#ffb121' : '#fafaf0',
+                                    backgroundColor: appDocType === 2 ? '#ffb121' : 'white',
                                     fontSize: '15px',
                                     color: appDocType === 2 ? 'white' : '#ffb121',
                                     border: '1px solid #ffb121'
@@ -370,7 +370,7 @@ const WriteForm = ({ }) => {
                             <tr>
                                 <td colSpan={4} rowSpan={3}
                                     style={{fontSize: '60px'}}>{appDocType === 0 ? '품 의 서' : appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</td>
-                                <td rowSpan={3} style={{fontSize: '23px'}}>결재</td>
+                                <td rowSpan={3} style={{fontSize: '30px',width:'18%'}}>결 재</td>
                                 <td className="fixed-size" style={{height: '50px'}}>최초승인자</td>
                                 <td className="fixed-size">중간승인자</td>
                                 <td className="fixed-size">최종승인자</td>
@@ -383,20 +383,20 @@ const WriteForm = ({ }) => {
                         <tr>
                             <td>
                                 <input type="text" value={firstApprover} disabled
-                                    style={{ width: '100%' }}
+                                    style={{ width: '100%', backgroundColor:'white',fontSize: '23px',textAlign:'center'}}
                                     onChange={(e) => setFirstApprover(e.target.value)} readOnly />
 
                             </td>
                             <td>
                                 <input type="text" value={secondApprover} disabled
                                     onChange={(e) => setSecondApprover(e.target.value)}
-                                    style={{ width: '100%' }} />
+                                    style={{ width: '100%', backgroundColor:'white',fontSize: '23px',textAlign:'center'}} />
                                 <Button variant="outlined" onClick={() => openModal('second')}>찾기</Button>
                                 {errors.secondApprover && <div className="error">{errors.secondApprover}</div>}
                             </td>
                             <td>
                                 <input type="text" value={thirdApprover} disabled onChange={(e) => setThirdApprover(e.target.value)}
-                                    style={{ width: '100%' }} />
+                                    style={{ width: '100%', backgroundColor:'white',fontSize: '23px',textAlign:'center'}} />
                                 <Button variant="outlined" onClick={() => openModal('third')}>찾기</Button>
                                 {errors.thirdApprover && <div className="error">{errors.thirdApprover}</div>}
                             </td>
@@ -405,17 +405,16 @@ const WriteForm = ({ }) => {
                             <td style={{ minWidth: '90px', fontSize: '23px' }}>성명</td>
                             <td><input type="text"
                                 defaultValue={writer}
-                                style={{ fontSize: '23px', width: '175px' }}
+                                style={{ fontSize: '23px', width: '175px',textAlign:'center'}}
                                 readOnly />
                             </td>
-                            <td style={{ minWidth: '70px', fontSize: '23px' }}>부서</td>
-                            <td><input type="text" defaultValue={department}
-                                style={{ fontSize: '23px', width: '175px' }} readOnly />
+                            <td style={{ width: '20%', fontSize: '23px' }}>부서</td>
+                            <td colSpan={2}><input type="text" defaultValue={department}
+                                style={{ fontSize: '23px', width: '175px',textAlign:'center'}} readOnly />
                             </td>
-                            <td></td>
                             <td  style={{ minWidth: '90px', fontSize: '23px' }}>직급</td>
                             <td colSpan={2}><input type="text" defaultValue={position}
-                                style={{ fontSize: '23px', width: '175px' }} readOnly />
+                                style={{ fontSize: '23px', width: '175px',textAlign:'center'}} readOnly />
                             </td>
 
 
