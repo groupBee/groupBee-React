@@ -4,29 +4,11 @@ import './ChatRoomContainer.css';
 import axios from 'axios';
 
 
-const ChatRoomContainer = ({ activeRoom, onClose }) => {
+const ChatRoomContainer = ({ activeRoom, onClose, userId, name }) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
-    const [userId, setUserId] = useState(''); // 사용자 ID 또는 이름 설정 (각 사용자가 다르도록)
-    const [name, setName] = useState('');
-
-    // 내 채팅 기본 정보 가져오기
-    const getInfo = async () => {
-        await axios.get("/api/employee/info")
-            .then(res => {
-                setName(res.data.name);
-                setUserId(res.data.id);
-            })
-            .catch(err => {
-                console.error("Failed to fetch user info:", err);
-            });
-    };
-
-    useEffect(() => {
-        getInfo();
-    }, []);
 
     // 1. 웹 소켓 연결 함수
     const connectWebSocket = () => {
