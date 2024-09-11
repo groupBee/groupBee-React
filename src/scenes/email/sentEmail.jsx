@@ -15,34 +15,34 @@ const SentEmail=()=>{
         const emailsPerPage = 15; // 페이지당 15개의 이메일을 표시
         const [pageGroup, setPageGroup] = useState(0); // 페이지 그룹 관리
         const pagesPerGroup = 5; // 그룹당 페이지 수를 5로 설정
-    
-      
-    
+
+
+
         // 이메일 목록을 가져오는 함수
-        const checkEmail = async () => {
-    
-            try {
-                const response = await fetch('/api/email/sent', {
-                    method: 'get'
-                });
-    
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log(result);
-                    // 이메일 목록을 최신순으로 정렬
-                    result.sort((a, b) => new Date(b.receivedDate) - new Date(a.receivedDate));
-                    setEmails(result);
-                    setError('');
-                } else {
-                    const result = await response.json();
-                    setError(result.error || '관리자에게 문의해 주세요.');
-                }
-            } catch (err) {
-                setError('에러: ' + err.message);
+    const checkEmail = async () => {
+        try {
+            const response = await fetch('/api/email/sent', {
+                method: 'get'
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log(result);
+                // 이메일 목록을 최신순으로 정렬
+                result.sort((a, b) => new Date(b.sentDate) - new Date(a.sentDate)); // 최신순으로 정렬
+                setEmails(result);
+                setError('');
+            } else {
+                const result = await response.json();
+                setError(result.error || '관리자에게 문의해 주세요.');
             }
-        };
-    
-        // 특정 이메일 내용을 보여주는 함수
+        } catch (err) {
+            setError('에러: ' + err.message);
+        }
+    };
+
+
+    // 특정 이메일 내용을 보여주는 함수
         const showMail = (content) => {
             alert(content)
             setSelectedEmail(content);
@@ -71,11 +71,13 @@ const SentEmail=()=>{
                 setCurrentPage(pageGroup * pagesPerGroup); // 이전 그룹의 마지막 페이지
             }
         };
-    
 
-    
-    
-        // 현재 페이지에 보여줄 이메일 목록 슬라이싱
+
+
+
+
+
+    // 현재 페이지에 보여줄 이메일 목록 슬라이싱
         const indexOfLastEmail = currentPage * emailsPerPage;
         const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
         const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
@@ -136,7 +138,7 @@ const SentEmail=()=>{
                             fontSize: '25px',
                         }}
                     >
-                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',
+                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',marginTop:'10px',
                         fontSize: '25px'}}><h1>보낸 메일함</h1></Box>
                     </Box>
                         {error && (
@@ -196,7 +198,7 @@ const SentEmail=()=>{
                                 </thead>
                                 <tbody>
                                 {currentEmails.map((email, index) => (
-                                    <tr key={index}>
+                                    <tr key={index} style={{borderBottom:'1px solid #e8e8e8'}}>
                                         <td style={{textAlign: 'center', padding: '10px'}}>
                                             {readEmails[index] ? <MailOpenIcon/> : <MailOutlineIcon/>}
                                         </td>
@@ -212,11 +214,9 @@ const SentEmail=()=>{
                                                 cursor: 'pointer',
 
                                             }}
+                                            onClick={() => showMail(email.content)}
                                         >
-                                            <p style={{marginLeft: '30px'}}
-                                               onClick={() => {
-                                                   showMail(email.content);
-                                               }}>&nbsp;&nbsp;{email.subject}</p>
+                                            {email.subject}
                                         </td>
                                         <td   style={{
                                             textAlign: 'center',
@@ -225,6 +225,7 @@ const SentEmail=()=>{
                                             whiteSpace: 'nowrap',
                                             overflow: 'hidden',
                                             textOverflow: 'ellipsis',
+                                            maxWidth: '300px',
                                         }}>
                                             {email.to}
                                         </td>
@@ -235,7 +236,8 @@ const SentEmail=()=>{
                                             whiteSpace: 'nowrap',
                                             color: isToday(email.receivedDate) ? '#ff4b22' : 'black', // 오늘 날짜면 초록색으로 표시
                                         }}
-                                        >{email.sentDate}</td>
+                                        >{email.sentDate}
+                                        </td>
                                     </tr>
                                 ))}
                                 </tbody>
