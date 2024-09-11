@@ -160,11 +160,7 @@ if(appId){
                                textAlign: 'right',
                                paddingRight: '20px'
                            }} readOnly />
-                    <select value={monetaryUnit} onChange={handleMonetaryUnitChange} name='monetaryUnit'>
-                        <option value={0}>원</option>
-                        <option value={1}>달러</option>
-                        <option value={2}>엔</option>
-                    </select>
+                    <span>원</span>
                 </td>
             </tr>
             <tr style={{ fontSize: '23px' }}>

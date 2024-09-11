@@ -428,12 +428,8 @@ const Detail = () => {
                                     <td>최종금액</td>
                                     <td colSpan={7}>
                                         <input type='text' value={list.additionalFields?.finalPrice || ''} readOnly
-                                               style={{width: '70px'}}/>
-                                        <select defaultValue={list.additionalFields?.monetaryUnit || ''} disabled>
-                                            <option value={0}>원</option>
-                                            <option value={1}>달러</option>
-                                            <option value={2}>엔</option>
-                                        </select>
+                                               style={{width: '60%',textAlign:'right',paddingRight:'20px'}}/>
+                                        <span>원</span>
                                     </td>
                                 </tr>
                                 <tr style={{fontSize: '23px'}}>
