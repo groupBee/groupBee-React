@@ -40,13 +40,16 @@
 
 /* 채팅 리스트 높이를 화면에 맞추기 */
 .chat-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  overflow-y: auto; /* 세로 스크롤 활성화 */
-  max-height: calc(100vh - 200px); /* 상단 요소(탭과 아이콘 등) 제외한 화면 크기 */
+
+  /* min-height: 150px; 최소 높이를 더 키워 스크롤 문제 해결 */
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+  scrollbar-width: none; /* 스크롤바 숨김 */
 }
 
+.chat-list::-webkit-scrollbar {
+  display: none; /* 스크롤바 숨김 (웹킷 브라우저) */
+}
 
 .chat-room {
   display: flex;
@@ -58,7 +61,6 @@
   cursor: pointer;
   min-height: 80px; /* 이전 60px에서 80px으로 수정 */
 }
-
 
 .chat-info {
   display: flex;
@@ -101,25 +103,43 @@
   color: gray;
   font-size: 12px;
 }
+
 /* 전체 및 개별 채팅방의 드롭다운 메뉴 스타일을 통일 */
-.dropdown-menu,
-.room-dropdown {
+.dropdown-menu{
   position: absolute;
-  top: 35px;
+  top: 100%; /* 부모 요소 바로 아래에 위치하도록 수정 */
   right: 0;
   background-color: white;
   border: 1px solid #ddd;
   border-radius: 5px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 200; /* 다른 요소보다 위에 표시되도록 설정 */
   min-width: 150px; /* 드롭다운의 최소 너비 설정 */
   padding: 10px; /* 메뉴 내부의 padding을 설정 */
   display: none; /* 기본적으로 숨김 처리 */
+  z-index: 9999; /* 드롭다운 클릭 가능하게 우선순위 높임 */
 }
 
-.dropdown-menu.open,
-.room-dropdown.open {
+.room-dropdown {
+  position: absolute;
+  top: 40px; /* 드롭다운이 버튼 바로 아래에 표시되도록 조정 */
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  padding: 10px;
+  z-index: 1000; /* 드롭다운이 상위로 오도록 */
+}
+
+.dropdown-menu.open {
   display: block; /* 열릴 때 표시 */
+  z-index: 9999;
+}
+
+.room-dropdown.open {
+  display: block;
+  z-index: 9999; /* 클릭 가능하게 우선순위를 높임 */
 }
 
 /* 드롭다운 아이템 스타일 */
@@ -137,4 +157,3 @@
 .dropdown-item:hover {
   background-color: #f0f0f0;
 }
-

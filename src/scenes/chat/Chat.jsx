@@ -14,6 +14,8 @@ const Chat = () => {
   const [chatRoomName, setChatRoomName] = useState('');
   const [userId, setUserID] = useState('');
   const [name, setName] = useState('');
+  const [chatRoomList, setChatRoomList] = useState([]);
+  const [filteredRoomList, setFilteredRoomList] = useState([]); // 필터링된 채팅방 목록
 
   // 유저 정보를 불러오는 함수
   const autoSelect = () => {
@@ -39,6 +41,21 @@ const Chat = () => {
   useEffect(() => {
     autoSelect();
   }, []);
+  // 내 채팅방 목록 가져오기
+  const getChatRoomList = () => {
+    const data = { userId };
+    console.log('userId===', userId);
+
+    axios
+      .post('http://100.64.0.10:9999/api/chat/chatting/list', data, {
+        headers: { 'Content-Type': 'application/json' },
+      })
+      .then((res) => {
+        setChatRoomList(res.data);
+        setFilteredRoomList(res.data); // 초기엔 전체 리스트 표시
+        console.log(res.data);
+      });
+  };
 
   const openModal = () => setModalOpen(true);
 
@@ -75,11 +92,11 @@ const Chat = () => {
       }
     }).then(res => {
       // 방 생성 후 로직 처리
+      getChatRoomList();
     });
     setChatRoomName('');
     setParticipants([]);
     setShowRoomInput(false);
-    getChatRoomList();
   };
 
   // Sidebar에서 클릭된 채팅방을 처리
@@ -89,7 +106,7 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
-      <Sidebar onRoomClick={handleRoomClick} openModal={openModal} userId={userId} />
+      <Sidebar setActiveRoom={setActiveRoom} filteredRoomList={filteredRoomList} setFilteredRoomList={setFilteredRoomList} onRoomClick={handleRoomClick} openModal={openModal} userId={userId} getChatRoomList={getChatRoomList} chatRoomList={chatRoomList} />
       {activeRoom && (
         <ChatRoomContainer
           activeRoom={activeRoom}
@@ -98,6 +115,7 @@ const Chat = () => {
           participants={activeRoom.participants}
           name={name}
           topic={activeRoom.topic}
+          getChatRoomList={getChatRoomList}
           onClose={() => setActiveRoom(null)}
         />
       )}
