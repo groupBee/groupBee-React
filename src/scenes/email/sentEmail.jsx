@@ -1,24 +1,27 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import MailOpenIcon from '@mui/icons-material/Drafts';
 import {Box} from "@mui/material";
-const SentEmail=()=>{
+import {useNavigate} from "react-router-dom";
+
+const SentEmail = () => {
 
 
-        const [emails, setEmails] = useState([]);
-        const [error, setError] = useState('');
-        const [selectedEmail, setSelectedEmail] = useState(null);
-        const [showModal, setShowModal] = useState(false);
-        const [readEmails, setReadEmails] = useState([]);
-        const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
-        const emailsPerPage = 15; // 페이지당 15개의 이메일을 표시
-        const [pageGroup, setPageGroup] = useState(0); // 페이지 그룹 관리
-        const pagesPerGroup = 5; // 그룹당 페이지 수를 5로 설정
+    const [emails, setEmails] = useState([]);
+    const [error, setError] = useState('');
+    const [selectedEmail, setSelectedEmail] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [readEmails, setReadEmails] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
+    const emailsPerPage = 15; // 페이지당 15개의 이메일을 표시
+    const [pageGroup, setPageGroup] = useState(0); // 페이지 그룹 관리
+    const pagesPerGroup = 5; // 그룹당 페이지 수를 5로 설정
+    const navigate = useNavigate();
 
 
 
-        // 이메일 목록을 가져오는 함수
+    // 이메일 목록을 가져오는 함수
     const checkEmail = async () => {
         try {
             const response = await fetch('/api/email/sent', {
@@ -43,213 +46,226 @@ const SentEmail=()=>{
 
 
     // 특정 이메일 내용을 보여주는 함수
-        const showMail = (content) => {
-            alert(content)
-            setSelectedEmail(content);
-            setShowModal(true);
-        };
-    
-        // 모달 닫기
-        const closeModal = () => {
-            setShowModal(false);
-        };
-    
-        // 페이지 이동 함수
-        const handlePageChange = (pageNumber) => {
-            setCurrentPage(pageNumber);
-        };
-    
-        // 페이지 그룹 이동 함수
-        const nextPageGroup = () => {
-            setPageGroup(pageGroup + 1);
-            setCurrentPage(pageGroup * pagesPerGroup + pagesPerGroup + 1); // 다음 그룹의 첫 페이지
-        };
-    
-        const prevPageGroup = () => {
-            if (pageGroup > 0) {
-                setPageGroup(pageGroup - 1);
-                setCurrentPage(pageGroup * pagesPerGroup); // 이전 그룹의 마지막 페이지
-            }
-        };
+    const showMail = (email) => {
+        // email.id가 없거나 undefined인 경우 대체 식별자 사용
+        const identifier = email.id || createEmailIdentifier(email);
 
+        const params = new URLSearchParams({
+            subject: email.subject || '',
+            from: email.from || '',
+            to: email.to || '',
+            cc: email.cc || '',
+            receivedDate: email.receivedDate || '',
+            content: email.content || ''
+        }).toString();
 
+        navigate(`/email/${identifier}?${params}`);
+    };
 
+    const createEmailIdentifier = (email) => {
+        const date = new Date(email.receivedDate);
+        return `${date.getTime()}-${email.subject.slice(0, 20).replace(/\s+/g, '-')}`;
+    };
 
+    // 모달 닫기
+    const closeModal = () => {
+        setShowModal(false);
+    };
+
+    // 페이지 이동 함수
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    // 페이지 그룹 이동 함수
+    const nextPageGroup = () => {
+        setPageGroup(pageGroup + 1);
+        setCurrentPage(pageGroup * pagesPerGroup + pagesPerGroup + 1); // 다음 그룹의 첫 페이지
+    };
+
+    const prevPageGroup = () => {
+        if (pageGroup > 0) {
+            setPageGroup(pageGroup - 1);
+            setCurrentPage(pageGroup * pagesPerGroup); // 이전 그룹의 마지막 페이지
+        }
+    };
 
 
     // 현재 페이지에 보여줄 이메일 목록 슬라이싱
-        const indexOfLastEmail = currentPage * emailsPerPage;
-        const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
-        const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
-    
-        // 총 페이지 수 계산
-        const totalPages = Math.ceil(emails.length / emailsPerPage);
-    
-        // 현재 그룹의 페이지 버튼 생성
-        const pageButtons = Array.from(
-            { length: Math.min(pagesPerGroup, totalPages - pageGroup * pagesPerGroup) },
-            (_, i) => pageGroup * pagesPerGroup + i + 1
-        );
-    
-    
-        // 유저 이름이 설정된 후 이메일 체크
-        useEffect(() => {
-    
-                checkEmail();
-            },[]);
+    const indexOfLastEmail = currentPage * emailsPerPage;
+    const indexOfFirstEmail = indexOfLastEmail - emailsPerPage;
+    const currentEmails = emails.slice(indexOfFirstEmail, indexOfLastEmail);
+
+    // 총 페이지 수 계산
+    const totalPages = Math.ceil(emails.length / emailsPerPage);
+
+    // 현재 그룹의 페이지 버튼 생성
+    const pageButtons = Array.from(
+        {length: Math.min(pagesPerGroup, totalPages - pageGroup * pagesPerGroup)},
+        (_, i) => pageGroup * pagesPerGroup + i + 1
+    );
+
+
+    // 유저 이름이 설정된 후 이메일 체크
+    useEffect(() => {
+
+        checkEmail();
+    }, []);
 
     const isToday = (dateString) => {
         const date = new Date(dateString);
         const today = new Date();
         return date.toDateString() === today.toDateString(); // 오늘 날짜인지 여부 반환
     };
-    
-        return (
+
+    return (
+        <Box
+            sx={{
+                m: '20px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                overflow: 'hidden',
+                width: '100%', // 반응형을 위한 너비 조정
+                padding: '0 10px', // 양쪽에 패딩 추가
+            }}
+        >
             <Box
                 sx={{
-                    m: '20px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    overflow: 'hidden',
-                    width: '100%', // 반응형을 위한 너비 조정
-                    padding: '0 10px', // 양쪽에 패딩 추가
+                    borderRadius: '8px',
+                    backgroundColor: 'white',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                    minHeight: '850px',
+                    width: '100%',
+                    maxWidth: '1050px',
+                    padding: '40px', // 패딩을 줄여서 내용이 잘 보이도록 조정
+                    overflow: 'hidden', // 요소가 넘어가면 숨김
                 }}
             >
                 <Box
                     sx={{
-                        borderRadius: '8px',
-                        backgroundColor: 'white',
-                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                        minHeight: '850px',
-                        width: '100%',
-                        maxWidth: '1050px',
-                        padding: '40px', // 패딩을 줄여서 내용이 잘 보이도록 조정
-                        overflow: 'hidden', // 요소가 넘어가면 숨김
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        marginTop: '-10px',
+                        marginBottom: '30px',
+                        fontSize: '25px',
                     }}
                 >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginTop: '-10px',
-                            marginBottom: '30px',
-                            fontSize: '25px',
+                    <Box sx={{
+                        display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px',
+                        fontSize: '25px'
+                    }}><h1>보낸 메일함</h1></Box>
+                </Box>
+                {error && (
+                    <Box sx={{color: 'red', textAlign: 'center', marginBottom: '10px'}}>
+                        {error}
+                    </Box>
+                )}
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        backgroundColor: 'white',
+                        height: 'auto',
+                        overflow: 'auto', // 스크롤이 생기도록 설정
+                    }}
+                >
+                    <table
+                        style={{
+                            border: '1px solid #ddd',
+                            width: '100%',
+                            borderCollapse: 'collapse',
                         }}
                     >
-                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center',marginTop:'10px',
-                        fontSize: '25px'}}><h1>보낸 메일함</h1></Box>
-                    </Box>
-                        {error && (
-                            <Box sx={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>
-                                {error}
-                            </Box>
-                        )}
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                backgroundColor: 'white',
-                                height: 'auto',
-                                overflow: 'auto', // 스크롤이 생기도록 설정
+                        <thead>
+                        <tr
+                            style={{
+                                backgroundColor: '#f5f5f5', // 연한 회색 배경색
+                                borderBottom: '2px solid #ddd', // 구분선을 두껍게
+                                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // 약간의 음영 추가
                             }}
                         >
-                            <table
-                                style={{
-                                    border: '1px solid #ddd',
-                                    width: '100%',
-                                    borderCollapse: 'collapse',
-                                }}
-                            >
-                                <thead>
-                                <tr
+                            <th style={{
+                                width: '80px',
+                                textAlign: 'center',
+                                padding: '10px',
+                                fontWeight: 'bold'
+                            }}>읽음
+                            </th>
+                            <th style={{
+                                width: '500px',
+                                textAlign: 'center',
+                                padding: '10px',
+                                fontWeight: 'bold'
+                            }}>제목
+                            </th>
+                            <th style={{
+                                width: '200px',
+                                textAlign: 'center',
+                                padding: '10px',
+                                fontWeight: 'bold'
+                            }}>수신자
+                            </th>
+                            <th style={{width: '200px', textAlign: 'center', padding: '10px', fontWeight: 'bold'}}>보낸
+                                날짜
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {currentEmails.map((email, index) => (
+                            <tr key={index} style={{borderBottom: '1px solid #e8e8e8'}}>
+                                <td style={{textAlign: 'center', padding: '10px'}}>
+                                    {readEmails[index] ? <MailOpenIcon/> : <MailOutlineIcon/>}
+                                </td>
+                                <td
                                     style={{
-                                        backgroundColor: '#f5f5f5', // 연한 회색 배경색
-                                        borderBottom: '2px solid #ddd', // 구분선을 두껍게
-                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // 약간의 음영 추가
+                                        textAlign: 'left',
+                                        padding: '10px 20px',
+                                        fontWeight: readEmails[index] ? 'normal' : 'bold',
+                                        whiteSpace: 'nowrap', // 긴 텍스트 줄바꿈 방지
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis', // 긴 텍스트 말줄임 표시
+                                        maxWidth: '400px', // 칸의 최대 너비 설정
+                                        cursor: 'pointer',
+
                                     }}
+                                    onClick={() => showMail(email)}
                                 >
-                                    <th style={{
-                                        width: '80px',
-                                        textAlign: 'center',
-                                        padding: '10px',
-                                        fontWeight: 'bold'
-                                    }}>읽음
-                                    </th>
-                                    <th style={{
-                                        width: '500px',
-                                        textAlign: 'center',
-                                        padding: '10px',
-                                        fontWeight: 'bold'
-                                    }}>제목
-                                    </th>
-                                    <th style={{
-                                        width: '200px',
-                                        textAlign: 'center',
-                                        padding: '10px',
-                                        fontWeight: 'bold'
-                                    }}>수신자
-                                    </th>
-                                    <th style={{width: '200px', textAlign: 'center', padding: '10px', fontWeight: 'bold'}}>보낸
-                                        날짜
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {currentEmails.map((email, index) => (
-                                    <tr key={index} style={{borderBottom:'1px solid #e8e8e8'}}>
-                                        <td style={{textAlign: 'center', padding: '10px'}}>
-                                            {readEmails[index] ? <MailOpenIcon/> : <MailOutlineIcon/>}
-                                        </td>
-                                        <td
-                                            style={{
-                                                textAlign: 'left',
-                                                padding: '10px 20px',
-                                                fontWeight: readEmails[index] ? 'normal' : 'bold',
-                                                whiteSpace: 'nowrap', // 긴 텍스트 줄바꿈 방지
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis', // 긴 텍스트 말줄임 표시
-                                                maxWidth: '400px', // 칸의 최대 너비 설정
-                                                cursor: 'pointer',
+                                    {email.subject}
+                                </td>
+                                <td style={{
+                                    textAlign: 'center',
+                                    padding: '10px',
+                                    fontWeight: readEmails[index] ? 'normal' : 'bold',
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '300px',
+                                }}>
+                                    {email.to}
+                                </td>
+                                <td style={{
+                                    textAlign: 'center',
+                                    padding: '10px',
+                                    fontWeight: readEmails[index] ? 'normal' : 'bold',
+                                    whiteSpace: 'nowrap',
+                                    color: isToday(email.receivedDate) ? '#ff4b22' : 'black', // 오늘 날짜면 초록색으로 표시
+                                }}
+                                >{email.sentDate}
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
 
-                                            }}
-                                            onClick={() => showMail(email.content)}
-                                        >
-                                            {email.subject}
-                                        </td>
-                                        <td   style={{
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            fontWeight: readEmails[index] ? 'normal' : 'bold',
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                            maxWidth: '300px',
-                                        }}>
-                                            {email.to}
-                                        </td>
-                                        <td  style={{
-                                            textAlign: 'center',
-                                            padding: '10px',
-                                            fontWeight: readEmails[index] ? 'normal' : 'bold',
-                                            whiteSpace: 'nowrap',
-                                            color: isToday(email.receivedDate) ? '#ff4b22' : 'black', // 오늘 날짜면 초록색으로 표시
-                                        }}
-                                        >{email.sentDate}
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
+                </Box>
 
-                        </Box>
-
-                        {/* 페이지네이션 버튼 */}
-                        <Box style={{textAlign: 'center', marginTop: '20px'}}>
-                            {pageGroup > 0 && (
-                                <button
-                                    onClick={prevPageGroup}
+                {/* 페이지네이션 버튼 */}
+                <Box style={{textAlign: 'center', marginTop: '20px'}}>
+                    {pageGroup > 0 && (
+                        <button
+                            onClick={prevPageGroup}
                             style={{
                                 margin: '5px',
                                 padding: '5px 10px',
@@ -299,12 +315,10 @@ const SentEmail=()=>{
                         </button>
                     )}
                 </Box>
+            </Box>
+        </Box>
 
-
-                    </Box>
-                </Box>
-
-        );
-    }
+    );
+}
 
 export default SentEmail;
