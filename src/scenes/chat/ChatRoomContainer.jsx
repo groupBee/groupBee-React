@@ -3,7 +3,7 @@ import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
-
+const env = loadEnv(mode, process.cwd());
 const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topic , formatDate}) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
@@ -26,7 +26,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
         console.log(`WebSocket 연결 시도 - ChatRoom ID: ${chatRoomId}`);
 
-        const socket = new WebSocket(`${WS_URI}/ws`);
+        const socket = new WebSocket(`${env.WS_URI}/ws`);
         const stompClient = Stomp.over(socket);
         stompClientRef.current = stompClient; // stompClient를 ref에 저장
 
