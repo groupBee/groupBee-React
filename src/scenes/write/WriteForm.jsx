@@ -223,7 +223,7 @@ const WriteForm = ({ }) => {
                 if (status === 1) {
                     alert("전자결재가 임시저장되었습니다.");
                 } else if (status === 0) {
-                    alert("전자결가 등록되었습니다.");
+                    alert("전자결재가 등록되었습니다.");
                 }
                 navigate('/send');
             })

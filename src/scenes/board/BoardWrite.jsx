@@ -96,14 +96,6 @@ const BoardWrite = () => {
     };
 
     const handleBackClick = () => {
-        Swal.fire({
-            title: '<strong>글 작성 완료</strong>',
-            icon: 'success',
-            html: '게시글글이 작성되었습니다.',
-            focusConfirm: false,
-            confirmButtonText: '확인',
-            confirmButtonColor: '#ffb121',
-        });
         navigate(`/board`);
     };
 
@@ -152,8 +144,14 @@ const BoardWrite = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-
-            console.log('Response:', response.data); // 응답 확인
+            Swal.fire({
+                title: '<strong>글 작성 완료</strong>',
+                icon: 'success',
+                html: '게시글이 작성되었습니다.',
+                focusConfirm: false,
+                confirmButtonText: '확인',
+                confirmButtonColor: '#ffb121',
+            });
             navigate('/board'); // 성공 시 페이지 이동
         } catch (error) {
             console.error('Error creating post or uploading files:', error);
