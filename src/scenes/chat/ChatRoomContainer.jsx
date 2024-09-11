@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
+import { Button } from 'react-bootstrap';
 
 const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topic }) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
@@ -9,10 +10,35 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
     const [messageTopic, setMessageTopic] = useState('');
-    
+
     const chatBodyRef = useRef(null); // 채팅 메시지를 담는 div를 참조하는 ref
 
     let subscriptionUrl = '';
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const today = new Date();
+
+        const isToday = date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear();
+
+        // 두 자릿수로 포맷팅하는 헬퍼 함수
+        const formatTwoDigits = (num) => (num < 10 ? `0${num}` : num);
+
+        const hours = formatTwoDigits(date.getHours());
+        const minutes = formatTwoDigits(date.getMinutes());
+
+        if (isToday) {
+            // 오늘 날짜일 경우 시:분만 반환
+            return `${hours}:${minutes}`;
+        } else {
+            // 오늘이 아닐 경우 월/일 시:분 반환
+            const month = formatTwoDigits(date.getMonth() + 1);
+            const day = formatTwoDigits(date.getDate());
+            return `${month}/${day} ${hours}:${minutes}`;
+        }
+    }
 
     // WebSocket 연결 함수
     const connectWebSocket = () => {
@@ -54,7 +80,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
                 // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { content: receivedMessage.content, name: receivedMessage.senderName, isMine: false }
+                    { content: receivedMessage.content, senderName: receivedMessage.senderName, isMine: false , name:receivedMessage.senderName}
                 ]);
             });
         }, (error) => {
@@ -92,7 +118,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
             // 내가 보낸 메시지를 오른쪽 말풍선에 추가
             setMessages(prevMessages => [
                 ...prevMessages,
-                { content: inputMessage, senderId: userId, senderName: name, isMine: true }
+                { content: inputMessage, senderId: userId, senderName: name, isMine: true , timestamp: new Date()}
             ]);
 
             setInputMessage('');  // 입력창 비우기
@@ -143,18 +169,35 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
     return (
         <div className={`chat-room-container ${activeRoom ? 'open' : ''}`}>
             <div className="chat-header">
-                <span style={{fontSize:'30px'}}>{activeRoom?.chatRoomName || 'No room selected'}</span>
+                <span style={{ fontSize: '30px' }}>{activeRoom?.chatRoomName || 'No room selected'}</span>
                 <button className="close-button" onClick={onClose}>X</button>
             </div>
             <div className="chat-body" ref={chatBodyRef}>
                 {/* 메시지 출력 */}
                 {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.senderId === userId ? 'right' : 'left'}`}>
-                        <div>{msg.senderId !== userId && msg.senderName}</div> {/* 이름을 왼쪽 메시지에만 표시 */}
-                        <div className="message-content">{msg.content}</div> {/* 메시지 내용 표시 */}
+                    <div key={index} className={`message-wrapper ${msg.senderId === userId ? 'right' : 'left'}`}>
+                        {msg.senderId === userId ? (
+                            <>
+                                {/* 오른쪽 말풍선일 때 시간 왼쪽에 */}
+                                <div className="message-timestamp">{msg.timestamp && formatDate(msg.timestamp)}</div>
+                                <div className={`message right`}>
+                                    <div className="message-content">{msg.content}</div> {/* 메시지 내용 표시 */}
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                {/* 왼쪽 말풍선일 때 시간 오른쪽에 */}
+                                <div className={`message left`}>
+                                    <div>{msg.senderName}</div> {/* 이름을 왼쪽 메시지에만 표시 */}
+                                    <div className="message-content">{msg.content}</div> {/* 메시지 내용 표시 */}
+                                </div>
+                                <div className="message-timestamp">{msg.timestamp && formatDate(msg.timestamp)}</div>
+                            </>
+                        )}
                     </div>
                 ))}
             </div>
+
             <div className="input-container">
                 <input
                     className="chat-input"

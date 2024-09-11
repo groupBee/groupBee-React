@@ -24,11 +24,20 @@ const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomLis
       .then((res) => {
         console.log('채팅방 나가기 성공:', res);
         getChatRoomList();
+        setActiveRoom(null);
       })
       .catch((err) => {
         console.error('채팅방 나가기 실패:', err);
       });
   };
+  const changeChatRoomName=(chatRoomName)=>{
+    // 요소의 id가 'myElement'인 경우
+    const element = document.getElementById('myElement');
+    element.style.display = 'block';  // display 속성을 block으로 설정
+    element.style.color = 'red';      // 텍스트 색상을 빨간색으로 설정
+    element.style.backgroundColor = 'blue'; // 배경색을 파란색으로 설정
+
+  }
 
   // 전체 채팅방 나가기
   const exitAllChatRooms = () => {
@@ -135,6 +144,7 @@ const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomLis
           <div key={idx} className="chat-room">
             <div className="chat-info" onClick={() => onRoomClick(room)}>
               <span className="chat-room-name">{room.chatRoomName}</span>
+              <span><input type='text'/></span>
               <span className="last-message">{room.lastMessage}</span>
               <span className="participants" style={{ color: 'gray', fontSize: '12px' }}>
                 {renderParticipants(room.participants)} {/* 참가자 리스트 표시 */}
@@ -168,6 +178,15 @@ const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomLis
                     }}
                   >
                     채팅방 나가기
+                  </button>
+                  <button
+                    className="dropdown-item"
+                    onClick={(e) => {
+                      e.stopPropagation(); // 버블링 방지
+                      changeChatRoomName(room.chatRoomId);
+                    }}
+                  >
+                    채팅방 이름 변경
                   </button>
                 </div>
               )}
