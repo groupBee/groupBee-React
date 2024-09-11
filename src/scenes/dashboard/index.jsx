@@ -21,6 +21,7 @@ import "./dashboardcss.css";
 import "./clock.css";
 import Weather from "./weather.jsx";
 import DashboardBook from "./dashboardBook.jsx";
+import Swal from "sweetalert2";
 
 function Dashboard() {
     const theme = useTheme();
@@ -714,7 +715,12 @@ function Dashboard() {
                             initialView="dayGridMonth"
                             events={events}
                             eventClick={(info) => {
-                                alert(`이벤트: ${info.event.title}`);
+
+                                Swal.fire({
+                                    title: `일정`,
+                                    html:`${info.event.title}`
+                                });
+
                             }}
                             locale='ko'
                             height="100%"

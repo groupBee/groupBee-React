@@ -100,7 +100,7 @@ const DetailPage = () => {
                 Swal.fire({
                     title: '<strong>게시글이 삭제되었습니다</strong>',
                     icon: 'success',
-                    html: '게시글이이 성공적으로 삭제되었습니다.',
+                    html: '게시글이 성공적으로 삭제되었습니다.',
                     confirmButtonText: '확인',
                     confirmButtonColor: '#ffb121',
                 });
