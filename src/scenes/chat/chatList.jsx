@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import './chatList.css';
 import axios from 'axios';
 
-const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomList, chatRoomList, setFilteredRoomList, filteredRoomList }) => {
+const Sidebar = ({formatDate, setActiveRoom, onRoomClick, openModal, userId, getChatRoomList, chatRoomList, setFilteredRoomList, filteredRoomList }) => {
   const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
   const [isOverallDropdownOpen, setIsOverallDropdownOpen] = useState(false); // 전체 채팅방 드롭다운
   const [selectedRoomDropdown, setSelectedRoomDropdown] = useState(null); // 개별 채팅방 드롭다운
@@ -20,7 +20,7 @@ const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomLis
   const exitChatRoom = (roomId) => {
     console.log(roomId);
     axios
-      .delete(`http://100.64.0.10:9999/api/chat/chatting/delete`, { params: { chatRoomId: roomId, userId: userId } })
+      .delete(`/api/chat/chatting/delete`, { params: { chatRoomId: roomId, userId: userId } })
       .then((res) => {
         console.log('채팅방 나가기 성공:', res);
         getChatRoomList();
@@ -30,18 +30,11 @@ const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomLis
         console.error('채팅방 나가기 실패:', err);
       });
   };
-  const changeChatRoomName=(chatRoomName)=>{
-    // 요소의 id가 'myElement'인 경우
-    const element = document.getElementById('myElement');
-    element.style.display = 'block';  // display 속성을 block으로 설정
-    element.style.color = 'red';      // 텍스트 색상을 빨간색으로 설정
-    element.style.backgroundColor = 'blue'; // 배경색을 파란색으로 설정
 
-  }
 
   // 전체 채팅방 나가기
   const exitAllChatRooms = () => {
-    axios.delete(`http://100.64.0.10:9999/api/chat/chatting/exitAll`, { params: { userId: userId } })
+    axios.delete(`/api/chat/chatting/exitAll`, { params: { userId: userId } })
       .then((res) => {
         console.log('전체 채팅방 나가기 성공:', res);
         getChatRoomList();
@@ -143,16 +136,15 @@ const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomLis
         {filteredRoomList.map((room, idx) => (
           <div key={idx} className="chat-room">
             <div className="chat-info" onClick={() => onRoomClick(room)}>
-              <span className="chat-room-name">{room.chatRoomName}</span>
-              <span><input type='text'/></span>
-              <span className="last-message">{room.lastMessage}</span>
-              <span className="participants" style={{ color: 'gray', fontSize: '12px' }}>
-                {renderParticipants(room.participants)} {/* 참가자 리스트 표시 */}
+              <span className="chat-room-name">{room.chatRoomName}&nbsp;&nbsp;
+                <b style={{fontSize:'10px', color:'gray'}}>{renderParticipants(room.participants)}&nbsp;&nbsp;({room.participants.length})</b> {/* 참가자 리스트 표시 */}
               </span>
+              <span className="last-message" style={{fontSize:'18px'}}>{room.lastMessage}</span>
+             
             </div>
 
             <div className="chat-meta">
-              <span className="time">{room.lastActive}</span>
+              <span className="time">{formatDate(room.lastActive)}</span>
               {room.unreadCount > 0 && (
                 <span className="unread-badge">{room.unreadCount}</span>
               )}

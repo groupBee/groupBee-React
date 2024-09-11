@@ -4,7 +4,7 @@ import './ChatRoomContainer.css';
 import axios from 'axios';
 import { Button } from 'react-bootstrap';
 
-const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topic }) => {
+const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topic , formatDate}) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
@@ -15,30 +15,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
     let subscriptionUrl = '';
 
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        const today = new Date();
-
-        const isToday = date.getDate() === today.getDate() &&
-            date.getMonth() === today.getMonth() &&
-            date.getFullYear() === today.getFullYear();
-
-        // 두 자릿수로 포맷팅하는 헬퍼 함수
-        const formatTwoDigits = (num) => (num < 10 ? `0${num}` : num);
-
-        const hours = formatTwoDigits(date.getHours());
-        const minutes = formatTwoDigits(date.getMinutes());
-
-        if (isToday) {
-            // 오늘 날짜일 경우 시:분만 반환
-            return `${hours}:${minutes}`;
-        } else {
-            // 오늘이 아닐 경우 월/일 시:분 반환
-            const month = formatTwoDigits(date.getMonth() + 1);
-            const day = formatTwoDigits(date.getDate());
-            return `${month}/${day} ${hours}:${minutes}`;
-        }
-    }
+    
 
     // WebSocket 연결 함수
     const connectWebSocket = () => {
@@ -49,7 +26,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
         console.log(`WebSocket 연결 시도 - ChatRoom ID: ${chatRoomId}`);
 
-        const socket = new WebSocket('ws://100.64.0.10:9999/ws');
+        const socket = new WebSocket(`${WS_URI}/ws`);
         const stompClient = Stomp.over(socket);
         stompClientRef.current = stompClient; // stompClient를 ref에 저장
 
@@ -129,7 +106,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
     // 채팅 히스토리 로드 함수
     const getChatHistory = () => {
-        axios('http://100.64.0.10:9999/api/chat/chatting/history?chatRoomId=' + chatRoomId)
+        axios('/api/chat/chatting/history?chatRoomId=' + chatRoomId)
             .then(res => {
                 const chatHistory = res.data;
                 console.log("받은 채팅 기록:", chatHistory);

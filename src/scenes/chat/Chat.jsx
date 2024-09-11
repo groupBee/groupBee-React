@@ -47,7 +47,7 @@ const Chat = () => {
     console.log('userId===', userId);
 
     axios
-      .post('http://100.64.0.10:9999/api/chat/chatting/list', data, {
+      .post('/api/chat/chatting/list', data, {
         headers: { 'Content-Type': 'application/json' },
       })
       .then((res) => {
@@ -86,7 +86,7 @@ const Chat = () => {
       lastMessage: '',
       topic: participants.length === 2 ? 'create-room-one' : participants.length > 2 ? 'create-room-many' : ''
     };
-    axios.post("http://100.64.0.10:9999/api/chat/chatting/create", data, {
+    axios.post("/api/chat/chatting/create", data, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -103,12 +103,37 @@ const Chat = () => {
   const handleRoomClick = (room) => {
     setActiveRoom(room);
   };
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+
+    const isToday = date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+
+    // 두 자릿수로 포맷팅하는 헬퍼 함수
+    const formatTwoDigits = (num) => (num < 10 ? `0${num}` : num);
+
+    const hours = formatTwoDigits(date.getHours());
+    const minutes = formatTwoDigits(date.getMinutes());
+
+    if (isToday) {
+        // 오늘 날짜일 경우 시:분만 반환
+        return `${hours}:${minutes}`;
+    } else {
+        // 오늘이 아닐 경우 월/일 시:분 반환
+        const month = formatTwoDigits(date.getMonth() + 1);
+        const day = formatTwoDigits(date.getDate());
+        return `${month}/${day} ${hours}:${minutes}`;
+    }
+}
 
   return (
     <div className="chat-container">
-      <Sidebar setActiveRoom={setActiveRoom} filteredRoomList={filteredRoomList} setFilteredRoomList={setFilteredRoomList} onRoomClick={handleRoomClick} openModal={openModal} userId={userId} getChatRoomList={getChatRoomList} chatRoomList={chatRoomList} />
+      <Sidebar formatDate={formatDate} setActiveRoom={setActiveRoom} filteredRoomList={filteredRoomList} setFilteredRoomList={setFilteredRoomList} onRoomClick={handleRoomClick} openModal={openModal} userId={userId} getChatRoomList={getChatRoomList} chatRoomList={chatRoomList} />
       {activeRoom && (
         <ChatRoomContainer
+        formatDate={formatDate}
           activeRoom={activeRoom}
           chatRoomId={activeRoom.chatRoomId}  // chatRoomId 전달
           userId={userId}  // userId 전달
