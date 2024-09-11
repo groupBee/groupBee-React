@@ -262,7 +262,7 @@ const SendEmail = () => {
                 >
                     <Box sx={{
                         display: 'flex', justifyContent: 'center', alignItems: 'center',
-                        fontSize: '25px', marginBottom: '30px', marginTop: '20px'
+                        fontSize: '25px',
                     }}><h1>메일 보내기</h1></Box>
                 </Box>
                 <form onSubmit={handleSendEmail}>
