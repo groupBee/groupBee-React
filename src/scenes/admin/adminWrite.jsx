@@ -22,7 +22,7 @@ const AdminWrite = () => {
     const isXsDevices = useMediaQuery("(max-width:466px)");
     const [apiData, setApiData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1); // 페이지네이션은 1부터 시작
-    const [itemsPerPage] = useState(12); // 페이지당 항목 수
+    const [itemsPerPage] = useState(8); // 페이지당 항목 수
     const [memberId, setMemberId] = useState("");
     const navigate = useNavigate();
 
@@ -137,7 +137,7 @@ const AdminWrite = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>번호</TableCell>
+                            <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold', height:'52px'}}>번호</TableCell>
                             <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>종류</TableCell>
                             <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>제목</TableCell>
                             <TableCell style={{ textAlign: "center", width: '10%', fontSize: '0.9rem', fontWeight: 'bold' }}>작성자</TableCell>
@@ -157,7 +157,7 @@ const AdminWrite = () => {
                                     },
                                 },
                             }}>
-                                <TableCell style={{ textAlign: "center", paddingTop: "15px", fontSize: '0.9rem' }}>{index + 1}</TableCell>
+                                <TableCell style={{ textAlign: "center", paddingTop: "15px", fontSize: '0.9rem', height:'74px'}}>{index + 1}</TableCell>
                                 <TableCell style={{ textAlign: "center", paddingTop: "15px", cursor: 'pointer', fontSize: '0.9rem' }}
                                            onClick={() => moveDetail(elec.id)}>{elec.appDocType === 0 ? '품 의 서' : elec.appDocType === 1 ? '휴 가 신 청 서' : '지 출 보 고 서'}</TableCell>
                                 <TableCell style={{ textAlign: "center", paddingTop: "15px", cursor: 'pointer', fontSize: '0.9rem' }}

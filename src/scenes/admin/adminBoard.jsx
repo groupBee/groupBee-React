@@ -137,7 +137,7 @@ const AdminBoard = () => {
                                             color: '#ffb121',
                                         },
                                     },}}>
-                                    <TableCell align="center" sx={{ fontSize: '0.9rem' }}>{index + 1}</TableCell>
+                                    <TableCell align="center" sx={{ fontSize: '0.9rem'}}>{index + 1}</TableCell>
                                     <TableCell align="center" sx={{
                                         fontSize: '0.9rem',
                                         maxWidth: '100px',
