@@ -2,11 +2,13 @@ import { useEffect, useState, useRef } from 'react';
 import './chatList.css';
 import axios from 'axios';
 
-const Sidebar = ({ onRoomClick, openModal, userId }) => {
-  const [chatRoomList, setChatRoomList] = useState([]);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedRoomDropdown, setSelectedRoomDropdown] = useState(null);
-  const dropdownRef = useRef(null);
+const Sidebar = ({ setActiveRoom, onRoomClick, openModal, userId, getChatRoomList, chatRoomList, setFilteredRoomList, filteredRoomList }) => {
+  const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
+  const [isOverallDropdownOpen, setIsOverallDropdownOpen] = useState(false); // 전체 채팅방 드롭다운
+  const [selectedRoomDropdown, setSelectedRoomDropdown] = useState(null); // 개별 채팅방 드롭다운
+  const [isSearchVisible, setIsSearchVisible] = useState(false); // 검색창 보임 여부
+  const overallDropdownRef = useRef(null); // 전체 채팅방 드롭다운 참조
+  const roomDropdownRefs = useRef({}); // 개별 채팅방 드롭다운 참조들
 
   useEffect(() => {
     if (userId) {
@@ -16,105 +18,157 @@ const Sidebar = ({ onRoomClick, openModal, userId }) => {
 
   // 채팅방 나가기 (개별)
   const exitChatRoom = (roomId) => {
-    axios.delete(`http://100.64.0.10:9999/api/chat/chatting/delete`, {
-      data: { chatRoomId: roomId },
-    })
-    .then(res => {
-      console.log('채팅방 나가기 성공:', res);
-      getChatRoomList();
-    })
-    .catch(err => {
-      console.error('채팅방 나가기 실패:', err);
-    });
+    console.log(roomId);
+    axios
+      .delete(`http://100.64.0.10:9999/api/chat/chatting/delete`, { params: { chatRoomId: roomId, userId: userId } })
+      .then((res) => {
+        console.log('채팅방 나가기 성공:', res);
+        getChatRoomList();
+      })
+      .catch((err) => {
+        console.error('채팅방 나가기 실패:', err);
+      });
   };
 
   // 전체 채팅방 나가기
   const exitAllChatRooms = () => {
-    axios.post('http://100.64.0.10:9999/api/chat/chatting/all-exit', {
-      userId: userId,
-    }, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(res => {
-      console.log('전체 채팅방 나가기 성공:', res);
-      getChatRoomList();
-    })
-    .catch(err => {
-      console.error('전체 채팅방 나가기 실패:', err);
-    });
+    axios.delete(`http://100.64.0.10:9999/api/chat/chatting/exitAll`, { params: { userId: userId } })
+      .then((res) => {
+        console.log('전체 채팅방 나가기 성공:', res);
+        getChatRoomList();
+      })
+      .catch((err) => {
+        console.error('전체 채팅방 나가기 실패:', err);
+      });
+    setActiveRoom(null);
   };
 
-  // 내 채팅방 목록 가져오기
-  const getChatRoomList = () => {
-    const data = { userId };
-    console.log("userId===" + userId);
+  // 검색어에 따라 채팅방 필터링
+  const handleSearch = (event) => {
+    const searchValue = event.target.value.toLowerCase();
+    setSearchTerm(searchValue);
 
-    axios.post('http://100.64.0.10:9999/api/chat/chatting/list', data, {
-      headers: { 'Content-Type': 'application/json' },
-    }).then(res => {
-      setChatRoomList(res.data);
-      console.log(res.data);
-    });
+    if (searchValue === '') {
+      setFilteredRoomList(chatRoomList); // 검색어 없으면 전체 채팅방 리스트
+    } else {
+      const filteredRooms = chatRoomList.filter((room) =>
+        room.chatRoomName.toLowerCase().includes(searchValue)
+      );
+      setFilteredRoomList(filteredRooms); // 검색어에 맞는 채팅방 필터링
+    }
   };
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(prev => !prev);
+  const toggleOverallDropdown = () => {
+    setIsOverallDropdownOpen((prev) => !prev);
   };
 
   const toggleRoomDropdown = (roomId) => {
     setSelectedRoomDropdown(selectedRoomDropdown === roomId ? null : roomId);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsDropdownOpen(false);
-        setSelectedRoomDropdown(null);
-      }
-    };
+  const handleClickOutside = (event) => {
+    if (overallDropdownRef.current && !overallDropdownRef.current.contains(event.target)) {
+      setIsOverallDropdownOpen(false);
+    }
+    if (selectedRoomDropdown !== null && roomDropdownRefs.current[selectedRoomDropdown] && !roomDropdownRefs.current[selectedRoomDropdown].contains(event.target)) {
+      setSelectedRoomDropdown(null);
+    }
+  };
 
+  // 검색창 보이기/숨기기 함수
+  const toggleSearch = () => {
+    setIsSearchVisible((prev) => !prev);  // 검색창 상태 토글
+  };
+
+  // 외부 클릭 감지 이벤트 등록
+  useEffect(() => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [selectedRoomDropdown, isOverallDropdownOpen]);
+
+  // 참가자 리스트를 형식에 맞게 보여주기
+  const renderParticipants = (participants) => {
+    const names = participants.map((p) => p.name);
+    if (names.length > 5) {
+      return `${names.slice(0, 5).join(', ')}...`;  // 5명까지 표시하고 나머지는 "..."
+    }
+    return names.join(', ');  // 참가자들을 쉼표로 구분하여 표시
+  };
 
   return (
     <div className="sidebar">
       <div className="tab-header">
         <div className="tab-buttons">
           <button className="tab-button active">Chat Rooms</button>
-          <button className="tab-button">Friends</button>
+          {/* 검색창이 보일 때만 표시 */}
+          <input
+            type="text"
+            style={{ display: isSearchVisible ? 'block' : 'none' }} // 검색창이 보일 때만 block
+            placeholder="Search Chat Rooms"
+            className="search-input"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
         </div>
 
-        <div className="icon-buttons" ref={dropdownRef}>
-          <button className="icon-button" onClick={openModal}>+</button>
-          <button className="icon-button">🔍</button>
-          <button className="icon-button" onClick={toggleDropdown}>⋯</button>
+        <div className="icon-buttons" ref={overallDropdownRef}>
+          <button className="icon-button" onClick={openModal}>
+            +
+          </button>
+          <button className="icon-button" onClick={toggleSearch}>🔍</button> {/* 검색창 토글 버튼 */}
+          <button className="icon-button" onClick={toggleOverallDropdown}>
+            ⋯
+          </button>
 
-          <div className={`dropdown-menu ${isDropdownOpen ? 'open' : ''}`}>
-            <button className="dropdown-item" onClick={exitAllChatRooms}>전체 채팅방 나가기</button>
+          <div className={`dropdown-menu ${isOverallDropdownOpen ? 'open' : ''}`}>
+            <button className="dropdown-item" onClick={exitAllChatRooms}>
+              전체 채팅방 나가기
+            </button>
           </div>
         </div>
       </div>
 
       <div className="chat-list">
-        {chatRoomList.map((room, idx) => (
+        {filteredRoomList.map((room, idx) => (
           <div key={idx} className="chat-room">
             <div className="chat-info" onClick={() => onRoomClick(room)}>
               <span className="chat-room-name">{room.chatRoomName}</span>
               <span className="last-message">{room.lastMessage}</span>
+              <span className="participants" style={{ color: 'gray', fontSize: '12px' }}>
+                {renderParticipants(room.participants)} {/* 참가자 리스트 표시 */}
+              </span>
             </div>
 
             <div className="chat-meta">
               <span className="time">{room.lastActive}</span>
-              {room.unreadCount > 0 && <span className="unread-badge">{room.unreadCount}</span>}
-              <button className="icon-button" onClick={() => toggleRoomDropdown(room.chatRoomId)}>⋯</button>
-              {selectedRoomDropdown === room.chatRoomId && ( 
-                <div className="room-dropdown open">
-                  <button className="dropdown-item" onClick={() => exitChatRoom(room.chatRoomId)}>채팅방 나가기</button>
+              {room.unreadCount > 0 && (
+                <span className="unread-badge">{room.unreadCount}</span>
+              )}
+              <button
+                className="icon-button"
+                onClick={(e) => {
+                  e.stopPropagation(); // 버블링 방지
+                  toggleRoomDropdown(room.chatRoomId);
+                }}
+              >
+                ⋯
+              </button>
+              {selectedRoomDropdown === room.chatRoomId && (
+                <div
+                  className="room-dropdown open"
+                  ref={(el) => (roomDropdownRefs.current[room.chatRoomId] = el)}
+                >
+                  <button
+                    className="dropdown-item"
+                    onClick={(e) => {
+                      e.stopPropagation(); // 버블링 방지
+                      exitChatRoom(room.chatRoomId);
+                    }}
+                  >
+                    채팅방 나가기
+                  </button>
                 </div>
               )}
             </div>

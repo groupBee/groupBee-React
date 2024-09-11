@@ -9,6 +9,9 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
     const [messageTopic, setMessageTopic] = useState('');
+    
+    const chatBodyRef = useRef(null); // 채팅 메시지를 담는 div를 참조하는 ref
+
     let subscriptionUrl = '';
 
     // WebSocket 연결 함수
@@ -28,7 +31,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
             console.log("Setting messageTopic to 'one'");
             subscriptionUrl = `/topic/messages/${chatRoomId}`;
             setMessageTopic('one')
-        } else{
+        } else {
             console.log("Setting messageTopic to 'many'");
             subscriptionUrl = `/topic/group/${chatRoomId}`;
             setMessageTopic('many')
@@ -37,12 +40,11 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
         stompClient.connect({}, (frame) => {
             console.log('WebSocket이 연결되었습니다: ' + frame);
             setIsConnected(true); // WebSocket 연결 상태를 true로 설정
-            
-            console.log("fffrgiergin" + messageTopic);
 
             // WebSocket 메시지 구독
             stompClient.subscribe(subscriptionUrl, (message) => {
                 const receivedMessage = JSON.parse(message.body);
+                console.log("수신한 메시지:", receivedMessage);
 
                 // 서버로부터 받은 메시지 중에서 본인의 메시지는 제외
                 if (receivedMessage.senderId === userId) {
@@ -52,54 +54,75 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
                 // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { text: receivedMessage.content, name: receivedMessage.senderNickName, isMine: false }
+                    { content: receivedMessage.content, name: receivedMessage.senderName, isMine: false }
                 ]);
             });
         }, (error) => {
             console.error('WebSocket 오류 발생: ', error);
             setIsConnected(false); // WebSocket 연결 실패 시 false로 설정
         });
+
     };
 
     // 메시지 전송 함수
     const sendMessage = () => {
         const stompClient = stompClientRef.current;
+
         if (!isConnected || !stompClient || inputMessage.trim() === '') {
-            console.error('WebSocket이 연결되지 않았거나 메시지가 비어있음');
-            return; // 연결되지 않았거나 메시지가 비어있으면 전송하지 않음
+            console.error('WebSocket이 연결되지 않았거나 stompClient가 초기화되지 않았거나 메시지가 비어있습니다.');
+            return;
         }
 
-
-        // 메시지 전송
         const messageObj = {
-            senderName: name,
+            senderName: name,  // 사용자명
             chatRoomId: chatRoomId,
             senderId: userId,
-            recipientId: activeRoom.participants,  // 수신자 목록을 recipientId에 추가
+            recipientId: activeRoom.participants,  // 수신자 목록
             content: inputMessage,
             announcement: '',
             fileUrl: '',
-            topic: messageTopic
+            topic: messageTopic,
+            timestamp: new Date()
         };
 
-        stompClient.send('/app/chat', {}, JSON.stringify(messageObj));
+        try {
+            // 서버로 메시지 전송
+            stompClient.send('/app/chat', {}, JSON.stringify(messageObj));
 
-        // 내가 보낸 메시지를 오른쪽 말풍선에 추가
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            { text: inputMessage, name: name, isMine: true }
-        ]);
+            // 내가 보낸 메시지를 오른쪽 말풍선에 추가
+            setMessages(prevMessages => [
+                ...prevMessages,
+                { content: inputMessage, senderId: userId, senderName: name, isMine: true }
+            ]);
 
-        // 입력 창 비우기
-        setInputMessage('');
+            setInputMessage('');  // 입력창 비우기
+        } catch (error) {
+            console.error('메시지 전송 중 오류 발생:', error);
+        }
     };
 
-    // WebSocket 연결 설정
+    // 채팅 히스토리 로드 함수
+    const getChatHistory = () => {
+        axios('http://100.64.0.10:9999/api/chat/chatting/history?chatRoomId=' + chatRoomId)
+            .then(res => {
+                const chatHistory = res.data;
+                console.log("받은 채팅 기록:", chatHistory);
+                // 오래된 메시지 순으로 정렬하여 저장
+                setMessages(chatHistory.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)));
+            })
+            .catch(err => {
+                console.error('채팅 기록을 불러오는데 실패했습니다: ', err);
+            });
+    };
+
+    // WebSocket 연결 및 채팅 히스토리 로드
     useEffect(() => {
         if (userId && chatRoomId) {
             connectWebSocket();
+            getChatHistory();  // 채팅방에 입장할 때 채팅 기록 불러오기
         }
-    }, [userId, chatRoomId]); // userId 또는 chatRoomId가 설정되면 WebSocket 연결
+    }, [userId, chatRoomId]);
+
 
     // 메시지 입력 후 엔터 키로 전송
     const handleKeyPress = (e) => {
@@ -108,18 +131,27 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
         }
     };
 
+    // 메시지가 업데이트될 때마다 스크롤을 아래로 이동시키는 함수
+    useEffect(() => {
+        if (chatBodyRef.current) {
+            chatBodyRef.current.scrollTop = chatBodyRef.current.scrollHeight;
+        }
+    }, [messages]);  // messages 배열이 변경될 때마다 실행
+
+
+    // 채팅 메시지 UI 렌더링
     return (
         <div className={`chat-room-container ${activeRoom ? 'open' : ''}`}>
             <div className="chat-header">
-                <span>Chat Room: {activeRoom?.name || 'No room selected'}</span>
+                <span style={{fontSize:'30px'}}>{activeRoom?.chatRoomName || 'No room selected'}</span>
                 <button className="close-button" onClick={onClose}>X</button>
             </div>
-            <div className="chat-body">
+            <div className="chat-body" ref={chatBodyRef}>
                 {/* 메시지 출력 */}
                 {messages.map((msg, index) => (
-                    <div key={index} className={`message ${msg.isMine ? 'right' : 'left'}`}>
-                        <div>{msg.name === name ? '' : msg.name}</div>
-                        {msg.text}
+                    <div key={index} className={`message ${msg.senderId === userId ? 'right' : 'left'}`}>
+                        <div>{msg.senderId !== userId && msg.senderName}</div> {/* 이름을 왼쪽 메시지에만 표시 */}
+                        <div className="message-content">{msg.content}</div> {/* 메시지 내용 표시 */}
                     </div>
                 ))}
             </div>
