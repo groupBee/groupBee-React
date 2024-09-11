@@ -390,22 +390,22 @@ const Detail = () => {
                                     </td>
                                     <td>지출유형</td>
                                     <td colSpan={3}>
-                                        {list.additionalFields && typeof list.additionalFields.expendType !== 'undefined' ? (
+                                        {list.additionalFields &&list.additionalFields.expendType !== 'undefined' ? (
                                             (() => {
                                                 switch (list.additionalFields.expendType) {
-                                                    case 0:
+                                                    case "0":
                                                         return "자재비";
-                                                    case 1:
+                                                    case "1":
                                                         return "배송비";
-                                                    case 2:
+                                                    case "2":
                                                         return "교육비";
-                                                    case 4:
+                                                    case "4":
                                                         return "식대";
-                                                    case 5:
+                                                    case "5":
                                                         return "출장비";
-                                                    case 6:
+                                                    case "6":
                                                         return "마일리지";
-                                                    case 7:
+                                                    case "7":
                                                         return "선물";
                                                     default:
                                                         return "기타";
