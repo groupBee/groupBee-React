@@ -26,7 +26,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
         console.log(`WebSocket 연결 시도 - ChatRoom ID: ${chatRoomId}`);
 
-        const socket = new WebSocket(`${import.meta.env.VITE_WS_URI}}/ws`);
+        const socket = new WebSocket(`${import.meta.env.VITE_WS_URI}/ws`);
         const stompClient = Stomp.over(socket);
         stompClientRef.current = stompClient; // stompClient를 ref에 저장
 
