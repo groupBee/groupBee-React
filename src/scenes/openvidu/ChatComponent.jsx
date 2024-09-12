@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { useChat, useMaybeLayoutContext } from "@livekit/components-react";
-import './Chat.css';
+import './ChatComponent.css';
 
 export function ChatComponent({
                                   messageFormatter,

@@ -41,8 +41,9 @@ const SentEmail = () => {
             from: email.from || '',
             to: email.to || '',
             cc: email.cc || '',
-            receivedDate: email.sentDate || '',
-            content: email.content || ''
+            sentDate: email.sentDate || '',
+            content: email.content || '',
+            isSentEmail: 'true'  // 추가된 파라미터
         }).toString();
 
         navigate(`/email/${identifier}?${params}`);
@@ -70,29 +71,50 @@ const SentEmail = () => {
     };
 
     const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const today = new Date();
+        if (!dateString) return '';
 
-        if (date.toDateString() === today.toDateString()) {
-            return new Intl.DateTimeFormat('ko-KR', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }).format(date);
+        const parseDateString = (str) => {
+            const parts = str.split(' ');
+            const [, month, day, time, , year] = parts;
+            const [hour, minute, second] = time.split(':');
+
+            const monthMap = {
+                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+            };
+
+            return new Date(year, monthMap[month], day, hour, minute, second);
+        };
+
+        const date = parseDateString(dateString);
+
+        if (isNaN(date.getTime())) {
+            console.error('Invalid date:', dateString);
+            return '날짜 형식 오류';
         }
 
-        return new Intl.DateTimeFormat('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        }).format(date);
+        const today = new Date();
+        const isToday = date.toDateString() === today.toDateString();
+
+        const options = isToday
+            ? { hour: '2-digit', minute: '2-digit', hour12: false }
+            : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+
+        return new Intl.DateTimeFormat('ko-KR', options).format(date);
     };
 
     const isToday = (dateString) => {
-        const date = new Date(dateString);
+        if (!dateString) return false;
+        const parseDateString = (str) => {
+            const parts = str.split(' ');
+            const [, month, day, , , year] = parts;
+            const monthMap = {
+                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+            };
+            return new Date(year, monthMap[month], day);
+        };
+        const date = parseDateString(dateString);
         const today = new Date();
         return date.toDateString() === today.toDateString();
     };
@@ -143,8 +165,8 @@ const SentEmail = () => {
                                         {email.subject}
                                     </TableCell>
                                     <TableCell align="center">{email.to}</TableCell>
-                                    <TableCell align="center" sx={{ color: isToday(email.receivedDate) ? '#ff4b22' : 'black' }}>
-                                        {formatDate(email.receivedDate)}
+                                    <TableCell align="center" sx={{ color: isToday(email.sentDate) ? '#ff4b22' : 'black' }}>
+                                        {formatDate(email.sentDate)}
                                     </TableCell>
                                 </TableRow>
                             ))}

@@ -1,8 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
 import './chatList.css';
 import axios from 'axios';
+import AddIcon from '@mui/icons-material/Add'; // + 아이콘
+import SearchIcon from '@mui/icons-material/Search'; // 돋보기 아이콘
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {MoreHoriz} from "@mui/icons-material"; // ⋯ 아이콘
 
-const Sidebar = ({formatDate, setActiveRoom, onRoomClick, openModal, userId, getChatRoomList, chatRoomList, setFilteredRoomList, filteredRoomList }) => {
+const Sidebar = ({profile, formatDate, setActiveRoom, onRoomClick, openModal, userId, getChatRoomList, chatRoomList, setFilteredRoomList, filteredRoomList }) => {
   const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
   const [isOverallDropdownOpen, setIsOverallDropdownOpen] = useState(false); // 전체 채팅방 드롭다운
   const [selectedRoomDropdown, setSelectedRoomDropdown] = useState(null); // 개별 채팅방 드롭다운
@@ -100,7 +104,7 @@ const Sidebar = ({formatDate, setActiveRoom, onRoomClick, openModal, userId, get
   };
 
   return (
-    <div className="sidebar">
+    <div className="sidebar2">
       <div className="tab-header">
         <div className="tab-buttons">
           <button className="tab-button active">Chat Rooms</button>
@@ -115,15 +119,16 @@ const Sidebar = ({formatDate, setActiveRoom, onRoomClick, openModal, userId, get
           />
         </div>
 
-        <div className="icon-buttons" ref={overallDropdownRef}>
+        <div className="icon-buttons2" ref={overallDropdownRef}>
           <button className="icon-button" onClick={openModal}>
-            +
+            <AddIcon/> {/* + 아이콘 */}
           </button>
-          <button className="icon-button" onClick={toggleSearch}>🔍</button> {/* 검색창 토글 버튼 */}
+          <button className="icon-button" onClick={toggleSearch}>
+            <SearchIcon/> {/* 돋보기 아이콘 */}
+          </button>
           <button className="icon-button" onClick={toggleOverallDropdown}>
-            ⋯
+            <MoreHoriz/> {/* ⋯ 아이콘 */}
           </button>
-
           <div className={`dropdown-menu ${isOverallDropdownOpen ? 'open' : ''}`}>
             <button className="dropdown-item" onClick={exitAllChatRooms}>
               전체 채팅방 나가기
@@ -134,10 +139,10 @@ const Sidebar = ({formatDate, setActiveRoom, onRoomClick, openModal, userId, get
 
       <div className="chat-list">
         {filteredRoomList.map((room, idx) => (
-          <div key={idx} className="chat-room">
-            <div className="chat-info" onClick={() => onRoomClick(room)}>
+            <div key={idx} className="chat-room" onClick={() => onRoomClick(room)}>
+              <div className="chat-info" onClick={() => onRoomClick(room)}>
               <span className="chat-room-name">{room.chatRoomName}&nbsp;&nbsp;
-                <b style={{fontSize:'10px', color:'gray'}}>{renderParticipants(room.participants)}&nbsp;&nbsp;({room.participants.length})</b> {/* 참가자 리스트 표시 */}
+                <b style={{fontSize: '10px', color: 'gray'}}>{renderParticipants(room.participants)}&nbsp;&nbsp;({room.participants.length})</b> {/* 참가자 리스트 표시 */}
               </span>
               <span className="last-message" style={{fontSize:'18px'}}>{room.lastMessage}</span>
              

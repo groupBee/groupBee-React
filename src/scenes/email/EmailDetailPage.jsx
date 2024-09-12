@@ -67,8 +67,8 @@ function EmailDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const [infoData, setInfoData] = useState([]);
-
+    const [infoData, setInfoData] = useState({});
+    const [isSentEmail, setIsSentEmail] = useState(false);
 
     useEffect(() => {
         const fetchEmailDetails = () => {
@@ -86,8 +86,10 @@ function EmailDetailPage() {
                     to: params.get('to') || '',
                     cc: params.get('cc') || '',
                     receivedDate: params.get('receivedDate') || '',
+                    sentDate: params.get('sentDate') || '',
                     content: params.get('content') || ''
                 };
+                setIsSentEmail(params.get('isSentEmail') === 'true');
                 console.log("Parsed email data:", emailData);
 
                 setEmail(emailData);
@@ -107,9 +109,7 @@ function EmailDetailPage() {
             const response = await fetch('/api/employee/info');
             const data = await response.json();
             setInfoData(data);
-            console.log(data)
-
-
+            console.log(data);
         } catch (error) {
             console.error('Error fetching user data:', error);
         }
@@ -130,8 +130,41 @@ function EmailDetailPage() {
             }).format(date);
         } catch (err) {
             console.error("Error formatting date:", err);
-            return dateString; // 원본 문자열 반환
+            return dateString;
         }
+    };
+
+    const formatDate2 = (dateString) => {
+        if (!dateString) return '';
+
+        const parseDateString = (str) => {
+            const parts = str.split(' ');
+            const [, month, day, time, , year] = parts;
+            const [hour, minute, second] = time.split(':');
+
+            const monthMap = {
+                Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+                Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
+            };
+
+            return new Date(year, monthMap[month], day, hour, minute, second);
+        };
+
+        const date = parseDateString(dateString);
+
+        if (isNaN(date.getTime())) {
+            console.error('Invalid date:', dateString);
+            return '날짜 형식 오류';
+        }
+
+        const today = new Date();
+        const isToday = date.toDateString() === today.toDateString();
+
+        const options = isToday
+            ? { hour: '2-digit', minute: '2-digit', hour12: false }
+            : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+
+        return new Intl.DateTimeFormat('ko-KR', options).format(date);
     };
 
     if (loading) {
@@ -180,26 +213,47 @@ function EmailDetailPage() {
                 <Divider sx={{ marginBottom: 2 }} />
                 <Grid container spacing={2} style={{marginLeft:'5%'}}>
                     <Grid item xs={12} sm={1}>
-                        <Typography variant="subtitle2" color="textSecondary">발신자</Typography>
+                        <Typography variant="subtitle2" color="textSecondary">
+                            {isSentEmail ? "수신자" : "발신자"}
+                        </Typography>
                     </Grid>
                     <Grid item xs={12} sm={11}>
-                        <Typography>{decodeURIComponent(email.from)}</Typography>
+                        <Typography>
+                            {isSentEmail ? decodeURIComponent(email.to) : decodeURIComponent(email.from)}
+                        </Typography>
                     </Grid>
                     <Grid item xs={12} sm={1}>
-                        <Typography variant="subtitle2" color="textSecondary">수신자</Typography>
+                        <Typography variant="subtitle2" color="textSecondary">
+                            {isSentEmail ? "발신자" : "수신자"}
+                        </Typography>
                     </Grid>
                     <Grid item xs={12} sm={11}>
-                        <Typography>{infoData.email}</Typography>
+                        <Typography>
+                            {isSentEmail ? infoData.email : infoData.email}
+                        </Typography>
                     </Grid>
                     <Grid item xs={12} sm={1}>
-                        <Typography variant="subtitle2" color="textSecondary">수신일</Typography>
+                        <Typography variant="subtitle2" color="textSecondary">
+                            {isSentEmail ? "발신일" : "수신일"}
+                        </Typography>
                     </Grid>
                     <Grid item xs={12} sm={9}>
-                        <Typography>{formatDate(decodeURIComponent(email.receivedDate))}</Typography>
+                        <Typography>
+                            {isSentEmail ? formatDate2(decodeURIComponent(email.sentDate)) : formatDate(email.receivedDate)}
+                        </Typography>
                     </Grid>
                 </Grid>
                 <Divider sx={{ margin: '16px 0' }} />
-                <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', marginTop: 2 ,height:'600px',marginLeft:'5%'}}>
+                <Typography variant="body1"
+                            sx={{ whiteSpace: 'pre-wrap',
+                                marginTop: 2 ,
+                                height:'600px',
+                                marginLeft:'5%',
+                                marginRight:'5%',
+                                border:'1px solid #dddd',
+                                borderRadius:'4px',
+                                padding:'2%'
+                }}>
                     {decodeURIComponent(email.content)}
                 </Typography>
             </StyledPaper>

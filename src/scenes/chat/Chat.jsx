@@ -5,29 +5,32 @@ import GroupModal from "../../components/groupModal.jsx";
 import { Modal } from "react-bootstrap";
 import './Chat.css';
 import axios from "axios";
+import logo_grey from "../../assets/images/logo-photoaidcom-greyscale.png";
 
 const Chat = () => {
   const [activeRoom, setActiveRoom] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [showRoomInput, setShowRoomInput] = useState(false);
-  const [participants, setParticipants] = useState([]);  
+  const [participants, setParticipants] = useState([]);
   const [chatRoomName, setChatRoomName] = useState('');
   const [userId, setUserID] = useState('');
   const [name, setName] = useState('');
   const [chatRoomList, setChatRoomList] = useState([]);
   const [filteredRoomList, setFilteredRoomList] = useState([]); // 필터링된 채팅방 목록
-
+  const [profile,setProfile]=useState((''));//내 프로필 사진
   // 유저 정보를 불러오는 함수
   const autoSelect = () => {
     axios.get("/api/employee/info")
       .then(res => {
         setUserID(res.data.id);
         setName(res.data.name);
+        setProfile(res.data.profileFile
+        );
         const userInfo = res.data;
         setParticipants(prev => {
           const isAlreadyAdded = prev.some(participant => participant.userId === userInfo.id);
           if (!isAlreadyAdded) {
-            return [...prev, { userId: userInfo.id, name: userInfo.name }];
+            return [...prev, { userId: userInfo.id, name: userInfo.name, profile:userInfo.profileFile }];
           }
           return prev;
         });
@@ -59,25 +62,33 @@ const Chat = () => {
 
   const openModal = () => setModalOpen(true);
 
+  //모달에서 필요한 값 가져오기 '참가자 정보'
   const handleModalSelect = (value) => {
+    console.log("3123123123"+value[0])
     setParticipants(prev => {
       const existingIds = prev.map(participant => participant.userId);
       const newParticipants = value.filter(item =>
         !existingIds.includes(item.id)
       ).map(item => ({
         userId: item.id,
-        name: item.name
+        name: item.name,
+        profile: item.profileFile
       }));
+      //기존에 내가 미리 들어갔으므로 기존에 있던 참가자 (나)빼고 다 넣기
       const allParticipants = [...prev, ...newParticipants];
+      //내가 참여자로 선택되면 자동으로 빼기
       const uniqueParticipants = allParticipants.filter((participant, index, self) =>
         index === self.findIndex(p => p.userId === participant.userId)
       );
+      console.log('사진제발'+profile)
+      console.log(uniqueParticipants);
       return uniqueParticipants;
     });
+    console.log("참가자참가자"+participants);
     setShowRoomInput(true);
     setModalOpen(false);
   };
-
+//참가자 선택 후 확인버튼 눌렀을때
   const createChatting = () => {
     const data = {
       chatRoomId: '',
@@ -129,20 +140,34 @@ const Chat = () => {
 }
 
   return (
-    <div className="chat-container">
-      <Sidebar formatDate={formatDate} setActiveRoom={setActiveRoom} filteredRoomList={filteredRoomList} setFilteredRoomList={setFilteredRoomList} onRoomClick={handleRoomClick} openModal={openModal} userId={userId} getChatRoomList={getChatRoomList} chatRoomList={chatRoomList} />
+    <div className="chat-container" style={{height:'100%', padding:'10px 50px', display: 'flex', gap: '20px'}}>
+      <Sidebar formatDate={formatDate} setActiveRoom={setActiveRoom} filteredRoomList={filteredRoomList} setFilteredRoomList={setFilteredRoomList} onRoomClick={handleRoomClick} openModal={openModal} userId={userId} getChatRoomList={getChatRoomList} chatRoomList={chatRoomList}/>
       {activeRoom && (
         <ChatRoomContainer
         formatDate={formatDate}
           activeRoom={activeRoom}
           chatRoomId={activeRoom.chatRoomId}  // chatRoomId 전달
           userId={userId}  // userId 전달
+          profile={profile}
           participants={activeRoom.participants}
           name={name}
           topic={activeRoom.topic}
           getChatRoomList={getChatRoomList}
           onClose={() => setActiveRoom(null)}
         />
+      )}
+      {!activeRoom && (
+          <img
+              src={logo_grey}
+              style={{
+                height: "100px",
+                borderRadius: "8px",
+                position: 'absolute',
+                top: '50%',
+                left: '80%',
+                transform: 'translate(-50%, -50%)'
+              }}
+          />
       )}
       <GroupModal open={modalOpen} onClose={() => setModalOpen(false)} onSelect={handleModalSelect} />
       {showRoomInput && (
