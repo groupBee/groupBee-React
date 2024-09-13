@@ -1,10 +1,13 @@
-import { useEffect, useState, useRef } from 'react';
+import {useEffect, useState, useRef} from 'react';
 import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
-import { Button } from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
+import CloseIcon from "@mui/icons-material/Close";
+import PeopleIcon from "@mui/icons-material/People";
+import error from "eslint-plugin-react/lib/util/error.js";
 
-const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topic , formatDate}) => {
+const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoomId, topic, formatDate}) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
@@ -15,7 +18,66 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
     let subscriptionUrl = '';
 
-    
+    // 프로필을 표시할 조건
+    const showProfile = (allMessages, index) => {
+        if (index === 0) {
+            return true; // 첫 번째 메시지는 항상 프로필 표시
+        }
+
+        const currentMsg = allMessages[index];
+        const prevMsg = allMessages[index - 1];
+
+        // 이전 메시지와 발신자가 다르거나 1분 이상의 차이가 나면 프로필 표시
+        return (
+            currentMsg.senderId !== prevMsg.senderId ||
+            new Date(currentMsg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) !==
+            new Date(prevMsg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+        );
+    };
+
+    const renderParticipants = (participants) => {
+        const names = participants.map((p) => p.name);
+        if (names.length > 5) {
+            return `${names.slice(0, 5).join(', ')}...`;  // 5명까지 표시하고 나머지는 "..."
+        }
+        return names.join(', ');  // 참가자들을 쉼표로 구분하여 표시
+    };
+
+
+    // 타임스탬프를 표시할 조건
+    const shouldShowTimestamp = (allMessages, index) => {
+        if (index === allMessages.length - 1) {
+            return true; // 마지막 메시지는 항상 타임스탬프 표시
+        }
+
+        const currentMsg = allMessages[index];
+        const nextMsg = allMessages[index + 1];
+
+        // 다음 메시지가 같은 사람이거나 1분 이내에 보내지 않은 경우 타임스탬프 표시
+        return (
+            currentMsg.senderId !== nextMsg.senderId ||
+            new Date(currentMsg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) !==
+            new Date(nextMsg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+        );
+    };
+
+    // 이름을 표시할 조건
+    const showName = (allMessages, index) => {
+        if (index === 0) {
+            return true; // 첫 번째 메시지는 항상 이름 표시
+        }
+
+        const currentMsg = allMessages[index];
+        const prevMsg = allMessages[index - 1];
+
+        // 이전 메시지와 발신자가 다르거나 1분 이상의 차이가 나면 이름 표시
+        return (
+            currentMsg.senderId !== prevMsg.senderId ||
+            new Date(currentMsg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) !==
+            new Date(prevMsg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+        );
+    };
+
 
     // WebSocket 연결 함수
     const connectWebSocket = () => {
@@ -57,7 +119,12 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
                 // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { content: receivedMessage.content, senderName: receivedMessage.senderName, isMine: false , name:receivedMessage.senderName}
+                    {
+                        content: receivedMessage.content,
+                        senderName: receivedMessage.senderName,
+                        isMine: false,
+                        name: receivedMessage.senderName
+                    }
                 ]);
             });
         }, (error) => {
@@ -72,12 +139,14 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
         const stompClient = stompClientRef.current;
 
         if (!isConnected || !stompClient || inputMessage.trim() === '') {
+            console.error(error);
             console.error('WebSocket이 연결되지 않았거나 stompClient가 초기화되지 않았거나 메시지가 비어있습니다.');
             return;
         }
 
         const messageObj = {
             senderName: name,  // 사용자명
+            profile: profile,
             chatRoomId: chatRoomId,
             senderId: userId,
             recipientId: activeRoom.participants,  // 수신자 목록
@@ -95,7 +164,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
             // 내가 보낸 메시지를 오른쪽 말풍선에 추가
             setMessages(prevMessages => [
                 ...prevMessages,
-                { content: inputMessage, senderId: userId, senderName: name, isMine: true , timestamp: new Date()}
+                {content: inputMessage, senderId: userId, senderName: name, isMine: true, timestamp: new Date()}
             ]);
 
             setInputMessage('');  // 입력창 비우기
@@ -144,38 +213,71 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
 
     // 채팅 메시지 UI 렌더링
     return (
-        <div className={`chat-room-container ${activeRoom ? 'open' : ''}`}>
+        <div className={`chat-room-container ${activeRoom ? 'open' : ''}`} style={{height:'100%', borderRadius:'5px', display: 'flex', flexDirection: 'column'}}>
             <div className="chat-header">
-                <span style={{ fontSize: '30px' }}>{activeRoom?.chatRoomName || 'No room selected'}</span>
-                <button className="close-button" onClick={onClose}>X</button>
+                <div className="chat-header-info">
+                    <span style={{fontSize: '20px'}}>{activeRoom?.chatRoomName || 'No room selected'}</span>
+                    <div className="chat-room-participants">
+                        <PeopleIcon fontSize="small"/>
+                        <span>{renderParticipants(activeRoom?.participants || [])}</span>
+                        <span className="participant-count">({activeRoom?.participants?.length || 0})</span>
+                    </div>
+                </div>
+                <button style={{backgroundColor: 'transparent', border: 'none'}} onClick={onClose}>
+                    <CloseIcon/>
+                </button>
             </div>
-            <div className="chat-body" ref={chatBodyRef}>
-                {/* 메시지 출력 */}
-                {messages.map((msg, index) => (
-                    <div key={index} className={`message-wrapper ${msg.senderId === userId ? 'right' : 'left'}`}>
-                        {msg.senderId === userId ? (
-                            <>
-                                {/* 오른쪽 말풍선일 때 시간 왼쪽에 */}
-                                <div className="message-timestamp">{msg.timestamp && formatDate(msg.timestamp)}</div>
-                                <div className={`message right`}>
-                                    <div className="message-content">{msg.content}</div> {/* 메시지 내용 표시 */}
+            <div className="lk-chat-messages" ref={chatBodyRef}
+                 style={{flex: 1, overflowY: 'auto', paddingBottom: '70px'}}>
+                {messages.filter(msg => msg.content && msg.content.trim() !== '').map((msg, index, filteredMessages) => (
+                    <div key={index} className={`lk-chat-entry ${msg.senderId === userId ? 'lk-chat-entry-self' : ''}`}>
+                        {msg.senderId !== userId ? (
+                            <div className="lk-chat-entry-other">
+                                <div className="profile-picture">
+                                    {showProfile(messages, index) && (
+                                        <div className="profile-picture">
+                                            <div className="profile-placeholder">
+                                                <img src={msg.profile}
+                                                     alt={msg.senderName}
+                                                     className="profile-image"/>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </>
+                                <div className="lk-chat-entry-content">
+                                    {showName(messages, index) && (
+                                        <div className="lk-chat-entry-metadata">{msg.senderName}</div>
+                                    )}
+                                    <div className="lk-chat-entry-bubble-container">
+                                        <div className="lk-chat-entry-bubble2">
+                                            <div className="message-content2">{msg.content}</div>
+                                        </div>
+                                        {shouldShowTimestamp(messages, index) && (
+                                            <div className="lk-chat-entry-timestamp">
+                                                {msg.timestamp && formatDate(msg.timestamp)}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         ) : (
-                            <>
-                                {/* 왼쪽 말풍선일 때 시간 오른쪽에 */}
-                                <div className={`message left`}>
-                                    <div>{msg.senderName}</div> {/* 이름을 왼쪽 메시지에만 표시 */}
-                                    <div className="message-content">{msg.content}</div> {/* 메시지 내용 표시 */}
+                            <div className="lk-chat-entry-self">
+                                <div className="lk-chat-entry-bubble-container">
+                                    {shouldShowTimestamp(messages, index) && (
+                                        <div className="lk-chat-entry-timestamp">
+                                            {msg.timestamp && formatDate(msg.timestamp)}
+                                        </div>
+                                    )}
+                                    <div className="lk-chat-entry-bubble2">
+                                        <div className="message-content">{msg.content}</div>
+                                    </div>
                                 </div>
-                                <div className="message-timestamp">{msg.timestamp && formatDate(msg.timestamp)}</div>
-                            </>
+                            </div>
                         )}
                     </div>
                 ))}
             </div>
-
-            <div className="input-container">
+            <div className="input-container" style={{width:'100%'}}>
                 <input
                     className="chat-input"
                     type="text"
@@ -184,7 +286,7 @@ const ChatRoomContainer = ({ activeRoom, onClose, userId, name, chatRoomId, topi
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                 />
-                <button className="send-button" onClick={sendMessage}>Send</button>
+                <button className="send-button" onClick={sendMessage}>보내기</button>
             </div>
         </div>
     );
