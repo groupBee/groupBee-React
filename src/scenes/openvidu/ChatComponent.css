@@ -40,6 +40,7 @@
 .lk-chat-entry-self .lk-chat-entry-bubble {
     background-color: #0084ff;
     color: white;
+    border-radius: 18px;
 }
 
 .lk-chat-entry-timestamp {
@@ -61,7 +62,7 @@
 
 /* 자신이 보낸 메시지 타임스탬프 왼쪽 */
 .lk-chat-entry-self .lk-chat-entry-container {
-    flex-direction: row-reverse; /* 메시지 오른쪽, 타임스탬프 왼쪽 */
+    justify-content: space-between; /* 메시지와 타임스탬프 간 간격 조정 */
 }
 
 .lk-chat-entry-timestamp {

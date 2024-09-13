@@ -24,6 +24,11 @@ import UpdatePage from "./scenes/board/UpdatePage.jsx";
 import CommuteList from "./scenes/Commute/CommuteList.jsx";
 import Video from "./scenes/openvidu/VideoConference.jsx";
 import Chat from "./scenes/chat/Chat.jsx"
+import EmailList from "./scenes/email/emailList.jsx";
+
+import EmailDetailPage from './scenes/email/EmailDetailPage';
+
+
 const AppRouter = () => {
     return (
         <Router>
@@ -48,6 +53,8 @@ const AppRouter = () => {
                     <Route path="/mypage" element={<Mypage/>}/>
                     <Route path="/detail" element={<Detail/>}/>
                     <Route path="/email" element={<EmailMain/>}/>
+                    <Route path="/email/list" element={<EmailList />} />
+                    <Route path="/email/:id" element={<EmailDetailPage />} />
                     <Route path="/admin/*" element={<Admin/>}/>
                     <Route path="/commutelist" element={<CommuteList/>}/>
                     <Route path="/video" element={<Video/>}/>
