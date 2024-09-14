@@ -7,7 +7,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PeopleIcon from "@mui/icons-material/People";
 import error from "eslint-plugin-react/lib/util/error.js";
 
-const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoomId, topic, formatDate}) => {
+const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoomId, topic, formatDate,updateChatRoomList}) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
@@ -129,6 +129,7 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                         timestamp: receivedMessage.timestamp  // timestamp도 추가
                     }
                 ]);
+                updateChatRoomList(chatRoomId, receivedMessage.content, receivedMessage.senderName);
             });
         }, (error) => {
             console.error('WebSocket 오류 발생: ', error);
@@ -169,6 +170,10 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                 ...prevMessages,
                 {content: inputMessage, senderId: userId, senderName: name, isMine: true, timestamp: new Date()}
             ]);
+
+
+            // Sidebar 업데이트를 위해 부모 컴포넌트의 함수 호출
+            updateChatRoomList(chatRoomId, inputMessage);
 
             setInputMessage('');  // 입력창 비우기
         } catch (error) {
