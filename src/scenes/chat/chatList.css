@@ -15,7 +15,7 @@
   width: 100%; /* 가득 채우기 */
   margin: 0; /* 여백 없애기 */
   padding: 0; /* 패딩 없애기 */
-  height: 9%;
+  height: 71px;
   border-radius: 5px 5px 0 0;
 }
 .tab-buttons {
