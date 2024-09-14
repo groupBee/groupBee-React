@@ -149,15 +149,29 @@ const Chat = () => {
     }
 }
 
-  const chatRoomStyle = {
-    width: '40%',
-    height:'91%',
-    transform: `translateX(${isChatRoomVisible ? '0' : '100%'})`,
-    transition: 'transform 0.3s ease-in-out',
-    position: 'absolute',
-    top: '8%',
-    left: '58%',
-    backgroundColor: 'transparent',
+  const updateChatRoomList = (chatRoomId, lastMessage, senderName) => {
+    setChatRoomList(prevList =>
+        prevList.map(room =>
+            room.chatRoomId === chatRoomId
+                ? {
+                  ...room,
+                  lastMessage: lastMessage,
+                  lastActive: new Date()
+                }
+                : room
+        )
+    );
+    setFilteredRoomList(prevList =>
+        prevList.map(room =>
+            room.chatRoomId === chatRoomId
+                ? {
+                  ...room,
+                  lastMessage: lastMessage,
+                  lastActive: new Date()
+                }
+                : room
+        )
+    );
   };
 
   return (
@@ -173,6 +187,7 @@ const Chat = () => {
               userId={userId}
               getChatRoomList={getChatRoomList}
               chatRoomList={chatRoomList}
+              updateChatRoomList={updateChatRoomList}
           />
         </div>
         <div className={`chatroom-container ${isChatRoomVisible ? 'visible' : ''}`}>
@@ -188,6 +203,7 @@ const Chat = () => {
                   topic={activeRoom.topic}
                   getChatRoomList={getChatRoomList}
                   onClose={handleCloseChatRoom}
+                  updateChatRoomList={updateChatRoomList}  // 수정된 함수 전달
               />
           )}
         </div>
