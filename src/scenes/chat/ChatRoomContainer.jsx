@@ -123,7 +123,10 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                         content: receivedMessage.content,
                         senderName: receivedMessage.senderName,
                         isMine: false,
-                        name: receivedMessage.senderName
+                        name: receivedMessage.senderName,
+                        profile: receivedMessage.profile,  // 프로필 정보 추가
+                        senderId: receivedMessage.senderId,  // senderId도 추가
+                        timestamp: receivedMessage.timestamp  // timestamp도 추가
                     }
                 ]);
             });
@@ -213,7 +216,7 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
 
     // 채팅 메시지 UI 렌더링
     return (
-        <div className={`chat-room-container ${activeRoom ? 'open' : ''}`} style={{height:'100%', borderRadius:'5px', display: 'flex', flexDirection: 'column'}}>
+        <div className={`chat-room-container2 ${activeRoom ? 'open' : ''}`} style={{height:'100%', borderRadius:'5px', display: 'flex', flexDirection: 'column'}}>
             <div className="chat-header">
                 <div className="chat-header-info">
                     <span style={{fontSize: '20px'}}>{activeRoom?.chatRoomName || 'No room selected'}</span>
@@ -229,7 +232,7 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
             </div>
             <div className="lk-chat-messages" ref={chatBodyRef}
                  style={{flex: 1, overflowY: 'auto', paddingBottom: '70px'}}>
-                {messages.filter(msg => msg.content && msg.content.trim() !== '').map((msg, index, filteredMessages) => (
+                {messages.map((msg, index) => (
                     <div key={index} className={`lk-chat-entry ${msg.senderId === userId ? 'lk-chat-entry-self' : ''}`}>
                         {msg.senderId !== userId ? (
                             <div className="lk-chat-entry-other">
@@ -248,10 +251,12 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                                     {showName(messages, index) && (
                                         <div className="lk-chat-entry-metadata">{msg.senderName}</div>
                                     )}
+
                                     <div className="lk-chat-entry-bubble-container">
-                                        <div className="lk-chat-entry-bubble2">
+                                        {msg.content && msg.content.trim() !== '' && (
+                                            <div className="lk-chat-entry-bubble2">
                                             <div className="message-content2">{msg.content}</div>
-                                        </div>
+                                        </div>)}
                                         {shouldShowTimestamp(messages, index) && (
                                             <div className="lk-chat-entry-timestamp">
                                                 {msg.timestamp && formatDate(msg.timestamp)}
@@ -268,9 +273,11 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                                             {msg.timestamp && formatDate(msg.timestamp)}
                                         </div>
                                     )}
-                                    <div className="lk-chat-entry-bubble2">
+                                    {msg.content && msg.content.trim() !== '' && (
+                                        <div className="lk-chat-entry-bubble2">
                                         <div className="message-content">{msg.content}</div>
                                     </div>
+                                        )}
                                 </div>
                             </div>
                         )}
