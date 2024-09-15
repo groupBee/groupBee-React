@@ -2,7 +2,6 @@ import {useEffect, useState, useRef} from 'react';
 import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
-import {Button} from 'react-bootstrap';
 import CloseIcon from "@mui/icons-material/Close";
 import PeopleIcon from "@mui/icons-material/People";
 import error from "eslint-plugin-react/lib/util/error.js";
@@ -11,12 +10,45 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
+    const [unreadCount, setUnreadCount] = useState(0); // 읽지 않은 메시지 카운트 추가
+    const [isChatOpen, setIsChatOpen] = useState(true); // 채팅창 열림 상태 추가
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
     const [messageTopic, setMessageTopic] = useState('');
 
     const chatBodyRef = useRef(null); // 채팅 메시지를 담는 div를 참조하는 ref
 
     let subscriptionUrl = '';
+
+    // 창이 활성화되었을 때 WebSocket 연결
+    useEffect(() => {
+        const handleFocus = () => {
+            setIsChatOpen(true);
+            setUnreadCount(0); // 채팅창 열리면 읽지 않은 메시지 초기화
+            sendReadReceipt();  // 읽었음을 서버에 알림
+            console.log("채팅창 열림");
+        };
+
+        const handleBlur = () => {
+            setIsChatOpen(false);
+            console.log("채팅창 닫힘");
+        };
+
+        window.addEventListener('focus', handleFocus);
+        window.addEventListener('blur', handleBlur);
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('blur', handleBlur);
+        };
+    }, []);
+
+    // 메시지를 읽었음을 서버에 알리는 함수
+    const sendReadReceipt = () => {
+        const stompClient = stompClientRef.current;
+        if (stompClient && chatRoomId) {
+            stompClient.send(`/app/chat/${chatRoomId}/read`, {}, JSON.stringify({ userId }));
+        }
+    };
 
     // 프로필을 표시할 조건
     const showProfile = (allMessages, index) => {
@@ -114,6 +146,15 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                 // 서버로부터 받은 메시지 중에서 본인의 메시지는 제외
                 if (receivedMessage.senderId === userId) {
                     return;  // 본인이 보낸 메시지는 무시
+                }
+
+                // 창이 열려 있지 않으면 읽지 않은 메시지로 처리
+                if (!isChatOpen) {
+                    console.log(`읽지 않은 메시지로 처리 : ${receivedMessage.content}`);
+                    setUnreadCount(prevCount => prevCount + 1);
+                } else {
+                    console.log(`메시지를 읽었습니다: ${receivedMessage.content}`);
+                    sendReadReceipt();  // 서버에 메시지를 읽었다고 알림
                 }
 
                 // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
