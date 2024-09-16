@@ -6,7 +6,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import PeopleIcon from "@mui/icons-material/People";
 import error from "eslint-plugin-react/lib/util/error.js";
 
-const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoomId, topic, formatDate,updateChatRoomList}) => {
+const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoomId, topic, formatDate2,updateChatRoomList}) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
@@ -259,6 +259,32 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
         }
     }, [messages]);  // messages 배열이 변경될 때마다 실행
 
+    const shouldShowDate = (allMessages, index) => {
+        if (index === 0) return false; // 첫 메시지의 날짜는 표시하지 않음
+
+        const currentMsg = allMessages[index];
+        const prevMsg = allMessages[index - 1];
+
+        // 두 날짜가 모두 유효한지 확인
+        if (!isValidDate(new Date(currentMsg.timestamp)) || !isValidDate(new Date(prevMsg.timestamp))) {
+            return false;
+        }
+
+        const currentDate = new Date(currentMsg.timestamp).toDateString();
+        const prevDate = new Date(prevMsg.timestamp).toDateString();
+
+        return currentDate !== prevDate;
+    };
+
+    const isValidDate = (date) => {
+        return date instanceof Date && !isNaN(date);
+    };
+
+    const formatDateHeader = (dateString) => {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('ko-KR', options);
+    };
 
     // 채팅 메시지 UI 렌더링
     return (
@@ -279,6 +305,14 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
             <div className="lk-chat-messages" ref={chatBodyRef}
                  style={{flex: 1, overflowY: 'auto', paddingBottom: '70px'}}>
                 {messages.map((msg, index) => (
+                    <div key={index} style={{width:'100%'}}>
+                        {shouldShowDate(messages, index) && (
+                            <div className="date-header-container">
+                                <div className="date-header">
+                                    {formatDateHeader(msg.timestamp)}
+                                </div>
+                            </div>
+                        )}
                     <div key={index} className={`lk-chat-entry ${msg.senderId === userId ? 'lk-chat-entry-self' : ''}`}>
                         {msg.senderId !== userId ? (
                             <div className="lk-chat-entry-other">
@@ -305,7 +339,7 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                                         </div>)}
                                         {shouldShowTimestamp(messages, index) && (
                                             <div className="lk-chat-entry-timestamp">
-                                                {msg.timestamp && formatDate(msg.timestamp)}
+                                                {msg.timestamp && formatDate2(msg.timestamp)}
                                             </div>
                                         )}
                                     </div>
@@ -316,21 +350,22 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                                 <div className="lk-chat-entry-bubble-container">
                                     {shouldShowTimestamp(messages, index) && (
                                         <div className="lk-chat-entry-timestamp">
-                                            {msg.timestamp && formatDate(msg.timestamp)}
+                                            {msg.timestamp && formatDate2(msg.timestamp)}
                                         </div>
                                     )}
                                     {msg.content && msg.content.trim() !== '' && (
                                         <div className="lk-chat-entry-bubble2">
-                                        <div className="message-content">{msg.content}</div>
-                                    </div>
-                                        )}
+                                            <div className="message-content">{msg.content}</div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
                     </div>
+                    </div>
                 ))}
             </div>
-            <div className="input-container" style={{width:'100%'}}>
+            <div className="input-container" style={{width: '100%'}}>
                 <input
                     className="chat-input"
                     type="text"
