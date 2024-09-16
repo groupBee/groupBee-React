@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import {useEffect, useState, useRef, useCallback} from 'react';
 import './chatList.css';
 import axios from 'axios';
 import AddIcon from '@mui/icons-material/Add'; // + 아이콘
@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search'; // 돋보기 아이콘
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {MoreHoriz} from "@mui/icons-material"; // ⋯ 아이콘
 
-const Sidebar = ({profile, formatDate, setActiveRoom, onRoomClick, openModal, userId, getChatRoomList, chatRoomList, setFilteredRoomList, filteredRoomList }) => {
+const Sidebar = ({profile, formatDate, setActiveRoom, onRoomClick, openModal, userId, getChatRoomList, chatRoomList, setFilteredRoomList, filteredRoomList, setChatRoomList}) => {
   const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태
   const [isOverallDropdownOpen, setIsOverallDropdownOpen] = useState(false); // 전체 채팅방 드롭다운
   const [selectedRoomDropdown, setSelectedRoomDropdown] = useState(null); // 개별 채팅방 드롭다운
@@ -19,6 +19,18 @@ const Sidebar = ({profile, formatDate, setActiveRoom, onRoomClick, openModal, us
       getChatRoomList();
     }
   }, [userId]);
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filteredRooms = chatRoomList.filter((room) =>
+          room.chatRoomName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredRoomList(filteredRooms);
+    } else {
+      setFilteredRoomList(chatRoomList);
+    }
+  }, [chatRoomList, searchTerm]);
+
 
   // 채팅방 나가기 (개별)
   const exitChatRoom = (roomId) => {
@@ -95,13 +107,29 @@ const Sidebar = ({profile, formatDate, setActiveRoom, onRoomClick, openModal, us
   }, [selectedRoomDropdown, isOverallDropdownOpen]);
 
   // 참가자 리스트를 형식에 맞게 보여주기
-  const renderParticipants = (participants) => {
+  // 메모이제이션된 renderParticipants 함수
+  const renderParticipants = useCallback((participants) => {
     const names = participants.map((p) => p.name);
     if (names.length > 5) {
-      return `${names.slice(0, 5).join(', ')}...`;  // 5명까지 표시하고 나머지는 "..."
+      return `${names.slice(0, 5).join(', ')}...`;
     }
-    return names.join(', ');  // 참가자들을 쉼표로 구분하여 표시
-  };
+    return names.join(', ');
+  }, []);
+
+  const renderRoomName = useCallback((room) => {
+    if (room.chatRoomName && room.chatRoomName.trim() !== '') {
+      return room.chatRoomName;
+    }
+
+    const participantNames = room.participants
+        .filter(p => p.userId !== userId)
+        .map(p => p.name);
+
+    if (participantNames.length > 5) {
+      return `${participantNames.slice(0, 5).join(', ')}...`;
+    }
+    return participantNames.join(', ');
+  }, [userId]);
 
   return (
     <div className="sidebar2">

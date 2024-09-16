@@ -18,6 +18,8 @@ const Chat = () => {
   const [chatRoomList, setChatRoomList] = useState([]);
   const [filteredRoomList, setFilteredRoomList] = useState([]); // 필터링된 채팅방 목록
   const [profile,setProfile]=useState((''));//내 프로필 사진
+  const [isChatRoomVisible, setIsChatRoomVisible] = useState(false);
+
   // 유저 정보를 불러오는 함수
   const autoSelect = () => {
     axios.get("/api/employee/info")
@@ -111,9 +113,17 @@ const Chat = () => {
   };
 
   // Sidebar에서 클릭된 채팅방을 처리
+  // Sidebar에서 클릭된 채팅방을 처리
   const handleRoomClick = (room) => {
     setActiveRoom(room);
+    setIsChatRoomVisible(true);
   };
+
+  const handleCloseChatRoom = () => {
+    setIsChatRoomVisible(false);
+    setTimeout(() => setActiveRoom(null), 300); // 트랜지션이 끝난 후 activeRoom을 null로 설정
+  };
+
   function formatDate(dateString) {
     const date = new Date(dateString);
     const today = new Date();
@@ -139,60 +149,101 @@ const Chat = () => {
     }
 }
 
+  const updateChatRoomList = (chatRoomId, lastMessage, senderName) => {
+    setChatRoomList(prevList =>
+        prevList.map(room =>
+            room.chatRoomId === chatRoomId
+                ? {
+                  ...room,
+                  lastMessage: lastMessage,
+                  lastActive: new Date()
+                }
+                : room
+        )
+    );
+    setFilteredRoomList(prevList =>
+        prevList.map(room =>
+            room.chatRoomId === chatRoomId
+                ? {
+                  ...room,
+                  lastMessage: lastMessage,
+                  lastActive: new Date()
+                }
+                : room
+        )
+    );
+  };
+
   return (
-    <div className="chat-container" style={{height:'100%', padding:'10px 50px', display: 'flex', gap: '20px'}}>
-      <Sidebar formatDate={formatDate} setActiveRoom={setActiveRoom} filteredRoomList={filteredRoomList} setFilteredRoomList={setFilteredRoomList} onRoomClick={handleRoomClick} openModal={openModal} userId={userId} getChatRoomList={getChatRoomList} chatRoomList={chatRoomList}/>
-      {activeRoom && (
-        <ChatRoomContainer
-        formatDate={formatDate}
-          activeRoom={activeRoom}
-          chatRoomId={activeRoom.chatRoomId}  // chatRoomId 전달
-          userId={userId}  // userId 전달
-          profile={profile}
-          participants={activeRoom.participants}
-          name={name}
-          topic={activeRoom.topic}
-          getChatRoomList={getChatRoomList}
-          onClose={() => setActiveRoom(null)}
-        />
-      )}
-      {!activeRoom && (
-          <img
-              src={logo_grey}
-              style={{
-                height: "100px",
-                borderRadius: "8px",
-                position: 'absolute',
-                top: '50%',
-                left: '80%',
-                transform: 'translate(-50%, -50%)'
-              }}
+      <div className="chat-container">
+        <div className="sidebar-container">
+          <Sidebar
+              formatDate={formatDate}
+              setActiveRoom={setActiveRoom}
+              filteredRoomList={filteredRoomList}
+              setFilteredRoomList={setFilteredRoomList}
+              onRoomClick={handleRoomClick}
+              openModal={openModal}
+              userId={userId}
+              getChatRoomList={getChatRoomList}
+              chatRoomList={chatRoomList}
+              updateChatRoomList={updateChatRoomList}
           />
-      )}
-      <GroupModal open={modalOpen} onClose={() => setModalOpen(false)} onSelect={handleModalSelect} />
-      {showRoomInput && (
-        <Modal show={showRoomInput} onHide={() => { setShowRoomInput(false) }} centered>
-          <Modal.Header closeButton>
-            <Modal.Title>방 제목 입력</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>참가자: {participants.map(p => p.name).join(', ')}</p>
-            <input
-              type="text"
-              value={chatRoomName}
-              onChange={(e) => setChatRoomName(e.target.value)}
-              placeholder="방 제목 입력"
-              style={{ width: '100%', padding: '10px', margin: '10px 0' }}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <button onClick={createChatting} style={{ width: '100%', padding: '10px', backgroundColor: '#5CB85C', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-              방 만들기
-            </button>
-          </Modal.Footer>
-        </Modal>
-      )}
-    </div>
+        </div>
+        <div className={`chatroom-container ${isChatRoomVisible ? 'visible' : ''}`}>
+          {activeRoom && (
+              <ChatRoomContainer
+                  formatDate={formatDate}
+                  activeRoom={activeRoom}
+                  chatRoomId={activeRoom.chatRoomId}
+                  userId={userId}
+                  profile={profile}
+                  participants={activeRoom.participants}
+                  name={name}
+                  topic={activeRoom.topic}
+                  getChatRoomList={getChatRoomList}
+                  onClose={handleCloseChatRoom}
+                  updateChatRoomList={updateChatRoomList}  // 수정된 함수 전달
+              />
+          )}
+        </div>
+        {!isChatRoomVisible && (
+              <img src={logo_grey} alt="Logo" className={`grey-logo ${isChatRoomVisible ? 'visible' : ''}`}/>
+        )}
+        <GroupModal open={modalOpen} onClose={() => setModalOpen(false)} onSelect={handleModalSelect}/>
+        {showRoomInput && (
+            <Modal show={showRoomInput} onHide={() => {
+              setShowRoomInput(false)
+            }} centered>
+              <Modal.Header closeButton>
+                <Modal.Title>방 제목 입력</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <p>참가자: {participants.map(p => p.name).join(', ')}</p>
+                <input
+                    type="text"
+                    value={chatRoomName}
+                    onChange={(e) => setChatRoomName(e.target.value)}
+                    placeholder="방 제목 입력"
+                    style={{width: '100%', padding: '10px', margin: '10px 0'}}
+                />
+              </Modal.Body>
+              <Modal.Footer>
+                <button onClick={createChatting} style={{
+                  width: '100%',
+                  padding: '10px',
+                  backgroundColor: '#5CB85C',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer'
+                }}>
+                  방 만들기
+                </button>
+              </Modal.Footer>
+            </Modal>
+        )}
+      </div>
   );
 };
 
