@@ -91,26 +91,28 @@ const Chat = () => {
     setModalOpen(false);
   };
 //참가자 선택 후 확인버튼 눌렀을때
-  const createChatting = () => {
-    const data = {
-      chatRoomId: '',
-      chatRoomName,
-      participants,
-      lastMessage: '',
-      topic: participants.length === 2 ? 'create-room-one' : participants.length > 2 ? 'create-room-many' : ''
+    const createChatting = () => {
+        const currentDate = new Date(); // 현재 로컬 시간
+        const data = {
+            chatRoomId: '',
+            chatRoomName,
+            participants,
+            lastMessage: '',
+            topic: participants.length === 2 ? 'create-room-one' : participants.length > 2 ? 'create-room-many' : '',
+            lastActive: currentDate.toISOString() // ISO 형식의 현재 로컬 시간
+        };
+        axios.post("/api/chat/chatting/create", data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => {
+            // 방 생성 후 로직 처리
+            getChatRoomList();
+        });
+        setChatRoomName('');
+        setParticipants([]);
+        setShowRoomInput(false);
     };
-    axios.post("/api/chat/chatting/create", data, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(res => {
-      // 방 생성 후 로직 처리
-      getChatRoomList();
-    });
-    setChatRoomName('');
-    setParticipants([]);
-    setShowRoomInput(false);
-  };
 
   // Sidebar에서 클릭된 채팅방을 처리
   // Sidebar에서 클릭된 채팅방을 처리
@@ -124,30 +126,38 @@ const Chat = () => {
     setTimeout(() => setActiveRoom(null), 300); // 트랜지션이 끝난 후 activeRoom을 null로 설정
   };
 
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    const today = new Date();
+    function formatDate(dateString,lastMessage) {
+        if (!dateString || !lastMessage) {
+            return ''; // 날짜가 없거나 마지막 메시지가 없으면 빈 문자열 반환
+        }
 
-    const isToday = date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
+        const date = new Date(dateString);
+        const now = new Date();
 
-    // 두 자릿수로 포맷팅하는 헬퍼 함수
-    const formatTwoDigits = (num) => (num < 10 ? `0${num}` : num);
+        const isToday = date.getDate() === now.getDate() &&
+            date.getMonth() === now.getMonth() &&
+            date.getFullYear() === now.getFullYear();
 
-    const hours = formatTwoDigits(date.getHours());
-    const minutes = formatTwoDigits(date.getMinutes());
+        const formatTwoDigits = (num) => (num < 10 ? `0${num}` : num);
 
-    if (isToday) {
-        // 오늘 날짜일 경우 시:분만 반환
-        return `${hours}:${minutes}`;
-    } else {
-        // 오늘이 아닐 경우 월/일 시:분 반환
-        const month = formatTwoDigits(date.getMonth() + 1);
-        const day = formatTwoDigits(date.getDate());
-        return `${month}/${day} ${hours}:${minutes}`;
+        const hours = formatTwoDigits(date.getHours());
+        const minutes = formatTwoDigits(date.getMinutes());
+
+        if (isToday) {
+            return `${hours}:${minutes}`;
+        } else {
+            const month = formatTwoDigits(date.getMonth() + 1);
+            const day = formatTwoDigits(date.getDate());
+            return `${month}/${day}`;
+        }
     }
-}
+
+    const formatDate2 = (dateString) => {
+        const date = new Date(dateString);
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+    };
 
   const updateChatRoomList = (chatRoomId, lastMessage, senderName) => {
     setChatRoomList(prevList =>
@@ -193,7 +203,7 @@ const Chat = () => {
         <div className={`chatroom-container ${isChatRoomVisible ? 'visible' : ''}`}>
           {activeRoom && (
               <ChatRoomContainer
-                  formatDate={formatDate}
+                  formatDate2={formatDate2}
                   activeRoom={activeRoom}
                   chatRoomId={activeRoom.chatRoomId}
                   userId={userId}
