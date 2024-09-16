@@ -6,9 +6,11 @@ COPY . ./
 
 EXPOSE 5173
 
-RUN npm run postinstall --silent
+RUN npm cache clean --force
 
-RUN npm install --silent
+RUN npm run postinstall
+
+RUN npm install
 
 CMD ["npm","run","dev"]
 
