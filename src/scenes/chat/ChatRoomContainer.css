@@ -94,6 +94,8 @@
   background-color: yellow;
   color: black;
   border-radius: 10px 0 10px 10px;
+  align-items: flex-end;
+  justify-content: flex-end; /* Added to keep the bubble on the right */
 }
 
 .lk-chat-entry-timestamp {

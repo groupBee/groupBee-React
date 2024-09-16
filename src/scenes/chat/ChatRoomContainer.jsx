@@ -305,7 +305,7 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
             <div className="lk-chat-messages" ref={chatBodyRef}
                  style={{flex: 1, overflowY: 'auto', paddingBottom: '70px'}}>
                 {messages.map((msg, index) => (
-                    <div key={index} style={{width:'100%'}}>
+                    <div key={index} className="lk-chat-totla" style={{display: 'flex', flexDirection: 'column'}}>
                         {shouldShowDate(messages, index) && (
                             <div className="date-header-container">
                                 <div className="date-header">
