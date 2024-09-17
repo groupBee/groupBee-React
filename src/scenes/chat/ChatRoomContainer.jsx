@@ -2,21 +2,53 @@ import {useEffect, useState, useRef} from 'react';
 import Stomp from 'stompjs';
 import './ChatRoomContainer.css';
 import axios from 'axios';
-import {Button} from 'react-bootstrap';
 import CloseIcon from "@mui/icons-material/Close";
 import PeopleIcon from "@mui/icons-material/People";
 import error from "eslint-plugin-react/lib/util/error.js";
 
-const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoomId, topic, formatDate}) => {
+const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoomId, topic, formatDate2,updateChatRoomList}) => {
     const [messages, setMessages] = useState([]);  // 모든 메시지를 저장할 배열
     const [inputMessage, setInputMessage] = useState('');  // 입력된 메시지 상태
     const [isConnected, setIsConnected] = useState(false); // WebSocket 연결 상태 확인
+    const [unreadCount, setUnreadCount] = useState(0); // 읽지 않은 메시지 카운트 추가
+    const [isChatOpen, setIsChatOpen] = useState(true); // 채팅창 열림 상태 추가
     const stompClientRef = useRef(null); // stompClient를 useRef로 관리
     const [messageTopic, setMessageTopic] = useState('');
 
     const chatBodyRef = useRef(null); // 채팅 메시지를 담는 div를 참조하는 ref
 
     let subscriptionUrl = '';
+
+    // 창이 활성화되었을 때 WebSocket 연결
+    useEffect(() => {
+        const handleFocus = () => {
+            setIsChatOpen(true);
+            setUnreadCount(0); // 채팅창 열리면 읽지 않은 메시지 초기화
+            sendReadReceipt();  // 읽었음을 서버에 알림
+            console.log("채팅창 열림");
+        };
+
+        const handleBlur = () => {
+            setIsChatOpen(false);
+            console.log("채팅창 닫힘");
+        };
+
+        window.addEventListener('focus', handleFocus);
+        window.addEventListener('blur', handleBlur);
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            window.removeEventListener('blur', handleBlur);
+        };
+    }, []);
+
+    // 메시지를 읽었음을 서버에 알리는 함수
+    const sendReadReceipt = () => {
+        const stompClient = stompClientRef.current;
+        if (stompClient && chatRoomId) {
+            stompClient.send(`/app/chat/${chatRoomId}/read`, {}, JSON.stringify({ userId }));
+        }
+    };
 
     // 프로필을 표시할 조건
     const showProfile = (allMessages, index) => {
@@ -116,6 +148,15 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                     return;  // 본인이 보낸 메시지는 무시
                 }
 
+                // 창이 열려 있지 않으면 읽지 않은 메시지로 처리
+                if (!isChatOpen) {
+                    console.log(`읽지 않은 메시지로 처리 : ${receivedMessage.content}`);
+                    setUnreadCount(prevCount => prevCount + 1);
+                } else {
+                    console.log(`메시지를 읽었습니다: ${receivedMessage.content}`);
+                    sendReadReceipt();  // 서버에 메시지를 읽었다고 알림
+                }
+
                 // 서버로부터 받은 메시지를 왼쪽 말풍선에 추가 (다른 사용자의 메시지)
                 setMessages((prevMessages) => [
                     ...prevMessages,
@@ -123,9 +164,13 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                         content: receivedMessage.content,
                         senderName: receivedMessage.senderName,
                         isMine: false,
-                        name: receivedMessage.senderName
+                        name: receivedMessage.senderName,
+                        profile: receivedMessage.profile,  // 프로필 정보 추가
+                        senderId: receivedMessage.senderId,  // senderId도 추가
+                        timestamp: receivedMessage.timestamp  // timestamp도 추가
                     }
                 ]);
+                updateChatRoomList(chatRoomId, receivedMessage.content, receivedMessage.senderName);
             });
         }, (error) => {
             console.error('WebSocket 오류 발생: ', error);
@@ -166,6 +211,10 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                 ...prevMessages,
                 {content: inputMessage, senderId: userId, senderName: name, isMine: true, timestamp: new Date()}
             ]);
+
+
+            // Sidebar 업데이트를 위해 부모 컴포넌트의 함수 호출
+            updateChatRoomList(chatRoomId, inputMessage);
 
             setInputMessage('');  // 입력창 비우기
         } catch (error) {
@@ -210,10 +259,36 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
         }
     }, [messages]);  // messages 배열이 변경될 때마다 실행
 
+    const shouldShowDate = (allMessages, index) => {
+        if (index === 0) return false; // 첫 메시지의 날짜는 표시하지 않음
+
+        const currentMsg = allMessages[index];
+        const prevMsg = allMessages[index - 1];
+
+        // 두 날짜가 모두 유효한지 확인
+        if (!isValidDate(new Date(currentMsg.timestamp)) || !isValidDate(new Date(prevMsg.timestamp))) {
+            return false;
+        }
+
+        const currentDate = new Date(currentMsg.timestamp).toDateString();
+        const prevDate = new Date(prevMsg.timestamp).toDateString();
+
+        return currentDate !== prevDate;
+    };
+
+    const isValidDate = (date) => {
+        return date instanceof Date && !isNaN(date);
+    };
+
+    const formatDateHeader = (dateString) => {
+        const date = new Date(dateString);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return date.toLocaleDateString('ko-KR', options);
+    };
 
     // 채팅 메시지 UI 렌더링
     return (
-        <div className={`chat-room-container ${activeRoom ? 'open' : ''}`} style={{height:'100%', borderRadius:'5px', display: 'flex', flexDirection: 'column'}}>
+        <div className={`chat-room-container2 ${activeRoom ? 'open' : ''}`} style={{height:'100%', borderRadius:'5px', display: 'flex', flexDirection: 'column'}}>
             <div className="chat-header">
                 <div className="chat-header-info">
                     <span style={{fontSize: '20px'}}>{activeRoom?.chatRoomName || 'No room selected'}</span>
@@ -229,7 +304,15 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
             </div>
             <div className="lk-chat-messages" ref={chatBodyRef}
                  style={{flex: 1, overflowY: 'auto', paddingBottom: '70px'}}>
-                {messages.filter(msg => msg.content && msg.content.trim() !== '').map((msg, index, filteredMessages) => (
+                {messages.map((msg, index) => (
+                    <div key={index} className="lk-chat-totla" style={{display: 'flex', flexDirection: 'column'}}>
+                        {shouldShowDate(messages, index) && (
+                            <div className="date-header-container">
+                                <div className="date-header">
+                                    {formatDateHeader(msg.timestamp)}
+                                </div>
+                            </div>
+                        )}
                     <div key={index} className={`lk-chat-entry ${msg.senderId === userId ? 'lk-chat-entry-self' : ''}`}>
                         {msg.senderId !== userId ? (
                             <div className="lk-chat-entry-other">
@@ -248,13 +331,15 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                                     {showName(messages, index) && (
                                         <div className="lk-chat-entry-metadata">{msg.senderName}</div>
                                     )}
+
                                     <div className="lk-chat-entry-bubble-container">
-                                        <div className="lk-chat-entry-bubble2">
+                                        {msg.content && msg.content.trim() !== '' && (
+                                            <div className="lk-chat-entry-bubble2">
                                             <div className="message-content2">{msg.content}</div>
-                                        </div>
+                                        </div>)}
                                         {shouldShowTimestamp(messages, index) && (
                                             <div className="lk-chat-entry-timestamp">
-                                                {msg.timestamp && formatDate(msg.timestamp)}
+                                                {msg.timestamp && formatDate2(msg.timestamp)}
                                             </div>
                                         )}
                                     </div>
@@ -265,19 +350,22 @@ const ChatRoomContainer = ({profile, activeRoom, onClose, userId, name, chatRoom
                                 <div className="lk-chat-entry-bubble-container">
                                     {shouldShowTimestamp(messages, index) && (
                                         <div className="lk-chat-entry-timestamp">
-                                            {msg.timestamp && formatDate(msg.timestamp)}
+                                            {msg.timestamp && formatDate2(msg.timestamp)}
                                         </div>
                                     )}
-                                    <div className="lk-chat-entry-bubble2">
-                                        <div className="message-content">{msg.content}</div>
-                                    </div>
+                                    {msg.content && msg.content.trim() !== '' && (
+                                        <div className="lk-chat-entry-bubble2">
+                                            <div className="message-content">{msg.content}</div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
                     </div>
+                    </div>
                 ))}
             </div>
-            <div className="input-container" style={{width:'100%'}}>
+            <div className="input-container" style={{width: '100%'}}>
                 <input
                     className="chat-input"
                     type="text"
