@@ -32,25 +32,25 @@
  React 기반으로 설계된 웹 애플리케이션으로, 회사의 주요 정보를 한눈에 확인할 수 있습니다. 사용자에게 공지사항, 결재 현황, 예약 상태, 날씨 정보, 캘린더 등의 다양한 정보를 직관적으로 제공합니다.
 
 ### 사용 기술 
-- React (hooks 사용) 
-- Material-UI 
-- Axios 
-- FullCalendar 
-- SweetAlert2
+- **React (hooks 사용)** 
+- **Material-UI** 
+- **Axios** 
+- **FullCalendar** 
+- **SweetAlert2**
+- **OpenWeather**
 
 ### 주요 기능 
 #### 2-1. 공지사항 
-- 최신 공지사항을 표시하며, 중요 공지는 강조 표시됩니다. 
-- 공지사항 목록은 페이지네이션 처리되어 있습니다. 
+- 최신 공지사항을 표시하며, 중요 공지는 강조 표시됩니다.  
 - 각 공지는 제목, 작성자, 작성일을 포함합니다. 
 
-#### 2-2. 시계 및 출퇴근 기능 
-- 현재 시간을 실시간으로 표시합니다. 
-- 출근 및 퇴근 버튼을 통해 근태 체크가 가능합니다. 
+#### 2-2. 출퇴근 기능 
+- 로컬 시간대를 기준으로 현재 시간을 출력합니다.
+- 출근 및 퇴근 버튼을 통해 근태를 체크할 수 있습니다. 
 - 당일의 출근 및 퇴근 시간이 표시됩니다. 
 
 #### 2-3. 날씨 정보 
-- 현재 위치의 날씨 정보를 표시합니다. 
+- OpenWeather API를 사용해 현재 장소에 대한 날씨 정보를 제공합니다.
 - 온도, 날씨 상태, 습도 등의 정보를 제공합니다. 
 
 #### 2-4. 결재 현황 
@@ -80,7 +80,7 @@
 - 부서는 상위, 중간, 하위 부서로 나뉘며, 트리 구조로 화면에 표시됩니다. 
 - 각 부서를 클릭하면 해당 부서와 관련된 직원 목록이 오른쪽에 표시됩니다.
 
- #### 3-2. 직원 목록 필터링 
+#### 3-2. 직원 목록 필터링 
 - 부서를 클릭하면 해당 부서에 속한 직원들이 필터링되어 화면에 표시됩니다. 
 - "하위 부서 포함" 체크박스를 선택하면 선택된 부서의 하위 부서에 속한 직원들도 함께 표시됩니다. 
 
@@ -103,8 +103,32 @@
 <img src="https://velog.velcdn.com/images/woong2/post/47de0bd5-97ba-45a9-b9c9-cd535f60af18/image.png" style="width: 500px; height: auto;">
 
 
+
 ## ☘️ 5. 캘린더
 <img src="https://velog.velcdn.com/images/woong2/post/ed24fabc-8d44-4972-9e37-9ed0414e85f3/image.png" style="width: 500px; height: auto;">
+캘린더는 대한민국 공휴일, 사용자가 추가한 일정, 그리고 회사 내 자산 예약 정보를 포함한 총 3가지 주요 기능을 제공합니다. 또한, 오늘 날짜의 일정들을 관리할 수 있는 To-do 리스트 기능도 함께 제공합니다.
+
+### 사용 기술
+- **Redis**
+- **FullCalendar**
+
+### 참고 자료 
+- [Redis 공식 문서](https://redis.io/enterprise/?gad_source=1&gclid=Cj0KCQjwo8S3BhDeARIsAFRmkOM6o1GdtOPsTQIfbXek25XaGcOm2FR_qOf5LKk6u4_U8gv_xLPXpDkaAkoREALw_wcB&utm_campaign=gg_s_brand_bam_acq_apac-en_21161918358&utm_source=google&utm_medium=cpc&utm_content=redis_exact&utm_term=)
+- [FullCalendar 공식 문서](https://fullcalendar.io/)
+
+### 주요 기능
+
+#### 5-1. 트랜잭션 처리
+트랜잭션 처리를 통해 데이터 무결성을 확보하여 예약 충돌이나 데이터 불일치 문제를 방지할 수 있습니다. 이를 통해 여러 사용자가 동시에 예약할 때도 일관된 데이터 상태를 유지할 수 있습니다.
+
+#### 5-2. 한국 공휴일 출력
+기존의 풀캘린더(FullCalendar)에 구글 캘린더 API를 연동하여 대한민국 공휴일을 자동으로 출력하도록 구현하였습니다. 이를 통해 사용자는 공휴일 정보를 실시간으로 확인할 수 있습니다.
+
+#### 5-3. To-do 리스트 기능
+오늘의 일정 섹션을 통해 사용자는 오늘 날짜에 해당하는 일정 목록을 한눈에 확인할 수 있습니다. 이를 통해 중요한 일정이나 작업을 놓치지 않고, 효율적으로 하루를 관리할 수 있습니다.
+
+
+
 
 ## ☘️ 6. 예약
 <img src="https://velog.velcdn.com/images/woong2/post/8e7c5a50-967c-4308-837a-466b6c261bdd/image.jpeg" style="width: 500px; height: auto;">
@@ -112,18 +136,14 @@
 MUI나 페이지네이션 등 다양한 react 기반의 UI 컴포넌트를 사용하여 구성했습니다.
 
 ### 사용 기술
-- **MUI**: UI 컴포넌트 라이브러리. 
-- **Bootstrap**: UI 컴포넌트 라이브러리. 
+- **Material-UI**
+- **Bootstrap**
 
 ### 참고 자료
-- [MUI 공식 문서](https://mui.com/)
+- [Material-UI 공식 문서](https://mui.com/)
 - [Bootstrap 공식 문서](https://getbootstrap.kr/)
 
 ### 주요 기능
-- **프로그래스바**: 실시간 예약 현황을 확인할 수 있습니다.
-- **데이터픽커**: 날짜 선택을 위해 데이터 픽커를 활용.
-- **시간선택**: 선택한 시간에 대해 이미 예약된 시간은 선택할 수 없습니다.
-- **sweetalert2**: sweetalert2를 활용한 알림창 구현
 
 #### 6-1. 프로그래스바
 1시간 단위로 24개로 나눈 프로그래스바를 통해 예약 현황을 실시간으로 확인할 수 있으며, 현재 상태를 한눈에 파악할 수 있습니다. 이 프로그래스바는 예약이 가능한 상태에서는 노란색으로 표시되고, 예약이 마감된 상태는 회색으로 나타납니다.
@@ -135,6 +155,25 @@ MUI나 페이지네이션 등 다양한 react 기반의 UI 컴포넌트를 사�
 
 ## ☘️ 7. 게시판
 <img src="https://velog.velcdn.com/images/woong2/post/320eebf0-352a-4dfc-b2b4-42c2743b1120/image.jpeg" style="width: 500px; height: auto;">
+게시판은 기본 CRUD를 기반으로 사내게시판에서 공지사항과 게시물을 작성할 수 있는 페이지입니다.
+
+### 사용 기술
+- **MUI**
+- **Bootstrap**
+- **React Quill**
+
+### 참고 자료
+- [MUI 공식 문서](https://mui.com/)
+- [Bootstrap 공식 문서](https://getbootstrap.kr/)
+- [React Quill 공식 문서](https://github.com/zenoamaro/react-quill)
+
+### 주요 기능
+
+#### 7-1. React Quill을 이용한 편집
+게시물 작성 시 React Quill을 사용하여 사진 첨부, 색상 변경, 글꼴 변경 등 다양한 스타일로 게시물을 작성할 수 있습니다.
+
+#### 7-2. 공지사항 처리
+게시물 작성 시 "공지사항" 또는 "중요" 옵션을 선택하면, 제목에 "공지" 말머리가 추가되며 게시판 상단에 고정됩니다.
 
 
 
@@ -143,9 +182,27 @@ MUI나 페이지네이션 등 다양한 react 기반의 UI 컴포넌트를 사�
 <img src="https://velog.velcdn.com/images/woong2/post/18222e8f-66ce-4402-b5e3-572ebab4c122/image.png" style="width: 500px; height: auto;">
 
 ## ☘️ 9. 출퇴근목록
+<img src="https://velog.velcdn.com/images/woong2/post/97052ebe-3a8d-4bd3-af2d-358abb8cb6f4/image.jpeg" style="width: 500px; height: auto;">
+메인 페이지에서 출근 및 퇴근 버튼을 클릭하면, 해당 날의 출근 시각과 퇴근 시각을 출퇴근 목록에서 확인할 수 있습니다. 근무 시간은 총 9시간을 기준으로 하며, 출근과 퇴근 사이의 시간이 9시간을 초과할 경우 정상 처리로 기록됩니다.
+
+### 사용 기술
+- **Material-UI**
+
+### 참고 자료
+- [Material-UI 공식 문서](https://mui.com/)
+
+### 주요 기능
+
+#### 9-1. 근무시간처리
+근무 시간은 총 9시간을 기준으로 하며, 출근과 퇴근 사이의 시간이 9시간을 초과할 경우 정상 처리로 기록됩니다.
+
+#### 9-2. 출근 퇴근 순서
+출근 버튼을 누르지 않고 퇴근 버튼만 누를 경우, 정상적으로 기록되지 않도록 처리하였습니다
+
 
 
 ## ☘️ 10. 채팅
+
 
 ## ☘️ 11. OpenVidu 화상회의
 
@@ -153,11 +210,11 @@ MUI나 페이지네이션 등 다양한 react 기반의 UI 컴포넌트를 사�
 
 ### 사용 기술
  - **OpenVidu**: 실시간 비디오 스트리밍 솔로션. 
-- **React**: 프론트엔드 프레임워크.
+
 
 ### 참고 자료 
 - [OpenVidu 공식 문서](https://docs.openvidu.io/en/stable/) 
-- [React 공식 문서](https://reactjs.org/docs/getting-started.html)
+
 
 ### 주요 기능
  - **커스텀 컨트롤바**: 프로젝트에 맞춘 비디오 컨트롤바.
@@ -186,10 +243,10 @@ MUI나 페이지네이션 등 다양한 react 기반의 UI 컴포넌트를 사�
 관리자 페이지는 관리자 계정으로만 접속할 수 있으며, 각 기능별로 API 요청을 통해 데이터를 받아와 인터페이스를 구성하였습니다. 관리자는 모든 데이터에 접근할 수 있으며, 수정 및 삭제 기능도 이용할 수 있습니다.
 
 ### 사용 기술 
-- React (hooks 사용) 
-- Material-UI 
-- Axios 
-- React router
+- **React (hooks 사용)**
+- **Material-UI** 
+- **Axios**
+- **React router**
 
 ### 주요 기능
 
@@ -201,4 +258,3 @@ MUI나 페이지네이션 등 다양한 react 기반의 UI 컴포넌트를 사�
 
 #### 12-3. 각 기능 데이터 확인 및 수정 가능
 각 기능별로 데이터 내역을 실시간 확인가능하며 전자결재 확인 및 삭제, 게시물 확인 및 삭제, 이메일 데이터 확인, 자원 관리, 예약내역 확인 및 삭제, 인사정보 수정 
-
