@@ -71,37 +71,56 @@ const SentEmail = () => {
     };
 
     const formatDate = (dateString) => {
-        if (!dateString) return '';
-
+        if (!dateString) return '';  // dateString이 없으면 빈 문자열 반환
+    
         const parseDateString = (str) => {
+            if (!str || typeof str !== 'string') {
+                console.error('Invalid date string:', str);
+                return null; // 오류 발생 시 null을 반환
+            }
+    
             const parts = str.split(' ');
+            if (parts.length < 6) {
+                console.error('Invalid date format:', str);
+                return null; // 날짜 문자열이 예상과 다르면 null 반환
+            }
+    
             const [, month, day, time, , year] = parts;
             const [hour, minute, second] = time.split(':');
-
+    
             const monthMap = {
                 Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
                 Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11
             };
-
+    
+            // 유효하지 않은 월이 있을 경우 처리
+            if (!(month in monthMap)) {
+                console.error('Invalid month:', month);
+                return null;
+            }
+    
             return new Date(year, monthMap[month], day, hour, minute, second);
         };
-
+    
         const date = parseDateString(dateString);
-
-        if (isNaN(date.getTime())) {
+    
+        // date가 null이거나 유효하지 않은 날짜일 경우 처리
+        if (!date || isNaN(date.getTime())) {
             console.error('Invalid date:', dateString);
             return '날짜 형식 오류';
         }
-
+    
         const today = new Date();
         const isToday = date.toDateString() === today.toDateString();
-
+    
+        // 오늘 날짜인지에 따라 다른 옵션으로 형식화
         const options = isToday
             ? { hour: '2-digit', minute: '2-digit', hour12: false }
             : { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
-
+    
         return new Intl.DateTimeFormat('ko-KR', options).format(date);
     };
+    
 
     const isToday = (dateString) => {
         if (!dateString) return false;
@@ -173,7 +192,7 @@ const SentEmail = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Box sx={{textAlign: 'center', marginTop: '20px'}}>
+                <Box sx={{ textAlign: 'center', marginTop: '20px' }}>
                     {pageGroup > 0 && (
                         <Button
                             onClick={prevPageGroup}
